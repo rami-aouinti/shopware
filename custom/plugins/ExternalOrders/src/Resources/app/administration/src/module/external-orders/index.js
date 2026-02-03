@@ -15,8 +15,7 @@ Module.register('external-orders', {
             component: 'external-orders-list',
             path: 'index',
             meta: {
-                parentPath: 'sw.order.index',
-                privilege: 'order.viewer',
+                privilege: 'admin',
             },
         },
     },
@@ -29,8 +28,7 @@ Module.register('external-orders', {
             path: 'external.orders.index',
             icon: 'regular-shopping-cart',
             position: 45,
-            parent: 'sw-order',
-            privilege: 'order.viewer',
+            parent: null,
         },
     ],
 });
