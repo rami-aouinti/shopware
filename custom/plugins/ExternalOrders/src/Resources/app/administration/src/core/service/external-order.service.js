@@ -15,7 +15,7 @@ class ExternalOrderService extends ApiService {
             params.search = search;
         }
 
-        const response = await this.httpClient.get(`/_action/${this.apiEndpoint}/list`, {
+        const response = await this.httpClient.get(`_action/${this.getApiBasePath()}/list`, {
             headers: this.getBasicHeaders(),
             params,
         });
@@ -24,7 +24,7 @@ class ExternalOrderService extends ApiService {
     }
 
     async detail(orderId) {
-        const response = await this.httpClient.get(`/_action/${this.apiEndpoint}/detail/${orderId}`, {
+        const response = await this.httpClient.get(`_action/${this.getApiBasePath()}/detail/${orderId}`, {
             headers: this.getBasicHeaders(),
         });
 
@@ -33,5 +33,9 @@ class ExternalOrderService extends ApiService {
 }
 
 Shopware.Application.addServiceProvider('externalOrderService', (container) => {
-    return new ExternalOrderService(container.httpClient, Shopware.Service('loginService'));
+    const initContainer = Shopware.Application.getContainer('init');
+    const httpClient = initContainer?.httpClient ?? container.httpClient;
+    const loginService = container.loginService ?? Shopware.Service('loginService');
+
+    return new ExternalOrderService(httpClient, loginService);
 });
