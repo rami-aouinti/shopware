@@ -3,7 +3,7 @@ services:
 ###> shopware/core ###
   database:
     ports:
-      - "3306"
+      - "3306:3306"
 ###< shopware/core ###
 
 ###> symfony/mailer ###
