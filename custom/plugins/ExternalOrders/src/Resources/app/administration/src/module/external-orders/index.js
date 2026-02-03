@@ -27,8 +27,8 @@ Module.register('external-orders', {
             color: '#009ee3',
             path: 'external.orders.index',
             icon: 'regular-shopping-cart',
+            parent: 'sw-order',
             position: 45,
-            parent: null,
         },
     ],
 });

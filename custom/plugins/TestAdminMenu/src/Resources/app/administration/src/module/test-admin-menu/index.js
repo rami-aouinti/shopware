@@ -18,7 +18,7 @@ Shopware.Module.register('test-admin-menu', {
             id: 'test-admin-menu',
             label: 'test-admin-menu.general.mainMenuItemGeneral',
             path: 'test.admin.menu.index',
-            parent: 'sw-extension',
+            parent: 'sw-order',
             position: 100,
         },
     ],

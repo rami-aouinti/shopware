@@ -1,0 +1,23 @@
+{
+  "base": "/bundles/testadminmenu/administration/",
+  "entryPoints": {
+    "test-admin-menu": {
+      "css": [],
+      "dynamic": [],
+      "js": [
+        "/bundles/testadminmenu/administration/assets/test-admin-menu-td9CFv84.js"
+      ],
+      "legacy": false,
+      "preload": []
+    }
+  },
+  "legacy": false,
+  "metadatas": {},
+  "version": [
+    "7.1.0",
+    7,
+    1,
+    0
+  ],
+  "viteServer": null
+}

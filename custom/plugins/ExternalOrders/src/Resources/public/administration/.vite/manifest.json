@@ -1,0 +1,11 @@
+{
+  "main.js": {
+    "file": "assets/external-orders-CrnpWzna.js",
+    "name": "external-orders",
+    "src": "main.js",
+    "isEntry": true,
+    "css": [
+      "assets/external-orders-DqhZYy_m.css"
+    ]
+  }
+}
