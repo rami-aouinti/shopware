@@ -31,7 +31,6 @@ Module.register('external-orders', {
             icon: 'regular-shopping-cart',
             position: 45,
             parent: null,
-            privilege: 'admin',
         },
     ],
 });
