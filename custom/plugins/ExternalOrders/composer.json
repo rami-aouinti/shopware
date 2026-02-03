@@ -1,0 +1,21 @@
+{
+    "name": "external/orders",
+    "description": "External orders overview for marketplaces",
+    "type": "shopware-platform-plugin",
+    "license": "proprietary",
+    "require": {
+        "shopware/core": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "ExternalOrders\\": "src/"
+        }
+    },
+    "extra": {
+        "shopware-plugin-class": "ExternalOrders\\ExternalOrders",
+        "label": {
+            "en-GB": "External Orders",
+            "de-DE": "Externe Bestellungen"
+        }
+    }
+}

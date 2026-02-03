@@ -1,0 +1,124 @@
+.external-orders {
+    &__channels {
+        margin-bottom: 24px;
+    }
+
+    &__channel-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+
+    &__channel-button {
+        min-width: 120px;
+        justify-content: center;
+    }
+
+    &__summary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    &__summary-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    &__summary-label {
+        font-size: 12px;
+        color: #52667a;
+    }
+
+    &__summary-value {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    &__summary-actions {
+        display: flex;
+        gap: 8px;
+        margin-left: auto;
+    }
+
+    &__filters {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    &__filter-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+    }
+
+    &__date {
+        width: 150px;
+    }
+
+    &__action {
+        padding: 0;
+    }
+
+    &__detail {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    &__detail-card {
+        margin-bottom: 8px;
+    }
+
+    &__detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+    }
+
+    &__detail-section {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 16px;
+    }
+
+    &__detail-section h4 {
+        margin-bottom: 12px;
+    }
+
+    &__detail-section dl {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 6px 12px;
+        margin: 0;
+    }
+
+    &__detail-section dt {
+        font-weight: 600;
+        color: #52667a;
+    }
+
+    &__detail-section dd {
+        margin: 0;
+    }
+
+    &__totals {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    &__totals-row {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 500;
+    }
+}
