@@ -33,5 +33,7 @@ class ExternalOrderService extends ApiService {
 }
 
 Shopware.Application.addServiceProvider('externalOrderService', (container) => {
-    return new ExternalOrderService(container.httpClient, Shopware.Service('loginService'));
+    const initContainer = Shopware.Application.getContainer('init');
+
+    return new ExternalOrderService(initContainer.httpClient, container.loginService);
 });
