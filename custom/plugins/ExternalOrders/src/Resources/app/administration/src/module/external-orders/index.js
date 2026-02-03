@@ -9,8 +9,6 @@ Module.register('external-orders', {
     description: 'Zentrale Übersicht für externe Bestellungen',
     color: '#009ee3',
     icon: 'regular-shopping-cart',
-    routePrefixPath: 'external-orders',
-    routePrefixName: 'external.orders',
 
     routes: {
         index: {
