@@ -17,7 +17,6 @@ Module.register('external-orders', {
             component: 'external-orders-list',
             path: 'index',
             meta: {
-                parentPath: 'sw.order.index',
                 privilege: 'admin',
             },
         },
