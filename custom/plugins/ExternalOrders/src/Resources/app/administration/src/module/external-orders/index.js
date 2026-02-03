@@ -9,8 +9,6 @@ Module.register('external-orders', {
     description: 'Zentrale Übersicht für externe Bestellungen',
     color: '#009ee3',
     icon: 'regular-shopping-cart',
-    routePrefixPath: 'external-orders',
-    routePrefixName: 'external.orders',
 
     routes: {
         index: {
@@ -18,7 +16,7 @@ Module.register('external-orders', {
             path: 'index',
             meta: {
                 parentPath: 'sw.order.index',
-                privilege: 'admin',
+                privilege: 'order.viewer',
             },
         },
     },
@@ -30,8 +28,9 @@ Module.register('external-orders', {
             color: '#009ee3',
             path: 'external.orders.index',
             icon: 'regular-shopping-cart',
-            position: 40,
+            position: 45,
             parent: 'sw-order',
+            privilege: 'order.viewer',
         },
     ],
 });
