@@ -1,0 +1,26 @@
+{
+  "name": "custom/test-admin-menu",
+  "description": "Adds a test admin menu entry that renders Hallo.",
+  "type": "shopware-platform-plugin",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Custom"
+    }
+  ],
+  "require": {
+    "shopware/core": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "TestAdminMenu\\": "src/"
+    }
+  },
+  "extra": {
+    "shopware-plugin-class": "TestAdminMenu\\TestAdminMenu",
+    "label": {
+      "en-GB": "Test Admin Menu",
+      "de-DE": "Test Admin Menu"
+    }
+  }
+}
