@@ -1,0 +1,16 @@
+<div style="font-family:arial; font-size:12px;">
+    <br/>
+    <p>
+        {% if salutation is not empty %}
+            {{ salutation.letterName ?? 'Dear mrs/mr' }} {{ [salutation.title ?? '', salutation.firstName ?? '', salutation.lastName ?? ''] | filter(part => part != '') | join(' ') }},
+        {% else %}
+            Dear mrs/mr,
+        {% endif %}
+        <br/>
+        <br/>
+        please send the attached products.
+        <br/>
+        <br/>
+        With regards - Your team from {{ shopName }}
+    </p>
+</div>

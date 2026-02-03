@@ -1,0 +1,9 @@
+localeCode: 'en-GB'
+typeName: 'Supplier Order'
+subject: 'Order {{ supplierOrder.number }}{{ (supplierOrder.supplier.customerNumber is not null) ? " (Customer number: " ~ supplierOrder.supplier.customerNumber ~ ")" : "" }}'
+sender: 'Pickware ERP'
+description: 'Supplier order'
+contentHtml:
+  fromFile: 'content-en-gb.html'
+contentPlain:
+  fromFile: 'content-en-gb.txt'

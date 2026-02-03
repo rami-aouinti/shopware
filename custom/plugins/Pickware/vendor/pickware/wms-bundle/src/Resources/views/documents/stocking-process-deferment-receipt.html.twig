@@ -1,0 +1,74 @@
+{% sw_extends '@Shopware/documents/base.html.twig' %}
+
+{% use '@Framework/documents/includes/logo.html.twig' %}
+{% use '@Framework/documents/includes/letter_header.html.twig' %}
+
+{% block document_title_tag %}
+    {{ 'pickware-wms.stocking-process-deferment-receipt.title' | trans | sw_sanitize(null, true) }} {{ order.orderNumber }}
+{% endblock %}
+
+{% block document_base %}
+    {% include '@PickwareWmsBundle/documents/stocking-process-deferment-receipt.css.twig' %}
+    {{ parent() }}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{# letter_header #}
+{% block document_recipient %}
+{% endblock %}
+{% block document_sender_address %}
+{% endblock %}
+{% block document_side_info %}
+    <table>
+        <tr>
+            <td>
+                {{ config.documentDate | format_datetime('medium', 'medium', locale=locale) | sw_sanitize(null, true) }}
+            </td>
+        </tr>
+    </table>
+{% endblock %}
+
+{# By overwriting the whole document_body we ignore Shopware's position loop, summary, comment payment_shipping
+   and shipping_address #}
+{% block document_body %}
+    {{ block('letter_header') }}
+
+    {# document headline is hardcoded since the headline block of the base template is in the first table (which is
+       completely overwritten in this document_body block) #}
+    <div class="document-title-container">
+        <h1>
+            {{ 'pickware-wms.stocking-process-deferment-receipt.title' | trans | sw_sanitize(null, true) }}
+            <span><strong>{{ stockingProcessNumber | sw_sanitize(null, true) }}</strong></span>
+        </h1>
+        <h2>
+            {{ 'pickware-wms.stocking-process-deferment-receipt.sub-title' | trans | sw_sanitize(null, true) }}
+            <span><strong>{{ 'pickware-wms.stocking-process-deferment-receipt.warehouse-label' | trans({'%warehouseName%': warehouse.name, '%warehouseCode%': warehouse.code}) | sw_sanitize(null, true) }}</strong></span>
+        </h2>
+        <h2>
+            {{ 'pickware-wms.stocking-process-deferment-receipt.origin' | trans | sw_sanitize(null, true) }}
+            <span><strong>{{ 'pickware-wms.stocking-process-deferment-receipt.cancelled-picking-process' | trans | sw_sanitize(null, true) }}</strong></span>
+        </h2>
+        <img class="barcode" src="{{ barcode }}" alt="Barcode">
+    </div>
+
+    <div class="line-item-container">
+        <table class="line-item-table">
+            <thead>
+                <tr class="line-item-table-header">
+                    <th style="width: 20%">{{ 'pickware-wms.stocking-process-deferment-receipt.columns.product-number' | trans | sw_sanitize(null, true) }}</th>
+                    <th style="width: 60%">{{ 'pickware-wms.stocking-process-deferment-receipt.columns.product' | trans | sw_sanitize(null, true) }}</th>
+                    <th style="width: 20%">{{ 'pickware-wms.stocking-process-deferment-receipt.columns.quantity' | trans | sw_sanitize(null, true) }}</th>
+                </tr>
+            </thead>
+            {% for productNameQuantity in productNameQuantities %}
+                    <tr class ="line-item">
+                        <td>{{ productNameQuantity.productNumber | default('') | sw_sanitize(null, true) }}</td>
+                        <td>{{ productNameQuantity.name | default('') | sw_sanitize(null, true) }}</td>
+                        <td>{{ productNameQuantity.quantity | sw_sanitize(null, true) }}</td>
+                    </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

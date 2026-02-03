@@ -1,0 +1,7 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Property Pickware\\DocumentUtils\\Pdf\\PdfMerger\:\:\$fileContents type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Pdf/PdfMerger.php

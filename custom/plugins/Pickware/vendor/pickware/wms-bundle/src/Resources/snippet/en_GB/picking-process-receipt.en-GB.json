@@ -1,0 +1,30 @@
+{
+    "pickware-wms": {
+        "picking-process-receipt": {
+            "file-name": "Receipt for picking process %s",
+            "title": {
+                "deferred": "Deferred picking process",
+                "picked": "Completed picking process"
+            },
+            "sub-title": "Warehouse:",
+            "warehouse-label": "%warehouseName% (%warehouseCode%)",
+            "created-at": "Created at:",
+            "user": "User:",
+            "order-number": "Order number:",
+            "order-date": "Order date:",
+            "product-list-title": {
+                "deferred": "Missing products",
+                "picked": "Picked products"
+            },
+            "order-list-title": "Orders",
+            "columns": {
+                "product-number": "Product number",
+                "product": "Product",
+                "quantity": "Quantity",
+                "order-number": "Order number",
+                "receiver": "Receiver",
+                "shipping-method": "Shipping method"
+            }
+        }
+    }
+}

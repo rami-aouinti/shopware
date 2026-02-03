@@ -1,0 +1,19 @@
+{
+    "pickware-wms": {
+        "picking-statistics-deliveries-export": {
+            "file-name": "Picking Dashboard - Gepickte Aufträge %s",
+            "columns": {
+                "delivery-id": "Auftrag-ID",
+                "delivery-completed-at": "Abschlusszeitpunkt",
+                "user-name": "Nutzername",
+                "user-roles": "Nutzerrollen",
+                "order-number": "Bestellnummer",
+                "order-sales-channel-name": "Verkaufskanal",
+                "warehouse-name": "Lager",
+                "picking-process-number": "Kommissioniervorgangsnummer",
+                "picking-mode": "Pickmodus",
+                "picking-profile-name": "Pickprofil"
+            }
+        }
+    }
+}

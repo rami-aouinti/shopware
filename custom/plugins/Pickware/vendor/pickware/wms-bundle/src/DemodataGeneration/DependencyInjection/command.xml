@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<container
+    xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <service
+            id="pickware-wms.command.create-user"
+            class="Pickware\MobileAppAuthBundle\DemodataGeneration\Command\PickwareCreateUserCommand"
+        >
+            <tag name="console.command" />
+            <argument type="service" id="Pickware\DalBundle\EntityManager" />
+            <argument type="string">pickware-wms:create-user</argument>
+            <argument type="string">pickware-wms-restricted</argument>
+            <argument type="string">WMS Testing</argument>
+            <argument type="constant">
+                Pickware\PickwareWms\Installation\PickwareWmsAclRoleFactory::PICKWARE_WMS_ROLE_NAME
+            </argument>
+        </service>
+    </services>
+</container>

@@ -1,0 +1,113 @@
+<style type="text/css">
+
+hr {
+    margin: 25px 0;
+}
+
+.pw-pos-table {
+    width: 100%;
+    margin-bottom: 25px;
+    border-spacing: 0;
+}
+
+.pw-pos-table th,
+.pw-pos-table td,
+.pw-pos-table tr {
+    padding: 10px 5px 10px 5px;
+}
+
+.pw-pos-table.transactions tr.comment-row td {
+    padding-top: 0;
+}
+
+.pw-pos-table.transactions tr:last-child td {
+    border-bottom: 1px solid black;
+}
+.pw-pos-table.transactions tr.border-top td {
+    border-top: 1px solid black;
+}
+
+.pw-pos-table.summary th {
+    border-bottom: 1px solid black;
+}
+
+.pw-pos-table.summary td,
+.pw-pos-table.summary tr {
+    width: 50%
+}
+.pw-pos-table td,
+.pw-pos-table tr {
+    vertical-align: top;
+}
+
+.pw-pos-table th {
+    text-align: left;
+}
+
+.pw-pos-table .right-aligned {
+    text-align: right;
+}
+
+{# custom aggregations #}
+.pw-pos-custom-aggregations {
+    margin: 0;
+    padding: 0;
+}
+
+.summary-of-transactions-header {
+    display: block;
+    margin: 0;
+    padding: 1mm 2.5mm 1.5mm;
+    text-align: right;
+    line-height: 1;
+    border-bottom: 1px solid #D1D9E0;
+}
+
+.summary-of-transactions-header span {
+    float: left;
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+.summary-of-transactions__payment-type-header {
+    margin-top: 5mm;
+    padding-top: 2mm;
+    padding-bottom: 2.5mm;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.summary-of-transactions__payment-type-header:first-child {
+    margin-top: -5mm;
+}
+
+.summary-of-transactions__line-item-group-header {
+    font-size: 14px;
+}
+
+.summary-of-transactions__line-item-group-header span {
+    padding-left: 5mm;
+}
+
+.summary-of-transactions__line-item-header {
+    font-size: 12px;
+}
+
+.summary-of-transactions__line-item-header span {
+    padding-left: 10mm;
+}
+
+.pw-pos-custom-aggregations .summary-of-transactions__tax-rate-header {
+    font-size: 11px;
+}
+
+.summary-of-transactions__tax-rate-header span {
+    padding-left: 15mm;
+}
+
+{# revert shopware styling #}
+@page {
+    margin-top: 50px !important;
+}
+</style>

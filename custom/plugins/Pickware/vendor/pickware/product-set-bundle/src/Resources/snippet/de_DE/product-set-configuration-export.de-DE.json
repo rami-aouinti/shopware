@@ -1,0 +1,14 @@
+{
+    "pickware-product-set": {
+        "product-set-configuration-export": {
+            "file-name": "Stücklisten %s",
+            "columns": {
+                "product-set-product-number": "Produktnummer Stückliste",
+                "product-set-product-name": "Produktname Stückliste",
+                "product-set-configuration-product-number": "Produktnummer zugeordnetes Produkt",
+                "product-set-configuration-product-name": "Produktname zugeordnetes Produkt",
+                "quantity": "Menge"
+            }
+        }
+    }
+}

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/master/src/Core/System/SystemConfig/Schema/config.xsd"
+>
+    <card>
+        <title>Login Austrian Post</title>
+        <title lang="de-DE">Login Österreichische Post</title>
+        <input-field type="int">
+            <name>clientId</name>
+            <required>true</required>
+            <label>Client ID</label>
+            <label lang="de-DE">Client-ID</label>
+        </input-field>
+        <input-field type="int">
+            <name>orgUnitId</name>
+            <required>true</required>
+            <label>OrgUnit ID</label>
+            <label lang="de-DE">OrgUnit-ID</label>
+        </input-field>
+        <input-field type="text">
+            <name>orgUnitGuid</name>
+            <required>true</required>
+            <label>Organisation Unique ID</label>
+            <label lang="de-DE">Organisation-Unique-ID</label>
+        </input-field>
+        <input-field type="bool">
+            <name>useTestingEndpoint</name>
+            <label>Use testing webservice</label>
+            <label lang="de-DE">Nutze Testing-Webservice</label>
+            <helpText lang="de-DE">
+                Nutze den Testing-Webservice von Österreichische Post anstatt den Productive-Webservice.
+            </helpText>
+            <helpText>Use the Austrian Post testing web service instead of the productive web service.</helpText>
+        </input-field>
+    </card>
+    <card>
+        <title lang="de-DE">Kontodaten</title>
+        <title>Bank account data</title>
+        <input-field type="text">
+            <name>bankTransferDataAccountOwnerName</name>
+            <label>Owner</label>
+            <label lang="de-DE">Inhaber</label>
+            <helpText lang="de-DE">
+                Diese Daten werden benötigt, um Zahlungen per Nachnahme auf das richtige Konto zu leiten.
+            </helpText>
+            <helpText>This data is needed to direct cash on delivery payments to the correct bank account.</helpText>
+        </input-field>
+        <input-field type="text">
+            <name>bankTransferDataIban</name>
+            <label>IBAN</label>
+            <label lang="de-DE">IBAN</label>
+            <helpText lang="de-DE">
+                Diese Daten werden benötigt, um Zahlungen per Nachnahme auf das richtige Konto zu leiten.
+            </helpText>
+            <helpText>This data is needed to direct cash on delivery payments to the correct bank account.</helpText>
+        </input-field>
+        <input-field type="text">
+            <name>bankTransferDataBic</name>
+            <label>BIC</label>
+            <label lang="de-DE">BIC</label>
+            <helpText lang="de-DE">
+                Diese Daten werden benötigt, um Zahlungen per Nachnahme auf das richtige Konto zu leiten.
+            </helpText>
+            <helpText>This data is needed to direct cash on delivery payments to the correct bank account.</helpText>
+        </input-field>
+    </card>
+    <card>
+        <title>Label settings</title>
+        <title lang="de-DE">Etiketten-Einstellungen</title>
+        <input-field type="single-select">
+            <name>labelSize</name>
+            <label>Paper size</label>
+            <label lang="de-DE">Papierformat</label>
+            <required>true</required>
+            <options>
+                <option>
+                    <id>A5</id>
+                    <name>DIN A5 (100x200)</name>
+                    <name lang="de-DE">DIN A5 (100x200)</name>
+                </option>
+                <option>
+                    <id>A6</id>
+                    <name>DIN A6 (100x150)</name>
+                    <name lang="de-DE">DIN A6 (100x150)</name>
+                </option>
+            </options>
+        </input-field>
+    </card>
+</config>

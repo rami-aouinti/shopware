@@ -1,0 +1,57 @@
+{
+    "name": "pickware/http-utils",
+    "description": "A library with utils for HTTP request / response processing",
+    "license": "proprietary",
+    "type": "library",
+    "version": "4.32.0",
+    "authors": [
+        {
+            "name": "Pickware",
+            "email": "info@pickware.de"
+        }
+    ],
+    "require": {
+        "php": ">= 8.2",
+        "ext-json": "*",
+        "pickware/php-standard-library": "^2.25.0",
+        "shopware/core": ">=6.6.10.5 <6.8",
+        "symfony/http-foundation": "^7.0.0"
+    },
+    "require-dev": {
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "2.1.29",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpunit/phpunit": "^9.5.0"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../../libraries/composer-packages/*"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Pickware\\HttpUtils\\": "src",
+            "Pickware\\HttpUtils\\Test\\": "test"
+        },
+        "exclude-from-classmap": [
+            "**.unit.php"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true,
+            "phpstan/extension-installer": true,
+            "symfony/runtime": true,
+            "viison/composer-git-hooks-installer-plugin": true
+        },
+        "lock": false
+    },
+    "extra": {
+        "ci-min-supported-shopware-version": "6.6.10.5"
+    },
+    "scripts": {
+        "phpstan": "./vendor/bin/phpstan analyse --memory-limit=4G --no-interaction --ansi -c phpstan.neon.dist",
+        "test:unit": "composer install && ./vendor/bin/phpunit --config phpunit.unit.xml --testdox"
+    }
+}

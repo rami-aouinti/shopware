@@ -1,0 +1,21 @@
+monolog:
+  channels: ['pickware_debug', 'pickware_debug_error']
+  handlers:
+    # Service name: monolog.logger.pickware_debug
+    pickware_debug:
+      type: rotating_file
+      path: '%kernel.logs_dir%/pickware_debug_%kernel.environment%.log'
+      max_files: 30
+      level: debug
+      channels: ['pickware_debug']
+      bubble: false
+      priority: 150
+    # Service name: monolog.logger.pickware_debug_error
+    pickware_debug_error:
+      type: rotating_file
+      path: '%kernel.logs_dir%/pickware_debug_error_%kernel.environment%.log'
+      max_files: 30
+      level: debug
+      channels: ['pickware_debug_error']
+      bubble: false
+      priority: 150

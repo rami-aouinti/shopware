@@ -1,0 +1,16 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Pickware\SwissPostBundle\:
+    resource: '../../'
+    exclude:
+      - '../../**/*Event.php'
+      - '../../**/*Exception.php'
+      - '../../**/*Message.php'
+      - '../../Administration/'
+      - '../../Installation/'
+      - '../../Api/Requests/'
+      - '../../Api/Services/'
+      - '../../Config/'

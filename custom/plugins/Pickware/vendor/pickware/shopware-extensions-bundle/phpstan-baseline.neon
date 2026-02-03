@@ -1,0 +1,235 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\Mail\\MailSendSuppressionService\:\:runWithMailSendDisabled\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Mail/MailSendSuppressionService.php
+
+		-
+			message: '#^Property Pickware\\ShopwareExtensionsBundle\\Mail\\SystemConfigServiceDecorator\:\:\$configs has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Mail/SystemConfigServiceDecorator.php
+
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\Mail\\SystemConfigServiceDecoratorTest\:\:decorationCoverageDataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Mail/SystemConfigServiceDecorator.unit.php
+
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\Mail\\SystemConfigServiceDecoratorTest\:\:test_forwardsAllCallsOfPublicMethodsToTheDecoratedInstance\(\) has parameter \$expectedArguments with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Mail/SystemConfigServiceDecorator.unit.php
+
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\OrderDelivery\\OrderDeliveryService\:\:getPrimaryOrderDeliveryStates\(\) has parameter \$orderIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDelivery/OrderDeliveryService.php
+
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\OrderDelivery\\OrderDeliveryService\:\:getPrimaryOrderDeliveryStates\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDelivery/OrderDeliveryService.php
+
+		-
+			message: '#^Call to method render\(\) on an unknown class Pickware\\DocumentBundle\\Renderer\\DomPdfRenderer\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/OrderDocument/OrderDocumentRenderer.php
+
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentRenderer\:\:createRenderedDocument\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDocument/OrderDocumentRenderer.php
+
+		-
+			message: '#^Parameter \$pdfRenderer of method Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentRenderer\:\:__construct\(\) has invalid type Pickware\\DocumentBundle\\Renderer\\DomPdfRenderer\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/OrderDocument/OrderDocumentRenderer.php
+
+		-
+			message: '#^Property Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentRenderer\:\:\$pdfRenderer has unknown class Pickware\\DocumentBundle\\Renderer\\DomPdfRenderer as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/OrderDocument/OrderDocumentRenderer.php
+
+		-
+			message: '#^Unknown parameter \$html in call to Shopware\\Core\\Checkout\\Document\\Renderer\\RenderedDocument constructor\.$#'
+			identifier: argument.unknown
+			count: 1
+			path: src/OrderDocument/OrderDocumentRenderer.php
+
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentService\:\:addDocumentFileToDocument\(\) has parameter \$documentFile with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.php
+
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentService\:\:createDocument\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.php
+
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentService\:\:createDocumentConfigurationArray\(\) has parameter \$documentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.php
+
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentService\:\:createDocumentConfigurationArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.php
+
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentService\:\:createDocumentWithTechnicalName\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.php
+
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentService\:\:uploadDocument\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.php
+
+		-
+			message: '#^Variable \$document in PHPDoc tag @var does not exist\.$#'
+			identifier: varTag.variableNotFound
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with string will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.unit.php
+
+		-
+			message: '#^Property Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentServiceTest\:\:\$document \(Shopware\\Core\\Checkout\\Document\\DocumentEntity\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.unit.php
+
+		-
+			message: '#^Property Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentServiceTest\:\:\$documentConfig \(array\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.unit.php
+
+		-
+			message: '#^Property Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentServiceTest\:\:\$documentConfig type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.unit.php
+
+		-
+			message: '#^Property Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentServiceTest\:\:\$documentFile \(Symfony\\Component\\HttpFoundation\\File\\UploadedFile\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.unit.php
+
+		-
+			message: '#^Property Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentServiceTest\:\:\$documentId \(string\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.unit.php
+
+		-
+			message: '#^Property Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentServiceTest\:\:\$documentNumber \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.unit.php
+
+		-
+			message: '#^Property Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentServiceTest\:\:\$documentType \(Shopware\\Core\\Checkout\\Document\\Aggregate\\DocumentType\\DocumentTypeEntity\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.unit.php
+
+		-
+			message: '#^Property Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentServiceTest\:\:\$mediaEntity \(Shopware\\Core\\Content\\Media\\MediaEntity\|null\) is never assigned Shopware\\Core\\Content\\Media\\MediaEntity so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.unit.php
+
+		-
+			message: '#^Property Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentServiceTest\:\:\$options type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.unit.php
+
+		-
+			message: '#^Property Pickware\\ShopwareExtensionsBundle\\OrderDocument\\OrderDocumentServiceTest\:\:\$order \(Shopware\\Core\\Checkout\\Order\\OrderEntity\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/OrderDocument/OrderDocumentService.unit.php
+
+		-
+			message: '#^Call to static method createForContainer\(\) on an unknown class Pickware\\InstallationLibrary\\BundleMigrationDropper\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/PickwareShopwareExtensionsBundle.php
+
+		-
+			message: '#^Call to static method createForContainer\(\) on an unknown class Pickware\\InstallationLibrary\\DependencyAwareTableDropper\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/PickwareShopwareExtensionsBundle.php
+
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\PickwareShopwareExtensionsBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareShopwareExtensionsBundle.php
+
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\Price\\CalculatedPriceExtensionUnitTest\:\:priceDataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Price/CalculatedPriceExtension.unit.php
+
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\Price\\CalculatedTaxCollectionExtensionUnitTest\:\:dataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Price/CalculatedTaxCollectionExtension.unit.php
+
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\Price\\TaxRuleCollectionExtensionUnitTest\:\:dataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Price/TaxRuleCollectionExtension.unit.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\:\:getId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/StateTransitioning/StateTransitionBatchService.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\:\:getStateMachineState\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/StateTransitioning/StateTransitionService.php
+
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\Struct\\CollectionExtension\:\:haveSameKeys\(\) has parameter \$collection1 with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Struct/CollectionExtension.php
+
+		-
+			message: '#^Method Pickware\\ShopwareExtensionsBundle\\Struct\\CollectionExtension\:\:haveSameKeys\(\) has parameter \$collection2 with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Struct/CollectionExtension.php

@@ -1,0 +1,9 @@
+localeCode: 'de-DE'
+typeName: 'Gutscheinbon'
+subject: 'Bon für deinen Wertgutschein'
+sender: '{{ shopName }}'
+description: 'Den Bon des Wertgutscheins an den Kunden schicken'
+contentHtml:
+  fromFile: 'content-de-de.html.twig'
+contentPlain:
+  fromFile: 'content-de-de.txt.twig'

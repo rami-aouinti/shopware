@@ -1,0 +1,163 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Property Pickware\\MobileAppAuthBundle\\Controller\\AuthenticationControllerTest\:\:\$psr7Response \(Nyholm\\Psr7\\Response\) does not accept Psr\\Http\\Message\\ResponseInterface\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Controller/AuthenticationController.unit.php
+
+		-
+			message: '#^Comparison operation "\>\=" between int\<0, max\> and 0 is always true\.$#'
+			identifier: greaterOrEqual.alwaysTrue
+			count: 1
+			path: src/DemodataGeneration/Generator/MobileAppCredentialGenerator.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\ClientRepository\:\:getClientEntity\(\) has parameter \$clientIdentifier with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OAuth/ClientRepository.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\ClientRepository\:\:validateClient\(\) has parameter \$clientIdentifier with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OAuth/ClientRepository.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\ClientRepository\:\:validateClient\(\) has parameter \$clientSecret with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OAuth/ClientRepository.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\ClientRepository\:\:validateClient\(\) has parameter \$grantType with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OAuth/ClientRepository.php
+
+		-
+			message: '#^Property Pickware\\MobileAppAuthBundle\\OAuth\\ClientRepositoryTest\:\:\$clientSecret \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/OAuth/ClientRepository.unit.php
+
+		-
+			message: '#^Class Pickware\\MobileAppAuthBundle\\OAuth\\Model\\MobileAppCredentialCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/OAuth/Model/MobileAppCredentialCollection.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\Model\\Subscriber\\MobileAppAuthAclRoleWriteRestrictorSubscriber\:\:restrictWriteOnMobileAppAuthRole\(\) has parameter \$event with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OAuth/Model/Subscriber/MobileAppAuthAclRoleWriteRestrictorSubscriber.php
+
+		-
+			message: '#^Property Pickware\\MobileAppAuthBundle\\OAuth\\PinGrantTest\:\:\$requestBody type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OAuth/PinGrant.unit.php
+
+		-
+			message: '#^Property Pickware\\MobileAppAuthBundle\\OAuth\\PinGrantTest\:\:\$respondTypeMock is unused\.$#'
+			identifier: property.unused
+			count: 1
+			path: src/OAuth/PinGrant.unit.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\ScopeRepository\:\:finalizeScopes\(\) has parameter \$authCodeId with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OAuth/ScopeRepository.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\ScopeRepository\:\:finalizeScopes\(\) has parameter \$grantType with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OAuth/ScopeRepository.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\ScopeRepository\:\:finalizeScopes\(\) has parameter \$userIdentifier with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OAuth/ScopeRepository.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\ScopeRepository\:\:hasScope\(\) has parameter \$haystack with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OAuth/ScopeRepository.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\ScopeRepositoryTest\:\:assertArrayHasObjectOfType\(\) has parameter \$array with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OAuth/ScopeRepository.unit.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\ScopeRepositoryTest\:\:assertArrayHasObjectOfType\(\) has parameter \$message with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OAuth/ScopeRepository.unit.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\ScopeRepositoryTest\:\:assertArrayHasObjectOfType\(\) has parameter \$type with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OAuth/ScopeRepository.unit.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\ScopeRepositoryTest\:\:assertArrayNotHasObjectOfType\(\) has parameter \$array with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OAuth/ScopeRepository.unit.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\ScopeRepositoryTest\:\:assertArrayNotHasObjectOfType\(\) has parameter \$message with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OAuth/ScopeRepository.unit.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\ScopeRepositoryTest\:\:assertArrayNotHasObjectOfType\(\) has parameter \$type with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OAuth/ScopeRepository.unit.php
+
+		-
+			message: '#^Property Pickware\\MobileAppAuthBundle\\OAuth\\ScopeRepositoryTest\:\:\$initialScopes type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OAuth/ScopeRepository.unit.php
+
+		-
+			message: '#^Property Pickware\\MobileAppAuthBundle\\OAuth\\ScopeRepositoryTest\:\:\$requestedScopes type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OAuth/ScopeRepository.unit.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\UserRepository\:\:getUserEntityByUserCredentials\(\) has parameter \$grantType with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OAuth/UserRepository.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\UserRepository\:\:getUserEntityByUserCredentials\(\) has parameter \$password with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OAuth/UserRepository.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\OAuth\\UserRepository\:\:getUserEntityByUserCredentials\(\) has parameter \$username with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OAuth/UserRepository.php
+
+		-
+			message: '#^Method Pickware\\MobileAppAuthBundle\\PickwareMobileAppAuthBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareMobileAppAuthBundle.php

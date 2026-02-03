@@ -1,0 +1,9 @@
+localeCode: 'en-GB'
+typeName: 'Receipt'
+subject: 'Receipt slip for your purchase'
+sender: '{{ shopName }}'
+description: 'Send a receipt to the customer'
+contentHtml:
+  fromFile: 'content-en-gb.html.twig'
+contentPlain:
+  fromFile: 'content-en-gb.txt.twig'

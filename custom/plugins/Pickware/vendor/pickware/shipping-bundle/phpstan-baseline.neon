@@ -1,0 +1,1263 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\ShippingBundle\\AddressCorrecting\\AddressCorrectingService\:\:__construct\(\) has parameter \$addressCorrections with no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AddressCorrecting/AddressCorrectingService.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Authentication\\Token\:\:fromArray\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Authentication/Token.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Authentication\\Token\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Authentication/Token.php
+
+		-
+			message: '#^Instanceof between \$this\(Pickware\\ShippingBundle\\Carrier\\AbstractCarrierAdapter\) and ''Pickware\\\\ShippingBundle\\\\Carrier\\\\Capabilities\\\\CancellationCapability''\|''Pickware\\\\ShippingBundle\\\\Carrier\\\\Capabilities\\\\CashOnDeliveryCapability''\|''Pickware\\\\ShippingBundle\\\\Carrier\\\\Capabilities\\\\MultiTrackingCapability''\|''Pickware\\\\ShippingBundle\\\\Carrier\\\\Capabilities\\\\ReturnShipmentCancellationCapability''\|''Pickware\\\\ShippingBundle\\\\Carrier\\\\Capabilities\\\\ReturnShipmentsRegistrationCapability''\|''Pickware\\\\ShippingBundle\\\\Carrier\\\\Capabilities\\\\ShipmentsRegistrationCapability'' will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: src/Carrier/AbstractCarrierAdapter.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\AbstractCarrierAdapter@anonymous/Carrier/AbstractCarrierAdapter\.unit\.php\:37\:\:enableCashOnDeliveryInShipmentConfig\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/AbstractCarrierAdapter.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\AbstractCarrierAdapter@anonymous/Carrier/AbstractCarrierAdapter\.unit\.php\:37\:\:isCashOnDeliveryEnabledInShipmentConfig\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/AbstractCarrierAdapter.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\Capabilities\\CashOnDeliveryCapability\:\:enableCashOnDeliveryInShipmentConfig\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Capabilities/CashOnDeliveryCapability.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\Capabilities\\CashOnDeliveryCapability\:\:isCashOnDeliveryEnabledInShipmentConfig\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Capabilities/CashOnDeliveryCapability.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Carrier\\CarrierAdapterException\:\:\$jsonApiError on left side of \?\? is not nullable nor uninitialized\.$#'
+			identifier: nullCoalesce.initializedProperty
+			count: 1
+			path: src/Carrier/CarrierAdapterException.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\CarrierAdapterRegistry\:\:addCarrierAdapterWithFeatureFlags\(\) has parameter \$featureFlagNames with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/CarrierAdapterRegistry.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\CarrierAdapterRegistry\:\:getCarrierPageFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/CarrierAdapterRegistry.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\AbstractCarrierAdapter@anonymous/Carrier/CarrierAdapterRegistry\.unit\.php\:347\:\:getPageFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/CarrierAdapterRegistry.unit.php
+
+		-
+			message: '#^Trait Pickware\\ShippingBundle\\Carrier\\CarrierAdapterRegistryDecoration is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Carrier/CarrierAdapterRegistryDecoration.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\CarrierAdapterRegistryInterface\:\:addCarrierAdapterWithFeatureFlags\(\) has parameter \$featureFlagNames with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/CarrierAdapterRegistryInterface.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\CarrierAdapterRegistryInterface\:\:getCarrierPageFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/CarrierAdapterRegistryInterface.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\ConfigDescription\:\:__construct\(\) has parameter \$shipmentConfigDescription with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/ConfigDescription.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\ConfigDescription\:\:getDefaultValues\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/ConfigDescription.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\ConfigDescription\:\:getDefaultValuesFromConfigDescription\(\) has parameter \$configDescription with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/ConfigDescription.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\ConfigDescription\:\:getDefaultValuesFromConfigDescription\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/ConfigDescription.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\ConfigDescription\:\:getOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/ConfigDescription.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Carrier\\ConfigDescription\:\:\$configDescription type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/ConfigDescription.php
+
+		-
+			message: '#^Class Pickware\\ShippingBundle\\Carrier\\Model\\CarrierCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Carrier/Model/CarrierCollection.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:getCapabilities\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:getReturnShipmentConfigDefaultValues\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:getReturnShipmentConfigOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:getShipmentConfigDefaultValues\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:getShipmentConfigOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:getStorefrontConfigDefaultValues\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:getStorefrontConfigOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:setCapabilities\(\) has parameter \$capabilities with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:setReturnShipmentConfigDefaultValues\(\) has parameter \$configDefaultValues with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:setReturnShipmentConfigOptions\(\) has parameter \$configOptions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:setShipmentConfigDefaultValues\(\) has parameter \$configDefaultValues with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:setShipmentConfigOptions\(\) has parameter \$configOptions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:setStorefrontConfigDefaultValues\(\) has parameter \$configDefaultValues with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:setStorefrontConfigOptions\(\) has parameter \$configOptions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:\$capabilities type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:\$returnShipmentConfigDefaultValues type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:\$returnShipmentConfigOptions type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:\$shipmentConfigDefaultValues type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:\$shipmentConfigOptions type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:\$storefrontConfigDefaultValues type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Carrier\\Model\\CarrierEntity\:\:\$storefrontConfigOptions type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/Model/CarrierEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\Model\\Subscriber\\CarrierEntitySubscriber\:\:onEntityLoaded\(\) has parameter \$event with generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\Event\\EntityLoadedEvent but does not specify its types\: TEntity$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Carrier/Model/Subscriber/CarrierEntitySubscriber.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Carrier\\PageFormatProviding\:\:getPageFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Carrier/PageFormatProviding.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Config\\CommonShippingConfig\:\:fromArray\(\) has parameter \$rawConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/CommonShippingConfig.php
+
+		-
+			message: '#^Class Pickware\\ShippingBundle\\Config\\Config implements generic interface ArrayAccess but does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Config/Config.php
+
+		-
+			message: '#^Class Pickware\\ShippingBundle\\Config\\Config implements generic interface IteratorAggregate but does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Config/Config.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Config\\Config\:\:__construct\(\) has parameter \$rawConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Config.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Config\\Config\:\:getIterator\(\) return type with generic class ArrayIterator does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Config/Config.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Config\\Config\:\:getRawConfig\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Config.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Config\\Config\:\:\$rawConfig type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Config.php
+
+		-
+			message: '#^Cannot call static method fromArray\(\) on class\-string\|false\.$#'
+			identifier: staticMethod.nonObject
+			count: 1
+			path: src/Config/ConfigDecoratorTrait.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Config\\ConfigDecoratorTraitTest\:\:createConfigDecorator\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Config/ConfigDecoratorTrait.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Config\\ConfigDecoratorTraitTest\:\:createConfigDecorator\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/ConfigDecoratorTrait.unit.php
+
+		-
+			message: '#^Method class@anonymous/Config/ConfigDecoratorTrait\.unit\.php\:26\:\:fromArray\(\) has parameter \$rawConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/ConfigDecoratorTrait.unit.php
+
+		-
+			message: '#^Variable \$carrier in PHPDoc tag @var does not match assigned variable \$argument\.$#'
+			identifier: varTag.differentVariable
+			count: 1
+			path: src/Config/ConfigImportCommand.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Config\\ConfigService\:\:saveConfigurationArrayForDomainAndSalesChannel\(\) has parameter \$configArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/ConfigService.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Config\\ConfigService\:\:stripDomainFromKeys\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/ConfigService.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Config\\ConfigService\:\:stripDomainFromKeys\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/ConfigService.php
+
+		-
+			message: '#^Class Pickware\\ShippingBundle\\Config\\Model\\ShippingMethodConfigCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Config/Model/ShippingMethodConfigCollection.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Config\\Model\\ShippingMethodConfigEntity\:\:getReturnShipmentConfig\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Model/ShippingMethodConfigEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Config\\Model\\ShippingMethodConfigEntity\:\:getShipmentConfig\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Model/ShippingMethodConfigEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Config\\Model\\ShippingMethodConfigEntity\:\:getStorefrontConfig\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Model/ShippingMethodConfigEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Config\\Model\\ShippingMethodConfigEntity\:\:setReturnShipmentConfig\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Model/ShippingMethodConfigEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Config\\Model\\ShippingMethodConfigEntity\:\:setShipmentConfig\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Model/ShippingMethodConfigEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Config\\Model\\ShippingMethodConfigEntity\:\:setStorefrontConfig\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Model/ShippingMethodConfigEntity.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Config\\Model\\ShippingMethodConfigEntity\:\:\$returnShipmentConfig type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Model/ShippingMethodConfigEntity.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Config\\Model\\ShippingMethodConfigEntity\:\:\$shipmentConfig type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Model/ShippingMethodConfigEntity.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Config\\Model\\ShippingMethodConfigEntity\:\:\$storefrontConfig type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Model/ShippingMethodConfigEntity.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between string and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 2
+			path: src/Config/Model/ShippingMethodConfigEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Http\\HttpLogger\:\:getContext\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Http/HttpLogger.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Installation\\PickwareShippingBundleInstaller\:\:\$featureFlagService is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Installation/PickwareShippingBundleInstaller.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Mail\\Controller\\MailControllerTest\:\:\$shipmentId is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Mail/Controller/MailController.unit.php
+
+		-
+			message: '#^Offset ''configuration_key'' does not exist on array\{string, string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: src/Migration/Migration1719407928AddPrivacyConfigurationToShippingMethodConfig.php
+
+		-
+			message: '#^Parameter \#2 \$systemConfiguration of method Pickware\\ShippingBundle\\Migration\\Migration1719407928AddPrivacyConfigurationToShippingMethodConfig\:\:findBooleanConfigValueForCarrier\(\) expects array\<array\{string, string\}\>, list\<array\<string, mixed\>\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Migration/Migration1719407928AddPrivacyConfigurationToShippingMethodConfig.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Notifications\\Notification\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Notifications/Notification.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Parcel\\Parcel\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Parcel/Parcel.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Parcel\\Parcel\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Parcel/Parcel.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Parcel\\ParcelCustomsInformation\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Parcel/ParcelCustomsInformation.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Parcel\\ParcelItem\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Parcel/ParcelItem.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Parcel\\ParcelItem\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Parcel/ParcelItem.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Pickware\\MoneyBundle\\MoneyValue\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: src/Parcel/ParcelItem.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Parcel\\ParcelItemTest\:\:parcelItemProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Parcel/ParcelItem.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Parcel\\ParcelItemTest\:\:totalPriceProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Parcel/ParcelItem.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Parcel\\ParcelItemCustomsInformation\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Parcel/ParcelItemCustomsInformation.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\ParcelHydration\\ParcelHydrationConfiguration\:\:__construct\(\) has parameter \$filterProducts with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ParcelHydration/ParcelHydrationConfiguration.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\ParcelHydration\\ParcelHydrationConfiguration\:\:getFilterProducts\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ParcelHydration/ParcelHydrationConfiguration.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 1
+			path: src/ParcelHydration/ParcelItemHydrator.unit.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: src/ParcelHydration/Processor/DistributeParentPricesProcessor.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\ParcelHydration\\Processor\\DistributeParentPricesProcessor\:\:areAllLineItemPricesNullOrZero\(\) has parameter \$children with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ParcelHydration/Processor/DistributeParentPricesProcessor.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\ParcelHydration\\Processor\\DistributeParentPricesProcessor\:\:isAnyLineItemQuantityZero\(\) has parameter \$children with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ParcelHydration/Processor/DistributeParentPricesProcessor.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\ParcelHydration\\Processor\\DistributeParentPricesProcessorTest\:\:findItemByOrderLineItemId\(\) has parameter \$items with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ParcelHydration/Processor/DistributeParentPricesProcessor.unit.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: src/ParcelHydration/Processor/FilterProductsInParcelProcessor.unit.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''Shopware\\\\Core\\\\Checkout\\\\Order\\\\Aggregate\\\\OrderLineItem\\\\OrderLineItemEntity'' and ''getStates'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/ParcelHydration/Processor/FilterSupportedParcelItemsProcessor.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\ParcelPacking\\BinPacking\\WeightBasedFirstFitDecreasingBinPackerTest\:\:distributableItemsDataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ParcelPacking/BinPacking/WeightBasedFirstFitDecreasingBinPacker.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\ParcelPacking\\ParcelPackingConfiguration\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ParcelPacking/ParcelPackingConfiguration.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\ParcelPacking\\ParcelPackingConfiguration\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ParcelPacking/ParcelPackingConfiguration.php
+
+		-
+			message: '#^Class Pickware\\ShopwarePlugins\\ShopwareIntegrationTestPlugin\\ShopwareIntegrationTestPlugin not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/PickwareShippingBundle.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\PickwareShippingBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareShippingBundle.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Privacy\\EmailTransferAgreement\\EmailTransferAgreement\:\:fromCustomFieldSet\(\) has parameter \$customFields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Privacy/EmailTransferAgreement/EmailTransferAgreement.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Privacy\\EmailTransferAgreement\\EmailTransferAgreement\:\:fromSalesChannelContextPayload\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Privacy/EmailTransferAgreement/EmailTransferAgreement.php
+
+		-
+			message: '#^@dataProvider emailTransferAgreementValues related method must be public\.$#'
+			identifier: phpunit.dataProviderPublic
+			count: 2
+			path: src/Privacy/EmailTransferAgreement/EmailTransferAgreement.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Privacy\\EmailTransferAgreement\\DataTransferAgreementTest\:\:emailTransferAgreementValues\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: src/Privacy/EmailTransferAgreement/EmailTransferAgreement.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Privacy\\EmailTransferAgreement\\DataTransferAgreementTest\:\:emailTransferAgreementValues\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Privacy/EmailTransferAgreement/EmailTransferAgreement.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Privacy\\PrivacyConfiguration\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Privacy/PrivacyConfiguration.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Privacy\\PrivacyConfiguration\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Privacy/PrivacyConfiguration.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Privacy\\RemovedFieldNode\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Privacy/RemovedFieldNode.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Privacy\\RemovedFieldTree\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Privacy/RemovedFieldTree.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Rest\\BadResponseExceptionHandlingMiddlewareTest\:\:\$clientExceptionCallbackCalls type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Rest/BadResponseExceptionHandlingMiddleware.unit.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Rest\\BadResponseExceptionHandlingMiddlewareTest\:\:\$nextRequestHandlerMockCalls type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Rest/BadResponseExceptionHandlingMiddleware.unit.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Rest\\BadResponseExceptionHandlingMiddlewareTest\:\:\$serverExceptionCallbackCalls type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Rest/BadResponseExceptionHandlingMiddleware.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\SalesChannelContext\\Model\\SalesChannelApiContextEntity\:\:getPayload\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SalesChannelContext/Model/SalesChannelApiContextEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\SalesChannelContext\\Model\\SalesChannelApiContextEntity\:\:getValue\(\) has parameter \$path with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SalesChannelContext/Model/SalesChannelApiContextEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\SalesChannelContext\\Model\\SalesChannelApiContextEntity\:\:setPayload\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SalesChannelContext/Model/SalesChannelApiContextEntity.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\SalesChannelContext\\Model\\SalesChannelApiContextEntity\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SalesChannelContext/Model/SalesChannelApiContextEntity.php
+
+		-
+			message: '#^Class Pickware\\ShippingBundle\\SalesChannelContext\\Model\\SalesChannelApiContextEntityCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/SalesChannelContext/Model/SalesChannelApiContextEntityCollection.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\SalesChannelContext\\Subscriber\\SynchronizeSalesChannelContextsSubscriber\:\:unflattenKeyPayload\(\) has parameter \$keyParts with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SalesChannelContext/Subscriber/SynchronizeSalesChannelContextsSubscriber.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\SalesChannelContext\\Subscriber\\SynchronizeSalesChannelContextsSubscriber\:\:unflattenKeyPayload\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SalesChannelContext/Subscriber/SynchronizeSalesChannelContextsSubscriber.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\SalesChannelContext\\Subscriber\\SynchronizeSalesChannelContextsSubscriberTest\:\:\$pickwareSalesChannelContext \(Pickware\\ShippingBundle\\SalesChannelContext\\Model\\SalesChannelApiContextEntity\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/SalesChannelContext/Subscriber/SynchronizeSalesChannelContextsSubscriber.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\Address\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Address.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\Address\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Address.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\AddressTest\:\:getOptimizedNameArrayDataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Address.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\AddressTest\:\:getOptimizedNameArrayDataProviderWithPrioritizingTheCompany\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Address.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\AddressTest\:\:test_canReturnAnOptimizedNameArray\(\) has parameter \$expected with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Address.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\AddressTest\:\:test_canReturnAnOptimizedNameArrayWithPrioritizingTheCompany\(\) has parameter \$expected with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Address.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\AddressConfiguration\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/AddressConfiguration.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\AddressConfiguration\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/AddressConfiguration.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ApiVersioning\\ApiVersion20240426\\ShipmentBlueprintApiLayer\:\:transformShipmentBlueprint\(\) has parameter \$shipmentBlueprint with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ApiVersioning/ApiVersion20240426/ShipmentBlueprintApiLayer.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ApiVersioning\\ApiVersion20240426\\ShipmentBlueprintApiLayer\:\:transformShipmentBlueprint\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ApiVersioning/ApiVersion20240426/ShipmentBlueprintApiLayer.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Shipment\\ApiVersioning\\ApiVersion20240426\\ShipmentBlueprintApiLayerUnitTest\:\:\$responseJson type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ApiVersioning/ApiVersion20240426/ShipmentBlueprintApiLayer.unit.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: src/Shipment/Controller/ShipmentController.php
+
+		-
+			message: '#^Variable \$shipmentBlueprintCreationConfigurationParameter on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.variable
+			count: 1
+			path: src/Shipment/Controller/ShipmentController.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Shipment\\Controller\\ShipmentControllerTest\:\:\$notifications type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Controller/ShipmentController.unit.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Shipment\\Controller\\ShipmentControllerTest\:\:\$shipmentBlueprintCreationResults type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Controller/ShipmentController.unit.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Shipment\\Controller\\ShipmentControllerTest\:\:\$shipmentTrackingUrls type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Controller/ShipmentController.unit.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Shipment\\Controller\\ShipmentControllerTest\:\:\$shipmentsOperationResultSetWithOrderId type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Controller/ShipmentController.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\Country\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Country.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\Country\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Country.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\Fee\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Fee.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\Fee\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Fee.php
+
+		-
+			message: '#^Class Pickware\\ShippingBundle\\Shipment\\Model\\ShipmentCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Shipment/Model/ShipmentCollection.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\Model\\ShipmentEntity\:\:getMetaInformation\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Model/ShipmentEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\Model\\ShipmentEntity\:\:setMetaInformation\(\) has parameter \$metaInformation with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Model/ShipmentEntity.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Shipment\\Model\\ShipmentEntity\:\:\$metaInformation type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Model/ShipmentEntity.php
+
+		-
+			message: '#^Class Pickware\\ShippingBundle\\Shipment\\Model\\TrackingCodeCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Shipment/Model/TrackingCodeCollection.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\Model\\TrackingCodeEntity\:\:getMetaInformation\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Model/TrackingCodeEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\Model\\TrackingCodeEntity\:\:setMetaInformation\(\) has parameter \$metaInformation with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Model/TrackingCodeEntity.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Shipment\\Model\\TrackingCodeEntity\:\:\$metaInformation type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/Model/TrackingCodeEntity.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentBlueprint\:\:__construct\(\) has parameter \$certificateNumbers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentBlueprint.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentBlueprint\:\:__construct\(\) has parameter \$fees with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentBlueprint.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentBlueprint\:\:__construct\(\) has parameter \$permitNumbers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentBlueprint.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentBlueprint\:\:__construct\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentBlueprint.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentBlueprint\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentBlueprint.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentBlueprint\:\:getShipmentConfig\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentBlueprint.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentBlueprint\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentBlueprint.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentBlueprint\:\:setCertificateNumbers\(\) has parameter \$certificateNumbers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentBlueprint.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentBlueprint\:\:setShipmentConfig\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentBlueprint.php
+
+		-
+			message: '#^Parameter \#1 \$array \(list\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: src/Shipment/ShipmentBlueprint.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Shipment\\ShipmentBlueprint\:\:\$shipmentConfig type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentBlueprint.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentBlueprintCreationConfiguration\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentBlueprintCreationConfiguration.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentBlueprintCreationConfiguration\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentBlueprintCreationConfiguration.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentBlueprintCreationResult\:\:__construct\(\) has parameter \$errors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentBlueprintCreationResult.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentBlueprintCreationResult\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentBlueprintCreationResult.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentService\:\:completeShipmentPayloads\(\) has parameter \$shipmentPayloads with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentService.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentService\:\:completeShipmentPayloads\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentService.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentService\:\:createReturnShipmentForOrder\(\) has parameter \$shipmentPayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentService.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentService\:\:createReturnShipments\(\) has parameter \$shipmentsPayloads with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentService.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentService\:\:createShipmentBlueprintForOrder\(\) has parameter \$productsInParcel with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentService.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentService\:\:createShipmentBlueprints\(\) has parameter \$productsInParcelByOrderId with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentService.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentService\:\:createShipmentBlueprints\(\) has parameter \$shipmentBlueprintCreationConfigurationByOrderId with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentService.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentService\:\:createShipmentBlueprintsForOrders\(\) has parameter \$productsInParcelByOrderId with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentService.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentService\:\:createShipmentBlueprintsForOrders\(\) has parameter \$shipmentBlueprintCreationConfigurationByOrderId with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentService.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentService\:\:createShipmentForOrder\(\) has parameter \$shipmentPayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentService.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentService\:\:createShipments\(\) has parameter \$shipmentsPayloads with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentService.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentService\:\:createShipmentsForOrders\(\) has parameter \$shipmentPayloads with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentService.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentService\:\:createShipmentsForOrders\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentService.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentService\:\:repackParcels\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentService.php
+
+
+		-
+			message: '#^Parameter \#1 \$orderShipments of method Pickware\\ShippingBundle\\Shipment\\ShipmentService\:\:checkNoCashOnDeliveryLabelsExistForOrder\(\) expects Pickware\\ShippingBundle\\Shipment\\Model\\ShipmentCollection, Shopware\\Core\\Framework\\Struct\\Struct given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Shipment/ShipmentService.php
+
+		-
+			message: '#^Variable \$orderIds might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Shipment/ShipmentService.php
+
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Shipment/ShipmentService.unit.php
+
+		-
+			message: '#^Match expression does not handle remaining values\: int\<min, 0\>\|int\<2, max\>$#'
+			identifier: match.unhandled
+			count: 1
+			path: src/Shipment/ShipmentService.unit.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Shipment\\ShipmentServiceTest\:\:\$productsInParcel \(array\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Shipment/ShipmentService.unit.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Shipment\\ShipmentServiceTest\:\:\$productsInParcel type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentService.unit.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 2
+			path: src/Shipment/ShipmentService.unit.php
+
+		-
+			message: '#^You should use assertCount\(\$expectedCount, \$variable\) instead of assertSame\(\$expectedCount, count\(\$variable\)\)\.$#'
+			identifier: phpunit.assertCount
+			count: 1
+			path: src/Shipment/ShipmentService.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentTrackingCodeUpdater\:\:copyReturnTrackingCodesOfShipmentsToOrders\(\) has parameter \$returnShipmentIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentTrackingCodeUpdater.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentTrackingCodeUpdater\:\:copyTrackingCodesOfShipmentsToOrders\(\) has parameter \$shipmentIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentTrackingCodeUpdater.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentTrackingCodeUpdater\:\:persistOrderTrackingCodes\(\) has parameter \$payloads with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentTrackingCodeUpdater.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentTrackingCodeUpdater\:\:synchronizeTrackingCodes\(\) has parameter \$orderTrackingCodes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentTrackingCodeUpdater.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentTrackingCodeUpdater\:\:synchronizeTrackingCodes\(\) has parameter \$shipmentTrackingCodes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentTrackingCodeUpdater.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentTrackingCodeUpdater\:\:synchronizeTrackingCodes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentTrackingCodeUpdater.php
+
+		-
+			message: '#^Attribute class JetBrains\\PhpStorm\\Deprecated does not exist\.$#'
+			identifier: attribute.notFound
+			count: 1
+			path: src/Shipment/ShipmentsOperationResult.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentsOperationResult\:\:createFailedOperationResult\(\) has parameter \$errorMessages with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentsOperationResult.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentsOperationResult\:\:getErrors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentsOperationResult.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentsOperationResult\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentsOperationResult.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(Pickware\\HttpUtils\\JsonApi\\JsonApiError\)\: mixed\)\|null, Closure\(string\)\: Pickware\\HttpUtils\\JsonApi\\JsonApiError given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Shipment/ShipmentsOperationResult.php
+
+		-
+			message: '#^Parameter \#3 \$errors of static method Pickware\\ShippingBundle\\Shipment\\ShipmentsOperationResult\:\:createFailedOperationResult\(\) expects array\<Pickware\\HttpUtils\\JsonApi\\JsonApiError\>\|null, array\<int, string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Shipment/ShipmentsOperationResult.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Shipment\\ShipmentsOperationResultSet\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentsOperationResultSet.php
+
+		-
+			message: '#^Property Pickware\\ShippingBundle\\Shipment\\ShipmentsOperationResultSet\:\:\$shipmentsOperationResultsByShipmentId type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Shipment/ShipmentsOperationResultSet.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Soap\\RequestHandler\\AntiCompressionSoapRequestHandler\:\:fillWithRandomElements\(\) has parameter \$body with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Soap/RequestHandler/AntiCompressionSoapRequestHandler.php
+
+		-
+			message: '#^Trying to mock an undefined method __invoke\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 2
+			path: src/Soap/RequestHandler/AntiCompressionSoapRequestHandler.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Soap\\RequestHandler\\SoapRequestLoggingHandler\:\:getHeaderArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Soap/RequestHandler/SoapRequestLoggingHandler.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Soap\\RequestHandler\\SoapRequestLoggingHandler\:\:getLastSoapRequestAsArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Soap/RequestHandler/SoapRequestLoggingHandler.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Soap\\RequestHandler\\SoapRequestLoggingHandlerTest\:\:__construct\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Soap/RequestHandler/SoapRequestLoggingHandler.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Soap\\RequestHandler\\SoapRequestLoggingHandlerTest\:\:__construct\(\) has parameter \$name with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Soap/RequestHandler/SoapRequestLoggingHandler.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method __invoke\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 6
+			path: src/Soap/RequestHandler/SoapRequestLoggingHandler.unit.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Soap\\SoapRequest\:\:__construct\(\) has parameter \$body with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Soap/SoapRequest.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Soap\\SoapRequest\:\:addingHeaders\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Soap/SoapRequest.php
+
+		-
+			message: '#^Method Pickware\\ShippingBundle\\Soap\\SoapRequest\:\:getBody\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Soap/SoapRequest.php

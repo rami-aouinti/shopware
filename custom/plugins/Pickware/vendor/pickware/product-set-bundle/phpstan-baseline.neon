@@ -1,0 +1,205 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\ImportExportProfile\\ProductSetConfigurationCsvRowNormalizer\:\:mapTypes\(\) has parameter \$row with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ImportExportProfile/ProductSetConfigurationCsvRowNormalizer.php
+
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\ImportExportProfile\\ProductSetConfigurationCsvRowNormalizer\:\:mapTypes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ImportExportProfile/ProductSetConfigurationCsvRowNormalizer.php
+
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\ImportExportProfile\\ProductSetConfigurationCsvRowNormalizer\:\:normalizeRow\(\) has parameter \$row with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ImportExportProfile/ProductSetConfigurationCsvRowNormalizer.php
+
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\ImportExportProfile\\ProductSetConfigurationCsvRowNormalizer\:\:normalizeRow\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ImportExportProfile/ProductSetConfigurationCsvRowNormalizer.php
+
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\ImportExportProfile\\ProductSetConfigurationExporter\:\:getCsvHeaderTranslations\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ImportExportProfile/ProductSetConfigurationExporter.php
+
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\ImportExportProfile\\ProductSetConfigurationExporter\:\:getRowData\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ImportExportProfile/ProductSetConfigurationExporter.php
+
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\ImportExportProfile\\ProductSetConfigurationExporter\:\:getRowData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ImportExportProfile/ProductSetConfigurationExporter.php
+
+		-
+			message: '#^Property Pickware\\ProductSetBundle\\ImportExportProfile\\ProductSetConfigurationExporer\:\:\$formattedProductNames type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ImportExportProfile/ProductSetConfigurationExporter.unit.php
+
+		-
+			message: '#^Property Pickware\\ProductSetBundle\\ImportExportProfile\\ProductSetConfigurationExporer\:\:\$productSetConfigurations type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ImportExportProfile/ProductSetConfigurationExporter.unit.php
+
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\ImportExportProfile\\ProductSetConfigurationImporter\:\:getProductNumberProductMapping\(\) has parameter \$normalizedRows with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ImportExportProfile/ProductSetConfigurationImporter.php
+
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\ImportExportProfile\\ProductSetConfigurationImporter\:\:getProductNumberProductMapping\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ImportExportProfile/ProductSetConfigurationImporter.php
+
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\ImportExportProfile\\ProductSetConfigurationImporter\:\:upsertProductSetConfiguration\(\) has parameter \$normalizedRow with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ImportExportProfile/ProductSetConfigurationImporter.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Pickware\\ProductSetBundle\\Model\\ProductSetConfigurationEntity\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/ImportExportProfile/ProductSetConfigurationImporter.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Pickware\\ProductSetBundle\\Model\\ProductSetEntity\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/ImportExportProfile/ProductSetConfigurationImporter.php
+
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\Incompatibility\\MagnalisterIncompatibility\:\:__construct\(\) has parameter \$translatedWarnings with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Incompatibility/MagnalisterIncompatibility.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(Pickware\\IncompatibilityBundle\\Incompatibility\\Incompatibility\)\: bool\)\|null, Closure\(Pickware\\ProductSetBundle\\Incompatibility\\MagnalisterIncompatibility\)\: bool given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Incompatibility/MagnalisterIncompatibilityVerifier.php
+
+		-
+			message: '#^Class Pickware\\ProductSetBundle\\Model\\ProductSetCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Model/ProductSetCollection.php
+
+		-
+			message: '#^Class Pickware\\ProductSetBundle\\Model\\ProductSetConfigurationCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Model/ProductSetConfigurationCollection.php
+
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\Order\\OrderUpdater\:\:addProductSetSubProductToOrders\(\) has parameter \$subProductsFromOrderLineItem with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Order/OrderUpdater.php
+
+		-
+			message: '#^Call to method getLineItems\(\) on an unknown class Pickware\\ProductSetBundle\\OrderDocument\\OrderEntity\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/OrderDocument/DeliveryNoteFilterer.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$originalOrder contains unknown class Pickware\\ProductSetBundle\\OrderDocument\\OrderEntity\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/OrderDocument/DeliveryNoteFilterer.php
+
+		-
+			message: '#^PHPDoc tag @var with type Pickware\\ProductSetBundle\\OrderDocument\\OrderEntity is not subtype of native type Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\.$#'
+			identifier: varTag.nativeType
+			count: 1
+			path: src/OrderDocument/DeliveryNoteFilterer.php
+
+		-
+			message: '#^Class Pickware\\ShopwarePlugins\\ShopwareIntegrationTestPlugin\\ShopwareIntegrationTestPlugin not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/PickwareProductSetBundle.php
+
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\PickwareProductSetBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareProductSetBundle.php
+
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\Product\\ProductSetForVariantsUpdater\:\:validateCreationOfProductSet\(\) has parameter \$productIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Product/ProductSetForVariantsUpdater.php
+
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\Product\\ProductSetForVariantsUpdater\:\:validateDeletionOfProductSet\(\) has parameter \$productSetIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Product/ProductSetForVariantsUpdater.php
+
+		-
+			message: '#^Call to function method_exists\(\) with Pickware\\PickwareErpStarter\\Stock\\ProductAvailableStockUpdatedEvent and ''getContext'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Product/ProductSetUpdater.php
+
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\Product\\ProductSetUpdaterException\:\:invalidProductSetCreationBecauseParentIsNotProductSet\(\) has parameter \$productIdsByParentProductIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Product/ProductSetUpdaterException.php
+
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\Product\\ProductSetUpdaterException\:\:invalidProductSetDeletionBecauseParentIsAProductSet\(\) has parameter \$productIdsByParentProductIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Product/ProductSetUpdaterException.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Shopware\\Core\\Framework\\Rule\\Rule\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Promotion/CartScopeDiscountPackagerDecorator.php
+
+		-
+			message: '#^Call to method getCriteria\(\) on an unknown class Shopware\\Storefront\\Page\\Product\\ProductPageCriteriaEvent\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Storefront/ProductSetProductStorefrontUpdater.php
+
+		-
+			message: '#^Class Shopware\\Storefront\\Page\\Product\\ProductPageCriteriaEvent not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Storefront/ProductSetProductStorefrontUpdater.php
+
+		-
+			message: '#^Method Pickware\\ProductSetBundle\\Storefront\\ProductSetProductStorefrontUpdater\:\:onSalesChannelProductLoaded\(\) has parameter \$event with generic class Shopware\\Core\\System\\SalesChannel\\Entity\\SalesChannelEntityLoadedEvent but does not specify its types\: TEntity$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Storefront/ProductSetProductStorefrontUpdater.php
+
+		-
+			message: '#^Parameter \$event of method Pickware\\ProductSetBundle\\Storefront\\ProductSetProductStorefrontUpdater\:\:addProductSetExtensionToCriteria\(\) has invalid type Shopware\\Storefront\\Page\\Product\\ProductPageCriteriaEvent\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Storefront/ProductSetProductStorefrontUpdater.php

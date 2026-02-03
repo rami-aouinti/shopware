@@ -1,0 +1,679 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\PickwareWms\\Acl\\PickwareWmsFeaturePermissionsProvider\:\:getDefaultFeaturePermissions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Acl/PickwareWmsFeaturePermissionsProvider.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\Acl\\PickwareWmsFeaturePermissionsProviderUnitTest\:\:allFeaturePermissionsWithBasicPermissionDependencyProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Acl/PickwareWmsFeaturePermissionsProvider.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\Acl\\PickwareWmsFeaturePermissionsProviderUnitTest\:\:renamedFeaturePrivilegesProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Acl/PickwareWmsFeaturePermissionsProvider.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\ApiVersion\\ApiVersion20230721\\ProductVariantApiLayer\:\:findAndReplaceVariantListingConfig\(\) has parameter \$content with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiVersion/ApiVersion20230721/ProductVariantApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\ApiVersion\\ApiVersion20230721\\ProductVariantApiLayer\:\:replaceMainVariantIdInIncludes\(\) has parameter \$jsonContent with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiVersion/ApiVersion20230721/ProductVariantApiLayer.php
+
+		-
+			message: '#^Property Pickware\\PickwareWms\\ApiVersion\\ApiVersion20250207\\DeliveryResponseForStockContainerCreationApiLayerTest\:\:\$requestJson type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiVersion/ApiVersion20250207/DeliveryResponseForStockContainerCreationApiLayer.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\ApiVersion\\ApiVersion20250601\\DeliveryStatusPackedApiLayer\:\:appendPackedStateToFilter\(\) has parameter \$criteriaProperty with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiVersion/ApiVersion20250601/DeliveryStatusPackedApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\ApiVersion\\ApiVersion20250601\\DeliveryStatusPackedApiLayer\:\:findAndReplaceDeliveryStatus\(\) has parameter \$content with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiVersion/ApiVersion20250601/DeliveryStatusPackedApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\ApiVersion\\ApiVersion20250601\\DeliveryStatusPackedApiLayer\:\:setStateToDocumentsCreated\(\) has parameter \$jsonContent with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiVersion/ApiVersion20250601/DeliveryStatusPackedApiLayer.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''Pickware\\\\PickwareErpStarter\\\\ReturnOrder\\\\LegacyReturnOrderService'' and ''generateReturnOrder…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Config/Config.php
+
+		-
+			message: '#^Call to function method_exists\(\) with Pickware\\PickwareErpStarter\\GoodsReceipt\\GoodsReceiptService and ''areGoodsReceiptAddi…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Config/Config.php
+
+		-
+			message: '#^Call to function method_exists\(\) with Pickware\\PickwareErpStarter\\GoodsReceipt\\GoodsReceiptService and ''areGoodsReceiptsFor…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Config/Config.php
+
+		-
+			message: '#^Call to function method_exists\(\) with Pickware\\PickwareErpStarter\\Supplier\\SupplierService and ''areMultipleSupplier…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Config/Config.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\Config\\Config\:\:getAppConfig\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Config.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\Config\\Config\:\:getPluginConfigurationValues\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Config.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$configuration has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Config.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 1
+			path: src/Config/Config.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\Config\\ConfigUnitTest\:\:featureFlagServiceFeatureFlagsDataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Config.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\Config\\ConfigUnitTest\:\:test_returnsTheFeatureFlagsWhenGettingTheAppConfig\(\) has parameter \$featureFlags with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Config.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\Config\\ShippingMethodDocumentPrintingConfigSubscriber\:\:createDocumentPrintingConfigs\(\) has parameter \$shippingMethodIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/ShippingMethodDocumentPrintingConfigSubscriber.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\Config\\ShippingMethodDocumentPrintingConfigSubscriber\:\:getInsertedEntityIds\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/ShippingMethodDocumentPrintingConfigSubscriber.php
+
+		-
+			message: '#^Class Pickware\\PickwareWms\\Config\\ShippingMethodDocumentPrintingConfigSubscriber referenced with incorrect case\: Pickware\\PickwareWms\\Config\\shippingMethodDocumentPrintingConfigSubscriber\.$#'
+			identifier: class.nameCase
+			count: 1
+			path: src/Config/ShippingMethodDocumentPrintingConfigSubscriber.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwareWms\\Config\\ShippingMethodDocumentPrintingConfigSubscriberTest\:\:\$newEntities type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/ShippingMethodDocumentPrintingConfigSubscriber.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwareWms\\Delivery\\ApiVersioning\\ApiVersion20240426\\ShipmentBlueprintApiLayerUnitTest\:\:\$requestJson type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Delivery/ApiVersioning/ApiVersion20240426/ShipmentBlueprintApiLayer.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\Delivery\\ApiVersioning\\ApiVersion20240725\\TrackingCodeApiLayer\:\:transformParcelsInDeliveries\(\) has parameter \$deliveries with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Delivery/ApiVersioning/ApiVersion20240725/TrackingCodeApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\Delivery\\ApiVersioning\\ApiVersion20240725\\TrackingCodeApiLayer\:\:transformParcelsInDelivery\(\) has parameter \$delivery with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Delivery/ApiVersioning/ApiVersion20240725/TrackingCodeApiLayer.php
+
+		-
+			message: '#^Property Pickware\\PickwareWms\\Delivery\\ApiVersioning\\ApiVersion20240725\\TrackingCodeApiLayerUnitTest\:\:\$requestJson type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Delivery/ApiVersioning/ApiVersion20240725/TrackingCodeApiLayer.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwareWms\\Delivery\\DeliveryDocumentServiceTest\:\:\$orderDocumentPickingPropertyRecord has unknown class Pickware\\PickwareErpStarter\\PickingProperty\\OrderDocument\\OrderDocumentPickingPropertyRecord as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Delivery/DeliveryDocumentService.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\Delivery\\DeliveryParcelTrackingCodeMatchingService\:\:getIdsOfDeliveriesMatchingShippingLabelBarcodeValue\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Delivery/DeliveryParcelTrackingCodeMatchingService.php
+
+		-
+			message: '#^Unable to resolve the template type PassedElement in call to method static method Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<mixed\>\:\:create\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: src/Delivery/DeliveryService.php
+
+		-
+			message: '#^Method PHPUnit\\Framework\\MockObject\\Builder\\InvocationMocker\:\:with\(\) invoked with named argument \$context, but it''s not allowed because of @no\-named\-arguments\.$#'
+			identifier: argument.named
+			count: 1
+			path: src/Delivery/DeliveryService.unit.php
+
+		-
+			message: '#^Method PHPUnit\\Framework\\MockObject\\Builder\\InvocationMocker\:\:with\(\) invoked with named argument \$isReturnShipment, but it''s not allowed because of @no\-named\-arguments\.$#'
+			identifier: argument.named
+			count: 1
+			path: src/Delivery/DeliveryService.unit.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function set_error_handler expects \(callable\(int, string, string, int\)\: bool\)\|null, Closure\(int, string\)\: void given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Delivery/DeliveryService.unit.php
+
+		-
+			message: '#^Anonymous function has an unused use \$callCount\.$#'
+			identifier: closure.unusedUse
+			count: 1
+			path: src/Delivery/DeliveryShipmentCreation.unit.php
+
+		-
+			message: '#^Class Shopware\\Core\\Framework\\DataAbstractionLayer\\Field\\Flag\\RestrictDelete does not have a constructor and must be instantiated without any parameters\.$#'
+			identifier: new.noConstructor
+			count: 1
+			path: src/Delivery/Model/Extensions/DeliveryStockContainerExtension.php
+
+		-
+			message: '#^Access to protected property Shopware\\Core\\Checkout\\Document\\DocumentConfiguration\:\:\$custom\.$#'
+			identifier: property.protected
+			count: 4
+			path: src/DeliveryNote/DeliveryNoteLineItemFilterer.unit.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with Pickware\\PickwareWms\\Device\\Device will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: src/Device/Subscriber/SaveDeviceToContextSubscriber.unit.php
+
+		-
+			message: '#^Call to function method_exists\(\) with Pickware\\PickwareErpStarter\\GoodsReceipt\\GoodsReceiptService and ''startStocking'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/GoodsReceipt/Controller/GoodsReceiptController.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\Logging\\PickingProcessLoggingService\:\:logEvent\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Logging/PickingProcessLoggingService.php
+
+		-
+			message: '#^Parameter \#1 \$package of attribute class Shopware\\Core\\Framework\\Log\\Package constructor expects ''after\-sales''\|''b2b''\|''checkout''\|''data\-services''\|''discovery''\|''framework''\|''fundamentals@after…''\|''fundamentals…''\|''innovation''\|''inventory'', ''core'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Migration/Migration1723131335AddPrioritizedShippingMethodAndPrioritizedPaymentMethod.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\OrderPickability\\CachingOrderPickabilityCalculatorTest\:\:decorationCoverageDataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderPickability/CachingOrderPickabilityCalculator.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\OrderPickability\\CachingOrderPickabilityCalculatorTest\:\:test_forwardsAllCallsOfPublicMethodsToTheDecoratedInstance\(\) has parameter \$expectedArguments with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderPickability/CachingOrderPickabilityCalculator.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwareWms\\OrderSearch\\ApiVersioning\\ApiVersion20250703\\OrderDeliveryFilterApiLayerUnitTest\:\:\$requestJson type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderSearch/ApiVersioning/ApiVersion20250703/OrderDeliveryFilterApiLayer.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\OrderSearch\\CriteriaQueryBuilderDecorator\:\:getEqualsFilterWithFieldOfAssociation\(\) should return Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\Filter\\EqualsFilter\|null but returns Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\Filter\\Filter\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/OrderSearch/CriteriaQueryBuilderDecorator.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\Filter\\EqualsFilter and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/OrderSearch/CriteriaQueryBuilderDecorator.php
+
+		-
+			message: '#^Variable \$joinProperty might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/OrderSearch/CriteriaQueryBuilderDecorator.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\OrderSearch\\CriteriaQueryBuilderDecoratorTest\:\:decorationCoverageDataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderSearch/CriteriaQueryBuilderDecorator.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\OrderSearch\\CriteriaQueryBuilderDecoratorTest\:\:test_forwardsAllCallsOfPublicMethodsToTheDecoratedInstance\(\) has parameter \$expectedArguments with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderSearch/CriteriaQueryBuilderDecorator.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwareWms\\OrderSearch\\CriteriaQueryBuilderDecoratorTest\:\:\$paths type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderSearch/CriteriaQueryBuilderDecorator.unit.php
+
+		-
+			message: '#^Variable \$sqlParts in PHPDoc tag @var does not exist\.$#'
+			identifier: varTag.variableNotFound
+			count: 3
+			path: src/OrderSearch/CriteriaQueryBuilderDecorator.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\OrderSearch\\IgnoreSlowOrderSearchFiltersApiLayer\:\:removeLineItemProductFilters\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderSearch/IgnoreSlowOrderSearchFiltersApiLayer.php
+
+		-
+			message: '#^Call to an undefined method Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\PickwareErpStarter\\OrderShipping\\ProductQuantityLocation\>\:\:sortLike\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Picking/SingleBinLocationPrioritizingPickingStrategy.php
+
+		-
+			message: '#^Call to function method_exists\(\) with Pickware\\PickwareErpStarter\\Picking\\PickingStrategyStockShortageException and ''getProductNumbers'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Picking/SingleBinLocationPrioritizingPickingStrategy.php
+
+		-
+			message: '#^Call to function method_exists\(\) with Pickware\\PickwareErpStarter\\Stock\\StockArea and ''getWarehouseIds'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Picking/SingleBinLocationPrioritizingPickingStrategy.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: Pickware\\PickwareErpStarter\\Stock\\StockAreaType\:\:Warehouses$#'
+			identifier: match.unhandled
+			count: 1
+			path: src/Picking/SingleBinLocationPrioritizingPickingStrategy.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''Pickware\\\\PickwareErpStarter\\\\Stock\\\\StockArea'' and ''warehouses'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Picking/SingleBinLocationPrioritizingPickingStrategy.unit.php
+
+		-
+			message: '#^Parameter \#1 \$expectedException of static method Pickware\\PickwareWms\\Picking\\SingleBinLocationPrioritizingPickingStrategyTest\:\:assertFunctionThrowsException\(\) expects \(callable\(Exception\)\: void\)\|Exception, Closure\(Pickware\\PickwareErpStarter\\Picking\\PickingStrategyStockShortageException\)\: true given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Picking/SingleBinLocationPrioritizingPickingStrategy.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProcess\\ApiVersioning\\ApiVersion20240725\\TrackingCodeApiLayer\:\:transformParcelsInDeliveries\(\) has parameter \$deliveries with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/ApiVersioning/ApiVersion20240725/TrackingCodeApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProcess\\ApiVersioning\\ApiVersion20240725\\TrackingCodeApiLayer\:\:transformParcelsInDelivery\(\) has parameter \$delivery with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/ApiVersioning/ApiVersion20240725/TrackingCodeApiLayer.php
+
+		-
+			message: '#^Property Pickware\\PickwareWms\\PickingProcess\\ApiVersioning\\ApiVersion20240725\\TrackingCodeApiLayerUnitTest\:\:\$requestJson type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/ApiVersioning/ApiVersion20240725/TrackingCodeApiLayer.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwareWms\\PickingProcess\\ApiVersioning\\ApiVersion20250703\\OrderSelectionCriteriaDeliveryFilterApiLayerUnitTest\:\:\$requestJson type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/ApiVersioning/ApiVersion20250703/OrderSelectionCriteriaDeliveryFilterApiLayer.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProcess\\Controller\\PickingProcessController\:\:pickItemIntoDelivery\(\) has parameter \$pickingPropertyRecords with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/Controller/PickingProcessController.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProcess\\Controller\\PickingProcessController\:\:pickItemIntoDelivery\(\) has parameter \$stockLocation with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/Controller/PickingProcessController.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 1
+			path: src/PickingProcess/Controller/PickingProcessController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwareWms\\PickingProcess\\Controller\\PickingProcessControllerTest\:\:\$pickingProperties type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/Controller/PickingProcessController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwareWms\\PickingProcess\\Controller\\PickingProcessControllerTest\:\:\$stockLocation type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/Controller/PickingProcessController.unit.php
+
+		-
+			message: '#^Class Shopware\\Core\\Framework\\DataAbstractionLayer\\Field\\Flag\\RestrictDelete does not have a constructor and must be instantiated without any parameters\.$#'
+			identifier: new.noConstructor
+			count: 1
+			path: src/PickingProcess/Model/Extensions/PickingProcessStockContainerExtension.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProcess\\Model\\Indexer\\PickingProcessAdminSearchIndexer\:\:__construct\(\) has parameter \$repository with generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository but does not specify its types\: TEntityCollection$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickingProcess/Model/Indexer/PickingProcessAdminSearchIndexer.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProcess\\Model\\Indexer\\PickingProcessAdminSearchIndexer\:\:getQuery\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/Model/Indexer/PickingProcessAdminSearchIndexer.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProcess\\Model\\Indexer\\PickingProcessAdminSearchIndexer\:\:getQuery\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/Model/Indexer/PickingProcessAdminSearchIndexer.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProcess\\PickingProcessCreation\:\:completeDeliveryPayload\(\) has parameter \$deliveryPayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/PickingProcessCreation.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProcess\\PickingProcessCreation\:\:completeDeliveryPayload\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/PickingProcessCreation.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProcess\\PickingProcessCreation\:\:createPickingProcess\(\) has parameter \$pickingProcessPayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/PickingProcessCreation.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProcess\\PickingProcessCreation\:\:createStockContainer\(\) has parameter \$stockContainerPayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/PickingProcessCreation.php
+
+		-
+			message: '#^Property Pickware\\PickwareWms\\PickingProcess\\PickingProcessCreationTest\:\:\$pickingProcessPayload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/PickingProcessCreation.unit.php
+
+		-
+			message: '#^Call to sprintf contains 1 placeholder, 2 values given\.$#'
+			identifier: argument.sprintf
+			count: 1
+			path: src/PickingProcess/PickingProcessException.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProcess\\PickingProcessException\:\:deliveriesDoNotBelongToPickingProcess\(\) has parameter \$foreignDeliveryIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/PickingProcessException.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProcess\\PickingProcessException\:\:deliveriesInInvalidStateForDocumentCreationSkipping\(\) has parameter \$deliveryIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/PickingProcessException.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProcess\\PickingProcessException\:\:deliveriesNotFound\(\) has parameter \$deliveryIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/PickingProcessException.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProcess\\PickingProcessException\:\:invalidDeliveryStateForAction\(\) has parameter \$expectedStateNames with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProcess/PickingProcessException.php
+
+		-
+			message: '#^Property Pickware\\PickwareWms\\PickingProfile\\ApiVersioning\\ApiVersion20250703\\PickingProfileOrderDeliveryFilterApiLayerUnitTest\:\:\$requestJson type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProfile/ApiVersioning/ApiVersion20250703/PickingProfileOrderDeliveryFilterApiLayer.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProfile\\Indexer\\PickingProfileAdminSearchIndexer\:\:__construct\(\) has parameter \$repository with generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository but does not specify its types\: TEntityCollection$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickingProfile/Indexer/PickingProfileAdminSearchIndexer.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProfile\\Indexer\\PickingProfileAdminSearchIndexer\:\:getQuery\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProfile/Indexer/PickingProfileAdminSearchIndexer.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProfile\\Indexer\\PickingProfileAdminSearchIndexer\:\:getQuery\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProfile/Indexer/PickingProfileAdminSearchIndexer.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProperty\\Model\\PickingPropertyDeliveryRecordEntity\:\:getProductSnapshot\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProperty/Model/PickingPropertyDeliveryRecordEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProperty\\Model\\PickingPropertyDeliveryRecordEntity\:\:setProductSnapshot\(\) has parameter \$productSnapshot with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProperty/Model/PickingPropertyDeliveryRecordEntity.php
+
+		-
+			message: '#^Property Pickware\\PickwareWms\\PickingProperty\\Model\\PickingPropertyDeliveryRecordEntity\:\:\$productSnapshot type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PickingProperty/Model/PickingPropertyDeliveryRecordEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickingProperty\\OrderDocumentPickingPropertyProvider\:\:getOrderDocumentPickingProperties\(\) return type with generic class Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection does not specify its types\: Element$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickingProperty/OrderDocumentPickingPropertyProvider.php
+
+		-
+			message: '#^PHPDoc tag @return has invalid value \(ImmutableCollection\<OrderDocumentPickingPropertyRecord\>\>\)\: Unexpected token "\>", expected TOKEN_HORIZONTAL_WS at offset 74 on line 2$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/PickingProperty/OrderDocumentPickingPropertyProvider.php
+
+		-
+			message: '#^Class Pickware\\ShopwarePlugins\\ShopwareIntegrationTestPlugin\\ShopwareIntegrationTestPlugin not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/PickwareWmsBundle.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\PickwareWmsBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareWmsBundle.php
+
+		-
+			message: '#^Call to function method_exists\(\) with Pickware\\PickwareErpStarter\\ReturnOrder\\LegacyReturnOrderService and ''generateReturnOrder…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/ReturnOrder/Controller/ReturnOrderController.php
+
+		-
+			message: '#^Unable to resolve the template type PassedElement in call to method static method Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<mixed\>\:\:create\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: src/ReturnOrder/Controller/ReturnOrderController.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\ShippingProcess\\Controller\\ShippingProcessController\:\:createAndStartShippingProcess\(\) has parameter \$shippingProcess with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ShippingProcess/Controller/ShippingProcessController.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\ShippingProcess\\ShippingProcessException\:\:pickingProcessAlreadyPartOfShippingProcess\(\) has parameter \$pickingProcessNumbers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ShippingProcess/ShippingProcessException.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\ShippingProcess\\ShippingProcessException\:\:pickingProcessNotPicked\(\) has parameter \$pickingProcessNumbers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ShippingProcess/ShippingProcessException.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\ShippingProcess\\ShippingProcessException\:\:pickingProcessNotPicked\(\) has parameter \$pickingProcessStates with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ShippingProcess/ShippingProcessException.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\ShippingProcess\\ShippingProcessService\:\:createShippingProcess\(\) has parameter \$shippingProcessPayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ShippingProcess/ShippingProcessService.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\ShippingProcess\\ShippingProcessService\:\:updateShippingProcessInTransaction\(\) has parameter \$associations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ShippingProcess/ShippingProcessService.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\ShippingProcess\\ShippingProcessService\:\:validatePickingProcessesForShippingProcessCreation\(\) has parameter \$pickingProcessIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ShippingProcess/ShippingProcessService.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\StockContainerClearing\\StockContainerClearingService\:\:putStockInStockContainersToUnknownLocationInWarehouse\(\) has parameter \$stockContainerIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/StockContainerClearing/StockContainerClearingService.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''Pickware\\\\PickwareErpStarter\\\\Stock\\\\StockArea'' and ''warehouses'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/StockReservation/ReservedStockExcludingPickableStockProvider.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwareWms\\Stocking\\StockLocationProvider\\ConsumingStockLocationList\:\:\$prioritizedStockLocationReferences type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Stocking/StockLocationProvider/ConsumingStockLocationList.php
+
+		-
+			message: '#^Binary operation "\." between ''The stock area type…'' and Pickware\\PickwareErpStarter\\Stock\\StockAreaType\:\:Warehouses results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Stocking/StockLocationProvider/DisabledStockManagementLocationProviderFactory.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: Pickware\\PickwareErpStarter\\Stock\\StockAreaType\:\:Warehouses$#'
+			identifier: match.unhandled
+			count: 1
+			path: src/Stocking/StockLocationProvider/EmptyBinLocationProviderFactory.php
+
+		-
+			message: '#^Method PHPUnit\\Framework\\MockObject\\Builder\\InvocationMocker\:\:with\(\) invoked with named argument \$context, but it''s not allowed because of @no\-named\-arguments\.$#'
+			identifier: argument.named
+			count: 1
+			path: src/Stocking/StockLocationProvider/EmptyBinLocationProviderFactory.unit.php
+
+		-
+			message: '#^Method PHPUnit\\Framework\\MockObject\\Builder\\InvocationMocker\:\:with\(\) invoked with named argument \$stockLocationReferences, but it''s not allowed because of @no\-named\-arguments\.$#'
+			identifier: argument.named
+			count: 1
+			path: src/Stocking/StockLocationProvider/EmptyBinLocationProviderFactory.unit.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''Pickware\\\\PickwareErpStarter\\\\GoodsReceipt\\\\Controller\\\\GoodsReceiptController'' and ''getGoodsReceiptStoc…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/StockingProcess/StockingGoodsReceiptsFeatureFlag.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\StockingProcess\\StockingProcessCreation\:\:createStockingProcess\(\) has parameter \$stockingProcessPayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/StockingProcess/StockingProcessCreation.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\StockingProcess\\StockingProcessCreation\:\:validateSourcesAreNotAlreadyPartOfOtherStockProcess\(\) has parameter \$sourcesPayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/StockingProcess/StockingProcessCreation.php
+
+		-
+			message: '#^Property Pickware\\PickwareWms\\StockingProcess\\StockingProcessCreationTest\:\:\$stockingProcessPayload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/StockingProcess/StockingProcessCreation.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\StockingProcess\\StockingProcessException\:\:invalidStockingProcessState\(\) has parameter \$expectedStateNames with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/StockingProcess/StockingProcessException.php
+
+		-
+			message: '#^Method Pickware\\PickwareWms\\StockingProcess\\StockingProcessException\:\:sourceAlreadyInUse\(\) has parameter \$sourceIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/StockingProcess/StockingProcessException.php

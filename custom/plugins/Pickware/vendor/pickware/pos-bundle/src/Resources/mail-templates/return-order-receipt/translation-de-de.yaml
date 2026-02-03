@@ -1,0 +1,9 @@
+localeCode: 'de-DE'
+typeName: 'Rückgabebeleg'
+subject: 'Rückgabebeleg für deinen Kauf'
+sender: '{{ shopName }}'
+description: 'Den Rückgabebeleg an den Kunden schicken'
+contentHtml:
+  fromFile: 'content-de-de.html.twig'
+contentPlain:
+  fromFile: 'content-de-de.txt.twig'

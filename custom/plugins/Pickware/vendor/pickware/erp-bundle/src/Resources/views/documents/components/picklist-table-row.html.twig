@@ -1,0 +1,69 @@
+{# Multiple order line items can reference the same product (e.g. custom products in different
+configurations. Since picking is done per product (not per order line item), the same picking route
+note = the same product can reference multiple order line items. #}
+{% for orderLineItem in pickingRouteNode.orderLineItems %}
+    {# If the same product is part of the order in multiple order line items (e.g. custom products) we
+cannot differentiate "which" order line item needs to be picked in which quantity. We only now this
+per product (not per order line item). Workaround: show the ordered quantity instead. #}
+    {% if pickingRouteNode.orderLineItems | length === 1 %}
+        {% set quantityToPick = pickingRouteNode.quantity %}
+    {% else %}
+        {% set quantityToPick = orderLineItem.quantity %}
+    {% endif %}
+    {% if orderLineItem.product is not null %}
+        {% set productName = orderLineItem.product.id | pickware_erp_product_name({ optionsWithLabels: true, optionsTemplate: "<br /> <span class=\"variant-description\">{{ options|map(o => o.label ~ ': ' ~ o.value)|join(', ') }}</span>" }) | sw_sanitize(null, true) %}
+        {% set productNumber = orderLineItem.product.productNumber | sw_sanitize(null, true) %}
+    {% elseif orderLineItem.payload['productNumber'].length >= 1 %}
+        {% set productName = orderLineItem.label | sw_sanitize(null, true) %}
+        {% set productNumber = orderLineItem.payload['productNumber'] | sw_sanitize(null, true) %}
+    {% else %}
+        {% set productName = orderLineItem.label | sw_sanitize(null, true) %}
+        {% set productNumber = '' %}
+    {% endif %}
+    {% set orderLineItemAdditionalRows %}
+        {% sw_include '@Framework/documents/components/picklist-custom-product-row.html.twig' with {
+            customProducts: customProducts,
+            lineItem: orderLineItem
+        } %}
+        {% sw_include '@Framework/documents/components/picklist-custom-fields-row.html.twig' with {
+            orderLineItem: orderLineItem,
+            config: config,
+        } %}
+    {% endset %}
+    {% set numberOfAdditionalRows = 1 + orderLineItemAdditionalRows | trim | split('</tr>') | length - 1 %}
+
+    {% if pickingRouteNode.pickLocations | length == 0 %}
+        {# No stock locations are listed. Show a single 'unknown' location. #}
+        <tr class="line-item single-stock-location">
+            <td rowspan="{{ numberOfAdditionalRows }}" class="first-column left-bordered">{{ 'pickware-erp-starter.picklist-document.unknown' | trans | sw_sanitize(null, true) }}</td>
+            <td class="line-item-breakable">{{ productNumber }}</td>
+            <td class="line-item-breakable">{{ productName | raw }}</td>
+            <td class="align-right bold larger quantity-cell">{{ quantityToPick }}</td>
+            <td class="picked-cell"></td>
+        </tr>
+    {% else %}
+        {# Show the main stock location with optional alternative locations #}
+        <tr class="line-item {% if pickingRouteNode.pickLocations | length == 1 %}single-stock-location{% else %}main-stock-location{% endif %}">
+            <td rowspan="{{ numberOfAdditionalRows }}" class="bold larger first-column left-bordered">
+                {{ pickingRouteNode.pickLocations | first | sw_sanitize(null, true) }}
+                {% if pickingRouteNode.pickLocations | length > 1 %}
+                    <br />
+                    <span class="alternative-stock-locations">(<!--
+                    {% for pickLocation in pickingRouteNode.pickLocations %}
+                        {% if loop.first == false%}
+                            -->{{ pickLocation }}{% if loop.last == false %}, {% endif %}<!--
+                        {% endif %}
+                    {% endfor %}
+                    -->)</span>
+                {% endif %}
+            </td>
+            <td class="line-item-breakable">{{ productNumber }}</td>
+            <td class="line-item-breakable">{{ productName | raw }}</td>
+            <td class="align-right bold larger quantity-cell">{{ quantityToPick }}</td>
+            <td class="picked-cell"></td>
+        </tr>
+    {% endif %}
+    {% if orderLineItemAdditionalRows | trim %}
+        {{ orderLineItemAdditionalRows }}
+    {% endif %}
+{% endfor %}

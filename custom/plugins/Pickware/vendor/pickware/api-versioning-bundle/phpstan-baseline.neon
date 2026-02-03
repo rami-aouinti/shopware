@@ -1,0 +1,151 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\ApiVersioningBundle\\ApiVersioningRequestSubscriber\:\:findApplicableApiLayers\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiVersioningRequestSubscriber.php
+
+		-
+			message: '#^Method Pickware\\ApiVersioningBundle\\ApiVersioningRequestSubscriber\:\:findApplicableControllerActionApiLayers\(\) has parameter \$controller with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/ApiVersioningRequestSubscriber.php
+
+		-
+			message: '#^Method Pickware\\ApiVersioningBundle\\ApiVersioningRequestSubscriber\:\:findApplicableControllerActionApiLayers\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiVersioningRequestSubscriber.php
+
+		-
+			message: '#^Method Pickware\\ApiVersioningBundle\\ApiVersioningRequestSubscriber\:\:findApplicableEntityApiLayers\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiVersioningRequestSubscriber.php
+
+		-
+			message: '#^Method Pickware\\ApiVersioningBundle\\ApiVersioningRequestSubscriber\:\:getEntityApiLayers\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiVersioningRequestSubscriber.php
+
+		-
+			message: '#^Property Pickware\\ApiVersioningBundle\\ApiVersioningRequestSubscriber\:\:\$apiLayers type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiVersioningRequestSubscriber.php
+
+		-
+			message: '#^Call to an undefined method Pickware\\ApiVersioningBundle\\ApiVersioningRequestSubscriber\:\:setEntityApiLayersForApiLayer\(\)\.$#'
+			identifier: method.notFound
+			count: 8
+			path: src/ApiVersioningRequestSubscriber.unit.php
+
+		-
+			message: '#^Method Pickware\\ApiVersioningBundle\\ApiVersioningRequestSubscriber@anonymous/ApiVersioningRequestSubscriber\.unit\.php\:53\:\:getEntityApiLayers\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiVersioningRequestSubscriber.unit.php
+
+		-
+			message: '#^Method Pickware\\ApiVersioningBundle\\ApiVersioningRequestSubscriber@anonymous/ApiVersioningRequestSubscriber\.unit\.php\:53\:\:setEntityApiLayersForApiLayer\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiVersioningRequestSubscriber.unit.php
+
+		-
+			message: '#^Method Pickware\\ApiVersioningBundle\\ApiVersioningRequestSubscriberTest\:\:addApiLayers\(\) has parameter \$apiLayers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiVersioningRequestSubscriber.unit.php
+
+		-
+			message: '#^Method Pickware\\ApiVersioningBundle\\ApiVersioningRequestSubscriberTest\:\:createApiLayerAnnotation\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiVersioningRequestSubscriber.unit.php
+
+		-
+			message: '#^Method Pickware\\ApiVersioningBundle\\ApiVersioningRequestSubscriberTest\:\:createCustomControllerEvent\(\) has parameter \$controller with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/ApiVersioningRequestSubscriber.unit.php
+
+		-
+			message: '#^Method Pickware\\ApiVersioningBundle\\ApiVersioningRequestSubscriberTest\:\:createEntityApiLayerReflectionAttribute\(\) return type with generic class ReflectionAttribute does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/ApiVersioningRequestSubscriber.unit.php
+
+		-
+			message: '#^Property Pickware\\ApiVersioningBundle\\ApiVersioningRequestSubscriber@anonymous/ApiVersioningRequestSubscriber\.unit\.php\:53\:\:\$attributesPerApiLayerAndAttributeClass type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiVersioningRequestSubscriber.unit.php
+
+		-
+			message: '#^Static method Pickware\\ApiVersioningBundle\\ApiVersioningRequestSubscriberTest\:\:createApiLayerAnnotation\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: src/ApiVersioningRequestSubscriber.unit.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\DependencyInjection\\Extension\\ExtensionInterface\:\:addAnnotatedClassesToCompile\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/DependencyInjection/ApiLayerAnnotationCachingCompilerPass.php
+
+		-
+			message: '#^Method Pickware\\ApiVersioningBundle\\JsonApiResponseModifier\:\:modifyJsonApiContentForTypes\(\) has parameter \$typeModifiers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApiResponseModifier.php
+
+		-
+			message: '#^Method Pickware\\ApiVersioningBundle\\JsonApiResponseProcessor\:\:getElements\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApiResponseProcessor.php
+
+		-
+			message: '#^Method Pickware\\ApiVersioningBundle\\JsonApiResponseProcessor\:\:groupValuesOfJsonApiContentForType\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApiResponseProcessor.php
+
+		-
+			message: '#^Parameter \#1 \$content of static method Pickware\\ApiVersioningBundle\\JsonApiResponseProcessor\:\:groupValuesOfJsonApiContentForType\(\) expects string, array\<string, array\<int, array\<string, list\<string\>\|string\>\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/JsonApiResponseProcessor.unit.php
+
+		-
+			message: '#^Parameter \#1 \$content of static method Pickware\\ApiVersioningBundle\\JsonApiResponseProcessor\:\:groupValuesOfJsonApiContentForType\(\) expects string, array\<string, array\<string, list\<string\>\|string\>\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/JsonApiResponseProcessor.unit.php
+
+		-
+			message: '#^Parameter \#1 \$content of static method Pickware\\ApiVersioningBundle\\JsonApiResponseProcessor\:\:groupValuesOfJsonApiContentForType\(\) expects string, array\<string, list\<array\<int\|string, list\<string\>\|string\>\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/JsonApiResponseProcessor.unit.php
+
+		-
+			message: '#^Method Pickware\\ApiVersioningBundle\\JsonRequestModifier\:\:modifyJsonContent\(\) has parameter \$modifyContent with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonRequestModifier.php
+
+		-
+			message: '#^Empty array passed to foreach\.$#'
+			identifier: foreach.emptyArray
+			count: 2
+			path: src/PickwareApiVersioningBundle.php
+
+		-
+			message: '#^Method Pickware\\ApiVersioningBundle\\PickwareApiVersioningBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareApiVersioningBundle.php

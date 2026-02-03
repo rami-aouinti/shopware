@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Stocktake complete-stocktake payload",
+    "description": "PUT request payload for api route _action/pickware-erp/stocktaking/complete-stocktake",
+    "type": "object",
+    "required": ["stocktakeId"],
+    "additionalProperties": false,
+    "properties": {
+        "stocktakeId": {
+            "$ref": "#/definitions/uuid"
+        }
+    },
+    "definitions": {
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        }
+    }
+}

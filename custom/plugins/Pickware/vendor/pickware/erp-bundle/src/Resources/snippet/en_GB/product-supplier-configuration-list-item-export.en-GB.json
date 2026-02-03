@@ -1,0 +1,29 @@
+{
+    "pickware-erp-starter": {
+        "product-supplier-configuration-list-item-export": {
+            "columns": {
+                "product-number": "Product number",
+                "product-name": "Product name",
+                "gtin": "EAN",
+                "manufacturer": "Manufacturer",
+                "manufacturer-number": "Manufacturer product number",
+                "supplier-product-number": "Supplier product number",
+                "supplier": "Supplier",
+                "supplier-number": "Supplier number",
+                "min-purchase": "Minimum purchase",
+                "purchase-steps": "Purchase steps",
+                "delivery-time-days": "Delivery time",
+                "purchase-price-net": "PP (net)",
+                "currency": "Currency",
+                "default-supplier": "Default supplier",
+                "delete": "Delete configuration"
+            },
+            "file-name": "Product supplier mapping %s",
+            "unknown-stock-location": "unbekannt",
+            "boolean-column": {
+                "true": "yes",
+                "false": "no"
+            }
+        }
+    }
+}

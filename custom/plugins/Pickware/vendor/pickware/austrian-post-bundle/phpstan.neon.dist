@@ -1,0 +1,8 @@
+includes:
+	- ../../tools/phpstan/phpstan.neon
+	- phpstan-baseline.neon
+
+parameters:
+    tmpDir: ../../tools/phpstan/cache/austrian-post-bundle
+    paths:
+        - src

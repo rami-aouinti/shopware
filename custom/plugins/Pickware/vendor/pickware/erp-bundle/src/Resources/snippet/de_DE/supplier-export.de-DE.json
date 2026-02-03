@@ -1,0 +1,31 @@
+{
+    "pickware-erp-starter": {
+        "supplier-export": {
+            "file-name": "Lieferanten %s",
+            "columns": {
+                "name": "Name",
+                "number": "Nummer",
+                "customer-number": "Kundennummer",
+                "language": "Sprache",
+                "default-delivery-time": "Standardlieferzeit",
+                "title": "Titel (Kontaktperson)",
+                "first-name": "Vorname (Kontaktperson)",
+                "last-name": "Nachname (Kontaktperson)",
+                "email": "E-Mail-Adresse",
+                "phone": "Telefonnummer",
+                "fax": "Faxnummer",
+                "website": "Website",
+                "company": "Firma",
+                "department": "Abteilung",
+                "street": "Straße",
+                "house-number": "Hausnummer",
+                "address-addition": "Adresszusatz",
+                "zip-code": "PLZ",
+                "city": "Stadt",
+                "country-iso": "Land (ISO2)",
+                "vat-id": "USt-Id",
+                "comment": "Kommentar"
+            }
+        }
+    }
+}

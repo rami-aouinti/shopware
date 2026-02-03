@@ -1,0 +1,1711 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\PickwarePos\\Acl\\PickwarePosFeaturePermissionsProvider\:\:getDefaultFeaturePermissions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Acl/PickwarePosFeaturePermissionsProvider.php
+
+		-
+			message: '#^Class Pickware\\PickwarePos\\Address\\Model\\AddressCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Address/Model/AddressCollection.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\ApiVersion\\ApiVersion20230721\\ProductVariantApiLayer\:\:findAndReplaceVariantListingConfig\(\) has parameter \$content with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiVersion/ApiVersion20230721/ProductVariantApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\BranchStore\\BranchStoreConfigService\:\:getBranchStoreConfig\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BranchStore/BranchStoreConfigService.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\BranchStore\\BranchStoreConfigService\:\:getGenericConfigValues\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BranchStore/BranchStoreConfigService.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\BranchStore\\BranchStoreConfigService\:\:getPluginConfigValues\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BranchStore/BranchStoreConfigService.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\BranchStore\\BranchStoreConfigService\:\:getSalesChannelConfigValues\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BranchStore/BranchStoreConfigService.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\BranchStore\\BranchStoreConfigService\:\:hydrateEntityConfigValues\(\) has parameter \$configuration with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BranchStore/BranchStoreConfigService.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\BranchStore\\BranchStoreConfigService\:\:hydrateEntityConfigValues\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BranchStore/BranchStoreConfigService.php
+
+		-
+			message: '#^Offset ''clickAndCollectPaym…''\|''posCashPaymentMetho…''\|''posDefaultCustomerId''\|''posReceiptLogoMedia…''\|''posShippingMethodId'' on array\{posShippingMethodId\: ''posShippingMethod'', posDefaultCustomerId\: ''posDefaultCustomer'', posCashPaymentMethodId\: ''posCashPaymentMethod'', posCardPaymentMethodIds\: ''posCardPaymentMetho…'', posOtherPaymentMethodIds\: ''posOtherPaymentMeth…'', posOpenPaymentMethodIds\: ''posOpenPaymentMetho…'', posReceiptLogoMediaId\: ''posReceiptLogo'', clickAndCollectShippingMethodIds\: ''clickAndCollectShip…'', \.\.\.\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: src/BranchStore/BranchStoreConfigService.php
+
+		-
+			message: '#^Offset ''clickAndCollectShip…''\|''posCardPaymentMetho…''\|''posOpenPaymentMetho…''\|''posOtherPaymentMeth…'' on array\{posShippingMethodId\: ''posShippingMethod'', posDefaultCustomerId\: ''posDefaultCustomer'', posCashPaymentMethodId\: ''posCashPaymentMethod'', posCardPaymentMethodIds\: ''posCardPaymentMetho…'', posOtherPaymentMethodIds\: ''posOtherPaymentMeth…'', posOpenPaymentMethodIds\: ''posOpenPaymentMetho…'', posReceiptLogoMediaId\: ''posReceiptLogo'', clickAndCollectShippingMethodIds\: ''clickAndCollectShip…'', \.\.\.\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: src/BranchStore/BranchStoreConfigService.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between ''clickAndCollectPaym…''\|''posCashPaymentMethod''\|''posDefaultCustomer''\|''posReceiptLogo''\|''posShippingMethod'' and ''clickAndCollectPaym…''\|''posCashPaymentMetho…''\|''posDefaultCustomerId''\|''posReceiptLogoMedia…''\|''posShippingMethodId'' will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/BranchStore/BranchStoreConfigService.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between ''clickAndCollectShip…''\|''posCardPaymentMetho…''\|''posOpenPaymentMetho…''\|''posOtherPaymentMeth…'' and ''clickAndCollectShip…''\|''posCardPaymentMetho…''\|''posOpenPaymentMetho…''\|''posOtherPaymentMeth…'' will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/BranchStore/BranchStoreConfigService.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Pickware\\PickwareErpStarter\\PickingProperty\\PickingPropertyService\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/BranchStore/BranchStoreConfigService.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\Struct\\Struct\:\:first\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/BranchStore/BranchStoreNameProvider.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Pickware\\PickwarePos\\BranchStore\\Model\\BranchStoreEntity\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/BranchStore/BranchStoreNameProvider.php
+
+		-
+			message: '#^Class Pickware\\PickwarePos\\BranchStore\\Model\\BranchStoreCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/BranchStore/Model/BranchStoreCollection.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 1
+			path: src/CashMovement/CashMovementType.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230126\\CashPointClosingSearchApiLayer\:\:addVatTable\(\) has parameter \$cashPointClosingTransactionLineItem with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230126/CashPointClosingSearchApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230126\\CashPointClosingSearchApiLayer\:\:includeVatTableInRequest\(\) has parameter \$jsonContent with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230126/CashPointClosingSearchApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230126\\CashPointClosingSearchApiLayer\:\:removeVatTable\(\) has parameter \$cashPointClosingTransactionLineItem with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230126/CashPointClosingSearchApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230126\\CashPointClosingTransactionSaveApiLayer\:\:addVatTable\(\) has parameter \$cashPointClosingTransactionLineItem with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230126/CashPointClosingTransactionSaveApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230126\\CashPointClosingTransactionSaveApiLayer\:\:includeVatTableInRequest\(\) has parameter \$jsonContent with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230126/CashPointClosingTransactionSaveApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230126\\CashPointClosingTransactionSaveApiLayer\:\:removeVatTable\(\) has parameter \$cashPointClosingTransactionLineItem with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230126/CashPointClosingTransactionSaveApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230126\\CashPointClosingTransactionSearchApiLayer\:\:addVatTable\(\) has parameter \$cashPointClosingTransactionLineItem with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230126/CashPointClosingTransactionSearchApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230126\\CashPointClosingTransactionSearchApiLayer\:\:includeVatTableInRequest\(\) has parameter \$jsonContent with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230126/CashPointClosingTransactionSearchApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230126\\CashPointClosingTransactionSearchApiLayer\:\:removeVatTable\(\) has parameter \$cashPointClosingTransactionLineItem with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230126/CashPointClosingTransactionSearchApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230308\\CashPointClosingSearchApiLayer\:\:addFiscalizationContext\(\) has parameter \$cashPointClosingTransaction with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230308/CashPointClosingSearchApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230308\\CashPointClosingSearchApiLayer\:\:addFiscalizationContextToCriteriaIncludes\(\) has parameter \$jsonContent with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230308/CashPointClosingSearchApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230308\\CashPointClosingSearchApiLayer\:\:removeFiscalizationContext\(\) has parameter \$cashPointClosingTransaction with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230308/CashPointClosingSearchApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230308\\CashPointClosingTransactionSaveApiLayer\:\:addFiscalizationContext\(\) has parameter \$cashPointClosingTransaction with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230308/CashPointClosingTransactionSaveApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230308\\CashPointClosingTransactionSaveApiLayer\:\:addFiscalizationContextToCriteriaIncludes\(\) has parameter \$jsonContent with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230308/CashPointClosingTransactionSaveApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230308\\CashPointClosingTransactionSaveApiLayer\:\:removeFiscalizationContext\(\) has parameter \$cashPointClosingTransaction with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230308/CashPointClosingTransactionSaveApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230308\\CashPointClosingTransactionSearchApiLayer\:\:addFiscalizationContext\(\) has parameter \$cashPointClosingTransaction with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230308/CashPointClosingTransactionSearchApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230308\\CashPointClosingTransactionSearchApiLayer\:\:addFiscalizationContextToCriteriaIncludes\(\) has parameter \$jsonContent with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230308/CashPointClosingTransactionSearchApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\ApiVersioning\\ApiVersion20230308\\CashPointClosingTransactionSearchApiLayer\:\:removeFiscalizationContext\(\) has parameter \$cashPointClosingTransaction with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/ApiVersioning/ApiVersion20230308/CashPointClosingTransactionSearchApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosing\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosing.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosing\:\:getTransactionIds\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosing.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosing\:\:getUserSnapShot\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosing.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosing\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosing.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosing\:\:setTransactionIds\(\) has parameter \$transactionIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosing.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosing\:\:setUserSnapShot\(\) has parameter \$userSnapShot with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosing.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CashPointClosing\:\:\$userSnapShot type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosing.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosing.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingException\:\:multipleCurrenciesFound\(\) has parameter \$currencyIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingException.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingService\:\:areArraysSame\(\) has parameter \$array1 with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingService.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingService\:\:areArraysSame\(\) has parameter \$array2 with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingService.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransaction\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransaction.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransaction\:\:getCashPointClosingTransactionLineItems\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransaction.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransaction\:\:getFiscalizationContext\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransaction.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransaction\:\:getUserSnapshot\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransaction.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransaction\:\:getVatTable\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransaction.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransaction\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransaction.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransaction\:\:setCashPointClosingTransactionLineItems\(\) has parameter \$cashPointClosingTransactionLineItems with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransaction.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransaction\:\:setFiscalizationContext\(\) has parameter \$fiscalizationContext with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransaction.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransaction\:\:setUserSnapshot\(\) has parameter \$userSnapshot with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransaction.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransaction\:\:setVatTable\(\) has parameter \$vatTable with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransaction.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransaction\:\:\$fiscalizationContext type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransaction.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransaction\:\:\$userSnapshot type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransaction.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransaction\:\:\$vatTable type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransaction.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransactionUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransaction.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransactionBuyer\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransactionBuyer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransactionBuyer\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransactionBuyer.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransactionBuyerUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransactionBuyer.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransactionLineItem\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransactionLineItem.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransactionLineItem\:\:getVatTable\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransactionLineItem.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransactionLineItem\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransactionLineItem.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransactionLineItem\:\:setVatTable\(\) has parameter \$vatTable with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransactionLineItem.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransactionLineItem\:\:\$vatTable type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransactionLineItem.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransactionLineItemUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransactionLineItem.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransactionPayment\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransactionPayment.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransactionPayment\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransactionPayment.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransactionPaymentUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransactionPayment.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashPointClosingTransactionService\:\:saveCashPointClosingTransaction\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashPointClosingTransactionService.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashStatement\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatement.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashStatement\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatement.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CashStatementUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatement.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashStatementBusinessCase\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatementBusinessCase.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashStatementBusinessCase\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatementBusinessCase.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CashStatementBusinessCaseUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatementBusinessCase.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashStatementBusinessCaseAmount\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatementBusinessCaseAmount.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashStatementBusinessCaseAmount\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatementBusinessCaseAmount.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CashStatementBusinessCaseAmountUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatementBusinessCaseAmount.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashStatementPayment\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatementPayment.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashStatementPayment\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatementPayment.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CashStatementPaymentUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatementPayment.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashStatementPaymentCashAmount\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatementPaymentCashAmount.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashStatementPaymentCashAmount\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatementPaymentCashAmount.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CashStatementPaymentCashAmountUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatementPaymentCashAmount.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashStatementPaymentType\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatementPaymentType.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CashStatementPaymentType\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatementPaymentType.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CashStatementPaymentTypeUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CashStatementPaymentType.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Controller\\CashPointClosingController\:\:getPreviewDocument\(\) has parameter \$cashRegisterId with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/CashPointClosing/Controller/CashPointClosingController.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\Api\\Context\\ContextSource\:\:getUserId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/CashPointClosing/Controller/CashPointClosingTransactionController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\Controller\\CashPointClosingTransactionControllerUnitTest\:\:\$cashPointClosingTransactionPayload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Controller/CashPointClosingTransactionController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\Controller\\CashPointClosingTransactionControllerUnitTest\:\:\$pickwareApiVersion \(string\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/CashPointClosing/Controller/CashPointClosingTransactionController.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\CashPointClosingCustomAggregation\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/CashPointClosingCustomAggregation.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\CashPointClosingCustomAggregation\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/CashPointClosingCustomAggregation.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\CashPointClosingCustomAggregationUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/CashPointClosingCustomAggregation.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\LineItemTotal\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/LineItemTotal.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\LineItemTotal\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/LineItemTotal.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\LineItemTotalUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/LineItemTotal.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\TotalByLineItemType\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/TotalByLineItemType.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\TotalByLineItemType\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/TotalByLineItemType.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function usort expects callable\(Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\TotalByTaxRate, Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\TotalByTaxRate\)\: int, Closure\(Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\TotalByTaxRate, Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\TotalByTaxRate\)\: float given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/TotalByLineItemType.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\TotalByLineItemTypeUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/TotalByLineItemType.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\TotalByLineItemTypeGroup\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/TotalByLineItemTypeGroup.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\TotalByLineItemTypeGroup\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/TotalByLineItemTypeGroup.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\TotalByLineItemTypeGroupUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/TotalByLineItemTypeGroup.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\TotalByPaymentType\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/TotalByPaymentType.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\TotalByPaymentType\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/TotalByPaymentType.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\TotalByPaymentTypeUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/TotalByPaymentType.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\TotalByTaxRate\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/TotalByTaxRate.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\TotalByTaxRate\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/TotalByTaxRate.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\CustomAggregation\\TotalByTaxRateUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/CustomAggregation/TotalByTaxRate.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Document\\CashPointClosingDocumentContentGenerator\:\:generateFromCashPointClosing\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Document/CashPointClosingDocumentContentGenerator.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Document\\CashPointClosingDocumentContentGenerator\:\:generateFromCashPointClosingPreview\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Document/CashPointClosingDocumentContentGenerator.php
+
+		-
+			message: '#^Anonymous function never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/CashPointClosing/Document/CashPointClosingDocumentContentGenerator.unit.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 1
+			path: src/CashPointClosing/Document/CashPointClosingDocumentContentGenerator.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Document\\CashPointClosingDocumentGenerator\:\:generate\(\) has parameter \$templateVariables with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Document/CashPointClosingDocumentGenerator.php
+
+		-
+			message: '#^Class Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingCollection.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingEntity\:\:getCashStatement\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingEntity\:\:getUserSnapshot\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingEntity\:\:setCashStatement\(\) has parameter \$cashStatement with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingEntity\:\:setUserSnapshot\(\) has parameter \$userSnapshot with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingEntity.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingEntity\:\:\$cashStatement type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingEntity.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingEntity\:\:\$userSnapshot type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingEntity.php
+
+		-
+			message: '#^Class Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionCollection.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:getBuyer\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:getFiscalizationContext\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:getPayment\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:getTotal\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:getUserSnapshot\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:getVatTable\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:setBuyer\(\) has parameter \$buyer with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:setFiscalizationContext\(\) has parameter \$fiscalizationContext with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:setPayment\(\) has parameter \$payment with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:setTotal\(\) has parameter \$total with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:setUserSnapshot\(\) has parameter \$userSnapshot with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:setVatTable\(\) has parameter \$vatTable with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:\$buyer type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:\$fiscalizationContext type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:\$payment type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:\$total type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:\$userSnapshot type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionEntity\:\:\$vatTable type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionEntity.php
+
+		-
+			message: '#^Class Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionLineItemCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionLineItemCollection.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionLineItemEntity\:\:getDiscount\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionLineItemEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionLineItemEntity\:\:getPricePerUnit\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionLineItemEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionLineItemEntity\:\:getTotal\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionLineItemEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionLineItemEntity\:\:getVatTable\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionLineItemEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionLineItemEntity\:\:setDiscount\(\) has parameter \$discount with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionLineItemEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionLineItemEntity\:\:setPricePerUnit\(\) has parameter \$pricePerUnit with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionLineItemEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionLineItemEntity\:\:setTotal\(\) has parameter \$total with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionLineItemEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionLineItemEntity\:\:setVatTable\(\) has parameter \$vatTable with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionLineItemEntity.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionLineItemEntity\:\:\$discount type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionLineItemEntity.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionLineItemEntity\:\:\$pricePerUnit type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionLineItemEntity.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionLineItemEntity\:\:\$total type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionLineItemEntity.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\Model\\CashPointClosingTransactionLineItemEntity\:\:\$vatTable type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Model/CashPointClosingTransactionLineItemEntity.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Price\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Price.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashPointClosing\\Price\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Price.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\CashPointClosing\\PriceUnitTest\:\:\$payload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashPointClosing/Price.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashRegister\\ApiVersioning\\ApiVersion20230308\\CashRegisterCreateApiLayer\:\:convertToFiscalizationConfiguration\(\) has parameter \$jsonContent with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashRegister/ApiVersioning/ApiVersion20230308/CashRegisterCreateApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashRegister\\ApiVersioning\\ApiVersion20230308\\CashRegisterCreateApiLayer\:\:convertToFiskalyDeResponse\(\) has parameter \$jsonContent with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashRegister/ApiVersioning/ApiVersion20230308/CashRegisterCreateApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashRegister\\ApiVersioning\\ApiVersion20230308\\CashRegisterSearchApiLayer\:\:convertToFiscalizationConfiguration\(\) has parameter \$jsonContent with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashRegister/ApiVersioning/ApiVersion20230308/CashRegisterSearchApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashRegister\\ApiVersioning\\ApiVersion20230308\\CashRegisterSearchApiLayer\:\:convertToFiskalyDeResponse\(\) has parameter \$jsonContent with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashRegister/ApiVersioning/ApiVersion20230308/CashRegisterSearchApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashRegister\\ApiVersioning\\ApiVersion20230308\\CashRegisterUpdateApiLayer\:\:convertToFiscalizationConfiguration\(\) has parameter \$jsonContent with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashRegister/ApiVersioning/ApiVersion20230308/CashRegisterUpdateApiLayer.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashRegister\\ApiVersioning\\ApiVersion20230308\\CashRegisterUpdateApiLayer\:\:convertToFiskalyDeResponse\(\) has parameter \$jsonContent with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashRegister/ApiVersioning/ApiVersion20230308/CashRegisterUpdateApiLayer.php
+
+		-
+			message: '#^Call to method getTransactionNumberPrefix\(\) on an unknown class Pickware\\PickwarePos\\CashRegister\\CashRegisterEntity\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CashRegister/CashRegisterCreation.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashRegister\\CashRegisterCreation\:\:createCashRegister\(\) has parameter \$cashRegisterPayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashRegister/CashRegisterCreation.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$highestPrefixCashRegister contains unknown class Pickware\\PickwarePos\\CashRegister\\CashRegisterEntity\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CashRegister/CashRegisterCreation.php
+
+		-
+			message: '#^PHPDoc tag @var with type Pickware\\PickwarePos\\CashRegister\\CashRegisterEntity\|null is not subtype of native type Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\|null\.$#'
+			identifier: varTag.nativeType
+			count: 1
+			path: src/CashRegister/CashRegisterCreation.php
+
+		-
+			message: '#^Class Pickware\\PickwarePos\\CashRegister\\CashRegisterCreation constructor invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/CashRegister/CashRegisterCreation.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashRegister\\FiscalizationConfiguration\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashRegister/FiscalizationConfiguration.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\CashRegister\\FiscalizationConfiguration\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CashRegister/FiscalizationConfiguration.php
+
+		-
+			message: '#^Class Pickware\\PickwarePos\\CashRegister\\Model\\CashRegisterCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/CashRegister/Model/CashRegisterCollection.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between string and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/CashRegister/Model/CashRegisterEntity.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$posPublicSalesChannelAndDomainId has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/ConfigService.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Config\\ConfigServiceTest\:\:\$posPublicSalesChannelAndDomainId type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/ConfigService.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Config\\ConfigServiceTest\:\:\$salesChannelId \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Config/ConfigService.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Coupon\\CouponException\:\:ambiguousCouponCode\(\) has parameter \$coupons with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Coupon/CouponException.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\:\:getDiscounts\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Coupon/CouponService.php
+
+		-
+			message: '#^Parameter \#1 \$promotion of static method Pickware\\PickwarePos\\Coupon\\CouponService\:\:convertShopwarePromotionToPickwarePosCoupon\(\) expects Shopware\\Core\\Checkout\\Promotion\\PromotionEntity, Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Coupon/CouponService.php
+
+		-
+			message: '#^Variable \$promotions in PHPDoc tag @var does not match assigned variable \$shopwarePromotions\.$#'
+			identifier: varTag.differentVariable
+			count: 2
+			path: src/Coupon/CouponService.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Coupon\\CouponServiceUnitTest\:\:configureMocks\(\) has parameter \$promotionProperties with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Coupon/CouponService.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Coupon\\CouponServiceUnitTest\:\:createTestData\(\) has parameter \$properties with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Coupon/CouponService.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Coupon\\CouponServiceUnitTest\:\:createTestData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Coupon/CouponService.unit.php
+
+		-
+			message: '#^You should use assertFalse\(\) instead of assertSame\(\) when expecting "false"$#'
+			identifier: phpunit.assertFalse
+			count: 2
+			path: src/Coupon/CouponService.unit.php
+
+		-
+			message: '#^You should use assertTrue\(\) instead of assertSame\(\) when expecting "true"$#'
+			identifier: phpunit.assertTrue
+			count: 2
+			path: src/Coupon/CouponService.unit.php
+
+		-
+			message: '#^Class NetInventors\\NetiNextEasyCoupon\\Core\\Content\\Product\\Aggregate\\EasyCouponProductDefinition not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Coupon/NetiNextEasyCouponAdapter.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Coupon\\NetiNextEasyCouponAdapter\:\:prepareOrderPayloadForPurchasableCoupons\(\) has parameter \$orderPayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Coupon/NetiNextEasyCouponAdapter.php
+
+		-
+			message: '#^Class NetInventors\\NetiNextEasyCoupon\\Core\\Content\\Product\\Aggregate\\EasyCouponProductDefinition not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Coupon/NetiNextEasyCouponAdapter.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Coupon\\NetiNextEasyCouponAdapterUnitTest\:\:configureMocks\(\) has parameter \$customProperties with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Coupon/NetiNextEasyCouponAdapter.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Coupon\\NetiNextEasyCouponAdapterUnitTest\:\:createTestData\(\) has parameter \$properties with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Coupon/NetiNextEasyCouponAdapter.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Coupon\\NetiNextEasyCouponAdapterUnitTest\:\:createTestData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Coupon/NetiNextEasyCouponAdapter.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Coupon\\NetiNextEasyCouponAdapterUnitTest\:\:\$orderPayload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Coupon/NetiNextEasyCouponAdapter.unit.php
+
+		-
+			message: '#^You should use assertFalse\(\) instead of assertSame\(\) when expecting "false"$#'
+			identifier: phpunit.assertFalse
+			count: 1
+			path: src/Coupon/NetiNextEasyCouponAdapter.unit.php
+
+		-
+			message: '#^You should use assertTrue\(\) instead of assertSame\(\) when expecting "true"$#'
+			identifier: phpunit.assertTrue
+			count: 5
+			path: src/Coupon/NetiNextEasyCouponAdapter.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Coupon\\PickwarePosCoupon\:\:getDiscount\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Coupon/PickwarePosCoupon.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Coupon\\PickwarePosCoupon\:\:getRules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Coupon/PickwarePosCoupon.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Coupon\\PickwarePosCoupon\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Coupon/PickwarePosCoupon.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Coupon\\PickwarePosCoupon\:\:\$discount type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Coupon/PickwarePosCoupon.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Coupon\\PickwarePosCoupon\:\:\$rules type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Coupon/PickwarePosCoupon.php
+
+		-
+			message: '#^You should use assertCount\(\$expectedCount, \$variable\) instead of assertSame\(\$expectedCount, count\(\$variable\)\)\.$#'
+			identifier: phpunit.assertCount
+			count: 3
+			path: src/Coupon/PickwarePosCoupon.unit.php
+
+		-
+			message: '#^You should use assertFalse\(\) instead of assertSame\(\) when expecting "false"$#'
+			identifier: phpunit.assertFalse
+			count: 3
+			path: src/Coupon/PickwarePosCoupon.unit.php
+
+		-
+			message: '#^You should use assertTrue\(\) instead of assertSame\(\) when expecting "true"$#'
+			identifier: phpunit.assertTrue
+			count: 1
+			path: src/Coupon/PickwarePosCoupon.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Customer\\Controller\\CustomerControllerTest\:\:\$customerAssociationsParameter \(array\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Customer/Controller/CustomerController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Customer\\Controller\\CustomerControllerTest\:\:\$customerAssociationsParameter type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Customer/Controller/CustomerController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Customer\\Controller\\CustomerControllerTest\:\:\$customerParameter type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Customer/Controller/CustomerController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Customer\\Controller\\CustomerControllerTest\:\:\$customerRecoveryWrittenContainerEvent is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Customer/Controller/CustomerController.unit.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\:\:getEmail\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Customer/CustomerCreation.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Customer\\CustomerCreation\:\:createPosCustomerIfNotExists\(\) has parameter \$customerPayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Customer/CustomerCreation.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Customer\\CustomerCreation\:\:ensureCustomerPayloadHasCustomerNumber\(\) has parameter \$customerPayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Customer/CustomerCreation.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Customer\\CustomerCreation\:\:ensureCustomerPayloadHasDefaultPaymentMethodId\(\) has parameter \$customerPayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Customer/CustomerCreation.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Customer\\CustomerCreationTest\:\:\$customer \(Shopware\\Core\\Checkout\\Customer\\CustomerEntity\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Customer/CustomerCreation.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Customer\\CustomerCreationTest\:\:\$customerPayload type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Customer/CustomerCreation.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Customer\\CustomerCreationTest\:\:\$existingCustomerRecoveries with generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Customer/CustomerCreation.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Customer\\CustomerCreationTest\:\:\$existingNewsletterRecipients with generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Customer/CustomerCreation.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Customer\\CustomerCreationTest\:\:\$pluginConfigPosCashPaymentMethodId \(string\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Customer/CustomerCreation.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Customer\\CustomerNotification\:\:getCustomer\(\) should return Shopware\\Core\\Checkout\\Customer\\CustomerEntity but returns Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Customer/CustomerNotification.php
+
+		-
+			message: '#^Parameter \#2 \$newsletterRecipient of class Shopware\\Core\\Content\\Newsletter\\Event\\NewsletterRegisterEvent constructor expects Shopware\\Core\\Content\\Newsletter\\Aggregate\\NewsletterRecipient\\NewsletterRecipientEntity, Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Customer/CustomerNotification.php
+
+		-
+			message: '#^Parameter \#3 \$newsletterRecipient of method Pickware\\PickwarePos\\Customer\\CustomerNotification\:\:getNewsletterSubscribeUrl\(\) expects Shopware\\Core\\Content\\Newsletter\\Aggregate\\NewsletterRecipient\\NewsletterRecipientEntity, Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Customer/CustomerNotification.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Customer\\CustomerNotificationTest\:\:\$matchingCustomerRecoveries with generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Customer/CustomerNotification.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Customer\\CustomerNotificationTest\:\:\$matchingNewsletterRecipients with generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Customer/CustomerNotification.unit.php
+
+		-
+			message: '#^Parameter \#1 \$package of attribute class Shopware\\Core\\Framework\\Log\\Package constructor expects ''after\-sales''\|''b2b''\|''checkout''\|''data\-services''\|''discovery''\|''framework''\|''fundamentals@after…''\|''fundamentals…''\|''innovation''\|''inventory'', ''core'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Migration/Migration1732115485AddCashRegisterTransactionNumberPrefixField.php
+
+		-
+			message: '#^Call to function method_exists\(\) with Pickware\\PickwareErpStarter\\Stock\\InternalReservedStockUpdater and ''deferReservedStockC…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Order/Controller/OrderController.php
+
+		-
+			message: '#^Parameter \#1 \$context of class Shopware\\Core\\Checkout\\Cart\\Event\\CheckoutOrderPlacedEvent constructor expects Shopware\\Core\\System\\SalesChannel\\SalesChannelContext, Shopware\\Core\\Framework\\Context given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Order/Controller/OrderController.php
+
+		-
+			message: '#^Parameter \#3 \$mailRecipientStruct of class Shopware\\Core\\Checkout\\Cart\\Event\\CheckoutOrderPlacedEvent constructor expects Shopware\\Core\\Framework\\Event\\EventData\\MailRecipientStruct\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Order/Controller/OrderController.php
+
+		-
+			message: '#^Parameter \#1 \$context of class Shopware\\Core\\Checkout\\Cart\\Event\\CheckoutOrderPlacedEvent constructor expects Shopware\\Core\\System\\SalesChannel\\SalesChannelContext, Shopware\\Core\\Framework\\Context given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Order/Controller/OrderController.unit.php
+
+		-
+			message: '#^Parameter \#3 \$mailRecipientStruct of class Shopware\\Core\\Checkout\\Cart\\Event\\CheckoutOrderPlacedEvent constructor expects Shopware\\Core\\Framework\\Event\\EventData\\MailRecipientStruct\|null, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Order/Controller/OrderController.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Order\\PosOrderShippingService\:\:getStockCorrections\(\) has parameter \$stockShortage with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Order/PosOrderShippingService.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Order\\PosOrderShippingService\:\:getStockCorrections\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Order/PosOrderShippingService.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Order\\PosOrderShippingServiceTest\:\:createStockMovementConstraint\(\) has parameter \$expected with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Order/PosOrderShippingService.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Order\\PosOrderShippingServiceTest\:\:createStockMovementConstraint\(\) return type with generic class PHPUnit\\Framework\\Constraint\\Callback does not specify its types\: CallbackInput$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Order/PosOrderShippingService.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\OrderDocument\\ApiVersioning\\ApiVersion20240118\\OrderDocumentCreationApiLayer\:\:addDocumentId\(\) has parameter \$jsonContent with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDocument/ApiVersioning/ApiVersion20240118/OrderDocumentCreationApiLayer.php
+
+		-
+			message: '#^Call to method method\(\) on an unknown class Pickware\\PickwarePos\\OrderDocument\\Controller\\DocumentService\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/OrderDocument/Controller/OrderDocumentController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\OrderDocument\\Controller\\OrderDocumentControllerTest\:\:\$creationDocumentConfig \(array\|Pickware\\PickwarePos\\OrderDocument\\Controller\\PayloadValidation\\DocumentConfig\|string\) is never assigned array so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/OrderDocument/Controller/OrderDocumentController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\OrderDocument\\Controller\\OrderDocumentControllerTest\:\:\$creationDocumentConfig \(array\|Pickware\\PickwarePos\\OrderDocument\\Controller\\PayloadValidation\\DocumentConfig\|string\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/OrderDocument/Controller/OrderDocumentController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\OrderDocument\\Controller\\OrderDocumentControllerTest\:\:\$creationDocumentConfig type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDocument/Controller/OrderDocumentController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\OrderDocument\\Controller\\OrderDocumentControllerTest\:\:\$documentId \(string\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/OrderDocument/Controller/OrderDocumentController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\OrderDocument\\Controller\\OrderDocumentControllerTest\:\:\$documentNumber \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/OrderDocument/Controller/OrderDocumentController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\OrderDocument\\Controller\\OrderDocumentControllerTest\:\:\$documentServiceMock has unknown class Pickware\\PickwarePos\\OrderDocument\\Controller\\DocumentService as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/OrderDocument/Controller/OrderDocumentController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\OrderDocument\\Controller\\OrderDocumentControllerTest\:\:\$documentTypeId \(string\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/OrderDocument/Controller/OrderDocumentController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\OrderDocument\\Controller\\OrderDocumentControllerTest\:\:\$emailAddress \(string\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/OrderDocument/Controller/OrderDocumentController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\OrderDocument\\Controller\\OrderDocumentControllerTest\:\:\$orderId \(string\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/OrderDocument/Controller/OrderDocumentController.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method readDocument\(\) on class Pickware\\PickwarePos\\OrderDocument\\Controller\\DocumentService\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: src/OrderDocument/Controller/OrderDocumentController.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\OrderDocument\\Controller\\PayloadValidation\\DocumentConfig\:\:__construct\(\) has parameter \$pickwarePosAdditionalElements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDocument/Controller/PayloadValidation/DocumentConfig.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\OrderDocument\\Controller\\PayloadValidation\\DocumentConfig\:\:fromArray\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDocument/Controller/PayloadValidation/DocumentConfig.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\OrderDocument\\Controller\\PayloadValidation\\DocumentConfig\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDocument/Controller/PayloadValidation/DocumentConfig.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\OrderDocument\\Controller\\PayloadValidation\\PickwarePosAdditionalElement\:\:fromArray\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDocument/Controller/PayloadValidation/PickwarePosAdditionalElement.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\OrderDocument\\Controller\\PayloadValidation\\PickwarePosAdditionalElement\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDocument/Controller/PayloadValidation/PickwarePosAdditionalElement.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\OrderDocument\\Controller\\PayloadValidation\\UploadDocumentConfig\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderDocument/Controller/PayloadValidation/UploadDocumentConfig.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\:\:getContentHtml\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/OrderDocument/OrderDocumentMailerService.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\:\:getContentPlain\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/OrderDocument/OrderDocumentMailerService.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\:\:getId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/OrderDocument/OrderDocumentMailerService.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\:\:getSenderName\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/OrderDocument/OrderDocumentMailerService.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\:\:getSubject\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/OrderDocument/OrderDocumentMailerService.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\OrderDocument\\TwigQrCodeExtension\:\:generateQrCodeDataUri\(\) has parameter \$data with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/OrderDocument/TwigQrCodeExtension.php
+
+		-
+			message: '#^Class Pickware\\PickwarePos\\OrderLineItem\\Model\\PickwarePosOrderLineItemCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/OrderLineItem/Model/PickwarePosOrderLineItemCollection.php
+
+		-
+			message: '#^Class Pickware\\ShopwarePlugins\\ShopwareIntegrationTestPlugin\\ShopwareIntegrationTestPlugin not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/PickwarePosBundle.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\PickwarePosBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwarePosBundle.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Product\\Controller\\ProductControllerTest\:\:\$entityRepositoryMock with generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository does not specify its types\: TEntityCollection$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Product/Controller/ProductController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Product\\Controller\\ProductControllerTest\:\:\$limitParameter \(int\|string\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Product/Controller/ProductController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Product\\Controller\\ProductControllerTest\:\:\$limitParameter \(int\|string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Product/Controller/ProductController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Product\\Controller\\ProductControllerTest\:\:\$productAssociationsParameter type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Product/Controller/ProductController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Product\\Controller\\ProductControllerTest\:\:\$requestParameter type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Product/Controller/ProductController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Product\\Controller\\ProductControllerTest\:\:\$searchResultMock with generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\EntitySearchResult does not specify its types\: TEntityCollection$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Product/Controller/ProductController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\Product\\Controller\\ProductControllerTest\:\:\$topSellerIds type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Product/Controller/ProductController.unit.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\Product\\ProductTopSellerService\:\:getTopSellerIds\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Product/ProductTopSellerService.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\ReturnOrder\\Controller\\ReturnOrderController\:\:completeReturnOrder\(\) has parameter \$associations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ReturnOrder/Controller/ReturnOrderController.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\ReturnOrder\\Controller\\ReturnOrderController\:\:completeReturnOrder\(\) has parameter \$itemsToRestock with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ReturnOrder/Controller/ReturnOrderController.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: mixed$#'
+			identifier: match.unhandled
+			count: 1
+			path: src/ReturnOrder/Controller/ReturnOrderController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\ReturnOrder\\Controller\\ReturnOrderControllerTest\:\:\$entityIdResolverMock is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/ReturnOrder/Controller/ReturnOrderController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\ReturnOrder\\Controller\\ReturnOrderControllerTest\:\:\$numberRangeValueGeneratorMock is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/ReturnOrder/Controller/ReturnOrderController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\ReturnOrder\\Controller\\ReturnOrderControllerTest\:\:\$refund is unused\.$#'
+			identifier: property.unused
+			count: 1
+			path: src/ReturnOrder/Controller/ReturnOrderController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\ReturnOrder\\Controller\\ReturnOrderControllerTest\:\:\$returnOrderAssociationsParameter \(array\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/ReturnOrder/Controller/ReturnOrderController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\ReturnOrder\\Controller\\ReturnOrderControllerTest\:\:\$returnOrderAssociationsParameter type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ReturnOrder/Controller/ReturnOrderController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\ReturnOrder\\Controller\\ReturnOrderControllerTest\:\:\$returnOrderParameter type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ReturnOrder/Controller/ReturnOrderController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\ReturnOrder\\Controller\\ReturnOrderControllerTest\:\:\$stockAdjustments type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ReturnOrder/Controller/ReturnOrderController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\SalesChannel\\PickwarePosSalesChannelControllerTest\:\:\$defaultSalesChannelConfig type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SalesChannel/Controller/PickwarePosSalesChannelController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\SalesChannel\\PickwarePosSalesChannelControllerTest\:\:\$requestContentJson type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SalesChannel/Controller/PickwarePosSalesChannelController.unit.php
+
+		-
+			message: '#^Property Pickware\\PickwarePos\\SalesChannel\\PickwarePosSalesChannelControllerTest\:\:\$systemConfigServiceMock \(PHPUnit\\Framework\\MockObject\\MockObject&Pickware\\PickwarePos\\SalesChannel\\PickwarePosSalesChannelService\) does not accept PHPUnit\\Framework\\MockObject\\MockObject&Shopware\\Core\\System\\SystemConfig\\SystemConfigService\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/SalesChannel/Controller/PickwarePosSalesChannelController.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method set\(\) on class Pickware\\PickwarePos\\SalesChannel\\PickwarePosSalesChannelService\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: src/SalesChannel/Controller/PickwarePosSalesChannelController.unit.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\:\:getId\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/SalesChannel/PickwarePosSalesChannelService.php
+
+		-
+			message: '#^Method Pickware\\PickwarePos\\SalesChannel\\PickwarePosSalesChannelService\:\:createNewPickwarePosSalesChannel\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SalesChannel/PickwarePosSalesChannelService.php

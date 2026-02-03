@@ -1,0 +1,30 @@
+{
+    "pickware-erp-starter": {
+        "purchase-list-export": {
+            "columns": {
+                "product-name": "Produktname",
+                "product-number": "Produktnummer",
+                "supplier-product-number": "Lieferantenproduktnummer",
+                "gtin": "GTIN/EAN",
+                "manufacturer-number": "Herstellernummer",
+                "manufacturer": "Hersteller",
+                "supplier-name": "Lieferant",
+                "stock": "Bestand",
+                "reserved-stock": "Reserviert",
+                "available-stock": "Verfügbar",
+                "reorder-point": "Meldebestand",
+                "incoming-stock": "Im Zulauf",
+                "sales": "Verkäufe",
+                "sales-prediction": "Voraussichtlicher Bedarf",
+                "purchase-suggestion": "Bestellvorschlag",
+                "min-purchase": "Mindestabnahme",
+                "purchase-steps": "Abnahmeintervall",
+                "delivery-time": "Lieferzeit",
+                "quantity": "Bestellmenge",
+                "purchase-price-net": "EK (netto)",
+                "purchase-total-net": "Summe (netto)"
+            },
+            "file-name": "Einkaufsliste %s"
+        }
+    }
+}

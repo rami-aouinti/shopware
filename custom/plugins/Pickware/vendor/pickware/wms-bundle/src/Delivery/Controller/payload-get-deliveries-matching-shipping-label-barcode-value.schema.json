@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Pickware WMS get-deliveries-matching-shipping-label-barcode-value payload",
+    "description": "PUT request payload for api route _action/pickware-wms/get-deliveries-matching-shipping-label-barcode-value",
+    "type": "object",
+    "required": ["shippingLabelBarcodeValue", "criteria"],
+    "properties": {
+        "shippingLabelBarcodeValue": {
+            "type": "string"
+        },
+        "criteria": {
+            "type": "object"
+        }
+    }
+}

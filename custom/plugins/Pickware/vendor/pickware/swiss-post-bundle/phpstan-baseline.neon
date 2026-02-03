@@ -1,0 +1,253 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Adapter\\SwissPostAdapter\:\:enableCashOnDeliveryInShipmentConfig\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SwissPostAdapter.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Adapter\\SwissPostAdapter\:\:getPageFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SwissPostAdapter.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Adapter\\SwissPostAdapter\:\:isCashOnDeliveryEnabledInShipmentConfig\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SwissPostAdapter.php
+
+		-
+			message: '#^Constant Pickware\\SwissPostBundle\\Adapter\\SwissPostAdapterException\:\:ERROR_CODE_UNSUPPORTED_PAGE_FORMAT is unused\.$#'
+			identifier: classConstant.unused
+			count: 1
+			path: src/Adapter/SwissPostAdapterException.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Adapter\\SwissPostLabelSize\:\:getSupportedPageFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SwissPostLabelSize.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Adapter\\SwissPostResponseProcessorTest\:\:createPayloadConstraint\(\) has parameter \$expected with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SwissPostResponseProcessor.unit.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Adapter\\SwissPostResponseProcessorTest\:\:createPayloadConstraint\(\) return type with generic class PHPUnit\\Framework\\Constraint\\Callback does not specify its types\: CallbackInput$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Adapter/SwissPostResponseProcessor.unit.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Adapter\\SwissPostShipmentConfig\:\:__construct\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SwissPostShipmentConfig.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Adapter\\SwissPostShipmentConfig\:\:getProductCodes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SwissPostShipmentConfig.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Adapter\\SwissPostShipmentConfigTest\:\:shipmentServiceOptionProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SwissPostShipmentConfig.unit.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Adapter\\SwissPostShipmentConfigTest\:\:test_returnsTheShipmentServiceOptionWhenGettingShipmentServiceOptionsAndTheValueForAShipmentServiceOptionIsSet\(\) has parameter \$expectedShipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SwissPostShipmentConfig.unit.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Adapter\\SwissPostShipmentConfigTest\:\:test_returnsTheShipmentServiceOptionWhenGettingShipmentServiceOptionsAndTheValueForAShipmentServiceOptionIsSet\(\) has parameter \$shipmentConfigOptions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SwissPostShipmentConfig.unit.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Adapter\\SwissPostShipmentFactory\:\:createSwissPostReturnShipmentsFromShipmentBlueprint\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SwissPostShipmentFactory.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Adapter\\SwissPostShipmentFactory\:\:createSwissPostShipmentsFromShipmentBlueprint\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SwissPostShipmentFactory.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Adapter\\SwissPostShipmentFactoryTest\:\:assertAddressEqualsWithoutPhoneAndEmail\(\) has parameter \$actualAddress with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SwissPostShipmentFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Adapter\\SwissPostShipmentFactoryTest\:\:assertAddressEqualsWithoutPhoneAndEmail\(\) has parameter \$expectedAddress with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SwissPostShipmentFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Adapter\\SwissPostShipmentRegistrationService\:\:registerSwissPostShipments\(\) has parameter \$shipmentIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SwissPostShipmentRegistrationService.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\OAuthMiddlewareTest\:\:requestAuthorizationEqualsTo\(\) return type with generic class PHPUnit\\Framework\\Constraint\\Callback does not specify its types\: CallbackInput$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Api/OAuthMiddleware.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method __invoke\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 2
+			path: src/Api/OAuthMiddleware.unit.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\Services\\AbstractShipmentOption\:\:applyToShipmentArray\(\) has parameter \$shipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/AbstractShipmentOption.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\Services\\CashOnDeliveryOption\:\:applyToShipmentArray\(\) has parameter \$shipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/CashOnDeliveryOption.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\Services\\DeliveryInstructionsOption\:\:applyToShipmentArray\(\) has parameter \$shipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/DeliveryInstructionsOption.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\Services\\ShipmentNotificationOption\:\:__construct\(\) has parameter \$notificationPayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/ShipmentNotificationOption.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\Services\\ShipmentNotificationOption\:\:applyToShipmentArray\(\) has parameter \$shipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/ShipmentNotificationOption.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\Services\\ShipmentNotificationOption\:\:notifications\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/ShipmentNotificationOption.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\Services\\ShipmentServiceOption\:\:applyToShipmentArray\(\) has parameter \$shipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/ShipmentServiceOption.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\SwissPostApiClientException\:\:createJsonApiErrorsFromBadResponseException\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/SwissPostApiClientException.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\SwissPostApiClientFactory\:\:createClient\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/SwissPostApiClientFactory.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\SwissPostApiClientFactory@anonymous/Api/SwissPostApiClientFactory\.unit\.php\:63\:\:__construct\(\) has parameter \$clientFactory with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Api/SwissPostApiClientFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\SwissPostApiClientFactory@anonymous/Api/SwissPostApiClientFactory\.unit\.php\:63\:\:createClient\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/SwissPostApiClientFactory.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method createClient\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: src/Api/SwissPostApiClientFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\SwissPostOAuthApiClientFactory\:\:createClient\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/SwissPostOAuthApiClientFactory.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\SwissPostOAuthApiClientFactory\:\:createSwissPostOAuthApiClient\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 3
+			path: src/Api/SwissPostOAuthApiClientFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\SwissPostOAuthApiClientFactory@anonymous/Api/SwissPostOAuthApiClientFactory\.unit\.php\:50\:\:__construct\(\) has parameter \$clientFactory with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Api/SwissPostOAuthApiClientFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\SwissPostOAuthApiClientFactory@anonymous/Api/SwissPostOAuthApiClientFactory\.unit\.php\:50\:\:createClient\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/SwissPostOAuthApiClientFactory.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method createClient\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: src/Api/SwissPostOAuthApiClientFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\SwissPostShipment\:\:__construct\(\) has parameter \$productCodes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/SwissPostShipment.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\SwissPostShipment\:\:convertReceiverAddressToArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/SwissPostShipment.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\SwissPostShipment\:\:convertShipperAddressToArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/SwissPostShipment.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\SwissPostShipment\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/SwissPostShipment.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\Api\\SwissPostShipment\:\:setShipmentServiceOptions\(\) has parameter \$shipmentServiceOptions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/SwissPostShipment.php
+
+		-
+			message: '#^Method Pickware\\SwissPostBundle\\PickwareSwissPostBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareSwissPostBundle.php

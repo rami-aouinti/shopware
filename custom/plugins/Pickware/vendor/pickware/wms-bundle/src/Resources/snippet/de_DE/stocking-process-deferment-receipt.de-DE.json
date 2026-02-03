@@ -1,0 +1,17 @@
+{
+    "pickware-wms": {
+        "stocking-process-deferment-receipt": {
+            "file-name": "Beleg fuer zurueckgestellten Einlagerungsvorgang %s",
+            "title": "Beleg für zurückgestellten Einlagerungsvorgang",
+            "sub-title": "Lager:",
+            "origin": "Herkunft:",
+            "cancelled-picking-process": "Abgebrochene Kommissionierung",
+            "warehouse-label": "%warehouseName% (%warehouseCode%)",
+            "columns": {
+                "product-number": "Artikelnummer",
+                "product": "Produkt",
+                "quantity": "Anzahl"
+            }
+        }
+    }
+}

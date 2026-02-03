@@ -1,0 +1,145 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\DocumentBundle\\Document\\DocumentContentsService\:\:saveFileAsDocument\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Document/DocumentContentsService.php
+
+		-
+			message: '#^Method Pickware\\DocumentBundle\\Document\\DocumentContentsService\:\:saveStreamAsDocument\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Document/DocumentContentsService.php
+
+		-
+			message: '#^Method Pickware\\DocumentBundle\\Document\\DocumentContentsService\:\:saveStringAsDocument\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Document/DocumentContentsService.php
+
+		-
+			message: '#^Property Pickware\\DocumentBundle\\Document\\DocumentContentsServiceTest\:\:\$options type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Document/DocumentContentsService.unit.php
+
+		-
+			message: '#^Method Pickware\\DocumentBundle\\Document\\DocumentEntityWriteValidator\:\:onPreWriteValidation\(\) has parameter \$event with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Document/DocumentEntityWriteValidator.php
+
+		-
+			message: '#^Class Pickware\\DocumentBundle\\Document\\Model\\DocumentCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Document/Model/DocumentCollection.php
+
+		-
+			message: '#^Class Pickware\\DocumentBundle\\Document\\Model\\DocumentTypeCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Document/Model/DocumentTypeCollection.php
+
+		-
+			message: '#^Method Pickware\\DocumentBundle\\Document\\Model\\Subscriber\\DeleteFileSubscriber\:\:onPreWriteValidationEvent\(\) has parameter \$event with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Document/Model/Subscriber/DeleteFileSubscriber.php
+
+		-
+			message: '#^Property Pickware\\DocumentBundle\\Document\\Model\\Subscriber\\DocumentTypeEntitySubscriberUnitTest\:\:\$entityLoadedEventMock with generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\Event\\EntityLoadedEvent does not specify its types\: TEntity$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Document/Model/Subscriber/DocumentEntitySubscriber.unit.php
+
+		-
+			message: '#^Method Pickware\\DocumentBundle\\Document\\Model\\Subscriber\\DocumentTypeEntitySubscriber\:\:onDocumentTypeLoaded\(\) has parameter \$event with generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\Event\\EntityLoadedEvent but does not specify its types\: TEntity$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Document/Model/Subscriber/DocumentTypeEntitySubscriber.php
+
+		-
+			message: '#^Method Pickware\\DocumentBundle\\Document\\PageFormat\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Document/PageFormat.php
+
+		-
+			message: '#^Method Pickware\\DocumentBundle\\Document\\PageFormat\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Document/PageFormat.php
+
+		-
+			message: '#^Method Pickware\\DocumentBundle\\Document\\PageFormatTest\:\:dinFormatDescriptorDataProver\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Document/PageFormat.unit.php
+
+		-
+			message: '#^Method Pickware\\DocumentBundle\\Document\\PageFormatTest\:\:pageSizesDataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Document/PageFormat.unit.php
+
+		-
+			message: '#^Method Pickware\\DocumentBundle\\Document\\PageFormatTest\:\:toArray\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Document/PageFormat.unit.php
+
+		-
+			message: '#^Method Pickware\\DocumentBundle\\Document\\PageFormatTest\:\:toArray\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Document/PageFormat.unit.php
+
+		-
+			message: '#^Method Pickware\\DocumentBundle\\Installation\\EnsureDocumentTypeInstallationStep\:\:__construct\(\) has parameter \$documentTypeDescriptionMapping with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Installation/EnsureDocumentTypeInstallationStep.php
+
+		-
+			message: '#^Property Pickware\\DocumentBundle\\Installation\\EnsureDocumentTypeInstallationStep\:\:\$documentTypeDescriptionMapping type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Installation/EnsureDocumentTypeInstallationStep.php
+
+		-
+			message: '#^Class Pickware\\ShopwarePlugins\\ShopwareIntegrationTestPlugin\\ShopwareIntegrationTestPlugin not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/PickwareDocumentBundle.php
+
+		-
+			message: '#^Method Pickware\\DocumentBundle\\PickwareDocumentBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareDocumentBundle.php
+
+		-
+			message: '#^Method Pickware\\DocumentBundle\\Renderer\\DocumentTemplateRenderer\:\:render\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Renderer/DocumentTemplateRenderer.php
+
+		-
+			message: '#^Method Pickware\\DocumentBundle\\Renderer\\Translator\:\:loadSnippetsWithCache\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Renderer/Translator.php
+
+		-
+			message: '#^Method Pickware\\DocumentBundle\\Renderer\\Translator\:\:trans\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Renderer/Translator.php
+
+		-
+			message: '#^You should use assertCount\(\$expectedCount, \$variable\) instead of assertSame\(\$expectedCount, count\(\$variable\)\)\.$#'
+			identifier: phpunit.assertCount
+			count: 2
+			path: src/Renderer/Translator.unit.php

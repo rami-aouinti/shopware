@@ -1,0 +1,25 @@
+{
+    "pickware-erp-starter": {
+        "goods-receipt-stocking-list": {
+            "file-name": "Stocking list %s",
+            "title": "Stocking list for goods receipt",
+            "sub-title": "Warehouse:",
+            "warehouse-label": "%warehouseName% (%warehouseCode%)",
+            "unknown": "unknown",
+            "comment": "Comment",
+            "empty-list": "There are no products in this goods receipt.",
+            "columns": {
+                "bin-location": "Bin Location",
+                "product-number": "Product number",
+                "product-name": "Product name",
+                "quantity": "Quantity"
+            },
+            "custom-products": {
+                "checkbox": {
+                    "off": "not checked",
+                    "on": "checked"
+                }
+            }
+        }
+    }
+}

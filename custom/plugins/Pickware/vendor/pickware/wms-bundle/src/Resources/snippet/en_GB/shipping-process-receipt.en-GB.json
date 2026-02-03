@@ -1,0 +1,22 @@
+{
+    "pickware-wms": {
+        "shipping-process-receipt": {
+            "file-name": "Receipt for shipping process %s",
+            "title": {
+                "deferred": "Deferred shipping process"
+            },
+            "sub-title": "Warehouse:",
+            "warehouse-label": "%warehouseName% (%warehouseCode%)",
+            "created-at": "Created at:",
+            "user": "User:",
+            "product-list-title": {
+                "deferred": "Remaining products"
+            },
+            "columns": {
+                "product-number": "Product number",
+                "product": "Product",
+                "quantity": "Quantity"
+            }
+        }
+    }
+}

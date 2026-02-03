@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Picking profile picking-profile-number-of-pickable-orders payload",
+    "description": "POST request payload for API route _action/pickware-wms/picking-profile-number-of-pickable-orders",
+    "type": "object",
+    "required": ["pickingProfiles"],
+    "properties": {
+        "pickingProfiles": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/pickingProfileFilter"
+            },
+            "minItems": 1
+        }
+    },
+    "definitions": {
+        "pickingProfileFilter": {
+            "type": "object",
+            "required": ["pickingProfileId", "filter"],
+            "properties": {
+                "pickingProfileId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "filter": {
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    },
+                    "minItems": 1
+                }
+            }
+        },
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        }
+    }
+}

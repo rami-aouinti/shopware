@@ -1,0 +1,9 @@
+localeCode: 'en-GB'
+typeName: 'Invoice Correction'
+subject: 'Invoice correction for your purchase'
+sender: '{{ shopName }}'
+description: 'Send an invoice correction to the customer'
+contentHtml:
+  fromFile: 'content-en-gb.html.twig'
+contentPlain:
+  fromFile: 'content-en-gb.txt.twig'

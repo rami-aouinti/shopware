@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="content-type" content="text/html; utf-8"/>
+    <title></title>
+    {% block css %}
+    <style type="text/css">
+        @page {
+            padding: 0;
+            margin-top: {{ marginsInMillimeter.top }}mm;
+            margin-left: {{ marginsInMillimeter.left }}mm;
+            margin-right: {{ marginsInMillimeter.right }}mm;
+            margin-bottom: {{ marginsInMillimeter.bottom }}mm;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            page-break-after: always;
+            page-break-inside: avoid;
+        }
+
+        .page:last-of-type {
+            /* Prevent an empty last page */
+            page-break-after: auto;
+        }
+    </style>
+    {% endblock %}
+</head>
+<body>
+{% for item in items %}
+    {% for i in 1..item.barcodeLabelCount ?? 1 %}
+    <div class="page">
+        {% block label %}{% endblock %}
+    </div>
+    {% endfor %}
+{% endfor %}
+</body>
+</html>

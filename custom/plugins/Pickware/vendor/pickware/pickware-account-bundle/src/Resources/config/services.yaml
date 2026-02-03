@@ -1,0 +1,14 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Pickware\PickwareAccountBundle\:
+    resource: '../../'
+    exclude:
+      - '../../**/*Event.php'
+      - '../../**/*Exception.php'
+      - '../../**/*Error.php'
+      - '../../**/*Message.php'
+      - '../../Administration/'
+      - '../../Installation/'

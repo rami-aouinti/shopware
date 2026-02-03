@@ -1,0 +1,5 @@
+{
+    "checkout": {
+        "pw-product-set-bundle-product-set-not-available": "Das Produkt \"%orderLineItemLabel%\" ist in dieser Warenkorbkonstellation nicht mehr verfügbar. Es kann nur \"%allowQuantity%\" mal in dieser Konstellation bestellt werden!"
+    }
+}

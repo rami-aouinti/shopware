@@ -1,0 +1,96 @@
+{% block summary %}
+    <!-- Since we only allow a single currency per cash register. We can use this shortcut to select "the" currency of
+         the cash register -->
+    {% set currencyIsoCode = cashPointClosing.cashStatement.payment.paymentTypes[0].currencyCode %}
+
+    <h1 class="headline">
+        {{ 'pickware-pos.cash-point-closing-document.summary.title'| trans | sw_sanitize(null, true) }}
+        {% if isPreview %}
+            ({{ 'pickware-pos.cash-point-closing-document.preview'| trans | sw_sanitize(null, true) }})
+        {% endif %}
+    </h1>
+    <hr>
+
+    <table class="pw-pos-table summary">
+        <tr>
+            <td>{{ 'pickware-pos.cash-point-closing-document.summary.number'| trans | sw_sanitize(null, true) }}</td>
+            <td>{{ cashPointClosing.number }}</td>
+        </tr>
+        <tr>
+            <td>{{ 'pickware-pos.cash-point-closing-document.summary.created'| trans | sw_sanitize(null, true) }}</td>
+            <td>{{ cashPointClosing.exportCreationDate | format_datetime('short', 'short', locale=localeCode, timezone=timeZone) }}</td>
+        </tr>
+        <tr>
+            <td>{{ 'pickware-pos.cash-point-closing-document.summary.branch-store'| trans | sw_sanitize(null, true) }}</td>
+            <td>{{ branchStore.name }}</td>
+        </tr>
+        <tr>
+            <td>{{ 'pickware-pos.cash-point-closing-document.summary.cash-register'| trans | sw_sanitize(null, true) }}</td>
+            <td>{{ cashRegister.name }}</td>
+        </tr>
+        <tr>
+            <td>{{ 'pickware-pos.cash-point-closing-document.summary.user'| trans | sw_sanitize(null, true) }}</td>
+            <td>
+                {% if cashPointClosing.user is null %}
+                    {{ cashPointClosing.userSnapshot.firstName }} {{ cashPointClosing.userSnapshot.lastName }}
+                {% else %}
+                    {{ cashPointClosing.user.firstName }} {{ cashPointClosing.user.lastName }}
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td>{{ 'pickware-pos.cash-point-closing-document.summary.first-transaction'| trans | sw_sanitize(null, true) }}</td>
+            <td>{{ firstTransaction.end | format_datetime('short', 'short', locale=localeCode, timezone=timeZone) }}</td>
+        </tr>
+        <tr>
+            <td>{{ 'pickware-pos.cash-point-closing-document.summary.last-transaction'| trans | sw_sanitize(null, true) }}</td>
+            <td>{{ lastTransaction.end | format_datetime('short', 'short', locale=localeCode, timezone=timeZone) }}</td>
+        </tr>
+    </table>
+
+    <hr>
+
+    <table class="pw-pos-table summary">
+        <tr>
+            <th colspan="2">{{ 'pickware-pos.cash-point-closing-document.summary.amounts'| trans | sw_sanitize(null, true) }}</th>
+        </tr>
+        <tr>
+            <td>{{ 'pickware-pos.cash-point-closing-document.summary.full-amount'| trans | sw_sanitize(null, true) }}</td>
+            <td>{{ cashPointClosing.cashStatement.payment.fullAmount | currency(currencyIsoCode) }}</td>
+        </tr>
+        <tr>
+            <td>{{ 'pickware-pos.cash-point-closing-document.summary.cash-amount'| trans | sw_sanitize(null, true) }}</td>
+            <td>{{ cashPointClosing.cashStatement.payment.cashAmount | currency(currencyIsoCode) }}</td>
+        </tr>
+    </table>
+
+    {% if cashPointClosing.cashStatement.payment.paymentTypes|length > 0 %}
+        <table class="pw-pos-table summary">
+            <tr>
+                <th colspan="2">{{ 'pickware-pos.cash-point-closing-document.summary.payments'| trans | sw_sanitize(null, true) }}</th>
+            </tr>
+            {% for payment in cashPointClosing.cashStatement.payment.paymentTypes %}
+            <tr>
+                <td>{{ ('pickware-pos.cash-point-closing-document.transactions.payment-type.' ~ (payment.type | lower)) | trans | sw_sanitize(null, true) }}</td>
+                <td>{{ payment.amount | currency(payment.currencyCode) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    {% if cashPointClosing.cashStatement.businessCases|length > 0 %}
+        <table class="pw-pos-table summary">
+            {% for businessCase in cashPointClosing.cashStatement.businessCases %}
+                <tr>
+                    <th colspan="2">{{ ('pickware-pos.cash-point-closing-document.line-item-type.' ~ (businessCase.type | lower)) | trans | sw_sanitize(null, true) }}</th>
+                </tr>
+                {% for amountPerTaxRate in businessCase.amountsPerTaxRate %}
+                    <tr>
+                        <td>{{ amountPerTaxRate.taxRate }}%</td>
+                        <td>{{ amountPerTaxRate.inclVat | currency(currencyIsoCode) }}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </table>
+    {% endif %}
+{% endblock %}

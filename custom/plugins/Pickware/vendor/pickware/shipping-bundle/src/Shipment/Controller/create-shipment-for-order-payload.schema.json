@@ -1,0 +1,17 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Shipping create-return-shipment-for-order payload",
+    "description": "POST request payload for api route _action/pickware-shipping/shipment/create-return-shipment-for-order",
+    "type": "object",
+    "required": ["orderId", "shipmentBlueprint"],
+    "properties": {
+        "orderId": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "shipmentBlueprint": { "type": "object" }
+    }
+}

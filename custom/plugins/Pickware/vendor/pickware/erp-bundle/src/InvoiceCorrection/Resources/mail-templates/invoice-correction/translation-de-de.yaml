@@ -1,0 +1,9 @@
+localeCode: 'de-DE'
+typeName: 'Rechnungskorrektur'
+subject: 'Rechnungskorrektur für deinen Kauf'
+sender: '{{ shopName }}'
+description: 'Eine Rechnungskorrektur an den Kunden schicken'
+contentHtml:
+  fromFile: 'content-de-de.html.twig'
+contentPlain:
+  fromFile: 'content-de-de.txt.twig'

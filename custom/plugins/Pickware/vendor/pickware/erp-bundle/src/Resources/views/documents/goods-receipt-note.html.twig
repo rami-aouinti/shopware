@@ -1,0 +1,96 @@
+{% sw_extends '@Shopware/documents/base.html.twig' %}
+
+{% use '@Framework/documents/includes/logo.html.twig' %}
+{% use '@Framework/documents/includes/letter_header.html.twig' %}
+
+{% block document_title_tag %}
+    {{ 'pickware-erp-starter.goods-receipt-note.title' | trans | sw_sanitize(null, true) }} {{ order.orderNumber }}
+{% endblock %}
+
+{% block document_base %}
+    {% include '@PickwareErpBundle/documents/goods-receipt-note.css.twig' %}
+    {{ parent() }}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{# right side document head #}
+{% block document_side_info %}
+    <table>
+        <tr>
+            <td>
+                {{ 'document.date'|trans({'%date%': config.documentDate|format_date('medium', locale=locale)})|sw_sanitize(null, true) }}
+            </td>
+        </tr>
+    </table>
+{% endblock %}
+
+{# left side document head #}
+{% block document_recipient %}
+{% endblock %}
+
+{% block document_sender_address %}
+{% endblock %}
+
+{# By overwriting the whole document_body we ignore Shopware's position loop, summary, comment payment_shipping
+   and shipping_address #}
+{% block document_body %}
+    {{ block('logo') }}
+    {{ block('letter_header') }}
+    {% set warehouse = goodsReceipt.warehouse %}
+
+
+    {# document headline is hardcoded since the headline block of the base template is in the first table (which is
+       completely overwritten in this document_body block) #}
+    <div class="document-title-container">
+        <h1>
+            {{ 'pickware-erp-starter.goods-receipt-note.title' | trans | sw_sanitize(null, true) }}
+            <span><strong>{{ goodsReceipt.number | sw_sanitize(null, true) }}</strong></span>
+        </h1>
+        <h2>
+            {{ 'pickware-erp-starter.goods-receipt-note.sub-title' | trans | sw_sanitize(null, true) }}
+            <span><strong>{{ 'pickware-erp-starter.goods-receipt-note.warehouse-label' | trans({'%warehouseName%': warehouse.name, '%warehouseCode%': warehouse.code}) | sw_sanitize(null, true) }}</strong></span>
+        </h2>
+        <img class="barcode" src="{{ barcode }}" alt="Barcode">
+    </div>
+
+    <div class="line-item-container">
+        <table class="line-item-table">
+            <thead>
+                <tr class="line-item-table-header">
+                    <th style="width: 30%">{{ 'pickware-erp-starter.goods-receipt-note.columns.origin' | trans | sw_sanitize(null, true) }}</th>
+                    <th style="width: 70%">{{ 'pickware-erp-starter.goods-receipt-note.columns.detail' | trans | sw_sanitize(null, true) }}</th>
+                </tr>
+            </thead>
+            {% if goodsReceipt.type.value === 'free' %}
+                <tr class ="line-item">
+                    <td>{{ 'pickware-erp-starter.goods-receipt-note.goods-receipt-type.free' | trans | sw_sanitize(null, true) }}</td>
+                    <td></td>
+                </tr>
+            {% elseif goodsReceipt.type.value === 'supplier' %}
+                {% for element in goodsReceipt.supplierOrders %}
+                    <tr class ="line-item">
+                        <td>{{ 'pickware-erp-starter.goods-receipt-note.goods-receipt-type.supplier' | trans({'%number%': element.number}) | sw_sanitize(null, true) }}</td>
+                        <td>{{ element.supplierSnapshot.name ~ ' ' ~ element.supplierSnapshot.number | raw }}</td>
+                    </tr>
+                {% endfor %}
+            {% elseif goodsReceipt.type.value === 'customer' %}
+                {% for element in goodsReceipt.returnOrders %}
+                    <tr class ="line-item">
+                        <td>{{ 'pickware-erp-starter.goods-receipt-note.goods-receipt-type.customer' | trans({'%number%': element.number}) | sw_sanitize(null, true) }}</td>
+                        <td>{{ 'pickware-erp-starter.goods-receipt-note.order' | trans({'%number%': element.order.orderNumber}) | sw_sanitize(null, true) }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </table>
+    </div>
+
+    {% if goodsReceipt.comment is not empty %}
+        <p id="documentComment">
+            <strong>{{ 'pickware-erp-starter.goods-receipt-note.comment' | trans | sw_sanitize(null, true) }}:</strong>
+            <br />
+            {{ goodsReceipt.comment | sw_sanitize(null, true) | nl2br }}
+        </p>
+    {% endif %}
+{% endblock %}

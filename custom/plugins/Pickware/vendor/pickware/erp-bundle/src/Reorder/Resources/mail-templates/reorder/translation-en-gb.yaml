@@ -1,0 +1,9 @@
+localeCode: 'en-GB'
+typeName: 'Reorder notification'
+subject: 'Reorder Notification'
+sender: 'Pickware ERP'
+description: 'Reorder Notification'
+contentHtml:
+  fromFile: 'content-en-gb.html'
+contentPlain:
+  fromFile: 'content-en-gb.txt'

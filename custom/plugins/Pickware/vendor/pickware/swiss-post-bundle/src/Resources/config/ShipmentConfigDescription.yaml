@@ -1,0 +1,270 @@
+elements:
+  - name: product
+    type: single-select
+    label:
+      de-DE: Produkt
+      en-GB: Product
+    options:
+      - value: 'ECO'
+        label:
+          de-DE: PostPac Economy
+          en-GB: PostPac Economy
+      - value: 'PRI'
+        label:
+          de-DE: PostPac Priority
+          en-GB: PostPac Priority
+      - value: 'SMP'
+        label:
+          de-DE: SmallPac Economy
+          en-GB: SmallPac Economy
+      - value: 'SMPPRI'
+        label:
+          de-DE: SmallPac Priority
+          en-GB: SmallPac Priority
+      - value: 'SP,ECO'
+        label:
+          de-DE: Sperrgut Economy
+          en-GB: Bulky goods Economy
+      - value: 'SP,PRI'
+        label:
+          de-DE: Sperrgut Priority
+          en-GB: Bulky goods Priority
+      - value: 'PPR'
+        label:
+          de-DE: PostPac Promo
+          en-GB: PostPac Promo
+      - value: 'SEM'
+        label:
+          de-DE: Swiss-Express “Mond”
+          en-GB: Swiss-Express “Moon”
+      - value: 'SEM,SP'
+        label:
+          de-DE: Sperrgut “Mond”
+          en-GB: Bulky goods “Moon”
+      - value: 'SKB'
+        label:
+          de-DE: SameDay Nachmittag/Abend
+          en-GB: SameDay afternoon/evening
+      - value: 'SKB,SP'
+        label:
+          de-DE: SameDay Nachmittag/Abend Sperrgut
+          en-GB: SameDay afternoon/evening bulky goods
+      - value: 'VL'
+        label:
+          de-DE: VinoLog
+          en-GB: VinoLog
+      - value: 'VLPRI,PRI'
+        label:
+          de-DE: VinoLog Priority
+          en-GB: VinoLog Priority
+      - value: 'DIR'
+        label:
+          de-DE: Direct parcel posting
+          en-GB: Direct parcel posting
+      - value: 'GAS,ECO'
+        label:
+          de-DE: PostPac Economy GAS
+          en-GB: PostPac Economy GAS
+      - value: 'GAS,PRI'
+        label:
+          de-DE: PostPac Priority GAS
+          en-GB: PostPac Priority GAS
+      - value: 'GAS,SP,ECO'
+        label:
+          de-DE: Sperrgut Economy GAS
+          en-GB: Bulky goods Economy GAS
+      - value: 'GAS,SP,PRI'
+        label:
+          de-DE: Sperrgut Priority GAS
+          en-GB: Bulky goods Priority GAS
+      - value: 'GAS,SEM'
+        label:
+          de-DE: Swiss-Express “Mond” GAS
+          en-GB: Swiss-Express “Moon” GAS
+      - value: 'GAS,SKB'
+        label:
+          de-DE: SameDay Nachmittag/Abend GAS
+          en-GB: SameDay afternoon/evening GAS
+      - value: 'RINL'
+        label:
+          de-DE: Einschreiben (R) Inland
+          en-GB: Registered (R) domestic
+      - value: 'APLUS'
+        label:
+          de-DE: A-Post Plus
+          en-GB: A Mail Plus
+      - value: 'DISP'
+        label:
+          de-DE: Dispomail
+          en-GB: Dispomail
+      - value: 'APOST'
+        label:
+          de-DE: A-Post
+          en-GB: A Mail
+      - value: 'BPOST'
+        label:
+          de-DE: B-Post-Einzelsendungen
+          en-GB: B Mail individual items
+      - value: 'RETR,PRI'
+        label:
+          de-DE: Einschreiben (R) Ausland Priority
+          en-GB: Registered (R) international PRIORITY
+    default: 'ECO' # PostPac Economy
+  - type: group
+    label:
+      en-GB: Services
+      de-DE: Services
+    elements:
+      - name: saturdayDelivery
+        type: boolean
+        label:
+          en-GB: Saturday delivery
+          de-DE: Samstagszustellung
+        default: false
+      - name: signature
+        type: boolean
+        label:
+          en-GB: Signature
+          de-DE: Zustellnachweis
+        default: false
+      - name: codEnabled
+        type: boolean
+        label:
+          en-GB: Cash on delivery
+          de-DE: Nachnahme
+        default: false
+        showConditions:
+          $context.isLabelCreation: true
+      - name: codAmount
+        type: number
+        suffix: CHF
+        precision: 2
+        min: 0
+        label:
+          en-GB: Cash on delivery amount
+          de-DE: Nachnahmebetrag
+        default: 0
+        showConditions:
+          $context.isLabelCreation: true
+          codEnabled: true
+  - type: group
+    label:
+      en-GB: Delivery instructions
+      de-DE: Zustellanweisungen
+    elements:
+      - name: deliveryInstructions
+        type: single-select
+        label:
+          de-DE: Zustellanweisungen
+          en-GB: Delivery instructions
+        options:
+          - value: 'none'
+            label:
+              de-DE: No delivery instruction
+              en-GB: Keine Zustellanweisung
+          - value: 'ZAW3211'
+            label:
+              de-DE: Sendung dem Empfänger direkt auf der Etage zustellen (A)
+              en-GB: Direct delivery to an upper floor (A)
+          - value: 'ZAW3212'
+            label:
+              de-DE: Nicht in den Ablagekasten legen; zustellen oder avisieren (B)
+              en-GB: Do not place in letterbox; deliver manually or notify (B)
+          - value: 'ZAW3213'
+            label:
+              de-DE: Lieferung telefonisch avisieren (C)
+              en-GB: Notify delivery by telephone (C)
+          - value: 'ZAW3214'
+            label:
+              de-DE: Im Ablagekasten oder bei der Haustüre (D)
+              en-GB: Place in letterbox or at front door (D)
+          - value: 'ZAW3215'
+            label:
+              de-DE: Inhalt zustellen; Box mitnehmen (K)
+              en-GB: Deliver contents; take back box (K)
+          - value: 'ZAW3216'
+            label:
+              de-DE: Erfolglose Zustellung; Sendung gleichtags als Priority zurücksenden (E)
+              en-GB: Failed delivery; return item as priority on the same day (E)
+          - value: 'ZAW3217'
+            label:
+              de-DE: Terminlieferung; zustellen am (F)
+              en-GB: Specific delivery date, deliver on ... (F)
+          - value: 'ZAW3218'
+            label:
+              de-DE: Zustellen, wenn alle Sendungen vor Ort sind (G)
+              en-GB: Deliver when all items have arrived (G)
+          - value: 'ZAW3220'
+            label:
+              de-DE: Zustellinformationen in der Dokumententasche beachten (I)
+              en-GB: Follow delivery information in document pouch (I)
+          - value: 'ZAW3222'
+            label:
+              de-DE: Sendung vorweisen; im Keller deponieren (L)
+              en-GB: Present item; leave in cellar (L)
+          - value: 'ZAW3232'
+            label:
+              de-DE: Leer- oder Recyclinggut zurücknehmen
+              en-GB: Collection of empty containers or materials for recycling
+          - value: 'ZAW3233'
+            label:
+              de-DE: Austausch/Rücknahme
+              en-GB: Exchange/Return
+          - value: 'ZAW3234'
+            label:
+              de-DE: Keine Zustellung ins Ablagefach oder an Nachbar; keine Deponierung
+              en-GB: Do not deliver to mailbox or neighbour; do not leave anywhere
+        default: 'none'
+      - name: deliveryDate
+        type: date
+        minDate: today
+        label:
+          en-GB: Deliverydate
+          de-DE: Zustelldatum
+        showConditions:
+          deliveryInstructions: 'ZAW3217'
+          $context.isLabelCreation: true
+  - type: group
+    label:
+      en-GB: Notifications
+      de-DE: Avisierung
+    elements:
+      - name: notifications
+        type: multi-select
+        helpText:
+          en-GB: 'Specifies which notifications should be active.'
+          de-DE: 'Gibt an, bei welche Avisierungsservices aktiv sein sollen.'
+        label:
+          de-DE: Avisierungsservices
+          en-GB: Notificationservices
+        options:
+          - value: 1
+            label:
+              de-DE: Einlieferungsnachweis (1)
+              en-GB: Proof of posting (1)
+          - value: 2
+            label:
+              de-DE: Informationen zur Lieferung (2)
+              en-GB: Delivery information (2)
+          - value: 4
+            label:
+              de-DE: Abholungsinformationen (4)
+              en-GB: Collection information (4)
+          - value: 32
+            label:
+              de-DE: Erinnerung an den Empfänger (32)
+              en-GB: Reminder of recipient (32)
+          - value: 64
+            label:
+              de-DE: Übergabestatus an Absender (64)
+              en-GB: Handover status to sender (64)
+          - value: 128
+            label:
+              de-DE: Umtausch/Rückgabe (128)
+              en-GB: Exchange/return (128)
+          - value: 256
+            label:
+              de-DE: Samstagszustellung (256)
+              en-GB: Saturday delivery (256)
+        default:
+          - 2

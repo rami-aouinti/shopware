@@ -1,0 +1,12 @@
+{{ order.orderCustomer.salutation.letterName }} {{ order.orderCustomer.firstName }} {{ order.orderCustomer.lastName }},
+
+{% if returnLabelDocuments|length  > 1 %}
+    im Anhang dieser E-Mail finden Sie {{ returnLabelDocuments|length }} Versandetikett von DPD zur Rücksendung ihrer Bestellung mit der Nummer {{ order.orderNumber }}.
+    Bitte drucken Sie diese aus und nutzen Sie sie, um die kostenfreie Rücksendung in Anspruch zu nehmen.
+    Es wurden Ihnen mehrere Rücksendeetiketten zugesendet, da Sie ihre Rücksendung womöglich auf mehrere Pakete aufteilen müssen, um die Gewichtsbegrenzung von DPD (20 kg) einzuhalten.
+{% else %}
+    im Anhang dieser E-Mail finden Sie ein Versandetikett von DPD zur Rücksendung ihrer Bestellung mit der Nummer {{ order.orderNumber }}.
+    Bitte drucken Sie es aus und nutzen Sie es, um die kostenfreie Rücksendung in Anspruch zu nehmen.
+{%  endif %}
+
+Ihr Team von {{ shopName }}.

@@ -1,0 +1,14 @@
+{% sw_include '@PickwareErpBundle/documents/components/custom-fields-line-item-row.css.twig' %}
+
+{% if config.pickwareErpProductCustomFields[lineItem.productId] is defined %}
+    {% for customField in config.pickwareErpProductCustomFields[lineItem.productId] %}
+        <div class="custom-field-line-item">
+            <b>{{ customField.label|sw_sanitize(null, true) }}:</b>
+            {% if customField.type == 'media' %}
+                <br><img src="{{ customField.value }}" class="custom-field-media-image" />
+            {% else %}
+                {{ customField.value|sw_sanitize(null, true)|nl2br }}
+            {% endif %}
+        </div>
+    {% endfor %}
+{% endif %}

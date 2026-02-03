@@ -1,0 +1,5 @@
+{
+    "checkout": {
+        "pw-product-set-bundle-product-set-not-available": "The product \"%orderLineItemLabel%\" is no longer available in this shopping cart configuration. It can only be ordered %allowQuantity% times in this configuration!"
+    }
+}

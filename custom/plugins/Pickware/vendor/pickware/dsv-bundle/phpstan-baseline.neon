@@ -1,0 +1,151 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\DsvBundle\\Adapter\\DsvAdapter\:\:getPageFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DsvAdapter.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Adapter\\DsvLabelSize\:\:getSupportedPageFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DsvLabelSize.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Adapter\\DsvResponseProcessorTest\:\:createPayloadConstraint\(\) has parameter \$expected with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DsvResponseProcessor.unit.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Adapter\\DsvResponseProcessorTest\:\:createPayloadConstraint\(\) return type with generic class PHPUnit\\Framework\\Constraint\\Callback does not specify its types\: CallbackInput$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Adapter/DsvResponseProcessor.unit.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Adapter\\DsvShipmentConfig\:\:__construct\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DsvShipmentConfig.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Adapter\\DsvShipmentConfigTest\:\:shipmentServiceOptionProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DsvShipmentConfig.unit.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Adapter\\DsvShipmentConfigTest\:\:test_appliesTheServiceOptionToTheShipmentArrayWhenRetrievingTheShipmentServiceOptionsAndTheServiceOptionConfigIsSetOnTheShipmentConfig\(\) has parameter \$expectedShipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DsvShipmentConfig.unit.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Adapter\\DsvShipmentConfigTest\:\:test_appliesTheServiceOptionToTheShipmentArrayWhenRetrievingTheShipmentServiceOptionsAndTheServiceOptionConfigIsSetOnTheShipmentConfig\(\) has parameter \$shipmentConfigOptions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DsvShipmentConfig.unit.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Adapter\\DsvShipmentRegistrationService\:\:registerDsvShipments\(\) has parameter \$shipmentIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DsvShipmentRegistrationService.php
+
+		-
+			message: '#^Trying to mock an undefined method createClient\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: src/Api/DsvApiClientFactory.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method createRestClient\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: src/Api/DsvOAuthApiClientFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Api\\DsvShipment\:\:createFromAddress\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/DsvShipment.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Api\\DsvShipment\:\:createParcels\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/DsvShipment.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Api\\DsvShipment\:\:getParcels\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/DsvShipment.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Api\\DsvShipment\:\:getShipmentServiceOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/DsvShipment.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Api\\DsvShipment\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/DsvShipment.php
+
+		-
+			message: '#^Property Pickware\\DsvBundle\\Api\\DsvShipmentTest\:\:\$parcels type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/DsvShipment.unit.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Api\\Handler\\DsvApiKeyMiddleware\:\:__construct\(\) has parameter \$apiKeyMapping with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Handler/DsvApiKeyMiddleware.php
+
+		-
+			message: '#^Property Pickware\\DsvBundle\\Api\\Handler\\DsvApiKeyMiddlewareTest\:\:\$nextRequestHandlerMockCalls type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Handler/DsvApiKeyMiddleware.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method __invoke\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 7
+			path: src/Api/Handler/DsvOAuthMiddleware.unit.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Api\\Services\\AbstractShipmentServiceOption\:\:applyToShipmentArray\(\) has parameter \$shipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/AbstractShipmentServiceOption.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Api\\Services\\B2CShipmentServiceOption\:\:applyToShipmentArray\(\) has parameter \$shipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/B2CShipmentServiceOption.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Api\\Services\\PreAdviceEmailDeliveryShipmentServiceOption\:\:applyToShipmentArray\(\) has parameter \$shipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/PreAdviceEmailDeliveryShipmentServiceOption.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\Api\\Services\\PrivateDeliveryShipmentServiceOption\:\:applyToShipmentArray\(\) has parameter \$shipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/PrivateDeliveryShipmentServiceOption.php
+
+		-
+			message: '#^Method Pickware\\DsvBundle\\PickwareDsvBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareDsvBundle.php

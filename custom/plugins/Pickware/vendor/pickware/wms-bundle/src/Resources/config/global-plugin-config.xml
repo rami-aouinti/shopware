@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/master/src/Core/System/SystemConfig/Schema/config.xsd"
+>
+    <card>
+        <title lang="de-DE">Kommissionierung</title>
+        <title>Picking</title>
+        <input-field type="single-select">
+            <name>shippingLabelCreationMode</name>
+            <defaultValue>manual</defaultValue>
+            <label lang="de-DE">Versandetikettenerstellung und -druck</label>
+            <label>Shipping label creation and printing</label>
+            <helpText lang="de-DE">
+                Steuert, wann und wie Versandetiketten in der WMS App erzeugt werden sollen.
+            </helpText>
+            <helpText>Controls if and how shipping labels are created by the WMS app.</helpText>
+            <options>
+                <option>
+                    <id>createAndPrint</id>
+                    <name lang="de-DE">Automatisch nach Abschluss der Kommissionierung</name>
+                    <name>Automatically after completion of picking</name>
+                </option>
+                <option>
+                    <id>presentDialog</id>
+                    <name lang="de-DE">Mit manueller Bestätigung nach Abschluss der Kommissionierung</name>
+                    <name>With manual confirmation after completion of picking</name>
+                </option>
+                <option>
+                    <id>manual</id>
+                    <name lang="de-DE">Manuell zu einem beliebigen, späteren Zeitpunkt</name>
+                    <name>Manually at any later time</name>
+                </option>
+            </options>
+        </input-field>
+        <input-field type="single-select">
+            <name>batchPickingDocumentCreationMode</name>
+            <defaultValue>manual</defaultValue>
+            <label lang="de-DE">
+                Dokumentenerstellung und -druck bei mehrstufiger Kommissionierung (Rollende oder Sammelkommissionierung)
+            </label>
+            <label>Document creation and printing for multi-order picking (cluster or batch picking)</label>
+            <helpText lang="de-DE">
+                Steuert, wann und wie Dokumente bei mehrstufiger Kommissionierung in der WMS App erzeugt werden sollen.
+            </helpText>
+            <helpText>Controls when and how documents are created by the WMS app for multi-order picking.</helpText>
+            <options>
+                <option>
+                    <id>automatic</id>
+                    <name lang="de-DE">Automatisch nach Auswahl der Kommissionierkiste</name>
+                    <name>Automatically after selection of the picking box</name>
+                </option>
+                <option>
+                    <id>manual</id>
+                    <name lang="de-DE">Mit manueller Bestätigung nach Auswahl der Kommissionierkiste</name>
+                    <name>With manual confirmation after selection of the picking box</name>
+                </option>
+            </options>
+        </input-field>
+        <component name="pw-wms-delivery-shipping-mode-select">
+            <name>deliveryShippingMode</name>
+            <defaultValue>manual</defaultValue>
+        </component>
+        <input-field type="bool">
+            <name>guidedPicking</name>
+            <defaultValue>true</defaultValue>
+            <label lang="de-DE">Automatische Vorauswahl des nächsten kommissionierbaren Produktes</label>
+            <label>Automatic preselection of the next pickable product</label>
+            <helpText lang="de-DE">
+                Steuert, ob das nächste zu kommissionierende Produkt am WMS automatisch vorausgewählt wird.
+            </helpText>
+            <helpText>Controls whether the next pickable product is preselected on the WMS automatically.</helpText>
+        </input-field>
+    </card>
+    <card>
+        <title lang="de-DE">Wareneingang</title>
+        <title>Goods receipt</title>
+        <component name="pw-wms-stocking-strategy-select">
+            <name>selectedStockingStrategy</name>
+            <defaultValue>static</defaultValue>
+        </component>
+        <component name="pw-wms-automatically-approve-goods-receipts-switch">
+            <name>automaticallyApproveGoodsReceipts</name>
+            <!-- Add the type prop to tell Shopware how to render the nested switch -->
+            <type>bool</type>
+            <defaultValue>true</defaultValue>
+            <label lang="de-DE">Wareneingang nach Erfassung automatisch freigeben</label>
+            <label>Automatically approve goods receipt upon creation</label>
+            <helpText lang="de-DE">
+                Diese Option steuert, ob Wareneingänge für Lieferantenbestellungen und freie Wareneingänge direkt nach
+                der Erfassung freigegeben werden sollen. Wareneingänge für Retouren werden immer automatisch
+                freigegeben.
+            </helpText>
+            <helpText>
+                This option controls whether goods receipts for supplier orders and free goods receipts should be
+                approved immediately when created. Goods receipts for return orders are always approved automatically.
+            </helpText>
+        </component>
+        <input-field type="bool">
+            <name>automaticallyPrintGoodsReceiptNotes</name>
+            <defaultValue>true</defaultValue>
+            <label lang="de-DE">Wareneingangsbeleg automatisch drucken</label>
+            <label>Automatically print goods receipt note</label>
+            <helpText lang="de-DE">
+                Diese Option steuert, ob der Wareneingangsbeleg automatisch gedruckt werden soll, wenn nach dem
+                Erfassen des Wareneingangs nicht sofort mit der Einlagerung begonnen wird.
+            </helpText>
+            <helpText>
+                This option controls whether the goods receipt note should be printed automatically if the products are
+                not stocked immediately after creating the goods receipt.
+            </helpText>
+        </input-field>
+        <component name="pw-wms-enable-return-order-management-in-app-switch">
+            <name>enableReturnOrderManagementInWMSApp</name>
+            <!-- Add the type prop to tell Shopware how to render the nested switch -->
+            <type>bool</type>
+            <defaultValue>true</defaultValue>
+            <label lang="de-DE">Retourenannahme in der WMS App erlauben</label>
+            <label>Allow receiving returns in the WMS App</label>
+            <helpText lang="de-DE">
+                Mit dieser Option kann die Erzeugung neuer Retouren sowie die Einlagerung vorhandener Retouren in der
+                WMS App deaktiviert werden. Wenn du ein Retourenportal nutzt, welches die vollständige Bearbeitung der
+                Retoure innerhalb des Portals erfordert, sollte diese Option deaktiviert werden, damit keine
+                zusätzlichen Retouren mit Pickware erstellt werden.
+            </helpText>
+            <helpText>
+                This option disables the creation of new returns and the reception of existing returns in the WMS App.
+                If you use a returns portal that requires the complete processing of returns within the portal,
+                this option should be deactivated so that no additional returns are created with Pickware.
+            </helpText>
+        </component>
+    </card>
+    <card>
+        <title lang="de-DE">Inventur</title>
+        <title>Stocktaking</title>
+        <input-field type="bool">
+            <name>displayExpectedStockInStocktaking</name>
+            <defaultValue>false</defaultValue>
+            <label lang="de-DE">Erwarteten Bestand bei der Zählung eines Produktes anzeigen</label>
+            <label>Display expected stock when counting a product</label>
+            <helpText lang="de-DE">
+                Steuert, ob in der WMS App beim Zählen eines Produktes der erwartete Bestand des Lagerplatzes angezeigt
+                wird.
+            </helpText>
+            <helpText>
+                Controls if the expected stock of the bin location is displayed when counting a product with the WMS
+                App.
+            </helpText>
+        </input-field>
+    </card>
+</config>

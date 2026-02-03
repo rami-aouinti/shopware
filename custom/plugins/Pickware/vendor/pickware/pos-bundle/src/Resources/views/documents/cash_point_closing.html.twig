@@ -1,0 +1,37 @@
+{% sw_extends '@Framework/documents/base.html.twig' %}
+
+{% use '@PickwarePos/documents/cash_point_closing/summary.html.twig' %}
+{% use '@PickwarePos/documents/cash_point_closing/transactions-of-type-beleg.html.twig' %}
+{% use '@PickwarePos/documents/cash_point_closing/transactions-of-type-other-than-beleg.html.twig' %}
+{% use '@PickwarePos/documents/cash_point_closing/custom-aggregations.html.twig' %}
+
+{% block document_base %}
+    {% include '@PickwarePos/documents/cash_point_closing/cash_point_closing.css.twig' %}
+    {{ parent() }}
+{% endblock %}
+
+
+{% block document_title_tag %}
+    {{ 'pickware-pos.cash-point-closing-document.summary.title'| trans | sw_sanitize(null, true) }}
+    {% if isPreview %}
+        ({{ 'pickware-pos.cash-point-closing-document.preview'| trans | sw_sanitize(null, true) }})
+    {% endif %}
+{% endblock %}
+
+{% block document_body %}
+    {{ block('summary') }}
+    {% if cashPointClosing.customAggregation is not empty %}
+        {% if cashPointClosing.customAggregation.paymentTypes is not empty %}
+            <div class="page_break"></div>
+            {{ block('custom_aggregations') }}
+        {% endif %}
+    {% endif %}
+    {% if transactionsOfTypeBeleg|length > 0 %}
+        <div class="page_break"></div>
+        {{ block('transactions_of_type_beleg') }}
+    {% endif %}
+    {% if transactionsOfTypeOtherThanBeleg|length > 0 %}
+        <div class="page_break"></div>
+        {{ block('transactions_of_type_other_than_beleg') }}
+    {% endif %}
+{% endblock %}

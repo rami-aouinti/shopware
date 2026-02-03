@@ -1,0 +1,16 @@
+{% sw_extends '@Framework/documents/delivery_note.html.twig' %}
+
+{% block document_body %}
+    {% if order and order.customFields and order.customFields.pickwareProductSetBundleFlattenLineItemsOnDeliveryNote %}
+        {% set nestedLineItems = order.lineItems %}
+    {% endif %}
+    {{ parent() }}
+{% endblock %}
+
+{% block document_loop_children_loop %}
+    {% if order and order.customFields and order.customFields.pickwareProductSetBundleFlattenLineItemsOnDeliveryNote %}
+
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}

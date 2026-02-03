@@ -1,0 +1,59 @@
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://dpd.com/common/service/ShipmentService/4.4" xmlns:types="http://dpd.com/common/service/types/ShipmentService/4.4" xmlns:types_authentication="http://dpd.com/common/service/types/Authentication/2.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://dpd.com/common/service/ShipmentService/4.4">
+    <wsdl:documentation>
+        <version name="4.4.0"> - The new type addressWithBusinessUnit includes all fields of address plus business unit. - The new type addressWithType includes all fields of addressWithBusinessUnit plus address type. - Sender and recipient in generalShipmentData have been changed to addressWithType. - The type invoiceConsigneAddress in International has been changed to addressWithBusinessUnit. - The international block has been moved from parcel to productAndServiceData. - New fields numberOfArticle and countryRegistrationNumber have been added to international block. - The fields customsAmountParcel, customsContent and customsTarif have been removed from international block and customsTerms can now also be 07 = "DAP enhanced, duty and taxes were pre-paid by the receiver". - New fields productFabricCompositon, productCode and productShortDescription have been added to additionalInvoiceLine. - New field parcelShopPudoId has been added to the parcelShopDelivery block. a new field returnAddress has been added. - The field addService has been expanded with additional values. - The field function can now also be LOCKZBK = "Delivery to mail-/parcelbox (without signature)". - The number of parcels has been changed from unbounded to 100. - In parcel, the minimum value of volume has been changed to 1001001. - The field cod in parcel has been removed. Therefore COD is no longer allowed. - Email pattern has been changed for all addresses. - The product DPD PARCELLetterPlus (PL+ in generalShipmentData) has been removed. - The day has been removed from pickup block and quantity as well as date are optional now. - New pattern for all time fields added. </version>
+        <version name="4.3.0"> - New structure for parcel labels, now including ZPL labels and other types. - New fields for ParcelLock in Pickup (boxId and boxTan). - New field mobile in type address. - New fields customsAmountExport, customsCurrencyExport, commercialInvoiceConsignor, commercialInvoiceConsignorVatNumber, additionalInvoiceLines in type international. - New type additionalInvoiceLine. - Changed field extraPickup in type pickup from Boolean to Integer and invoicePosition in type international from String to Integer. - Changed field length of field email in type address, customsAmount, customsAmountParcel, customsContent, customsTarif in type international, parcelClass in type parcel, phone in type personalDelivery. - New product DPD MAX (MAX in generalShipmentData). - New product DPD Priority (PM4 in generalShipmentData). - New feature DPD Food (DID). </version>
+        <version name="3.2.0"> - New field extraPickup in pickup. - New field startPosition in printOptions. </version>
+        <version name="3.1.0"> - New field tyres in productAndServiceData. - Field customerNumber in sender/recipient address and field invoicePosition in international must be numeric. - Parcelblock is optional, for only one parcel with no additional data. - Return parcel label in format A7 support. - Return parcel label receipt support. - Variable sender address support. - Parcel with 0kg weight handle as classic parcel. </version>
+        <version name="3.0.0"> - New field countrySpecificService in productAndServiceData. - Removed field paperFormat in storeOrders. - Introduced new element printOptions in storeOrders with paperformat, printertype and printer options. </version>
+    </wsdl:documentation>
+    <types>
+        <xsd:schema xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://dpd.com/common/service/ShipmentService/4.4" xmlns:types="http://dpd.com/common/service/types/ShipmentService/4.4" xmlns:types_authentication="http://dpd.com/common/service/types/Authentication/2.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://dpd.com/common/service/ShipmentService/4.4">
+            <xsd:import namespace="http://dpd.com/common/service/types/ShipmentService/4.4" schemaLocation="ShipmentService-Public_4_4.xsd"/>
+            <xsd:import namespace="http://dpd.com/common/service/types/Authentication/2.0" schemaLocation="Authentication_2_0.xsd"/>
+        </xsd:schema>
+    </types>
+    <message name="storeOrdersResponse">
+        <part element="types:storeOrdersResponse" name="return"> </part>
+    </message>
+    <message name="storeOrders">
+        <part element="types:storeOrders" name="parameters"> </part>
+    </message>
+    <message name="storeOrdersHeader">
+        <part element="types_authentication:authentication" name="authentication"> </part>
+    </message>
+    <message name="AuthenticationFaultMsg">
+        <part element="types_authentication:authenticationFault" name="fault"> </part>
+    </message>
+    <portType name="ShipmentService_4_4">
+        <operation name="storeOrders">
+            <wsdl:documentation>Stores up to 30 shipments and creates corresponding shipment documents.</wsdl:documentation>
+            <input message="tns:storeOrders"> </input>
+            <output message="tns:storeOrdersResponse"> </output>
+            <fault message="tns:AuthenticationFaultMsg" name="AuthenticationFault"> </fault>
+        </operation>
+    </portType>
+    <binding name="ShipmentService-Public_4_4_SOAP" type="tns:ShipmentService_4_4">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="storeOrders">
+            <soap:operation soapAction="http://dpd.com/common/service/ShipmentService/4.4/storeOrders"/>
+            <input>
+                <soap:header message="tns:storeOrdersHeader" part="authentication" use="literal"> </soap:header>
+                <soap:body parts="parameters" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="AuthenticationFault">
+                <soap:fault name="AuthenticationFault" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+    <service name="ShipmentService-Public_4_4">
+        <wsdl:documentation>
+            <version>4.4.0</version>
+        </wsdl:documentation>
+        <port binding="tns:ShipmentService-Public_4_4_SOAP" name="ShipmentService-Public_4_4_SOAP">
+            <soap:address location="https://public-ws-stage.dpd.com/services/ShipmentService/V4_4/"/>
+        </port>
+    </service>
+</definitions>

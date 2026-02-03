@@ -1,0 +1,156 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Return order request-and-approve-return-order payload",
+    "description": "POST request payload for api route _action/pickware-erp/request-and-approve-return-order",
+    "type": "object",
+    "required": ["returnOrder", "associations"],
+    "additionalProperties": false,
+    "properties": {
+        "returnOrder": {
+            "$ref": "#/definitions/returnOrder"
+        },
+        "associations": {
+            "type": "object"
+        }
+    },
+    "definitions": {
+        "returnOrder": {
+            "type": "object",
+            "description": "Return order payload. Note that some properties are missing on purpose, because they are added by the controller/service",
+            "required": ["id", "orderId", "lineItems", "warehouseId"],
+            "additionalProperties": false,
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "orderId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "warehouseId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "shippingCosts": {
+                    "type": ["object", "null"]
+                },
+                "lineItems": {
+                    "$ref": "#/definitions/lineItems"
+                },
+                "internalComment": {
+                    "type": "string"
+                }
+            }
+        },
+        "lineItems": {
+            "type": "array",
+            "items": {
+                "description": "Return order line item payload. Note that some properties are missing on purpose, because they are added by the controller/service",
+                "type": "object",
+                "required": ["id", "type", "quantity", "name", "priceDefinition"],
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "$ref": "#/definitions/uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "productId": {
+                        "$ref": "#/definitions/uuidOrNull"
+                    },
+                    "productNumber": {
+                        "type": ["string", "null"]
+                    },
+                    "price": {
+                        "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/price" }]
+                    },
+                    "priceDefinition": {
+                        "$ref": "#/definitions/priceDefinition"
+                    },
+                    "orderLineItemId": {
+                        "$ref": "#/definitions/uuidOrNull"
+                    },
+                    "reason": {
+                        "type": "string",
+                        "enum": [
+                            "unknown",
+                            "size_too_large",
+                            "size_too_small",
+                            "unwanted",
+                            "not_as_described",
+                            "wrong_item",
+                            "defective",
+                            "style",
+                            "color",
+                            "other"
+                        ]
+                    }
+                }
+            }
+        },
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "uuidOrNull": {
+            "description": "A UUID in HEX format or null",
+            "type": ["string", "null"],
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "price": {
+            "type": "object",
+            "required": ["unitPrice", "totalPrice", "quantity", "calculatedTaxes", "taxRules"],
+            "additionalProperties": true,
+            "properties": {
+                "unitPrice": {
+                    "type": "number"
+                },
+                "totalPrice": {
+                    "type": "number"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "calculatedTaxes": {
+                    "type": "array"
+                },
+                "taxRules": {
+                    "type": "array"
+                }
+            }
+        },
+        "priceDefinition": {
+            "type": "object",
+            "comment": "Some price definitions (e.g. absolute prices) to not have tax rules",
+            "required": ["type", "price", "quantity"],
+            "additionalProperties": true,
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "taxRules": {
+                    "type": "array"
+                }
+            }
+        }
+    }
+}

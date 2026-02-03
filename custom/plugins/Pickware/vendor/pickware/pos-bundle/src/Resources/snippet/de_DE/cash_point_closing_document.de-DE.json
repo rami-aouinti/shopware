@@ -1,0 +1,77 @@
+{
+    "pickware-pos": {
+        "cash-point-closing-document": {
+            "file-name": "Kassenabschluss %s",
+            "preview": "Vorschau",
+            "summary": {
+                "title": "Kassenabschluss Zusammenfassung",
+                "number": "Nummer",
+                "created": "Erstellt",
+                "branch-store": "Filiale",
+                "cash-register": "Kasse",
+                "user": "User",
+                "first-transaction": "Erste Transaktion",
+                "last-transaction": "Letzte Transaktion",
+                "amounts": "Summen",
+                "full-amount": "Gesamtbetrag",
+                "cash-amount": "Bargeldbetrag",
+                "payments": "Zahlungen"
+            },
+            "custom-aggregation": {
+                "title": "Belege Zusammenfassung"
+            },
+            "transactions": {
+                "title-for-transactions-of-type-beleg": "Belege",
+                "title-for-transactions-of-type-other-than-beleg": "Andere Vorgänge",
+                "created": "Erstellt",
+                "type": "Typ",
+                "reference": "Referenz",
+                "net": "Netto",
+                "gross": "Brutto",
+                "payment": "Zahlungsart",
+                "user": "Kassierer",
+                "comment": "Kommentar",
+                "line-item-type-groups": {
+                    "cashmovements": "Kassenbewegungen",
+                    "sales": "Erlöse"
+                },
+                "payment-type": {
+                    "bar": "Bar",
+                    "unbar": "Unbar",
+                    "eckarte": "EC Karte",
+                    "kreditkarte": "Kreditkarte",
+                    "elzahlungsdienstleister": "El. Zahlungsdienstleister",
+                    "guthabenkarte": "Guthaben Karte",
+                    "keine": "Keine"
+                }
+            },
+            "line-item-type": {
+                "anfangsbestand": "Anfangsbestand",
+                "umsatz": "Umsatz",
+                "pfand": "Pfand",
+                "pfandrueckzahlung": "Pfandrückzahlung",
+                "mehrzweckgutscheinkauf": "Mehrzweckgutschein Kauf",
+                "mehrzweckgutscheineinloesung": "Mehrzweckgutschein Einlösung",
+                "einzweckgutscheinkauf": "Einzweckgutschein Kauf",
+                "einzweckgutscheineinloesung": "Einzweckgutschein Einlösung",
+                "forderungsentstehung": "Forderungsentstehung",
+                "forderungsaufloesung": "Forderungsauflösung",
+                "anzahlungseinstellung": "Anzahlungseinstellung",
+                "anzahlungsaufloesung": "Anzahlungsauflösung",
+                "privateinlage": "Privateinlage",
+                "privatentnahme": "Privatentnahme",
+                "geldtransit": "Geldtransit",
+                "differenzsollist": "Differenz Soll-Ist",
+                "trinkgeldag": "Trinkgeld AG",
+                "trinkgeldan": "Trinkgeld AN",
+                "auszahlung": "Auszahlung",
+                "einzahlung": "Einzahlung",
+                "rabatt": "Rabatt",
+                "aufschlag": "Aufschlag",
+                "lohnzahlung": "Lohnzahlung",
+                "zuschussecht": "Zuschuss Echt",
+                "zuschussunecht": "Zuschuss Unecht"
+            }
+        }
+    }
+}

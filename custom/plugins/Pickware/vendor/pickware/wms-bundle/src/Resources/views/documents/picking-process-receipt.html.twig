@@ -1,0 +1,121 @@
+{% sw_extends '@Shopware/documents/base.html.twig' %}
+
+{% use '@Framework/documents/includes/logo.html.twig' %}
+{% use '@Framework/documents/includes/letter_header.html.twig' %}
+
+{% block document_title_tag %}
+    {{ title | sw_sanitize(null, true) }} {{ pickingProcessNumber }}
+{% endblock %}
+
+{% block document_base %}
+    {% include '@PickwareWmsBundle/documents/picking-process-receipt.css.twig' %}
+    {{ parent() }}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{# letter_header #}
+{% block document_recipient %}
+{% endblock %}
+{% block document_sender_address %}
+{% endblock %}
+{% block document_side_info %}
+    <table>
+        <tr>
+            <td>
+                {{ config.documentDate | format_datetime('medium', 'medium', locale=locale) | sw_sanitize(null, true) }}
+            </td>
+        </tr>
+    </table>
+{% endblock %}
+
+{# By overwriting the whole document_body we ignore Shopware's position loop, summary, comment payment_shipping
+   and shipping_address #}
+{% block document_body %}
+    {{ block('letter_header') }}
+
+    {# document headline is hardcoded since the headline block of the base template is in the first table (which is
+       completely overwritten in this document_body block) #}
+    <div class="document-title-container">
+        <h1>
+            {{ title | sw_sanitize(null, true) }}
+            <span><strong>{{ pickingProcessNumber | sw_sanitize(null, true) }}</strong></span>
+        </h1>
+        <h2>
+            {{ 'pickware-wms.picking-process-receipt.sub-title' | trans | sw_sanitize(null, true) }}
+            <span><strong>{{ 'pickware-wms.picking-process-receipt.warehouse-label' | trans({'%warehouseName%': warehouse.name, '%warehouseCode%': warehouse.code}) | sw_sanitize(null, true) }}</strong></span>
+        </h2>
+        {% if userName %}
+        <h2>
+            {{ 'pickware-wms.picking-process-receipt.user' | trans | sw_sanitize(null, true) }}
+            <span><strong>{{ userName | sw_sanitize(null, true) }}</strong></span>
+        </h2>
+        {% endif %}
+        {% if orderNumber %}
+        <h2>
+            {{ 'pickware-wms.picking-process-receipt.order-number' | trans | sw_sanitize(null, true) }}
+            <span><strong>{{ orderNumber | sw_sanitize(null, true) }}</strong></span>
+        </h2>
+        {% endif %}
+        {% if orderDate %}
+        <h2>
+            {{ 'pickware-wms.picking-process-receipt.order-date' | trans | sw_sanitize(null, true) }}
+            <span><strong>{{ orderDate | format_datetime('medium', 'none', locale=locale) | sw_sanitize(null, true) }}</strong></span>
+        </h2>
+        {% endif %}
+        {% if shippingAddress %}
+        <h2>
+            <span>
+                {% sw_include '@Framework/snippets/render.html.twig' with {
+                    format: shippingAddress.country.translated.addressFormat,
+                    address: shippingAddress
+                } %}
+            </span>
+        </h2>
+        {% endif %}
+        <img class="barcode" src="{{ barcode }}" alt="Barcode">
+    </div>
+
+    {% if orderList is defined %}
+    <div class="line-item-container">
+        <h3>{{ 'pickware-wms.picking-process-receipt.order-list-title' | trans | sw_sanitize(null, true) }}</h3>
+        <table class="line-item-table">
+            <thead>
+                <tr class="line-item-table-header">
+                    <th style="width: 20%">{{ 'pickware-wms.picking-process-receipt.columns.order-number' | trans | sw_sanitize(null, true) }}</th>
+                    <th style="width: 50%">{{ 'pickware-wms.picking-process-receipt.columns.receiver' | trans | sw_sanitize(null, true) }}</th>
+                    <th style="width: 30%">{{ 'pickware-wms.picking-process-receipt.columns.shipping-method' | trans | sw_sanitize(null, true) }}</th>
+                </tr>
+            </thead>
+            {% for order in orderList %}
+                    <tr class ="line-item">
+                        <td>{{ order.orderNumber | default('') | sw_sanitize(null, true) }}</td>
+                        <td>{{ order.shippingAddressName | default('') | sw_sanitize(null, true) }}</td>
+                        <td>{{ order.shippingMethodName | default('') | sw_sanitize(null, true) }}</td>
+                    </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% elseif productNameQuantities is defined %}
+    <div class="line-item-container">
+        <h3>{{ productListTitle | sw_sanitize(null, true) }}</h3>
+        <table class="line-item-table">
+            <thead>
+                <tr class="line-item-table-header">
+                    <th style="width: 20%">{{ 'pickware-wms.picking-process-receipt.columns.product-number' | trans | sw_sanitize(null, true) }}</th>
+                    <th style="width: 60%">{{ 'pickware-wms.picking-process-receipt.columns.product' | trans | sw_sanitize(null, true) }}</th>
+                    <th style="width: 20%">{{ 'pickware-wms.picking-process-receipt.columns.quantity' | trans | sw_sanitize(null, true) }}</th>
+                </tr>
+            </thead>
+            {% for productNameQuantity in productNameQuantities %}
+                    <tr class ="line-item">
+                        <td>{{ productNameQuantity.productNumber | default('') | sw_sanitize(null, true) }}</td>
+                        <td>{{ productNameQuantity.name | default('') | sw_sanitize(null, true) }}</td>
+                        <td>{{ productNameQuantity.quantity | sw_sanitize(null, true) }}</td>
+                    </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+{% endblock %}

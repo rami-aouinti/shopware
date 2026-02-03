@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<container
+    xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <service
+            id="pickware_mobile_app.http_foundation_factory"
+            class="Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory"
+        />
+        <service id="Pickware\MobileAppAuthBundle\Controller\AuthenticationController" public="true">
+            <argument type="service" id="pickware_mobile_app.authorization_server" />
+            <argument type="service" id="Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory" />
+            <argument type="service" id="pickware_mobile_app.http_foundation_factory" />
+            <argument type="service" id="shopware.rate_limiter" />
+        </service>
+    </services>
+</container>

@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Shipping create-shipments-for-orders payload",
+    "description": "POST request payload for api route _action/pickware-shipping/shipment/create-shipments-for-orders",
+    "type": "object",
+    "required": ["shipmentBlueprintsWithOrderId"],
+    "properties": {
+        "shipmentBlueprintsWithOrderId": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/shipmentBlueprintsWithOrderId"
+            }
+        }
+    },
+    "definitions": {
+        "shipmentBlueprintsWithOrderId": {
+            "type": "object",
+            "required": ["orderId", "shipmentBlueprint"],
+            "properties": {
+                "orderId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "shipmentBlueprint": {
+                    "type": "object"
+                }
+            }
+        },
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        }
+    }
+}

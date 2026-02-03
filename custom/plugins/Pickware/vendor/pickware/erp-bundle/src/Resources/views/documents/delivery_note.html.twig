@@ -1,0 +1,14 @@
+{% sw_extends '@Framework/documents/delivery_note.html.twig' %}
+
+{% block document_line_item_table_column_label %}
+    {{ parent() }}
+
+    {% sw_include '@PickwareErpBundle/documents/components/batch-line-item-row.html.twig' with { lineItem } %}
+    {% sw_include '@PickwareErpBundle/documents/components/picking-properties-line-item-row.html.twig' with { lineItem } %}
+    {% sw_include '@PickwareErpBundle/documents/components/custom-fields-line-item-row.html.twig' with { lineItem, config } %}
+{% endblock %}
+
+{% block shipping_address %}
+    {{ parent() }}
+    {% sw_include '@PickwareErpBundle/documents/components/custom-fields-order.html.twig' with { config } %}
+{% endblock %}

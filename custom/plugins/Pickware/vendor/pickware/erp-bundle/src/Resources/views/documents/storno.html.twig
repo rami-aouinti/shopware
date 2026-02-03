@@ -1,0 +1,29 @@
+{% sw_extends '@Framework/documents/storno.html.twig' %}
+
+
+{% block document_payment_shipping_inner %}
+    {{ parent() }}
+
+    {% set shippingAddress = order.deliveries.first.getShippingOrderAddress %}
+
+    {% set isEu = shippingAddress.country.isEu %}
+    {% if config.pickwareErpDisplayTaxExemptExportLabel
+        and isEu === false
+        and order.price.taxStatus === 'tax-free'
+    %}
+        {{ 'pickware-erp-starter.invoice-document.tax-exempt-export'|trans }}<br>
+    {% endif %}
+{% endblock %}
+
+{% block document_line_item_table_column_label %}
+    {{ parent() }}
+
+    {% sw_include '@PickwareErpBundle/documents/components/batch-line-item-row.html.twig' with { lineItem } %}
+    {% sw_include '@PickwareErpBundle/documents/components/picking-properties-line-item-row.html.twig' with { lineItem } %}
+    {% sw_include '@PickwareErpBundle/documents/components/custom-fields-line-item-row.html.twig' with { lineItem, config } %}
+{% endblock %}
+
+{% block shipping_address %}
+    {{ parent() }}
+    {% sw_include '@PickwareErpBundle/documents/components/custom-fields-order.html.twig' with { config } %}
+{% endblock %}

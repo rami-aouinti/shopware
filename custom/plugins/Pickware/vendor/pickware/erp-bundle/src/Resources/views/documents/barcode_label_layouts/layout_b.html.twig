@@ -1,0 +1,131 @@
+{% sw_extends '@PickwareErpBundle/documents/barcode_label_layouts/base.html.twig' %}
+
+{% set baseline_width = 60 - (marginsInMillimeter.left + marginsInMillimeter.left) %}
+{% set baseline_height = 40 - (marginsInMillimeter.top + marginsInMillimeter.bottom) %}
+{% set baseline_font_size = 10 %}
+{% set minimum_height_for_margin = 20 %}
+
+{# Dompdf does not support flexible sizes based on height and width directly (e.g. vh or vw). #}
+{# Therefore, we need to manually calculate the font size. #}
+
+{# Calculation of scaling factors for width and height #}
+{% set width_scale_factor = contentDimensions.width / baseline_width %}
+{% set height_scale_factor = contentDimensions.height / baseline_height %}
+
+{# Determine the appropriate scaling factor #}
+{% if width_scale_factor > 1.5 * height_scale_factor %}
+    {# If width changes significantly more than height, limit scaling #}
+    {% set scale_factor = height_scale_factor %}
+{% elseif height_scale_factor > 1.5 * width_scale_factor %}
+    {# If height changes significantly more than width, limit scaling #}
+    {% set scale_factor = width_scale_factor %}
+{% else %}
+    {# Normal scaling if both dimensions change proportionally #}
+    {% set scale_factor = (width_scale_factor + height_scale_factor) / 2 %}
+{% endif %}
+
+{# Calculation of final font size considering the baseline font size #}
+{% set font_size = (baseline_font_size * scale_factor)|number_format(2) %}
+
+{% block css %}
+    {{ parent() }}
+    <style type="text/css">
+        .container {
+            width: {{ contentDimensions.width }}mm;
+            height: {{ contentDimensions.height }}mm;
+            position: relative;
+            top: 0;
+            left: 0;
+            font-size: {{ font_size }}pt;
+            line-height: 1.2; /* Anpassung der Zeilenhöhe */
+            overflow: hidden;
+        }
+
+        .fieldContainer {
+            width: 100%;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .barcode {
+            position: relative;
+            width: {{ contentDimensions.width }}mm;
+            height: 100%;
+        {% if contentDimensions.height > minimum_height_for_margin %}
+            margin-top: 2em;
+        {% else %}
+            margin-top: 1.5em;
+        {% endif %}
+        }
+
+        .row {
+            width: 100%;
+            display: block;
+            position: relative;
+        {% if contentDimensions.height > minimum_height_for_margin %}
+            margin-top: 1em;
+        {% else %}
+            margin-top: 0;
+        {% endif %}
+        }
+
+        .row:first-child {
+            margin-top: 0;
+        }
+
+        .left {
+            position: absolute;
+            left: 0;
+            top: 0;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .right {
+            position: absolute;
+            right: 0;
+            top: 0;
+            text-align: right;
+            overflow: hidden;
+        }
+
+        .clearfix::after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+    </style>
+{% endblock %}
+
+{% block label %}
+    <div class="container">
+        <div class="fieldContainer">
+            <div class="row clearfix" style="position: relative; height: 1.2em;">
+                {% set field2_width_mm = (item.field2Value|length) * (font_size / 10) * 1.8 %}
+                {% set field1_width_mm = contentDimensions.width - field2_width_mm %}
+                {% set char_count = item.field1Value|length %}
+                {% set available_chars = (field1_width_mm / ((font_size / 10) * 2))|round %}
+                <div class="left" style="width: {{ field1_width_mm }}mm;">
+                    {% if char_count > available_chars %}
+                        {{ item.field1Value|slice(0, available_chars - 3) }}...
+                    {% else %}
+                        {{ item.field1Value }}
+                    {% endif %}
+                </div>
+                <div class="right">{{ item.field2Value }}</div>
+            </div>
+            <div class="row clearfix">
+                {% set char_count = item.field3Value|length %}
+                {% set available_chars = ((contentDimensions.width * 0.5) / ((font_size / 10) * 0.9))|round %}
+                <div class="left" style="width: 100%;">
+                    {% if char_count > available_chars %}
+                        {{ item.field3Value|slice(0, available_chars - 3) }}...
+                    {% else %}
+                        {{ item.field3Value }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <img class="barcode" src="{{ item.barcode }}" alt="Barcode" />
+    </div>
+{% endblock %}

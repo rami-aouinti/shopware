@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<container
+    xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <service id="Pickware\MobileAppAuthBundle\OAuth\UserRepository">
+            <argument type="service" id="Pickware\DalBundle\EntityManager" />
+            <argument type="service" id="request_stack" />
+        </service>
+        <service id="Pickware\MobileAppAuthBundle\OAuth\ScopeRepository">
+            <argument type="tagged" tag="shopware.oauth.scope" />
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+        </service>
+        <service id="Pickware\MobileAppAuthBundle\OAuth\ClientRepository" />
+        <service class="League\OAuth2\Server\AuthorizationServer" id="pickware_mobile_app.authorization_server">
+            <argument type="service" id="Pickware\MobileAppAuthBundle\OAuth\ClientRepository" />
+            <argument type="service" id="Shopware\Core\Framework\Api\OAuth\AccessTokenRepository" />
+            <argument type="service" id="Pickware\MobileAppAuthBundle\OAuth\ScopeRepository" />
+            <argument type="service" id="Shopware\Core\Framework\Api\OAuth\FakeCryptKey" />
+            <argument>%env(APP_SECRET)%</argument>
+        </service>
+    </services>
+</container>

@@ -1,0 +1,90 @@
+{% sw_extends '@Shopware/documents/base.html.twig' %}
+
+{% use '@Framework/documents/includes/logo.html.twig' %}
+{% use '@Framework/documents/includes/letter_header.html.twig' %}
+
+{% block document_title_tag %}
+    {{ 'pickware-erp-starter.return-order-stocking-list.title' | trans | sw_sanitize(null, true) }} {{ order.orderNumber }}
+{% endblock %}
+
+{% block document_base %}
+    {% include '@PickwareErpBundle/documents/return-order-stocking-list.css.twig' %}
+    {{ parent() }}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{# right side document head #}
+{% block document_side_info %}
+    <table>
+        <tr>
+            <td>
+                {{ 'document.date'|trans({'%date%': config.documentDate|format_date('medium', locale=locale)})|sw_sanitize(null, true) }}
+            </td>
+        </tr>
+    </table>
+{% endblock %}
+
+{# left side document head #}
+{% block document_recipient %}
+{% endblock %}
+
+{% block document_sender_address %}
+{% endblock %}
+
+{# By overwriting the whole document_body we ignore Shopware's position loop, summary, comment payment_shipping
+   and shipping_address #}
+{% block document_body %}
+    {{ block('logo') }}
+    {{ block('letter_header') }}
+    {% set warehouse = returnOrder.warehouse %}
+
+
+    {# document headline is hardcoded since the headline block of the base template is in the first table (which is
+       completely overwritten in this document_body block) #}
+    <div class="document-title-container">
+        <h1>
+            {{ 'pickware-erp-starter.return-order-stocking-list.title' | trans | sw_sanitize(null, true) }}
+            <span class="title-number">{{ returnOrder.number | sw_sanitize(null, true) }}</span>
+        </h1>
+        <h2>
+            {{ 'pickware-erp-starter.return-order-stocking-list.sub-title' | trans | sw_sanitize(null, true) }}
+            <span class="bold">{{ 'pickware-erp-starter.return-order-stocking-list.warehouse-label' | trans({'%warehouseName%': warehouse.name, '%warehouseCode%': warehouse.code}) | sw_sanitize(null, true) }}</span>
+        </h2>
+    </div>
+
+    <div class="line-item-container">
+        <table class="line-item-table">
+            <thead>
+            <tr class="line-item-table-header">
+                <th style="width: 15%" class="first-column">{{ 'pickware-erp-starter.return-order-stocking-list.columns.bin-location' | trans | sw_sanitize(null, true) }}</th>
+                <th style="width: 30%">{{ 'pickware-erp-starter.return-order-stocking-list.columns.product-number' | trans | sw_sanitize(null, true) }}</th>
+                <th style="width: 45%">{{ 'pickware-erp-starter.return-order-stocking-list.columns.product-name' | trans | sw_sanitize(null, true) }}</th>
+                <th style="width: 10%" class="align-right quantity-cell">{{ 'pickware-erp-starter.return-order-stocking-list.columns.quantity' | trans | sw_sanitize(null, true) }}</th>
+            </tr>
+            </thead>
+
+            {% for element in returnOrderStockingListElements %}
+                <tr class="line-item">
+                    {% if element.binLocation is null %}
+                        <td class="first-column left-bordered">{{ 'pickware-erp-starter.return-order-stocking-list.unknown' | trans | sw_sanitize(null, true) }}</td>
+                    {% else %}
+                        <td class="first-column left-bordered">{{ element.binLocation.code | raw }}</td>
+                    {% endif %}
+                    <td class="line-item-breakable">{{ element.product.productNumber | raw }}</td>
+                    <td class="line-item-breakable">{{ element.product.name }}</td>
+                    <td class="align-right bold larger quantity-cell right-bordered">{{ element.quantity }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    {% if returnOrder.comment is not empty %}
+        <p id="documentComment">
+            <b>{{ 'pickware-erp-starter.return-order-stocking-list.comment' | trans | sw_sanitize(null, true) }}:</b>
+            <br />
+            {{ returnOrder.comment | sw_sanitize(null, true) | nl2br }}
+        </p>
+    {% endif %}
+{% endblock %}

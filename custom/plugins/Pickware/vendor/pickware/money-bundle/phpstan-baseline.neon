@@ -1,0 +1,61 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\MoneyBundle\\Currency\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Currency.php
+
+		-
+			message: '#^Method Pickware\\MoneyBundle\\Currency\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Currency.php
+
+		-
+			message: '#^Method Pickware\\MoneyBundle\\CurrencyTest\:\:equalityCheckDataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Currency.unit.php
+
+		-
+			message: '#^Method Pickware\\MoneyBundle\\MoneyValue\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/MoneyValue.php
+
+		-
+			message: '#^Method Pickware\\MoneyBundle\\MoneyValue\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/MoneyValue.php
+
+		-
+			message: '#^Method Pickware\\MoneyBundle\\MoneyValueTest\:\:test_canBeSummedUpWithOtherMoneyValuesInSameCurrencyOrWithZeroMoneyValues\(\) has parameter \$summands with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/MoneyValue.unit.php
+
+		-
+			message: '#^Method Pickware\\MoneyBundle\\MoneyValueTest\:\:validRatioProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/MoneyValue.unit.php
+
+		-
+			message: '#^Method Pickware\\MoneyBundle\\MoneyValueTest\:\:validSummandsProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/MoneyValue.unit.php
+
+		-
+			message: '#^Method Pickware\\MoneyBundle\\PickwareMoneyBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareMoneyBundle.php
+
+		-
+			message: '#^Method Pickware\\MoneyBundle\\ShopwareCurrencyConverterTest\:\:factorOneConversionsProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ShopwareCurrencyConverter.unit.php

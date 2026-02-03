@@ -1,0 +1,73 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method class@anonymous/DependencyLoader\.php\:30\:\:addPackagesAtBasePath\(\) has parameter \$packages with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DependencyLoader.php
+
+		-
+			message: '#^Method class@anonymous/DependencyLoader\.php\:30\:\:addPackagesOfPlugins\(\) has parameter \$plugins with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DependencyLoader.php
+
+		-
+			message: '#^Method class@anonymous/DependencyLoader\.php\:30\:\:ensureLatestDependenciesOfPluginsLoaded\(\) has parameter \$plugins with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DependencyLoader.php
+
+		-
+			message: '#^Method class@anonymous/DependencyLoader\.php\:30\:\:getDistPackagesOfPlugin\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DependencyLoader.php
+
+		-
+			message: '#^Method class@anonymous/DependencyLoader\.php\:30\:\:registerPackageNamespace\(\) has parameter \$autoload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DependencyLoader.php
+
+		-
+			message: '#^Property class@anonymous/DependencyLoader\.php\:30\:\:\$packages type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DependencyLoader.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with false will always evaluate to false\.$#'
+			identifier: staticMethod.impossibleType
+			count: 1
+			path: src/DependencyLoader.unit.php
+
+		-
+			message: '#^Method Pickware\\DependencyLoader\\DependencyLoaderTest\:\:instantiateDependencyLoader\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/DependencyLoader.unit.php
+
+		-
+			message: '#^Method class@anonymous/DependencyLoader\.unit\.php\:183\:\:getDistPackages\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DependencyLoader.unit.php
+
+		-
+			message: '#^Method class@anonymous/DependencyLoader\.unit\.php\:264\:\:getDistPackages\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DependencyLoader.unit.php
+
+		-
+			message: '#^Method class@anonymous/DependencyLoader\.unit\.php\:51\:\:getDistPackages\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DependencyLoader.unit.php
+
+		-
+			message: '#^Method class@anonymous/DependencyLoader\.unit\.php\:76\:\:getDistPackages\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DependencyLoader.unit.php

@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<container
+    xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <service
+            id="pickware_wms.bin_location_property_stock_location_sorter"
+            class="Pickware\PickwareErpStarter\StockLocationSorting\BinLocationPropertyStockLocationSorter"
+            constructor="createBinLocationPositionStockLocationSorter"
+        >
+            <argument type="service" id="Pickware\PickwareErpStarter\StockApi\StockLocationConfigurationService" />
+        </service>
+    </services>
+</container>

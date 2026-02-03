@@ -1,0 +1,37 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\HttpFoundation\\Response\:\:getTargetUrl\(\)\.$#'
+			identifier: method.notFound
+			count: 6
+			path: src/OidcClient/Controller/OpenIdConnectClientController.unit.php
+
+		-
+			message: '#^Call to static method createForContainer\(\) on an unknown class Pickware\\InstallationLibrary\\BundleMigrationDropper\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/PickwareLicenseBundle.php
+
+		-
+			message: '#^Call to static method createForContainer\(\) on an unknown class Pickware\\InstallationLibrary\\DependencyAwareTableDropper\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/PickwareLicenseBundle.php
+
+		-
+			message: '#^Class Pickware\\ShopwarePlugins\\ShopwareIntegrationTestPlugin\\ShopwareIntegrationTestPlugin not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/PickwareLicenseBundle.php
+
+		-
+			message: '#^Method Pickware\\LicenseBundle\\Installation\\PickwareLicenseBundleInstaller\:\:install\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/PickwareLicenseBundle.php
+
+		-
+			message: '#^Method Pickware\\LicenseBundle\\PickwareLicenseBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareLicenseBundle.php

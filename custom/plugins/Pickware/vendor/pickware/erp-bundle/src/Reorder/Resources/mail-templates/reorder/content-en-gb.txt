@@ -1,0 +1,6 @@
+The following products stock have reached their reorder point:
+
+Product name | Product number | Reorder point | Stock
+{% for product in products %}
+{{ product.name }} | {{ product.productNumber }} | {{ product.extensions.pickwareErpPickwareProduct.reorderPoint }} | {{ product.stock }}
+{% endfor %}

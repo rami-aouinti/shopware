@@ -1,0 +1,15 @@
+{
+    "pickware-erp-starter": {
+        "stock-valuation-report-export": {
+            "file-name": "Bericht des Bewerteten Warenbestands %s",
+            "columns": {
+                "product-name": "Produktname",
+                "product-number": "Produktnummer",
+                "stock": "Bestand",
+                "tax-rate": "Steuersatz",
+                "valuation-net": "Netto",
+                "valuation-gross": "Brutto"
+            }
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "pickware-wms": {
+        "picking-modes": {
+            "single": "Einzelkommissionierung",
+            "preCollectedBatchPicking": "Sammelkommissionierung",
+            "pickToBoxBatchPicking": "Rollende Kommissionierung",
+            "singleItemOrdersPicking": "Einpösterkommissionierung"
+        }
+    }
+}

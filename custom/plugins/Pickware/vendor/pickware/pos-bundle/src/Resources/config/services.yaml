@@ -1,0 +1,29 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Pickware\PickwarePos\:
+    resource: '../../'
+    exclude:
+      - '../../**/*Exception.php'
+      - '../../**/*Event.php'
+      - '../../Installation/'
+
+  # Manual service definition for BundleSupportingAssetService from composer package
+  pickware_pos.bundle_supporting_asset_service:
+    class: Pickware\InstallationLibrary\BundleSupportingAssetService
+    public: true
+    arguments:
+      - '@Shopware\Core\Framework\Plugin\Util\AssetService'
+      - '@shopware.filesystem.asset'
+
+  # Manual definition for command from other bundle
+  pickware-pos.command.create-user:
+    class: Pickware\MobileAppAuthBundle\DemodataGeneration\Command\PickwareCreateUserCommand
+    arguments:
+      - '@Pickware\DalBundle\EntityManager'
+      - 'pickware-pos:create-user'
+      - 'pickware-pos-restricted'
+      - 'POS Testing'
+      - !php/const Pickware\PickwarePos\Installation\PickwarePosAclRoleFactory::PICKWARE_POS_ROLE_NAME

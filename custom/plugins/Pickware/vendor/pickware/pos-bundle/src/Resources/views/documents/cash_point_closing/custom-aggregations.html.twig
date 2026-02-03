@@ -1,0 +1,43 @@
+{% block custom_aggregations %}
+    <!-- Since we only allow a single currency per cash register. We can use this shortcut to select "the" currency of
+         the cash register -->
+    {% set currencyIsoCode = cashPointClosing.cashStatement.payment.paymentTypes[0].currencyCode %}
+
+    <h1 class="headline">
+        {{ 'pickware-pos.cash-point-closing-document.custom-aggregation.title'| trans | sw_sanitize(null, true) }}
+        {% if isPreview %}
+            ({{ 'pickware-pos.cash-point-closing-document.preview'| trans | sw_sanitize(null, true) }})
+        {% endif %}
+    </h1>
+    <hr>
+
+    <div class="pw-pos-custom-aggregations">
+        {% for paymentTypeIndex, paymentType in cashPointClosing.customAggregation.paymentTypes %}
+            <div class="summary-of-transactions-header summary-of-transactions__payment-type-header">
+                <span>{{ paymentType.paymentType }}</span>
+                {{ paymentType.total.inclVat | currency(currencyIsoCode) }}
+            </div>
+
+            {% for lineItemTypeGroupIndex, lineItemTypeGroup in paymentType.lineItemTypeGroups %}
+                <div class="summary-of-transactions-header summary-of-transactions__line-item-group-header">
+                    <span>{{ ('pickware-pos.cash-point-closing-document.transactions.line-item-type-groups.' ~ (lineItemTypeGroup.lineItemTypeGroup | lower))| trans | sw_sanitize(null, true) }}</span>
+                    {{ lineItemTypeGroup.total.inclVat | currency(currencyIsoCode) }}
+                </div>
+
+                {% for lineItemTypeIndex, lineItemType in lineItemTypeGroup.lineItemTypes %}
+                    <div class="summary-of-transactions-header summary-of-transactions__line-item-header">
+                        <span>{{ lineItemType.lineItemType }}</span>
+                        {{ lineItemType.total.inclVat | currency(currencyIsoCode) }}
+                    </div>
+
+                    {% for taxRateIndex, taxRate in lineItemType.taxRates %}
+                        <div class="summary-of-transactions-header summary-of-transactions__tax-rate-header">
+                            <span>{{ taxRate.taxRate }}%</span>
+                            {{ taxRate.total.inclVat | currency(currencyIsoCode) }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endblock %}

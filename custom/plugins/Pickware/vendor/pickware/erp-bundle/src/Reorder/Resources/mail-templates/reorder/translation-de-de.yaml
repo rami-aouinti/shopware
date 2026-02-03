@@ -1,0 +1,9 @@
+localeCode: 'de-DE'
+typeName: 'Meldebestand Benachrichtigung'
+subject: 'Meldebestand Benachrichtigung'
+sender: 'Pickware ERP'
+description: 'Meldebestand Benachrichtigung'
+contentHtml:
+  fromFile: 'content-de-de.html'
+contentPlain:
+  fromFile: 'content-de-de.txt'

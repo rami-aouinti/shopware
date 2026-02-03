@@ -1,0 +1,9 @@
+{% if salutation is not empty %}
+{{ salutation.letterName ?? 'Sehr geehrte Frau/Herr' }} {{ [salutation.title ?? '', salutation.firstName ?? '', salutation.lastName ?? ''] | filter(part => part != '') | join(' ') }},
+{% else %}
+Sehr geehrte Damen und Herren,
+{% endif %}
+
+bitte um Lieferung der im Anhang aufgeführten Artikel.
+
+Mit freundlichen Grüßen - Ihr Team von {{ shopName }}

@@ -1,0 +1,5 @@
+{% if lineItem.payload.pwErpPickingPropertyRecordValues|length > 0 %}
+    {% for pickingPropertyValues in lineItem.payload.pwErpPickingPropertyRecordValues %}
+        <br><i>{{ pickingPropertyValues }}</i>
+    {% endfor %}
+{% endif %}

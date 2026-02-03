@@ -1,0 +1,81 @@
+<style type="text/css">
+{# title #}
+{# Shopware document title #}
+.document-title-container {
+    position: relative;
+    margin: 0 0 20px 0 !important;
+}
+
+.document-title-container h1 {
+    font-weight: bold;
+    font-size: 20px !important;
+    line-height: 30px;
+    margin: 0;
+}
+
+.document-title-container h2 {
+    font-weight: normal;
+    font-size: 14px;
+}
+
+.document-title-container .barcode {
+    height: 40px;
+
+    position: absolute;
+    right: 0;
+    top: 10px;
+}
+
+{# content #}
+.line-item-container h3 {
+    font-weight: bold;
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+.line-item-table {
+    width: 100%;
+    table-layout: fixed;
+    border-spacing: 0 0 !important;
+}
+
+.line-item-table th {
+    padding: 0 5px 10px 5px !important;
+    vertical-align: top;
+    border: 0;
+}
+
+.line-item-table th:first-child {
+    padding-left: 10px;
+}
+
+.line-item > td  {
+    padding: 5px 5px;
+    border-top: 1px solid #00000026;
+    border-bottom: 1px solid #00000026;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.line-item > td:first-child  {
+    padding-left: 10px;
+    border-left: 1px solid #00000026;
+}
+
+.line-item > td:last-child {
+    border-right: 1px solid #00000026;
+}
+
+{# revert shopware styling #}
+@page {
+    margin-top: 0px !important;
+}
+
+footer {
+    bottom: 10px !important;
+}
+
+.line-item-table tbody tr:first-child > td {
+    padding-top: 2px !important;
+}
+</style>

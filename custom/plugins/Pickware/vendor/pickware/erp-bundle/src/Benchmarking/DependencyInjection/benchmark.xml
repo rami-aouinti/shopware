@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<container
+    xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <!-- automatically configure benchmark services with tags -->
+        <defaults autoconfigure="true" />
+        <service
+            class="Pickware\PickwareErpStarter\Benchmarking\StockMovementBenchmark"
+            id="pickware_erp.benchmark.stock-movement"
+        >
+            <argument id="Pickware\DalBundle\EntityManager" type="service" />
+            <argument
+                id="Pickware\ShopwarePlugins\ShopwareIntegrationTestPlugin\TestEntityCreation\TestEntityCreator"
+                type="service"
+            />
+            <argument id="Pickware\PickwareErpStarter\Test\TestEntityCreation\TestEntityCreator" type="service" />
+            <argument id="Pickware\PickwareErpStarter\StockApi\StockMovementService" type="service" />
+        </service>
+    </services>
+</container>

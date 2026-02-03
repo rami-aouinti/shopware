@@ -1,0 +1,32 @@
+{
+    "pickware-erp-starter": {
+        "picklist-document": {
+            "title": "Pickliste zu Bestellung",
+            "sub-title": "Lager:",
+            "warehouse-label": "%warehouseName% (%warehouseCode%)",
+            "unknown": "unbekannt",
+            "customer-comment": "Bestellkommentar",
+            "document-comment": "Dokumentenkommentar",
+            "empty-list": "Es sind keine Produkte für diese Bestellung zu picken! (Entweder wurde bereits die Bestellung versendet oder retouniert)",
+            "columns": {
+                "bin-location": "Lagerplatz",
+                "alternative": "(alternativ)",
+                "product-number": "Produktnummer",
+                "product-name": "Produktname",
+                "quantity": "Anzahl",
+                "picked": "Erledigt"
+            },
+            "header": {
+                "sales-channel": "Verkaufskanal: %salesChannel%",
+                "shipping-address": "Lieferadresse",
+                "billing-address": "Rechnungsadresse"
+            },
+            "custom-products": {
+                "checkbox": {
+                    "off": "nicht ausgewählt",
+                    "on": "ausgewählt"
+                }
+            }
+        }
+    }
+}

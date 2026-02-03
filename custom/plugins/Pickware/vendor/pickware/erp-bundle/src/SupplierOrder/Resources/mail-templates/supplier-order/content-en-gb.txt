@@ -1,0 +1,9 @@
+{% if salutation is not empty %}
+{{ salutation.letterName ?? 'Dear mrs/mr' }} {{ [salutation.title ?? '', salutation.firstName ?? '', salutation.lastName ?? ''] | filter(part => part != '') | join(' ') }},
+{% else %}
+Dear mrs/mr,
+{% endif %}
+
+please send the attached products.
+
+With regards - Your team from {{ shopName }}

@@ -1,0 +1,7 @@
+{
+    "pickware-erp-starter": {
+        "invoice-document": {
+            "tax-exempt-export": "Steuerfreie Ausfuhrlieferung gemäß § 4 Nr. 1a) UStG."
+        }
+    }
+}

@@ -1,0 +1,103 @@
+{
+    "name": "pickware/wms-bundle",
+    "description": "Pickware WMS, the extension for shipping and picking in Shopware",
+    "license": "proprietary",
+    "type": "library",
+    "version": "1.44.0",
+    "authors": [
+        {
+            "name": "Pickware GmbH",
+            "email": "info@pickware.de"
+        }
+    ],
+    "require": {
+        "php": ">= 8.2",
+        "ext-json": "*",
+        "doctrine/dbal": "^3.6 || ^4.0",
+        "pickware/acl-bundle": "^1.43.0",
+        "pickware/api-error-handling-bundle": "^3.75.0",
+        "pickware/api-versioning-bundle": "^3.27.0",
+        "pickware/bundle-installer": "^3.15.0",
+        "pickware/dal-bundle": "^5.59.0",
+        "pickware/document-bundle": "^4.91.0",
+        "pickware/erp-bundle": "^1.72.0",
+        "pickware/installation-library": "^4.69.0",
+        "pickware/locking-bundle": "^1.32.0",
+        "pickware/mobile-app-auth-bundle": "^3.43.0",
+        "pickware/php-standard-library": "^2.25.0",
+        "pickware/shipping-bundle": "^3.109.0",
+        "pickware/shopware-extensions-bundle": "^3.65.0",
+        "pickware/units-of-measurement": "^3.12.0",
+        "pickware/upsell-nudging-bundle": "^1.42.0",
+        "pickware/validation-bundle": "^3.72.0",
+        "picqer/php-barcode-generator": "^2.2",
+        "shopware/core": ">=6.6.10.5 <6.8",
+        "symfony/config": "^7.0.0",
+        "symfony/console": "^7.0.0",
+        "symfony/dependency-injection": "^7.0.0",
+        "symfony/http-kernel": "^7.0.0",
+        "symfony/monolog-bridge": "^7.0.0"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.23",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "2.1.29",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpunit/phpunit": "^9.5.0",
+        "pickware/phpstan-extensions": "*@dev",
+        "pickware/product-set-bundle": "*@dev",
+        "pickware/unit-testing-tools": "*@dev"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../bundles/*"
+        },
+        {
+            "type": "path",
+            "url": "../../libraries/composer-packages/*"
+        },
+        {
+            "type": "path",
+            "url": "../../libraries-dev/composer-packages/*"
+        },
+        {
+            "type": "path",
+            "url": "../../plugins/*"
+        },
+        {
+            "type": "path",
+            "url": "../../plugins-dev/*"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Pickware\\PickwareWms\\": "src/",
+            "Pickware\\PickwareWms\\Test\\TestEntityCreation\\": "test/TestEntityCreation/"
+        },
+        "exclude-from-classmap": [
+            "**.unit.php",
+            "**.integration.php"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true,
+            "pickware/dependency-loader": true,
+            "symfony/runtime": true
+        },
+        "lock": false
+    },
+    "extra": {
+        "ci-min-supported-shopware-version": "6.6.10.5",
+        "package-exclusively-with-plugins": [
+            "pickware/pickware-wms",
+            "pickware/pickware"
+        ]
+    },
+    "scripts": {
+        "phpstan": "./vendor/bin/phpstan analyse --memory-limit=4G --no-interaction --ansi -c phpstan.neon.dist",
+        "test:integration": "APP_ENV=test ${SHOPWARE_DIR}/vendor/bin/phpunit --config phpunit.integration.xml --testdox",
+        "test:unit": "composer install && ./vendor/bin/phpunit --config phpunit.unit.xml --testdox"
+    }
+}

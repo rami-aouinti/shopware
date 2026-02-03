@@ -1,0 +1,67 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\ValidationBundle\\JsonDoesNotValidateAgainstSchemaException\:\:__construct\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonDoesNotValidateAgainstSchemaException.php
+
+		-
+			message: '#^Method Pickware\\ValidationBundle\\JsonDoesNotValidateAgainstSchemaException\:\:__construct\(\) has parameter \$errors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonDoesNotValidateAgainstSchemaException.php
+
+		-
+			message: '#^Method Pickware\\ValidationBundle\\JsonDoesNotValidateAgainstSchemaException\:\:getSchemaErrors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonDoesNotValidateAgainstSchemaException.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Pickware\\\\HttpUtils\\\\JsonApi\\\\JsonApiErrors'' and Pickware\\HttpUtils\\JsonApi\\JsonApiErrors will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: src/JsonDoesNotValidateAgainstSchemaException.unit.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Pickware\\\\ValidationBundle\\\\JsonDoesNotValidateAgainstSchemaException'' and Pickware\\ValidationBundle\\JsonDoesNotValidateAgainstSchemaException will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: src/JsonDoesNotValidateAgainstSchemaException.unit.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Opis\\\\JsonSchema\\\\Schema'' and Opis\\JsonSchema\\Schema will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: src/JsonSchema.unit.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Pickware\\\\ValidationBundle\\\\JsonSchema'' and Pickware\\ValidationBundle\\JsonSchema will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 6
+			path: src/JsonSchema.unit.php
+
+		-
+			message: '#^Method Pickware\\ValidationBundle\\PickwareValidationBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareValidationBundle.php
+
+		-
+			message: '#^Property Pickware\\ValidationBundle\\Subscriber\\AcValidationAnnotationSubscriberTest\:\:\$controller has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Subscriber/AclValidationAnnotationSubscriber.unit.php
+
+		-
+			message: '#^Method Pickware\\ValidationBundle\\Subscriber\\JsonRequestValueResolver\:\:resolve\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Subscriber/JsonRequestValueResolver.php
+
+		-
+			message: '#^Method Pickware\\ValidationBundle\\TestFixtures\\ComplexTypeWithFromArray\:\:fromArray\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/TestFixtures/ComplexTypeWithFromArray.php

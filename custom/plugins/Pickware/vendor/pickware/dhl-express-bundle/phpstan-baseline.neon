@@ -1,0 +1,85 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\DhlExpressBundle\\Adapter\\DhlExpressAdapter\:\:getPageFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DhlExpressAdapter.php
+
+		-
+			message: '#^Method Pickware\\DhlExpressBundle\\Adapter\\DhlExpressAdapter\:\:getTrackingUrlForTrackingNumbers\(\) has parameter \$shipmentNumbers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DhlExpressAdapter.php
+
+		-
+			message: '#^Method Pickware\\DhlExpressBundle\\Adapter\\DhlExpressLabelSize\:\:getSupportedPageFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DhlExpressLabelSize.php
+
+		-
+			message: '#^Method Pickware\\DhlExpressBundle\\Adapter\\DhlExpressResponseProcessorTest\:\:createPayloadConstraint\(\) has parameter \$expected with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DhlExpressResponseProcessor.unit.php
+
+		-
+			message: '#^Method Pickware\\DhlExpressBundle\\Adapter\\DhlExpressResponseProcessorTest\:\:createPayloadConstraint\(\) return type with generic class PHPUnit\\Framework\\Constraint\\Callback does not specify its types\: CallbackInput$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Adapter/DhlExpressResponseProcessor.unit.php
+
+		-
+			message: '#^Method Pickware\\DhlExpressBundle\\Adapter\\DhlExpressShipmentConfig\:\:__construct\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DhlExpressShipmentConfig.php
+
+		-
+			message: '#^Method Pickware\\DhlExpressBundle\\Adapter\\DhlExpressShipmentFactory\:\:getShipmentServices\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DhlExpressShipmentFactory.php
+
+		-
+			message: '#^Method Pickware\\DhlExpressBundle\\Adapter\\DhlExpressShipmentRegistrationService\:\:cancelDhlExpressShipments\(\) has parameter \$shipmentIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DhlExpressShipmentRegistrationService.php
+
+		-
+			message: '#^Method Pickware\\DhlExpressBundle\\Adapter\\DhlExpressShipmentRegistrationService\:\:registerDhlExpressShipments\(\) has parameter \$shipmentIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DhlExpressShipmentRegistrationService.php
+
+		-
+			message: '#^Method Pickware\\DhlExpressBundle\\Adapter\\DhlExpressShipmentRegistrationServiceTest\:\:requestEqualsTo\(\) return type with generic class PHPUnit\\Framework\\Constraint\\Callback does not specify its types\: CallbackInput$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Adapter/DhlExpressShipmentRegistrationService.unit.php
+
+		-
+			message: '#^Method Pickware\\DhlExpressBundle\\Api\\DhlExpressApiClientFactory\:\:createClient\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/DhlExpressApiClientFactory.php
+
+		-
+			message: '#^Method Pickware\\DhlExpressBundle\\Api\\DhlExpressApiClientFactory@anonymous/Api/DhlExpressApiClientFactory\.unit\.php\:50\:\:createClient\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/DhlExpressApiClientFactory.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method createClient\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: src/Api/DhlExpressApiClientFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\DhlExpressBundle\\PickwareDhlExpressBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareDhlExpressBundle.php

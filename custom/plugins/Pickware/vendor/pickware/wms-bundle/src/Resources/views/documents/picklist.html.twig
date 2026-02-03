@@ -1,0 +1,10 @@
+{% sw_extends '@PickwareErpBundle/documents/picklist.html.twig' %}
+
+{% block document_side_info_date %}
+    {{ parent() }}
+    {% if order and order.orderNumber %}
+        {% sw_include '@PickwareWmsBundle/documents/components/picklist_barcode.html.twig' with {
+            orderNumber: order.orderNumber
+        } %}
+    {% endif %}
+{% endblock %}

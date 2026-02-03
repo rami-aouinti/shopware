@@ -1,0 +1,15 @@
+{
+    "pickware-erp-starter": {
+        "stock-valuation-report-export": {
+            "file-name": "Stock valuation report %s",
+            "columns": {
+                "product-name": "Product name",
+                "product-number": "Product number",
+                "stock": "Stock",
+                "tax-rate": "Tax rate",
+                "valuation-net": "Net",
+                "valuation-gross": "Gross"
+            }
+        }
+    }
+}

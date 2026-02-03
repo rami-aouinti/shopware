@@ -1,0 +1,337 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\AclRole\\AclRole\:\:__construct\(\) has parameter \$privileges with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AclRole/AclRole.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\AclRole\\AclRole\:\:getPrivileges\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AclRole/AclRole.php
+
+		-
+			message: '#^Property Pickware\\InstallationLibrary\\AclRole\\AclRole\:\:\$privileges type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AclRole/AclRole.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\Country\\Country\:\:__construct\(\) has parameter \$translatedNames with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Country/Country.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\Country\\Country\:\:getTranslatesName\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Country/Country.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\CustomFieldSet\\CustomField\:\:__construct\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CustomFieldSet/CustomField.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\CustomFieldSet\\CustomField\:\:getConfig\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CustomFieldSet/CustomField.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\CustomFieldSet\\CustomFieldSet\:\:__construct\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CustomFieldSet/CustomFieldSet.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\CustomFieldSet\\CustomFieldSet\:\:__construct\(\) has parameter \$fields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CustomFieldSet/CustomFieldSet.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\CustomFieldSet\\CustomFieldSet\:\:__construct\(\) has parameter \$relations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CustomFieldSet/CustomFieldSet.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\CustomFieldSet\\CustomFieldSet\:\:getConfig\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CustomFieldSet/CustomFieldSet.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\CustomFieldSet\\CustomFieldSet\:\:getFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CustomFieldSet/CustomFieldSet.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\CustomFieldSet\\CustomFieldSet\:\:getRelations\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CustomFieldSet/CustomFieldSet.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\CustomFieldSet\\CustomFieldSetInstaller\:\:ensureCustomFieldSetRelationsExist\(\) has parameter \$customFieldSetRelationEntityNames with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CustomFieldSet/CustomFieldSetInstaller.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\CustomFieldSet\\CustomFieldSetInstaller\:\:ensureCustomFieldsExist\(\) has parameter \$customFields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CustomFieldSet/CustomFieldSetInstaller.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\DependencyAwareTableDropper\:\:dropTables\(\) has parameter \$tableNames with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DependencyAwareTableDropper.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\DependencyAwareTableDropper\:\:resolveDependencies\(\) has parameter \$tableNames with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DependencyAwareTableDropper.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\DependencyAwareTableDropper\:\:resolveDependencies\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DependencyAwareTableDropper.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\DocumentType\\DocumentType\:\:__construct\(\) has parameter \$configOverwrite with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DocumentType/DocumentType.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\DocumentType\\DocumentType\:\:__construct\(\) has parameter \$translations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DocumentType/DocumentType.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\DocumentType\\DocumentType\:\:getConfigOverwrite\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DocumentType/DocumentType.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\DocumentType\\DocumentType\:\:getTranslations\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DocumentType/DocumentType.php
+
+		-
+			message: '#^Property Pickware\\InstallationLibrary\\DocumentType\\DocumentType\:\:\$configOverwrite type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DocumentType/DocumentType.php
+
+		-
+			message: '#^Property Pickware\\InstallationLibrary\\DocumentType\\DocumentType\:\:\$translations type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DocumentType/DocumentType.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\:\:getConfig\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/DocumentType/DocumentTypeInstaller.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\DocumentType\\DocumentTypeInstaller\:\:determineDocumentConfiguration\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DocumentType/DocumentTypeInstaller.php
+
+		-
+			message: '#^Variable \$baseDocumentBaseConfig in PHPDoc tag @var does not match assigned variable \$documentBaseConfigs\.$#'
+			identifier: varTag.differentVariable
+			count: 1
+			path: src/DocumentType/DocumentTypeInstaller.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\Elasticsearch\\ElasticsearchIndexInstaller\:\:installElasticsearchIndices\(\) has parameter \$entities with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Elasticsearch/ElasticsearchIndexInstaller.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\MailTemplate\\MailTemplate\:\:__construct\(\) has parameter \$availableTemplateVariables with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/MailTemplate/MailTemplate.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\MailTemplate\\MailTemplate\:\:getAvailableTemplateVariables\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/MailTemplate/MailTemplate.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\MailTemplate\\MailTemplate\:\:getMailTranslations\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/MailTemplate/MailTemplate.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\MailTemplate\\MailTemplate\:\:getTranslations\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/MailTemplate/MailTemplate.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\MailTemplate\\MailTemplate\:\:getTypeNameTranslations\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/MailTemplate/MailTemplate.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\:\:getId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/MailTemplate/MailTemplateInstaller.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\MailTemplate\\MailTemplateTranslation\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/MailTemplate/MailTemplateTranslation.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\NumberRange\\NumberRange\:\:__construct\(\) has parameter \$translations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/NumberRange/NumberRange.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\NumberRange\\NumberRange\:\:getTranslations\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/NumberRange/NumberRange.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\NumberRange\\NumberRange\:\:getTypeNameTranslations\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/NumberRange/NumberRange.php
+
+		-
+			message: '#^Property Pickware\\InstallationLibrary\\NumberRange\\NumberRange\:\:\$translations type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/NumberRange/NumberRange.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\SqlView\\SqlView\:\:__construct\(\) has parameter \$parameterTypes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SqlView/SqlView.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\SqlView\\SqlView\:\:__construct\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SqlView/SqlView.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\SqlView\\SqlView\:\:getSelectStatementParameterTypes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SqlView/SqlView.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\SqlView\\SqlView\:\:getSelectStatementParameters\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SqlView/SqlView.php
+
+		-
+			message: '#^Property Pickware\\InstallationLibrary\\SqlView\\SqlView\:\:\$selectStatementParameterTypes type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SqlView/SqlView.php
+
+		-
+			message: '#^Property Pickware\\InstallationLibrary\\SqlView\\SqlView\:\:\$selectStatementParameters type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SqlView/SqlView.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\StateMachine\\StateMachine\:\:__construct\(\) has parameter \$nameTranslations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/StateMachine/StateMachine.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\StateMachine\\StateMachine\:\:getNameTranslations\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/StateMachine/StateMachine.php
+
+		-
+			message: '#^Property Pickware\\InstallationLibrary\\StateMachine\\StateMachine\:\:\$nameTranslations type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/StateMachine/StateMachine.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\:\:getId\(\)\.$#'
+			identifier: method.notFound
+			count: 5
+			path: src/StateMachine/StateMachineInstaller.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\)\: mixed\)\|null, Closure\(Shopware\\Core\\System\\StateMachine\\Aggregation\\StateMachineState\\StateMachineStateEntity\)\: string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/StateMachine/StateMachineInstaller.php
+
+		-
+			message: '#^Variable \$existingNumberRange in PHPDoc tag @var does not match assigned variable \$existingStateMachine\.$#'
+			identifier: varTag.differentVariable
+			count: 1
+			path: src/StateMachine/StateMachineInstaller.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\StateMachine\\StateMachineState\:\:__construct\(\) has parameter \$nameTranslations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/StateMachine/StateMachineState.php
+
+		-
+			message: '#^Method Pickware\\InstallationLibrary\\StateMachine\\StateMachineState\:\:getNameTranslations\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/StateMachine/StateMachineState.php
+
+		-
+			message: '#^Property Pickware\\InstallationLibrary\\StateMachine\\StateMachineState\:\:\$nameTranslations type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/StateMachine/StateMachineState.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\DBAL\\\\Schema\\\\AbstractSchemaManager'' and ''tableExists'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/TableService.php
+
+		-
+			message: '#^Parameter \#1 \$names of method Doctrine\\DBAL\\Schema\\AbstractSchemaManager\<Doctrine\\DBAL\\Platforms\\AbstractPlatform\>\:\:tablesExist\(\) expects array\<int, string\>, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/TableService.php

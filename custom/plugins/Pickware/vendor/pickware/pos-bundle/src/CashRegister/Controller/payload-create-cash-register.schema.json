@@ -1,0 +1,95 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Cash register create-cash-register payload",
+    "description": "POST request payload for api route _action/pickware-pos/create-cash-register",
+    "type": "object",
+    "additionalProperties": true,
+    "required": ["cashRegister"],
+    "properties": {
+        "cashRegister": {
+            "$ref": "#/definitions/cashRegister"
+        }
+    },
+    "definitions": {
+        "cashRegister": {
+            "type": "object",
+            "additionalProperties": true,
+            "required": ["id", "name", "branchStoreId", "deviceUuid", "fiscalizationConfiguration"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/shopwareUuid"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "branchStoreId": {
+                    "$ref": "#/definitions/shopwareUuid"
+                },
+                "deviceUuid": {
+                    "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/uuid" }]
+                },
+                "fiscalizationConfiguration": {
+                    "oneOf": [
+                        { "type": "null" },
+                        { "$ref": "#/definitions/fiskalyAtConfiguration" },
+                        { "$ref": "#/definitions/fiskalyDeConfiguration" }
+                    ]
+                }
+            }
+        },
+        "fiskalyAtConfiguration": {
+            "type": "object",
+            "required": ["fiskalyAt"],
+            "additionalProperties": true,
+            "properties": {
+                "fiskalyAt": {
+                    "type": "object",
+                    "required": ["cashRegisterUuid", "businessPlatformUuid"],
+                    "additionalProperties": true,
+                    "properties": {
+                        "cashRegisterUuid": {
+                            "$ref": "#/definitions/uuid"
+                        },
+                        "businessPlatformUuid": {
+                            "$ref": "#/definitions/uuid"
+                        }
+                    }
+                }
+            }
+        },
+        "fiskalyDeConfiguration": {
+            "type": "object",
+            "required": ["fiskalyDe"],
+            "additionalProperties": true,
+            "properties": {
+                "fiskalyDe": {
+                    "type": "object",
+                    "required": ["clientUuid", "tssUuid", "businessPlatformUuid"],
+                    "additionalProperties": true,
+                    "properties": {
+                        "clientUuid": {
+                            "$ref": "#/definitions/uuid"
+                        },
+                        "tssUuid": {
+                            "$ref": "#/definitions/uuid"
+                        },
+                        "businessPlatformUuid": {
+                            "$ref": "#/definitions/uuid"
+                        }
+                    }
+                }
+            }
+        },
+        "shopwareUuid": {
+            "description": "Shopware's UUID which contains 32 random HEX characters",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "uuid": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        }
+    }
+}

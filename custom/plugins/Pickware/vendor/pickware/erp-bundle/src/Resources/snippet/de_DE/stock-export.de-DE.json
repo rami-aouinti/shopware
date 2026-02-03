@@ -1,0 +1,27 @@
+{
+    "pickware-erp-starter": {
+        "stock-export": {
+            "file-name": "Bestandsübersicht %s",
+            "columns": {
+                "warehouse-name": "Lager",
+                "warehouse-code": "Lagerkürzel",
+                "bin-location": "Lagerplatz",
+                "product-name": "Produktname",
+                "product-number": "Produktnummer",
+                "reorder-point": "Meldebestand",
+                "target-maximum-quantity": "Maximalbestand",
+                "replenishment-quantity": "Nachschubmenge",
+                "reserved-stock": "Reservierter Bestand",
+                "available-stock": "Verfügbarer Bestand",
+                "stock": "Bestand",
+                "change": "Änderung",
+                "default-bin-location": "Standardlagerplatz"
+            },
+            "unknown-stock-location": "unbekannt",
+            "default-bin-location": {
+                "true": "ja",
+                "false": "nein"
+            }
+        }
+    }
+}

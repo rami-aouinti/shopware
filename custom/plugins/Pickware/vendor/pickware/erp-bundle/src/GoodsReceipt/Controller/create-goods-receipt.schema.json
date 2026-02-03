@@ -1,0 +1,356 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Goods receipt create-goods-receipt payload",
+    "description": "POST request payload for api route _action/pickware-erp/goods-receipt/create-goods-receipt",
+    "type": "object",
+    "required": ["goodsReceipt"],
+    "additionalProperties": false,
+    "properties": {
+        "goodsReceipt": {
+            "$ref": "#/definitions/goodsReceipt"
+        }
+    },
+    "definitions": {
+        "goodsReceipt": {
+            "type": "object",
+            "required": ["id", "warehouseId", "lineItems", "type"],
+            "additionalProperties": false,
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": ["free", "supplier", "customer"]
+                },
+                "taxStatus": {
+                    "type": "string"
+                },
+                "currencyId": {
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/uuid"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "itemRounding": {
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/rounding"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "totalRounding": {
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/rounding"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "currencyFactor": {
+                    "oneOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "comment": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "warehouseId": {
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/uuid"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "lineItems": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/lineItem"
+                    }
+                },
+                "supplierId": {
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/uuid"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "supplierOrders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/supplierOrder"
+                    }
+                },
+                "customerId": {
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/uuid"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "returnOrders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/returnOrder"
+                    }
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/definitions/typeFreeImpliesNoReferencesAreSet"
+                },
+                {
+                    "$ref": "#/definitions/typeCustomerImpliesCustomerReferencesAreSet"
+                },
+                {
+                    "$ref": "#/definitions/typeSupplierImpliesSupplierReferencesAreSet"
+                }
+            ]
+        },
+        "lineItem": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "quantity", "productId"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "productId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "productSnapshot": {
+                    "type": "object"
+                },
+                "batchId": {
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/uuid"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "priceDefinition": {
+                    "$ref": "#/definitions/priceDefinition"
+                },
+                "supplierOrderId": {
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/uuid"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "returnOrderId": {
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/uuid"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            }
+        },
+        "supplierOrder": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "returnOrder": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "rounding": {
+            "description": "A rounding config",
+            "type": "object",
+            "required": ["decimals", "interval", "roundForNet"],
+            "additionalProperties": false,
+            "properties": {
+                "decimals": {
+                    "type": "integer"
+                },
+                "interval": {
+                    "type": "number"
+                },
+                "extensions": {
+                    "type": "array"
+                },
+                "roundForNet": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "priceDefinition": {
+            "type": "object",
+            "required": ["type", "price", "quantity", "taxRules"],
+            "additionalProperties": true,
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "taxRules": {
+                    "type": "array"
+                }
+            }
+        },
+        "typeFreeImpliesNoReferencesAreSet": {
+            "anyOf": [
+                {
+                    "not": {
+                        "properties": {
+                            "type": {
+                                "enum": ["free"]
+                            }
+                        }
+                    }
+                },
+                {
+                    "properties": {
+                        "customerId": {
+                            "type": "null"
+                        },
+                        "supplierId": {
+                            "type": "null"
+                        },
+                        "returnOrders": {
+                            "type": "null"
+                        },
+                        "supplierOrders": {
+                            "type": "null"
+                        }
+                    }
+                }
+            ]
+        },
+        "typeCustomerImpliesCustomerReferencesAreSet": {
+            "anyOf": [
+                {
+                    "not": {
+                        "properties": {
+                            "type": {
+                                "enum": ["supplier"]
+                            }
+                        }
+                    }
+                },
+                {
+                    "required": ["supplierId", "supplierOrders"],
+                    "properties": {
+                        "customerId": {
+                            "type": "null"
+                        },
+                        "supplierId": {
+                            "$ref": "#/definitions/uuid"
+                        },
+                        "returnOrders": {
+                            "type": "null"
+                        },
+                        "supplierOrders": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/supplierOrder"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "typeSupplierImpliesSupplierReferencesAreSet": {
+            "anyOf": [
+                {
+                    "not": {
+                        "properties": {
+                            "type": {
+                                "enum": ["customer"]
+                            }
+                        }
+                    }
+                },
+                {
+                    "required": ["customerId", "returnOrders"],
+                    "properties": {
+                        "supplierId": {
+                            "type": "null"
+                        },
+                        "customerId": {
+                            "$ref": "#/definitions/uuid"
+                        },
+                        "supplierOrders": {
+                            "type": "null"
+                        },
+                        "returnOrders": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/returnOrder"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

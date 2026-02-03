@@ -1,0 +1,157 @@
+elements:
+  - name: product
+    type: single-select
+    label:
+      de-DE: Produkt
+      en-GB: Product
+    options:
+      - value: CL
+        label:
+          de-DE: DPD CLASSIC
+          en-GB: DPD CLASSIC
+      - value: E830
+        label:
+          de-DE: DPD 8:30
+          en-GB: DPD 8:30
+      - value: E10
+        label:
+          de-DE: DPD 10:00
+          en-GB: DPD 10:00
+      - value: E12
+        label:
+          de-DE: DPD 12:00
+          en-GB: DPD 12:00
+      - value: E18
+        label:
+          de-DE: DPD 18:00
+          en-GB: DPD 18:00
+      - value: MAIL
+        label:
+          de-DE: DPD International Mail
+          en-GB: DPD International Mail
+      - value: MAX
+        label:
+          de-DE: DPD MAX
+          en-GB: DPD MAX
+      - value: PL
+        label:
+          de-DE: DPD PARCELLetter
+          en-GB: DPD PARCELLetter
+      - value: PM4
+        label:
+          de-DE: DPD Priority
+          en-GB: DPD Priority
+    default: CL # DPD CLASSIC
+  - type: group
+    label:
+      en-GB: Services
+      de-DE: Services
+    elements:
+      - name: food
+        type: boolean
+        helpText:
+          en-GB: 'Requires "Predict" notification.'
+          de-DE: 'Benötigt "Predict" Benachrichtigung.'
+        label:
+          en-GB: Food
+          de-DE: Food
+        default: false
+        showConditions:
+          product:
+            - 'CL'
+            - 'E12'
+            - 'E18'
+      - name: saturdayDelivery
+        type: boolean
+        label:
+          en-GB: Saturday delivery
+          de-DE: Samstagszustellung
+        default: false
+        showConditions:
+          product:
+            - 'E12'
+      - name: exWorksDelivery
+        type: boolean
+        label:
+          en-GB: Freight collect
+          de-DE: Unfrei
+        default: false
+      - name: personalDelivery
+        type: boolean
+        label:
+          de-DE: Persönliche Zustellung
+          en-GB: Personal delivery
+        default: false
+      - name: personalDeliveryType
+        type: single-select
+        label:
+          de-DE: Art der persönlichen Zustellung
+          en-GB: Personal delivery type
+        options:
+          - value: '1'
+            label:
+              de-DE: 'Zustellung (ohne persönliche Identifizierung)'
+              en-GB: 'Delivery (without personal identification)'
+          - value: '2'
+            label:
+              de-DE: 'Persönliche Zustellung mit Identifizierung (IDCheck)'
+              en-GB: 'Personal delivery with identification (IDCheck)'
+        default: '1'
+        showConditions:
+          personalDelivery: true
+  - type: group
+    label:
+      en-GB: Notifications
+      de-DE: Benachrichtigungen
+    elements:
+      - name: proactiveNotification
+        type: boolean
+        helpText:
+          en-GB: 'With proactive notification, your recipient will be informed by email for selected events.'
+          de-DE: 'Mit der proaktiven Benachrichtigung wird Ihr Empfänger bei ausgewählten Ereignissen per E-Mail informiert.'
+        label:
+          de-DE: Proaktive Benachrichtigung
+          en-GB: Proactive notification
+        default: false
+      - name: predict
+        type: boolean
+        helpText:
+          en-GB: 'With Predict, on the day of delivery, your recipient will be informed by email to the hour when their package will arrive.'
+          de-DE: 'Mit Predict wird Ihr Empfänger am Tag der Zustellung per E-Mail auf die Stunde genau informiert, wann sein Paket kommt.'
+        label:
+          de-DE: Predict
+          en-GB: Predict
+        default: false
+      - name: proactiveNotificationEvents
+        type: multi-select
+        helpText:
+          en-GB: 'Specifies for which events a notification is to be issued.'
+          de-DE: 'Gibt an, bei welchen Ereignissen eine Benachrichtigung erfolgen soll.'
+        label:
+          de-DE: Events für proaktive Benachrichtigung
+          en-GB: Events for proactive notifications
+        options:
+          - value: 1
+            label:
+              de-DE: Abholung
+              en-GB: Pick-up
+          - value: 2
+            label:
+              de-DE: Nicht Zustellung
+              en-GB: Non-delivery
+          - value: 4
+            label:
+              de-DE: Zustellung
+              en-GB: Delivery
+          - value: 8
+            label:
+              de-DE: Eingehend
+              en-GB: Inbound
+          - value: 16
+            label:
+              de-DE: Zur Auslieferung
+              en-GB: Out for delivery
+        default:
+          - 16
+        showConditions:
+          proactiveNotification: true

@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<container
+    xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <service id="Pickware\ValidationBundle\Subscriber\JsonValidationAnnotationSubscriber">
+            <argument type="service" id="Pickware\ValidationBundle\JsonValidator" />
+            <tag name="kernel.event_subscriber" />
+        </service>
+        <service id="Pickware\ValidationBundle\Subscriber\AclValidationAnnotationSubscriber">
+            <tag name="kernel.event_subscriber" />
+        </service>
+        <service id="Pickware\ValidationBundle\Subscriber\JsonRequestValueResolver" autowire="true">
+            <tag name="kernel.event_subscriber" />
+            <tag name="controller.argument_value_resolver" />
+        </service>
+    </services>
+</container>

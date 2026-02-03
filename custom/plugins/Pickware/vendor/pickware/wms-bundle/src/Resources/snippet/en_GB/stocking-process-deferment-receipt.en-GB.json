@@ -1,0 +1,17 @@
+{
+    "pickware-wms": {
+        "stocking-process-deferment-receipt": {
+            "file-name": "Receipt for deferred stocking process %s",
+            "title": "Receipt for deferred stocking process",
+            "sub-title": "Warehouse:",
+            "origin": "Origin:",
+            "cancelled-picking-process": "Cancelled picking process",
+            "warehouse-label": "%warehouseName% (%warehouseCode%)",
+            "columns": {
+                "product-number": "Product number",
+                "product": "Product",
+                "quantity": "Quantity"
+            }
+        }
+    }
+}

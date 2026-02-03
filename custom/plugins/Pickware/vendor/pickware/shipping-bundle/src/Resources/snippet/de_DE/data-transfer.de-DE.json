@@ -1,0 +1,7 @@
+{
+    "pickware-shipping-bundle": {
+        "data-transfer": {
+            "allow-email-transfer": "Meine E-Mail-Adresse darf an den Versanddienstleister übermittelt werden."
+        }
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "pickware-erp-starter": {
+        "goods-receipt-note": {
+            "file-name": "Wareneingangsbeleg %s",
+            "title": "Wareneingangsbeleg",
+            "sub-title": "Lager:",
+            "warehouse-label": "%warehouseName% (%warehouseCode%)",
+            "order": "Bestellung %number%",
+            "comment": "Kommentar",
+            "columns": {
+                "origin": "Herkunft",
+                "detail": "Details"
+            },
+            "goods-receipt-type": {
+                "free": "Freier Wareneingang",
+                "supplier": "Lieferantenbestellung %number%",
+                "customer": "Retoure %number%"
+            }
+        }
+    }
+}

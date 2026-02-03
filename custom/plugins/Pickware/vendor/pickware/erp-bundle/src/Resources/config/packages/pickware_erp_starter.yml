@@ -1,0 +1,4 @@
+pickware_erp_starter:
+  import_export:
+    csv_to_database_reader:
+      batch_size: 1000

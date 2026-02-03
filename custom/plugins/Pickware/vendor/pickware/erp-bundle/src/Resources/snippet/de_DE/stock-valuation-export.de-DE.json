@@ -1,0 +1,21 @@
+{
+    "pickware-erp-starter": {
+        "stock-valuation-export": {
+            "file-name": "Bewerteter Warenbestand %s",
+            "columns": {
+                "product-name": "Produktname",
+                "product-number": "Produktnummer",
+                "stock": "Bestand",
+                "purchase-price-net-in-default-currency": "EK (netto)",
+                "purchase-price-gross-in-default-currency": "EK (brutto)",
+                "stock-valuation-net-in-default-currency": "Lagerwert (netto)",
+                "stock-valuation-gross-in-default-currency": "Lagerwert (brutto)",
+                "currency-factor": "Umrechnungsfaktor",
+                "purchase-price-net": "EK (Originalwährung, netto)",
+                "purchase-price-gross": "EK (Originalwährung, brutto)",
+                "stock-valuation-net": "Lagerwert (Originalwährung, netto)",
+                "stock-valuation-gross": "Lagerwert (Originalwährung, brutto)"
+            }
+        }
+    }
+}

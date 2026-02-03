@@ -1,0 +1,36 @@
+{% if customProducts[lineItem.parentId] is defined %}
+    {% set options = customProducts[lineItem.parentId] %}
+    {% for option in options %}
+        <tr class="pw-erp-custom-product-row">
+            {# Product number column #}
+            <td>
+                {# If the product number is empty shopware will add a '*' as product number. #}
+                {% if option.productNumber != '*' %}
+                    {{ option.productNumber }}
+                {% endif %}
+            </td>
+            {# Product name column #}
+            <td>*
+                {{  option.label  }}:
+
+                {% if option.type == 'checkbox' %}
+                    {% if option.value == 'on' %}
+                        {{ 'pickware-erp-starter.picklist-document.custom-products.checkbox.on'| trans | sw_sanitize(null, true) }}
+                    {% else %}
+                        {{ 'pickware-erp-starter.picklist-document.custom-products.checkbox.off'| trans | sw_sanitize(null, true) }}
+                    {% endif %}
+                {% elseif option.type == 'datetime' %}
+                    {{ option.value|format_date('short', locale=locale) }}
+                {% elseif option.type == 'timestamp' %}
+                    {{ option.value|format_datetime('none', 'short', locale=locale) }}
+                {% else %}
+                    {{ option.value }}
+                {% endif %}
+            </td>
+            {# Quantity column #}
+            <td></td>
+            {# Picked column #}
+            <td class="picked-cell"></td>
+        </tr>
+    {% endfor %}
+{% endif %}

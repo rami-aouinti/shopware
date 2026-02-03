@@ -1,0 +1,9 @@
+{
+    "pickware-erp-starter": {
+        "order-document-batch": {
+            "batch-label": "Batch",
+            "best-before-date-label": "BBD",
+            "unknown-label": "Unknown"
+        }
+    }
+}

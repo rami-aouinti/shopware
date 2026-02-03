@@ -1,0 +1,10 @@
+{
+    "pickware-wms": {
+        "picking-modes": {
+            "single": "Single picking",
+            "preCollectedBatchPicking": "Pre-collected batch picking",
+            "pickToBoxBatchPicking": "Pick-to-box picking",
+            "singleItemOrdersPicking": "Single item orders picking"
+        }
+    }
+}

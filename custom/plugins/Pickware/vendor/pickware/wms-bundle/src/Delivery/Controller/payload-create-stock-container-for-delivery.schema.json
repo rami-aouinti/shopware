@@ -1,0 +1,39 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Picking process create-stock-container-for-delivery payload",
+    "description": "PUT request payload for api route _action/pickware-wms/create-stock-container-for-delivery",
+    "type": "object",
+    "required": ["associations", "deliveryId", "stockContainer"],
+    "properties": {
+        "associations": {
+            "type": "object"
+        },
+        "deliveryId": {
+            "$ref": "#/definitions/uuid"
+        },
+        "stockContainer": {
+            "$ref": "#/definitions/stockContainer"
+        }
+    },
+    "definitions": {
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "stockContainer": {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "number": {
+                    "anyOf": [{ "type": "string" }, { "type": "null" }]
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,12 @@
+import './common/common.js';
+import './component/component.js';
+import './document/document.js';
+import './flow/flow.js';
+import './invoice-correction/invoice-correction.js';
+import './order/order.js';
+import './picklist/picklist.js';
+import './product/product.js';
+import './reorder-notification/reorder-notification.js';
+import './return-order/return-order.js';
+import './search/search.js';
+import './supplier-order/supplier-order.js';

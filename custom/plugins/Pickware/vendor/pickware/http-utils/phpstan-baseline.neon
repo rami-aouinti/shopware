@@ -1,0 +1,205 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\HttpUtils\\Guzzle\\GuzzleServiceUnavailableRetryMiddlewareUnitTest\:\:notRetriableStatusCodeProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Guzzle/GuzzleServiceUnavailableRetryMiddleware.unit.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\Guzzle\\GuzzleServiceUnavailableRetryMiddlewareUnitTest\:\:retriableStatusCodeProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Guzzle/GuzzleServiceUnavailableRetryMiddleware.unit.php
+
+		-
+			message: '#^Class Pickware\\ApiErrorHandlingBundle\\JsonApiErrorTranslating\\LocalizableJsonApiError not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/JsonApi/JsonApiError.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiError\:\:createFromJsonArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiError.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiError\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiError.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiError\:\:getMeta\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiError.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiError\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiError.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiError\:\:setMeta\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiError.php
+
+		-
+			message: '#^Property Pickware\\HttpUtils\\JsonApi\\JsonApiError\:\:\$meta type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiError.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 1
+			path: src/JsonApi/JsonApiError.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Pickware\\\\HttpUtils\\\\JsonApi\\\\JsonApiError'' and Pickware\\HttpUtils\\JsonApi\\JsonApiError will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: src/JsonApi/JsonApiError.unit.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiErrorLinks\:\:fromArray\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiErrorLinks.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiErrorLinks\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiErrorLinks.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiErrorSource\:\:__construct\(\) has parameter \$properties with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiErrorSource.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiErrorSource\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiErrorSource.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiErrors\:\:__construct\(\) has parameter \$errors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiErrors.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiErrors\:\:getErrors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiErrors.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiErrors\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiErrors.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiErrors\:\:setErrors\(\) has parameter \$errors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiErrors.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiErrorsTest\:\:statusCodeProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiErrors.unit.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiLinkObject\:\:__construct\(\) has parameter \$hreflang with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiLinkObject.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiLinkObject\:\:__construct\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiLinkObject.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiLinkObject\:\:fromArray\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiLinkObject.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiLinkObject\:\:getHreflang\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiLinkObject.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiLinkObject\:\:getMeta\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiLinkObject.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\JsonApi\\JsonApiLinkObject\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiLinkObject.php
+
+		-
+			message: '#^Property Pickware\\HttpUtils\\JsonApi\\JsonApiLinkObject\:\:\$hreflang type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiLinkObject.php
+
+		-
+			message: '#^Property Pickware\\HttpUtils\\JsonApi\\JsonApiLinkObject\:\:\$meta type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApi/JsonApiLinkObject.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\ResponseFactory\:\:createInvalidPosContentType\(\) has parameter \$expectedContentType with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/ResponseFactory.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\Sanitizer\\HeaderSanitizer\:\:__construct\(\) has parameter \$sanitizedHeaders with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sanitizer/HeaderSanitizer.php
+
+		-
+			message: '#^Property Pickware\\HttpUtils\\Sanitizer\\HeaderSanitizer\:\:\$sanitizedHeaders type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sanitizer/HeaderSanitizer.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\Sanitizer\\HttpSanitizing\:\:sanitizeMessage\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sanitizer/HttpSanitizing.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\Sanitizer\\XmlSanitizer\:\:__construct\(\) has parameter \$hiddenXmlPaths with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sanitizer/XmlSanitizer.php
+
+		-
+			message: '#^Method Pickware\\HttpUtils\\Sanitizer\\XmlSanitizer\:\:__construct\(\) has parameter \$truncatedXmlPaths with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Sanitizer/XmlSanitizer.php

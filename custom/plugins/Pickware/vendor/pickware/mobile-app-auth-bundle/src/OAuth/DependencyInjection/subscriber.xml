@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<container
+    xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <service id="Pickware\MobileAppAuthBundle\OAuth\ApiPinAuthenticationSubscriber">
+            <argument type="service" id="pickware_mobile_app.authorization_server" />
+            <argument type="service" id="Pickware\MobileAppAuthBundle\OAuth\UserRepository" />
+            <argument type="service" id="Shopware\Core\Framework\Api\OAuth\RefreshTokenRepository" />
+            <tag name="kernel.event_subscriber" />
+        </service>
+    </services>
+</container>

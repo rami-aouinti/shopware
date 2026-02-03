@@ -1,0 +1,47 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "required": ["report"],
+    "additionalProperties": false,
+    "properties": {
+        "report": {
+            "$ref": "#/definitions/report"
+        }
+    },
+    "definitions": {
+        "report": {
+            "type": "object",
+            "required": ["id", "warehouseId", "reportingDay", "method"],
+            "additionalProperties": false,
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "warehouseId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "reportingDay": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "method": {
+                    "type": "string",
+                    "enum": ["fifo", "lifo", "average"]
+                },
+                "comment": {
+                    "oneOf": [{ "type": "string" }, { "type": "null" }]
+                },
+                "reportingDayTimeZone": {
+                    "type": "string"
+                }
+            }
+        },
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        }
+    }
+}

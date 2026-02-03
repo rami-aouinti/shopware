@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<archive
+    generatingSystem="Shopware"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://xml.datev.de/bedi/tps/document/v06.0"
+    xsi:schemaLocation="http://xml.datev.de/bedi/tps/document/v06.0 Document_v060.xsd"
+    version="6.0"
+>
+    <header>
+        <date>{CREATION_DATE}</date>
+        <description>{DESCRIPTION}</description>
+    </header>
+    <content>{DOCUMENTS}</content>
+</archive>

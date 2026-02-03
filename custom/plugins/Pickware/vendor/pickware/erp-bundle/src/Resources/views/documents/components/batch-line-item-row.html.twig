@@ -1,0 +1,20 @@
+{% if lineItem.payload.pwErpBatchInfo is defined and lineItem.payload.pwErpBatchInfo|length > 0 %}
+    {% set hasSingleBatch = lineItem.payload.pwErpBatchInfo|length == 1 %}
+    {% for batchInfo in lineItem.payload.pwErpBatchInfo %}
+        <br>
+        <b>{{ 'pickware-erp-starter.order-document-batch.batch-label'|trans }}:</b>
+        {{- ' ' -}}
+        {%- if batchInfo.batchNumber -%}
+            {{ batchInfo.batchNumber|sw_sanitize(null, true) }} – <b>{{ 'pickware-erp-starter.order-document-batch.best-before-date-label'|trans }}:</b>
+            {{- ' ' -}}
+            {%- if batchInfo.bestBeforeDate -%}
+                {{ batchInfo.bestBeforeDate|format_date('short', locale=locale) }}
+            {%- else -%}
+                -
+            {%- endif -%}
+        {%- else -%}
+            <i>{{ 'pickware-erp-starter.order-document-batch.unknown-label'|trans }}</i>
+        {%- endif -%}
+        {%- if not hasSingleBatch %} ({{ batchInfo.quantity }}){% endif %}
+    {% endfor %}
+{% endif %}

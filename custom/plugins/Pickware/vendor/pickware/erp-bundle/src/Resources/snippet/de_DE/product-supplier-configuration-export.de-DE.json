@@ -1,0 +1,22 @@
+{
+    "pickware-erp-starter": {
+        "product-supplier-configuration-export": {
+            "columns": {
+                "product-number": "Produktnummer",
+                "product-name": "Produktname",
+                "gtin": "EAN",
+                "manufacturer": "Hersteller",
+                "manufacturer-number": "Herstellernummer",
+                "supplier-product-number": "Lieferantenproduktnummer",
+                "supplier": "Lieferant",
+                "supplier-number": "Lieferantennummer",
+                "min-purchase": "Mindestabnahme",
+                "purchase-steps": "Abnahmeintervall",
+                "purchase-price-net": "EK (netto)",
+                "currency": "Währung"
+            },
+            "file-name": "Produkt-Lieferanten-Zuordnung %s",
+            "unknown-stock-location": "unbekannt"
+        }
+    }
+}

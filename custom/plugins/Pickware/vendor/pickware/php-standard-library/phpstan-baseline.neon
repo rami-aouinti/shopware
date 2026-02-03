@@ -1,0 +1,73 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method class@anonymous/Collection/ImmutableCollection\.unit\.php\:537\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Collection/ImmutableCollection.unit.php
+
+		-
+			message: '#^Parameter \#1 \$other of method Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<int\>\:\:equals\(\) expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<int\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Collection/ImmutableCollection.unit.php
+
+		-
+			message: '#^Parameter \#1 \$other of method Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<string\>\:\:equals\(\) expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<string\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<non\-empty\-string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Collection/ImmutableCollection.unit.php
+
+		-
+			message: '#^Parameter \#1 \$search of method Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<int\>\:\:containsElementEqualTo\(\) expects int, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Collection/ImmutableCollection.unit.php
+
+		-
+			message: '#^Parameter \#1 \$search of method Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<int\>\:\:containsElementIdenticalTo\(\) expects int, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Collection/ImmutableCollection.unit.php
+
+		-
+			message: '#^Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<\*NEVER\*\> does not accept int\.$#'
+			identifier: offsetAssign.valueType
+			count: 1
+			path: src/Collection/ImmutableCollection.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method __invoke\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: src/Collection/ImmutableCollection.unit.php
+
+		-
+			message: '#^You should use assertCount\(\$expectedCount, \$variable\) instead of assertSame\(\$expectedCount, \$variable\-\>count\(\)\)\.$#'
+			identifier: phpunit.assertCount
+			count: 1
+			path: src/Collection/ImmutableCollection.unit.php
+
+		-
+			message: '#^Function Pickware\\PhpStandardLibrary\\Language\\convertExceptionToArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Exception/functions.php
+
+		-
+			message: '#^Function Pickware\\PhpStandardLibrary\\Language\\escapeStringsInStacktrace\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Exception/functions.php
+
+		-
+			message: '#^Function Pickware\\PhpStandardLibrary\\Language\\escapeStringsInStacktrace\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Exception/functions.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function Pickware\\PhpStandardLibrary\\Optional\\doIf expects callable\(null\)\: non\-falsy\-string, Closure\(string\)\: non\-falsy\-string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Optional/functions.unit.php

@@ -1,0 +1,34 @@
+monolog:
+  channels: ['pickware_dhl_express']
+
+when@dev:
+  monolog:
+    handlers:
+      # Service name: monolog.logger.pickware_dhl_express
+      pickware_dhl_express:
+        type: stream
+        path: '%kernel.logs_dir%/pickware_dhl_express_%kernel.environment%.log'
+        level: debug
+        channels: ['pickware_dhl_express']
+        bubble: false
+        priority: 150
+
+when@prod:
+  monolog:
+    handlers:
+      # Service name: monolog.logger.pickware_dhl_express
+      pickware_dhl_express:
+        type: fingers_crossed
+        action_level: warning
+        handler: pickware_dhl_express_nested
+        buffer_size: 50
+        channels: ['pickware_dhl_express']
+        bubble: false
+        priority: 150
+      pickware_dhl_express_nested:
+        type: rotating_file
+        max_files: 30
+        path: '%kernel.logs_dir%/pickware_dhl_express_%kernel.environment%.log'
+        level: debug
+        bubble: false
+        priority: 150

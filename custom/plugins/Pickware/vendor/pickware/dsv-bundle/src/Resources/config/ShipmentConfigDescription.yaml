@@ -1,0 +1,194 @@
+elements:
+  - name: product
+    type: single-select
+    label:
+      de-DE: Produkt
+      en-GB: Product
+    options:
+      - value: 'Road'
+        label:
+          de-DE: Straße
+          en-GB: Road
+    default: 'Road'
+  - name: packageType
+    type: single-select
+    label:
+      de-DE: Verpackungsart
+      en-GB: Package type
+    options:
+      - value: 'BAG'
+        label:
+          de-DE: Sack
+          en-GB: Bag
+      - value: 'CAS'
+        label:
+          de-DE: Schachtel
+          en-GB: Case
+      - value: 'CLL'
+        label:
+          de-DE: CLL - Colli
+          en-GB: Colli
+      - value: 'CRT'
+        label:
+          de-DE: Lattenkiste
+          en-GB: Crate
+      - value: 'CTN'
+        label:
+          de-DE: Pappkarton / Karton
+          en-GB: Carton / box
+      - value: 'DRM'
+        label:
+          de-DE: Fass
+          en-GB: Drum
+      - value: 'CAN'
+        label:
+          de-DE: Kanister
+          en-GB: Can
+      - value: 'EUP'
+        label:
+          de-DE: Palette - 120cm x 80cm
+          en-GB: Pallet - 120cm x 80cm
+      - value: 'EUR'
+        label:
+          de-DE: Europalette - 120cm x 80cm
+          en-GB: Euro pallet - 120cm x 80cm
+      - value: 'GIB'
+        label:
+          de-DE: Gitterbox - 120cm x 80cm
+          en-GB: Gitterbox - 120cm x 80cm
+      - value: 'HPL'
+        label:
+          de-DE: Halbpalette - 80cm x 60cm
+          en-GB: Half pallet - 80cm x 60cm
+      - value: 'IBC'
+        label:
+          de-DE: IBC-Container - 120cm x 100cm
+          en-GB: IBC - 120cm x 100cm
+      - value: 'IPL'
+        label:
+          de-DE: Palette - 120cm x 100cm
+          en-GB: Pallet - 120cm x 100cm
+      - value: 'JCN'
+        label:
+          de-DE: Benzinkanister
+          en-GB: Jerry can
+      - value: 'QPL'
+        label:
+          de-DE: Viertelpalette - 60cm x 40cm
+          en-GB: Quarter pallet - 60cm x 40cm
+      - value: 'LOD'
+        label:
+          de-DE: Ladung
+          en-GB: Load
+      - value: 'PLT'
+        label:
+          de-DE: Palette - nicht spezifiziert
+          en-GB: Pallet - unspecified
+      - value: 'CON'
+        label:
+          de-DE: Pallet container
+          en-GB: Pallet container
+      - value: 'PXL'
+        label:
+          de-DE: Palette - 120cm x 120cm
+          en-GB: Pallet - 120cm x 120cm
+      - value: 'UPL'
+        label:
+          de-DE: Palette - 120cm x 110cm
+          en-GB: Pallet - 120cm x 110cm
+    default: 'EUP'
+
+  - type: group
+    label:
+      en-GB: Services
+      de-DE: Services
+    elements:
+      - name: b2C
+        type: boolean
+        label:
+          en-GB: B2CService
+          de-DE: B2CService
+        default: false
+        showConditions:
+          product:
+            - 'Road'
+      - name: privateDeliveryCurbSide
+        type: boolean
+        label:
+          en-GB: Private delivery curb side
+          de-DE: Private Lieferung Bordsteinkante
+        default: false
+        showConditions:
+          product:
+            - 'Road'
+      - name: preAdviceMailDelivery
+        type: boolean
+        label:
+          en-GB: Pre-advice email delivery
+          de-DE: Liefervorankündigung per E-Mail
+        default: false
+        showConditions:
+          product:
+            - 'Road'
+
+  - type: group
+    label:
+      en-GB: General
+      de-DE: Allgemein
+    elements:
+      - name: packageDescription
+        type: text
+        label:
+          de-DE: Warenbeschreibung (Paketbeschreibung)
+          en-GB: Goods description (Package description)
+      - name: incoterm
+        type: single-select
+        label:
+          de-DE: Incoterm
+          en-GB: Incoterm
+        options:
+          - value: EXW
+            label:
+              de-DE: 'Ab Werk (EXW)'
+              en-GB: 'Ex works (EXW)'
+          - value: FCA
+            label:
+              de-DE: 'Frei Frachtführer (FCA)'
+              en-GB: 'Free carrier (FCA)'
+          - value: CPT
+            label:
+              de-DE: 'Fracht bezahlt bis (CPT)'
+              en-GB: 'Carriage paid to (CPT)'
+          - value: CIP
+            label:
+              de-DE: 'Fracht und Versicherung bezahlt (CIP)'
+              en-GB: 'Carriage insurance paid (CIP)'
+          - value: DPU
+            label:
+              de-DE: 'Geliefert benannter Ort entladen (DPU)'
+              en-GB: 'Delivered at Place Unloaded (DPU)'
+          - value: DAP
+            label:
+              de-DE: 'Geliefert benannter Ort (DAP)'
+              en-GB: 'Delivered at place (DAP)'
+          - value: DDP
+            label:
+              de-DE: 'Frei Haus inkl. Zollabfertigung, Zölle und Steuern (DDP)'
+              en-GB: 'Delivered duty paid (DDP)'
+          - value: FAS
+            label:
+              de-DE: 'Frei Längsseite Schiff (FAS)'
+              en-GB: 'Free Alongside Ship (FAS)'
+          - value: FOB
+            label:
+              de-DE: 'Frei an Board (FOB)'
+              en-GB: 'Free on Board (FOB)'
+          - value: CFR
+            label:
+              de-DE: 'Kosten und Fracht (CFR)'
+              en-GB: 'Cost and Freight (CFR)'
+          - value: CFI
+            label:
+              de-DE: 'Kosten, Versicherung und Fracht (CFI)'
+              en-GB: 'Cost, Insurance and Freight (CFI)'
+        default: DAP

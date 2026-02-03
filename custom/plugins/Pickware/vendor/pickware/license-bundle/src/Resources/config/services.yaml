@@ -1,0 +1,63 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Pickware\LicenseBundle\:
+    resource: '../../'
+    exclude:
+      - '../../**/*Event.php'
+      - '../../**/*Exception.php'
+      - '../../**/*Message.php'
+      - '../../Administration/'
+      - '../../Installation/'
+
+  Pickware\PickwareAccountBundle\ApiClient\PickwareAccountApiClient:
+    class: 'Pickware\PickwareAccountBundle\ApiClient\PickwareAccountApiClient'
+    factory: '@Pickware\PickwareAccountBundle\ApiClient\PickwareAccountApiClientFactory'
+    arguments:
+      $businessPlatformBaseUrl: '%pickware_license.business_platform_base_url%'
+      $pickwareAccountAccessTokenProvider: '@Pickware\LicenseBundle\PickwareAccount\PickwareAccountAccessTokenProvider'
+
+  pickware_license.oidc.business_platform_client_configuration:
+    class: 'Pickware\OidcClientBundle\Client\OpenIdConnectClientConfiguration'
+    factory: '@Pickware\LicenseBundle\OidcClient\BusinessPlatformOpenIdConnectClientConfigurationFactory'
+
+  pickware_license.oidc.business_platform_client:
+    class: 'Pickware\OidcClientBundle\Provider\Oauth2PkceClient'
+    factory: '@Pickware\OidcClientBundle\Client\Oauth2PkceClientFactory'
+    arguments:
+      $openIdConnectClientConfiguration: '@pickware_license.oidc.business_platform_client_configuration'
+
+  pickware_license.usage_report.configuration:
+    class: 'Pickware\UsageReportBundle\Configuration\UsageReportConfiguration'
+    factory: '@Pickware\LicenseBundle\UsageReport\UsageReportConfigurationFactory'
+
+  pickware_license.usage_report.api_client:
+    class: 'Pickware\UsageReportBundle\ApiClient\UsageReportApiClient'
+    factory: '@Pickware\UsageReportBundle\ApiClient\UsageReportApiClientFactory'
+    arguments:
+      $businessPlatformBaseUrl: '%pickware_license.business_platform_base_url%'
+
+  pickware_license.usage_report.error_handler:
+    class: 'Pickware\LicenseBundle\UsageReport\UsageReportErrorHandler'
+
+  Pickware\UsageReportBundle\UsageReport\UsageReportService:
+    class: 'Pickware\UsageReportBundle\UsageReport\UsageReportService'
+    factory: '@Pickware\UsageReportBundle\UsageReport\UsageReportServiceFactory'
+    arguments:
+      $usageReportApiClient: '@pickware_license.usage_report.api_client'
+      $usageReportErrorHandler: '@pickware_license.usage_report.error_handler'
+      $usageReportConfiguration: '@pickware_license.usage_report.configuration'
+      $reportingPeriodInDays: '%pickware_license.usage_report.reporting_period_in_days%'
+
+  pickware_license.upsell_nudging.pickware_account_information:
+    class: 'Pickware\UpsellNudgingBundle\PickwareAccountInformation\PickwareAccountInformation'
+    factory: '@Pickware\LicenseBundle\UpsellNudging\PickwareAccountInformationFactory'
+
+parameters:
+  pickware_license.oidc.client_secret: 'pickware-oidc-public-client-secret'
+  pickware_license.business_platform_production_base_url: 'https://account.pickware.com'
+  pickware_license.business_platform_base_url: '%env(string:default:pickware_license.business_platform_production_base_url:PICKWARE_BUSINESS_PLATFORM_BASE_URL)%'
+  # We want to make sure to report at least one entire calendar month of usage.
+  pickware_license.usage_report.reporting_period_in_days: 62

@@ -1,0 +1,30 @@
+{
+    "pickware-wms": {
+        "picking-process-receipt": {
+            "file-name": "Beleg fuer Kommissioniervorgang %s",
+            "title": {
+                "deferred": "Zurückgestellter Kommissioniervorgang",
+                "picked": "Abgeschlossener Kommissioniervorgang"
+            },
+            "sub-title": "Lager:",
+            "warehouse-label": "%warehouseName% (%warehouseCode%)",
+            "created-at": "Erstellt am:",
+            "user": "Benutzer:",
+            "order-number": "Bestellnummer:",
+            "order-date": "Bestelldatum:",
+            "product-list-title": {
+                "deferred": "Fehlende Produkte",
+                "picked": "Kommissionierte Produkte"
+            },
+            "order-list-title": "Bestellungen",
+            "columns": {
+                "product-number": "Artikelnummer",
+                "product": "Produkt",
+                "quantity": "Anzahl",
+                "order-number": "Bestellnummer",
+                "receiver": "Empfänger",
+                "shipping-method": "Versandart"
+            }
+        }
+    }
+}

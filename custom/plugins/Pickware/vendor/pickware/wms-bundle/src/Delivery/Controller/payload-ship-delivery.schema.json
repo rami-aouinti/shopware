@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "description": "PUT request payload for API route _action/pickware-wms/ship-delivery",
+    "type": "object",
+    "required": ["deliveryId", "associations"],
+    "properties": {
+        "deliveryId": {
+            "$ref": "#/definitions/uuid"
+        },
+        "associations": {
+            "type": "object"
+        }
+    },
+    "definitions": {
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        }
+    }
+}

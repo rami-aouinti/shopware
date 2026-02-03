@@ -1,0 +1,5 @@
+{% if order.orderCustomer.salutation %}{{ order.orderCustomer.salutation.translated.letterName ~ ' ' }}{% endif %}{{ order.orderCustomer.firstName }} {{ order.orderCustomer.lastName }},
+
+Attached to this mail you can find the gift voucher for your purchase with the number: {{ order.orderNumber }}
+
+Don't hesitate to contact us if you have any questions.

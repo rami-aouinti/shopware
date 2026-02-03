@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/master/src/Core/System/SystemConfig/Schema/config.xsd"
+>
+    <card>
+        <title>Login DPD</title>
+        <title lang="de-DE">Login DPD</title>
+        <input-field type="text">
+            <name>delisId</name>
+            <required>true</required>
+            <label>Delis ID</label>
+            <label lang="de-DE">Delis ID</label>
+        </input-field>
+        <input-field type="password">
+            <name>password</name>
+            <required>true</required>
+            <label>Password</label>
+            <label lang="de-DE">Passwort</label>
+        </input-field>
+        <input-field type="bool">
+            <name>useTestingEndpoint</name>
+            <label>Use testing webservice</label>
+            <label lang="de-DE">Nutze Testing-Webservice</label>
+            <helpText lang="de-DE">Nutze den Testing-Webservice von DPD anstatt den Productive-Webservice.</helpText>
+            <helpText>Use the DPD testing web service instead of the productive web service.</helpText>
+        </input-field>
+    </card>
+    <card>
+        <title>DPD Customer Information</title>
+        <title lang="de-DE">DPD Kundeninformationen</title>
+        <input-field type="text">
+            <name>customerNumber</name>
+            <required>true</required>
+            <label>Customer number</label>
+            <label lang="de-DE">Kundennummer</label>
+        </input-field>
+        <input-field type="text">
+            <name>sendingDepotId</name>
+            <required>true</required>
+            <label>Sending depot ID</label>
+            <label lang="de-DE">Nummer des Versanddepot</label>
+            <helpText lang="de-DE">
+                Die Versanddepot-ID muss genau 4 Zeichen lang sein, ist sie zu kurz fülle sie bitte von vorne mit Nullen
+                auf, z.B. "123" => "0123".
+            </helpText>
+            <helpText>
+                The sending depot ID must be exactly 4 characters long, if it is too short please prefix it with zeros
+                e.g. "123" => "0123".
+            </helpText>
+            <minLength>4</minLength>
+            <maxLength>4</maxLength>
+        </input-field>
+    </card>
+    <card>
+        <title>Label settings</title>
+        <title lang="de-DE">Etiketten-Einstellungen</title>
+        <input-field type="single-select">
+            <name>labelSize</name>
+            <label>Paper size</label>
+            <label lang="de-DE">Papierformat</label>
+            <required>true</required>
+            <options>
+                <option>
+                    <id>A4</id>
+                    <name>DIN A4</name>
+                    <name lang="de-DE">DIN A4</name>
+                </option>
+                <option>
+                    <id>A6</id>
+                    <name>DIN A6</name>
+                    <name lang="de-DE">DIN A6</name>
+                </option>
+            </options>
+        </input-field>
+    </card>
+</config>

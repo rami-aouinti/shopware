@@ -1,0 +1,30 @@
+{
+    "pickware-erp-starter": {
+        "purchase-list-export": {
+            "columns": {
+                "product-name": "Product name",
+                "product-number": "Product number",
+                "supplier-product-number": "Supplier product number",
+                "gtin": "GTIN/EAN",
+                "manufacturer-number": "Manufacturer number",
+                "manufacturer": "Manufacturer",
+                "supplier-name": "Supplier",
+                "stock": "Stock",
+                "reserved-stock": "Reserved",
+                "available-stock": "Available",
+                "reorder-point": "Reorder point",
+                "incoming-stock": "Incoming",
+                "sales": "Sales",
+                "sales-prediction": "Estimated Demand",
+                "purchase-suggestion": "Purchase suggestion",
+                "min-purchase": "Minimum purchase",
+                "purchase-steps": "Purchase steps",
+                "delivery-time": "Delivery time",
+                "quantity": "Order quantity",
+                "purchase-price-net": "PP (net)",
+                "purchase-total-net": "Total (net)"
+            },
+            "file-name": "Purchase list %s"
+        }
+    }
+}

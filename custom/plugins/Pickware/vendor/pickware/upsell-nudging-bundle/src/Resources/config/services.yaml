@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Pickware\UpsellNudgingBundle\:
+    resource: '../../'
+    exclude:
+      - '../../Administration/'
+
+parameters:
+  pickware_upsell_nudging.business_platform_production_base_url: 'https://account.pickware.com'
+  pickware_upsell_nudging.business_platform_base_url: '%env(string:default:pickware_upsell_nudging.business_platform_production_base_url:PICKWARE_BUSINESS_PLATFORM_BASE_URL)%'

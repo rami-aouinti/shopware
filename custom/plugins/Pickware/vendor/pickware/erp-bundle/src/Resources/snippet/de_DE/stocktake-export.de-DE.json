@@ -1,0 +1,23 @@
+{
+    "pickware-erp-starter": {
+        "stocktake-export": {
+            "file-name": "Inventur %s %s",
+            "columns": {
+                "created-at": "Erstellt",
+                "counting-process-number": "Zählung",
+                "bin-location": "Lagerplatz",
+                "product-name": "Produktname",
+                "product-number": "Produktnummer",
+                "expected-total": "Erwartet (gesamt)",
+                "counted-total": "Gezählt (gesamt)",
+                "difference-total": "Differenz (gesamt)",
+                "expected": "Erwartet",
+                "counted": "Gezählt",
+                "difference": "Differenz",
+                "user": "Benutzer"
+            },
+            "unknown-bin-location": "unbekannt",
+            "deleted": "gelöscht"
+        }
+    }
+}

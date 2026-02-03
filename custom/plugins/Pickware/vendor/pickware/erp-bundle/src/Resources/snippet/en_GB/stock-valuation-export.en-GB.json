@@ -1,0 +1,21 @@
+{
+    "pickware-erp-starter": {
+        "stock-valuation-export": {
+            "file-name": "Stock valuation %s",
+            "columns": {
+                "product-name": "Product name",
+                "product-number": "Product number",
+                "stock": "Stock",
+                "purchase-price-net-in-default-currency": "PP (net)",
+                "purchase-price-gross-in-default-currency": "PP (gross)",
+                "stock-valuation-net-in-default-currency": "Stock valuation (net)",
+                "stock-valuation-gross-in-default-currency": "Stock valuation (gross)",
+                "currency-factor": "Currency factor",
+                "purchase-price-net": "PP (original currency, net)",
+                "purchase-price-gross": "PP (original currency, gross)",
+                "stock-valuation-net": "Stock valuation (original currency, net)",
+                "stock-valuation-gross": "Stock valuation (original currency, gross)"
+            }
+        }
+    }
+}

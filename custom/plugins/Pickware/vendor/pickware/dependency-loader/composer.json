@@ -1,0 +1,54 @@
+{
+    "name": "pickware/dependency-loader",
+    "description": "A dependency loader that ensures that all Pickware plugins that are installed in a Shopware 6 installation use the newest dependencies.",
+    "license": "proprietary",
+    "type": "composer-plugin",
+    "version": "5.16.0",
+    "authors": [
+        {
+            "name": "Pickware GmbH",
+            "email": "info@pickware.de"
+        }
+    ],
+    "require": {
+        "php": ">= 8.2",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "composer-plugin-api": "^1.0.0 || ^2.0.0",
+        "composer/composer": "^1.9.1 || ^2.0.0",
+        "shopware/core": ">=6.6.10.5 <6.8",
+        "symfony/yaml": "^7.0.0"
+    },
+    "require-dev": {
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "2.1.29",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpunit/phpunit": "^9.5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pickware\\DependencyLoader\\": "src"
+        },
+        "exclude-from-classmap": [
+            "**.unit.php"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "ergebnis/composer-normalize": true,
+            "phpstan/extension-installer": true,
+            "symfony/runtime": true,
+            "viison/composer-git-hooks-installer-plugin": true
+        },
+        "lock": false
+    },
+    "extra": {
+        "ci-min-supported-shopware-version": "6.6.10.5",
+        "class": "Pickware\\DependencyLoader\\DependencyLoaderComposerPlugin"
+    },
+    "scripts": {
+        "phpstan": "./vendor/bin/phpstan analyse --memory-limit=4G --no-interaction --ansi -c phpstan.neon.dist",
+        "test:unit": "composer install && ./vendor/bin/phpunit --config phpunit.unit.xml --testdox"
+    }
+}

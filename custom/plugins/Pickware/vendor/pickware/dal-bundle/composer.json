@@ -1,0 +1,95 @@
+{
+    "name": "pickware/dal-bundle",
+    "description": "A bundle for Shopware 6 that provides helpful utilities for the Shopware DAL",
+    "license": "proprietary",
+    "type": "library",
+    "version": "5.61.0",
+    "authors": [
+        {
+            "name": "Pickware GmbH",
+            "email": "info@pickware.de"
+        }
+    ],
+    "require": {
+        "php": ">= 8.2",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "composer/semver": "^3.0",
+        "doctrine/dbal": "^3.6 || ^4.0",
+        "pickware/api-error-handling-bundle": "^3.77.0",
+        "pickware/http-utils": "^4.32.0",
+        "pickware/php-standard-library": "^2.25.0",
+        "pickware/shopware-extensions-bundle": "^3.67.0",
+        "psr/event-dispatcher": "^1.0",
+        "shopware/core": ">=6.6.10.5 <6.8",
+        "symfony/config": "^7.0.0",
+        "symfony/dependency-injection": "^7.0.0",
+        "symfony/event-dispatcher": "^7.0.0",
+        "symfony/event-dispatcher-contracts": "^3.3",
+        "symfony/http-foundation": "^7.0.0",
+        "symfony/validator": "^7.0.0"
+    },
+    "require-dev": {
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "2.1.29",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpunit/phpunit": "^9.5.0",
+        "pickware/phpstan-extensions": "*@dev",
+        "pickware/unit-testing-tools": "*@dev",
+        "shopware/elasticsearch": "^6.6 || ^6.6.x-dev || ^6.7.x-dev"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../bundles/*"
+        },
+        {
+            "type": "path",
+            "url": "../../libraries/composer-packages/*"
+        },
+        {
+            "type": "path",
+            "url": "../../libraries-dev/composer-packages/*"
+        },
+        {
+            "type": "path",
+            "url": "../../plugins-dev/*"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Pickware\\DalBundle\\": "src"
+        },
+        "files": [
+            "src/BulkInsert/functions.php"
+        ],
+        "exclude-from-classmap": [
+            "**.unit.php",
+            "**.integration.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Pickware\\DalBundle\\Test\\": "test/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true,
+            "php-http/discovery": true,
+            "phpstan/extension-installer": true,
+            "pickware/dependency-loader": true,
+            "symfony/runtime": true,
+            "viison/composer-git-hooks-installer-plugin": true
+        },
+        "lock": false
+    },
+    "extra": {
+        "ci-min-supported-shopware-version": "6.6.10.5"
+    },
+    "scripts": {
+        "phpstan": "./vendor/bin/phpstan analyse --memory-limit=4G --no-interaction --ansi -c phpstan.neon.dist",
+        "test:integration": "${SHOPWARE_DIR}/vendor/bin/phpunit --config phpunit.integration.xml --testdox",
+        "test:unit": "composer install && ./vendor/bin/phpunit --config phpunit.unit.xml --testdox"
+    }
+}

@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<container
+    xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <service id="Pickware\ProductSetBundle\Product\ProductSetForVariantsUpdater">
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+            <argument type="service" id="Pickware\DalBundle\EntityManager" />
+            <tag name="kernel.event_subscriber" />
+        </service>
+        <service id="Pickware\ProductSetBundle\Product\ProductSetUpdater">
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+            <argument type="service" id="Pickware\DalBundle\EntityManager" />
+            <argument id="event_dispatcher" type="service" />
+            <argument type="service" id="Pickware\PickwareErpStarter\Stock\ProductAvailableStockUpdater" />
+            <argument
+                type="service"
+                id="Pickware\PickwareErpStarter\Cache\CacheInvalidationService"
+                on-invalid="null"
+            />
+            <argument
+                type="service"
+                id="Pickware\PickwareErpStarter\PaperTrail\PaperTrailUriProvider"
+                on-invalid="null"
+            />
+            <argument
+                type="service"
+                id="Pickware\PickwareErpStarter\PaperTrail\PaperTrailLoggingService"
+                on-invalid="null"
+            />
+            <tag name="kernel.event_subscriber" />
+        </service>
+        <service id="Pickware\ProductSetBundle\Product\ProductSetValidator">
+            <argument type="service" id="Pickware\DalBundle\EntityManager" />
+            <argument type="service" id="Pickware\ShopwareExtensionsBundle\Product\ProductNameFormatterService" />
+            <tag name="kernel.event_subscriber" />
+        </service>
+    </services>
+</container>

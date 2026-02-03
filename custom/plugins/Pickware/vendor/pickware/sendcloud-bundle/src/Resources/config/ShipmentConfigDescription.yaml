@@ -1,0 +1,23 @@
+elements:
+  - name: shippingMethodTechnicalName
+    type: text
+    label:
+      de-DE: Checkout Versandmethode
+      en-GB: Checkout delivery method
+    helpText:
+      de-DE: 'Technischer Name der Versandmethode, der als Checkout Versandmethode nach Sendcloud übertragen wird und dort für Versandregeln genutzt wird.'
+      en-GB: 'Technical name of the shipping method that is transmitted to Sendcloud as a checkout delivery method and used there for shipping rules.'
+    showConditions:
+      $context.isLabelCreation: true
+  - name: exportDocuments
+    type: group
+    label:
+      de-DE: Export
+      en-GB: Export
+    elements:
+      - name: sendExportInformation
+        type: boolean
+        label:
+          en-GB: Send export information
+          de-DE: Exportinformationen senden
+        default: false

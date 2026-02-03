@@ -1,0 +1,24 @@
+{
+    "pickware-wms": {
+        "picking-statistics-picks-export": {
+            "file-name": "Picking Dashboard - Picks %s",
+            "columns": {
+                "pick-id": "Pick ID",
+                "pick-created-at": "Pick timestamp",
+                "picked-quantity": "Picked quantity",
+                "product-number": "Product number",
+                "product-ean": "EAN",
+                "product-name": "Product name",
+                "product-weight": "Product weight (kg)",
+                "user-name": "User name",
+                "user-roles": "User roles",
+                "warehouse-name": "Warehouse",
+                "bin-location-code": "Bin location",
+                "picking-process-number": "Picking process number",
+                "picking-mode": "Picking mode",
+                "picking-profile-name": "Picking profile"
+            },
+            "unknown-stock-location": "unknown"
+        }
+    }
+}

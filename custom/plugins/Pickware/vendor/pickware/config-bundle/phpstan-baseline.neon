@@ -1,0 +1,25 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Class Pickware\\ShopwarePlugins\\ShopwareIntegrationTestPlugin\\ShopwareIntegrationTestPlugin not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/PickwareConfigBundle.php
+
+		-
+			message: '#^Method Pickware\\ConfigBundle\\PickwareConfigBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareConfigBundle.php
+
+		-
+			message: '#^Parameter \#1 \$pickwareScheduledTasks of class Pickware\\ConfigBundle\\ScheduledTaskConfigSubscriber constructor expects iterable\<Pickware\\ConfigBundle\\AbstractConfigurableScheduledTask\>, array\<int, stdClass\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/ScheduledTaskConfigSubscriber.unit.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\:\:getId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/ScheduledTaskExecutionTimeUpdater.php

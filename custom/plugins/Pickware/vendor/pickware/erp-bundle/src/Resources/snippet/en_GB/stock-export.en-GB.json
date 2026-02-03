@@ -1,0 +1,27 @@
+{
+    "pickware-erp-starter": {
+        "stock-export": {
+            "file-name": "Stock overview %s",
+            "columns": {
+                "warehouse-name": "Warehouse",
+                "warehouse-code": "Warehouse code",
+                "bin-location": "Bin Location",
+                "product-name": "Product name",
+                "product-number": "Product number",
+                "reorder-point": "Reorder point",
+                "target-maximum-quantity": "Maximum quantity",
+                "replenishment-quantity": "Replenishment quantity",
+                "reserved-stock": "Reserved stock",
+                "available-stock": "Available stock",
+                "stock": "Stock",
+                "change": "Change",
+                "default-bin-location": "Default bin location"
+            },
+            "unknown-stock-location": "unknown",
+            "default-bin-location": {
+                "true": "yes",
+                "false": "no"
+            }
+        }
+    }
+}

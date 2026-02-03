@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<container
+    xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <service id="Pickware\ProductSetBundle\Cart\ProductSetCartCollector">
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Cache\EntityCacheKeyGenerator" />
+            <argument type="service" id="Shopware\Core\Checkout\Cart\Price\QuantityPriceCalculator" />
+            <argument type="service" id="Pickware\FeatureFlagBundle\FeatureFlagService" />
+            <tag name="shopware.cart.collector" />
+            <!-- The priority is needed, so that the processor is called before the processor of Shopware -->
+            <!-- See: https://github.com/shopware/shopware/blob/6d0e2e2721f52e2a8766438c398eeacee940a075/src/Core/Checkout/DependencyInjection/cart.xml#L270 -->
+            <tag name="shopware.cart.processor" priority="6000" />
+        </service>
+        <service
+            id="Pickware\ProductSetBundle\Cart\OrderConverterDecorator"
+            decorates="Shopware\Core\Checkout\Cart\Order\OrderConverter"
+        >
+            <argument type="service" id="Pickware\ProductSetBundle\Cart\OrderConverterDecorator.inner" />
+            <argument type="service" id="Pickware\DalBundle\EntityManager" />
+        </service>
+    </services>
+</container>

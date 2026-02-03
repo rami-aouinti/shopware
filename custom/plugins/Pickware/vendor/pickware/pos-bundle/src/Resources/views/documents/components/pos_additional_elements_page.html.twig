@@ -1,0 +1,24 @@
+<div>
+    <table class="pw-pos-additional-elements-table">
+        {% for additionalElement in pickwarePosAdditionalElements %}
+            {% if additionalElement.type is same as('text') %}
+                {% if additionalElement.title is not same as(null) %}
+                    <tr>
+                        <td>{{ additionalElement.title }}</td>
+                        <td class="col-breakable">{{ additionalElement.value }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="2" class="col-breakable">{{ additionalElement.value }}</td>
+                    </tr>
+                {% endif %}
+            {% elseif additionalElement.type is same as('qr-code') %}
+                <tr>
+                    <td colspan="2">
+                        <img src="{{ pw_qr_code_data_uri(additionalElement.value) }}" alt="QR Code" />
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+</div>

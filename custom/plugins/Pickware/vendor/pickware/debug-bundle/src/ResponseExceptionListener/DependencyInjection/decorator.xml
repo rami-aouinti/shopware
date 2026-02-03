@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<container
+    xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <service
+            id="Pickware\DebugBundle\ResponseExceptionListener\ResponseExceptionListenerDecorator"
+            decorates="Shopware\Core\Framework\Api\EventListener\ResponseExceptionListener"
+        >
+            <argument
+                type="service"
+                id="Pickware\DebugBundle\ResponseExceptionListener\ResponseExceptionListenerDecorator.inner"
+            />
+            <argument type="service" id="monolog.logger.pickware_debug_error" />
+            <argument type="service" id="Pickware\DebugBundle\ResponseExceptionListener\JwtValidator" />
+            <argument type="service" id="pickware_debug.http_sanitizing" />
+        </service>
+    </services>
+</container>

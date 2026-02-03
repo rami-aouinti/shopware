@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Pickware\DalBundle\:
+    resource: '../../'
+    exclude:
+      - '../../**/*Event.php'
+      - '../../**/*Exception.php'
+      - '../../**/*Message.php'
+      - '../../**/*Field.php'
+      - '../../**/*functions.php'

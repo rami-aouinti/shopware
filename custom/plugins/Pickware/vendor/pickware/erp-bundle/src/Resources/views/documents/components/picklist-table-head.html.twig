@@ -1,0 +1,15 @@
+<thead>
+<tr class="line-item-table-header">
+    <th style="width: 30%" class="first-column">
+        {{ 'pickware-erp-starter.picklist-document.columns.bin-location' | trans | sw_sanitize(null, true) }}
+        {% if alterantiveBinLocationsExist %}
+            <br>
+            {{ 'pickware-erp-starter.picklist-document.columns.alternative' | trans | sw_sanitize(null, true) }}
+        {% endif %}
+    </th>
+    <th style="width: 20%">{{ 'pickware-erp-starter.picklist-document.columns.product-number' | trans | sw_sanitize(null, true) }}</th>
+    <th style="width: 35%">{{ 'pickware-erp-starter.picklist-document.columns.product-name' | trans | sw_sanitize(null, true) }}</th>
+    <th style="width: 10%" class="align-right quantity-cell">{{ 'pickware-erp-starter.picklist-document.columns.quantity' | trans | sw_sanitize(null, true) }}</th>
+    <th style="width: 5%" class="align-right">{{ 'pickware-erp-starter.picklist-document.columns.picked' | trans | sw_sanitize(null, true) }}</th>
+</tr>
+</thead>

@@ -1,0 +1,30 @@
+{% sw_extends '@Storefront/storefront/page/account/order-history/order-item.html.twig' %}
+{% set PICKWARE_PRODUCT_SET_LINE_ITEM_TYPE = constant('Pickware\\ProductSetBundle\\Model\\ProductSetDefinition::LINE_ITEM_TYPE') %}
+{% set PRODUCT_LINE_ITEM_TYPE = constant('Shopware\\Core\\Checkout\\Cart\\LineItem\\LineItem::PRODUCT_LINE_ITEM_TYPE') %}
+{% set pickwareProductSetLineItemIds = [] %}
+
+{% block page_account_order_item_context_menu_reorder_form_line_item_input %}
+    {% if lineItem.type == PICKWARE_PRODUCT_SET_LINE_ITEM_TYPE %}
+        {% set pickwareProductSetLineItemIds = pickwareProductSetLineItemIds|merge([lineItem.id]) %}
+        <input type="hidden"
+               name="lineItems[{{ lineItem.identifier }}][id]"
+               value="{{ lineItem.identifier }}">
+        <input type="hidden"
+               name="lineItems[{{ lineItem.identifier }}][referencedId]"
+               value="{{ lineItem.referencedId }}">
+        <input type="hidden"
+               name="lineItems[{{ lineItem.identifier }}][type]"
+               value="{{ PRODUCT_LINE_ITEM_TYPE }}">
+        <input type="hidden"
+               name="lineItems[{{ lineItem.identifier }}][stackable]"
+               value="1">
+        <input type="hidden"
+               name="lineItems[{{ lineItem.identifier }}][removable]"
+               value="1">
+        <input type="hidden"
+               name="lineItems[{{ lineItem.identifier }}][quantity]"
+               value="{{ lineItem.quantity }}">
+    {% elseif lineItem.type == PRODUCT_LINE_ITEM_TYPE and lineItem.parentId is null %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,8 @@
+includes:
+	- ../../tools/phpstan/phpstan.neon
+	- phpstan-baseline.neon
+
+parameters:
+    tmpDir: ../../tools/phpstan/cache/wms-bundle
+    paths:
+        - src

@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<container
+    xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <service id="Pickware\ProductSetBundle\OrderDocument\DeliveryNoteFilterer">
+            <argument type="service" id="Pickware\DalBundle\EntityManager" />
+            <argument type="service" id="Pickware\ProductSetBundle\Order\Snapshot\ProductSetSnapshotBuilder" />
+            <tag name="kernel.event_subscriber" />
+        </service>
+        <service id="Pickware\ProductSetBundle\OrderDocument\InvoiceCorrectionLineItemFilterer">
+            <tag name="kernel.event_subscriber" />
+        </service>
+        <service id="Pickware\ProductSetBundle\OrderDocument\InvoiceLineItemFilterer">
+            <tag name="kernel.event_subscriber" />
+        </service>
+        <service id="Pickware\ProductSetBundle\OrderDocument\StornoLineItemFilterer">
+            <tag name="kernel.event_subscriber" />
+        </service>
+        <service id="Pickware\ProductSetBundle\OrderDocument\ZugferdLineItemAdder">
+            <tag name="kernel.event_subscriber" />
+        </service>
+    </services>
+</container>

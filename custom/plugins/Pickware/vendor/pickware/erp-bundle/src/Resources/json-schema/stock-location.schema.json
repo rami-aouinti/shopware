@@ -1,0 +1,160 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Stock location",
+    "description": "A location where stock can exist, be moved to or moved from.",
+    "anyOf": [
+        {
+            "type": "string",
+            "enum": [
+                "unknown",
+                "initialization",
+                "product_total_stock_change",
+                "stock_correction",
+                "shopware_migration"
+            ]
+        },
+        {
+            "type": "object",
+            "required": ["warehouse"],
+            "additionalProperties": false,
+            "properties": {
+                "warehouse": {
+                    "$ref": "#/definitions/warehouse"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "required": ["binLocation"],
+            "additionalProperties": false,
+            "properties": {
+                "binLocation": {
+                    "$ref": "#/definitions/binLocation"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "required": ["order"],
+            "additionalProperties": false,
+            "properties": {
+                "order": {
+                    "$ref": "#/definitions/order"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "required": ["returnOrder"],
+            "additionalProperties": false,
+            "properties": {
+                "returnOrder": {
+                    "$ref": "#/definitions/returnOrder"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "required": ["supplierOrder"],
+            "additionalProperties": false,
+            "properties": {
+                "supplierOrder": {
+                    "$ref": "#/definitions/supplierOrder"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "required": ["stockContainer"],
+            "additionalProperties": false,
+            "properties": {
+                "stockContainer": {
+                    "$ref": "#/definitions/stockContainer"
+                }
+            }
+        },
+        {
+            "type": "object",
+            "required": ["goodsReceipt"],
+            "additionalProperties": false,
+            "properties": {
+                "goodsReceipt": {
+                    "$ref": "#/definitions/goodsReceipt"
+                }
+            }
+        }
+    ],
+    "definitions": {
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "warehouse": {
+            "description": "A warehouse",
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "binLocation": {
+            "description": "A bin location in a warehouse",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "order": {
+            "description": "An order",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "returnOrder": {
+            "description": "A return order",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "supplierOrder": {
+            "description": "A supplier order",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "stockContainer": {
+            "description": "A stock container",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "goodsReceipt": {
+            "description": "A goods receipt",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        }
+    }
+}

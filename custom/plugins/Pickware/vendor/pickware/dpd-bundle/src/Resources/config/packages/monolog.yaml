@@ -1,0 +1,34 @@
+monolog:
+  channels: ['pickware_dpd']
+
+when@dev:
+  monolog:
+    handlers:
+      # Service name: monolog.logger.pickware_dpd
+      pickware_dpd:
+        type: stream
+        path: '%kernel.logs_dir%/pickware_dpd_%kernel.environment%.log'
+        level: debug
+        channels: ['pickware_dpd']
+        bubble: false
+        priority: 150
+
+when@prod:
+  monolog:
+    handlers:
+      # Service name: monolog.logger.pickware_dpd
+      pickware_dpd:
+        type: fingers_crossed
+        action_level: warning
+        handler: pickware_dpd_nested
+        buffer_size: 50
+        channels: ['pickware_dpd']
+        bubble: false
+        priority: 150
+      pickware_dpd_nested:
+        type: rotating_file
+        max_files: 30
+        path: '%kernel.logs_dir%/pickware_dpd_%kernel.environment%.log'
+        level: debug
+        bubble: false
+        priority: 150

@@ -1,0 +1,23 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Pickware\PickwareErpStarter\:
+    resource: '../../'
+    exclude:
+      - '../../**/*Event.php'
+      - '../../**/*Exception.php'
+      - '../../**/*Message.php'
+      - '../../**/*Error.php'
+      - '../../Administration/'
+      - '../../Benchmarking/'
+      - '../../Collection/'
+      - '../../Installation/'
+      - '../../ShopwareMigration/'
+      - '../../Polyfill/'
+
+  # Make the EntityIndexerRegistry public, so it can be used in the activate() method of the plugin class
+  pickware_erp.entity_indexer_registry_public:
+    alias: Shopware\Core\Framework\DataAbstractionLayer\Indexing\EntityIndexerRegistry
+    public: true

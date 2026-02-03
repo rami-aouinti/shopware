@@ -1,0 +1,77 @@
+{
+    "pickware-pos": {
+        "cash-point-closing-document": {
+            "file-name": "Cash point closing %s",
+            "preview": "Preview",
+            "summary": {
+                "title": "Cash point closing summary",
+                "number": "Number",
+                "created": "Created",
+                "branch-store": "Branch store",
+                "cash-register": "Cash register",
+                "user": "User",
+                "first-transaction": "First transaction",
+                "last-transaction": "Last transaction",
+                "amounts": "Amounts",
+                "full-amount": "Full amount",
+                "cash-amount": "Cash amount",
+                "payments": "Payments"
+            },
+            "custom-aggregation": {
+                "title": "Transactions summary"
+            },
+            "transactions": {
+                "title-for-transactions-of-type-beleg": "Transactions",
+                "title-for-transactions-of-type-other-than-beleg": "Other transactions",
+                "created": "Created",
+                "type": "Type",
+                "reference": "Reference",
+                "net": "Net",
+                "gross": "Gross",
+                "payment": "Payment method",
+                "user": "Cashier",
+                "comment": "Comment",
+                "line-item-type-groups": {
+                    "cashmovements": "Cash movements",
+                    "sales": "Sales"
+                },
+                "payment-type": {
+                    "bar": "Cash",
+                    "unbar": "Cashless",
+                    "eckarte": "EC card",
+                    "kreditkarte": "Credit card",
+                    "elzahlungsdienstleister": "El. payment provider",
+                    "guthabenkarte": "Balance card",
+                    "keine": "None"
+                }
+            },
+            "line-item-type": {
+                "anfangsbestand": "Opening balance",
+                "umsatz": "Revenue",
+                "pfand": "Deposit",
+                "pfandrueckzahlung": "Deposit refund",
+                "mehrzweckgutscheinkauf": "Multipurpose voucher purchase",
+                "mehrzweckgutscheineinloesung": "Multipurpose voucher redemption",
+                "einzweckgutscheinkauf": "Single purpose voucher purchase",
+                "einzweckgutscheineinloesung": "Single purpose voucher redemption",
+                "forderungsentstehung": "Receivables origination",
+                "forderungsaufloesung": "Receivables resolution",
+                "anzahlungseinstellung": "Down payment setting",
+                "anzahlungsaufloesung": "Down payment resolution",
+                "privateinlage": "Private deposit",
+                "privatentnahme": "Private withdrawal",
+                "geldtransit": "Money Transit",
+                "differenzsollist": "Difference target/actual",
+                "trinkgeldag": "Tip AG",
+                "trinkgeldan": "Tip AN",
+                "auszahlung": "Withdrawal",
+                "einzahlung": "Deposit",
+                "rabatt": "Discount",
+                "aufschlag": "Surcharge",
+                "lohnzahlung": "Wage payment",
+                "zuschussecht": "Subsidy Real",
+                "zuschussunecht": "Subsidy Unreal"
+            }
+        }
+    }
+}

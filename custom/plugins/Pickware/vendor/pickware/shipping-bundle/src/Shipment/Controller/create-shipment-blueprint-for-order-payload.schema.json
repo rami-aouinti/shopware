@@ -1,0 +1,50 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Shipping create-return-shipment-blueprint-for-order payload",
+    "description": "POST request payload for api route _action/pickware-shipping/shipment/create-return-shipment-blueprint-for-order",
+    "type": "object",
+    "required": ["orderId"],
+    "properties": {
+        "orderId": { "$ref": "#/definitions/uuid" },
+        "configuration": {
+            "type": "object",
+            "properties": {
+                "skipParcelRepacking": {
+                    "$ref": "#/definitions/skipParcelRepacking"
+                },
+                "shippingMethodId": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "productsInParcel": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/productInParcel"
+            }
+        }
+    },
+    "definitions": {
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "skipParcelRepacking": {
+            "type": "boolean"
+        },
+        "productInParcel": {
+            "type": "object",
+            "required": ["productId", "quantity"],
+            "properties": {
+                "productId": { "$ref": "#/definitions/uuid" },
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,103 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\UnitsOfMeasurement\\Dimensions\\BoxDimensions\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dimensions/BoxDimensions.php
+
+		-
+			message: '#^Method Pickware\\UnitsOfMeasurement\\Dimensions\\BoxDimensions\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dimensions/BoxDimensions.php
+
+		-
+			message: '#^Method Pickware\\UnitsOfMeasurement\\Dimensions\\RectangleDimensions\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dimensions/RectangleDimensions.php
+
+		-
+			message: '#^Method Pickware\\UnitsOfMeasurement\\Dimensions\\RectangleDimensions\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dimensions/RectangleDimensions.php
+
+		-
+			message: '#^Binary operation "/" between float and 0\.001\|0\.01\|0\.0254\|0\.1\|1\.0\|1000\.0\|null results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/PhysicalQuantity/Length.php
+
+		-
+			message: '#^Method Pickware\\UnitsOfMeasurement\\PhysicalQuantity\\Length\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PhysicalQuantity/Length.php
+
+		-
+			message: '#^Method Pickware\\UnitsOfMeasurement\\PhysicalQuantity\\Length\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PhysicalQuantity/Length.php
+
+		-
+			message: '#^Binary operation "/" between float and 0\.001\|0\.01\|0\.0283495231\|0\.1\|0\.45359237\|1\.0\|1000\.0\|null results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/PhysicalQuantity/PhysicalQuantityTrait.unit.php
+
+		-
+			message: '#^Method class@anonymous/PhysicalQuantity/PhysicalQuantityTrait\.unit\.php\:24\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PhysicalQuantity/PhysicalQuantityTrait.unit.php
+
+		-
+			message: '#^Method class@anonymous/PhysicalQuantity/PhysicalQuantityTrait\.unit\.php\:24\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PhysicalQuantity/PhysicalQuantityTrait.unit.php
+
+		-
+			message: '#^Access to undefined constant Pickware\\UnitsOfMeasurement\\PhysicalQuantity\\Time\:\:METRIC_UNITS\.$#'
+			identifier: classConstant.notFound
+			count: 1
+			path: src/PhysicalQuantity/Time.php
+
+		-
+			message: '#^Binary operation "/" between float and 1\.0E\-9\|1\.0E\-6\|0\.001\|1\.0\|60\|3600\|86400\|31536000\|null results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/PhysicalQuantity/Time.php
+
+		-
+			message: '#^Method Pickware\\UnitsOfMeasurement\\PhysicalQuantity\\Time\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PhysicalQuantity/Time.php
+
+		-
+			message: '#^Method Pickware\\UnitsOfMeasurement\\PhysicalQuantity\\Time\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PhysicalQuantity/Time.php
+
+		-
+			message: '#^Binary operation "/" between float and 1\.0E\-6\|0\.001\|0\.0283495231\|0\.45359237\|1\.0\|1000\.0\|null results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/PhysicalQuantity/Weight.php
+
+		-
+			message: '#^Method Pickware\\UnitsOfMeasurement\\PhysicalQuantity\\Weight\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PhysicalQuantity/Weight.php
+
+		-
+			message: '#^Method Pickware\\UnitsOfMeasurement\\PhysicalQuantity\\Weight\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PhysicalQuantity/Weight.php

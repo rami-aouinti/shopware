@@ -1,0 +1,9 @@
+localeCode: 'en-GB'
+typeName: 'ReturnOrderReceipt'
+subject: 'Receipt of the return order for your purchase'
+sender: '{{ shopName }}'
+description: 'Send a return order receipt to the customer'
+contentHtml:
+  fromFile: 'content-en-gb.html.twig'
+contentPlain:
+  fromFile: 'content-en-gb.txt.twig'

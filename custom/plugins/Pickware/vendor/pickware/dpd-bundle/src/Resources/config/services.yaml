@@ -1,0 +1,17 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Pickware\DpdBundle\:
+    resource: '../../'
+    exclude:
+      - '../../**/*Event.php'
+      - '../../**/*Exception.php'
+      - '../../**/*Message.php'
+      - '../../Administration/'
+      - '../../Installation/'
+      - '../../Api/Handler/'
+      - '../../Api/Services/'
+      - '../../Api/Requests/'
+      - '../../Config/'

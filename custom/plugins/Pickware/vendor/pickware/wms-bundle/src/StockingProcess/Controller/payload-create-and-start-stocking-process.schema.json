@@ -1,0 +1,88 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Stocking process create-and-start-stocking-process payload",
+    "description": "PUT request payload for api route _action/pickware-wms/create-and-start-stocking-process",
+    "type": "object",
+    "required": ["associations", "stockingProcess"],
+    "properties": {
+        "associations": {
+            "type": "object"
+        },
+        "stockingProcess": {
+            "$ref": "#/definitions/stockingProcess"
+        }
+    },
+    "definitions": {
+        "stockingProcess": {
+            "type": "object",
+            "required": ["id", "warehouseId", "sources"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "warehouseId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "sources": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/source"
+                    },
+                    "minItems": 1
+                }
+            }
+        },
+        "source": {
+            "type": "object",
+            "anyOf": [
+                {
+                    "type": "object",
+                    "required": ["goodsReceipt"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "goodsReceipt": {
+                            "$ref": "#/definitions/objectWithId"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": ["binLocation"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "binLocation": {
+                            "$ref": "#/definitions/objectWithId"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": ["stockContainer"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "stockContainer": {
+                            "$ref": "#/definitions/objectWithId"
+                        }
+                    }
+                }
+            ]
+        },
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "objectWithId": {
+            "description": "An object containing only an ID",
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        }
+    }
+}

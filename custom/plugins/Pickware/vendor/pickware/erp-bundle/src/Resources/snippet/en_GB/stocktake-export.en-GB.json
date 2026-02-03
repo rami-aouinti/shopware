@@ -1,0 +1,23 @@
+{
+    "pickware-erp-starter": {
+        "stocktake-export": {
+            "file-name": "Stocktake %s %s",
+            "columns": {
+                "created-at": "Created at",
+                "counting-process-number": "Counting",
+                "bin-location": "Bin location",
+                "product-name": "Product name",
+                "product-number": "Product number",
+                "expected-total": "Expected (total)",
+                "counted-total": "Counted (total)",
+                "difference-total": "Difference (total)",
+                "expected": "Expected",
+                "counted": "Counted",
+                "difference": "Difference",
+                "user": "User"
+            },
+            "unknown-bin-location": "unknown",
+            "deleted": "deleted"
+        }
+    }
+}

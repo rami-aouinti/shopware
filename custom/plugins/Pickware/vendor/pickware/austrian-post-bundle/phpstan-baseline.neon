@@ -1,0 +1,217 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Adapter\\AustrianPostAdapter\:\:enableCashOnDeliveryInShipmentConfig\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/AustrianPostAdapter.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Adapter\\AustrianPostAdapter\:\:getPageFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/AustrianPostAdapter.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Adapter\\AustrianPostAdapter\:\:isCashOnDeliveryEnabledInShipmentConfig\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/AustrianPostAdapter.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Adapter\\AustrianPostLabelSize\:\:getSupportedPageFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/AustrianPostLabelSize.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Adapter\\AustrianPostShipmentConfig\:\:__construct\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/AustrianPostShipmentConfig.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Adapter\\AustrianPostShipmentConfigTest\:\:provideShipmentServiceOptions\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Adapter/AustrianPostShipmentConfig.unit.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Adapter\\AustrianPostShipmentConfigTest\:\:test_returnsTheShipmentServiceOptionsWhenRetrievingTheShipmentServiceOptionsFromTheAustrianPostShipmentConfig\(\) has parameter \$expectedServiceOptions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/AustrianPostShipmentConfig.unit.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Adapter\\AustrianPostShipmentConfigTest\:\:test_returnsTheShipmentServiceOptionsWhenRetrievingTheShipmentServiceOptionsFromTheAustrianPostShipmentConfig\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/AustrianPostShipmentConfig.unit.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Adapter\\AustrianPostShipmentRegistrationService\:\:cancelShipments\(\) has parameter \$shipmentIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/AustrianPostShipmentRegistrationService.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Adapter\\AustrianPostShipmentRegistrationService\:\:registerShipments\(\) has parameter \$shipmentIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/AustrianPostShipmentRegistrationService.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Api\\AustrianPostShipment\:\:__construct\(\) has parameter \$parcels with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/AustrianPostShipment.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Api\\AustrianPostShipment\:\:__construct\(\) has parameter \$shipmentServices with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/AustrianPostShipment.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Api\\AustrianPostShipment\:\:convertAddressToAustrianPostFormat\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/AustrianPostShipment.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Api\\AustrianPostShipment\:\:createColloRowsFromParcels\(\) has parameter \$parcels with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/AustrianPostShipment.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Api\\AustrianPostShipment\:\:createColloRowsFromParcels\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/AustrianPostShipment.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Api\\AustrianPostShipment\:\:getParcels\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/AustrianPostShipment.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Api\\AustrianPostShipment\:\:getShipmentServices\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/AustrianPostShipment.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Api\\AustrianPostShipment\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/AustrianPostShipment.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between array\{ColloArticleRow\: list\<array\{ArticleName\?\: non\-empty\-string, ConsumerUnitNetWeight\?\: float, CountryOfOriginID\?\: non\-empty\-string, CurrencyID\?\: non\-empty\-string, CustomsOptionID\?\: 1\|2\|3\|4\|5\|6, HSTariffNumber\?\: non\-empty\-string, Quantity\: int, UnitID\: ''KGM'', \.\.\.\}\>\}\|float and '''' will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/Api/AustrianPostShipment.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between string and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/Api/AustrianPostShipment.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Api\\AustrianPostSoapApiClientFactory\:\:createSoapClient\(\) has parameter \$soapOptions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/AustrianPostSoapApiClientFactory.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Api\\AustrianPostSoapApiClientFactory@anonymous/Api/AustrianPostSoapApiClientFactory\.unit\.php\:56\:\:createSoapClient\(\) has parameter \$soapOptions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/AustrianPostSoapApiClientFactory.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method createSoapClient\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: src/Api/AustrianPostSoapApiClientFactory.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method __invoke\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 2
+			path: src/Api/Handler/AustrianPostShipmentServiceCredentialsHandler.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method __invoke\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 2
+			path: src/Api/Handler/AustrianPostShipmentServicePrinterConfigHandler.unit.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Api\\Services\\AbstractShipmentServiceOption\:\:applyToShipmentArray\(\) has parameter \$shipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/AbstractShipmentServiceOption.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Api\\Services\\CashOnDeliveryServiceOption\:\:applyToShipmentArray\(\) has parameter \$shipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/CashOnDeliveryServiceOption.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Api\\Services\\FragileServiceOption\:\:applyToShipmentArray\(\) has parameter \$shipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/FragileServiceOption.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Api\\Services\\FreshServiceOption\:\:applyToShipmentArray\(\) has parameter \$shipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/FreshServiceOption.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Api\\Services\\InsuredServiceOption\:\:applyToShipmentArray\(\) has parameter \$shipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/InsuredServiceOption.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Config\\AustrianPostConfigTest\:\:apiConfigOptionProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/AustrianPostConfig.unit.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Config\\AustrianPostConfigTest\:\:bankTransferDataOptionProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/AustrianPostConfig.unit.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Config\\AustrianPostConfigTest\:\:test_throwsAnExceptionWhenRetrievingTheApiCredentialsAndAConfigValueIsMissing\(\) has parameter \$configArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/AustrianPostConfig.unit.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Config\\AustrianPostConfigTest\:\:test_throwsAnExceptionWhenRetrievingTheBankTransferDataAndAConfigValueIsMissing\(\) has parameter \$configArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/AustrianPostConfig.unit.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\Config\\AustrianPostPrinterConfig\:\:getPrinterObject\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/AustrianPostPrinterConfig.php
+
+		-
+			message: '#^Method Pickware\\AustrianPostBundle\\PickwareAustrianPostBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareAustrianPostBundle.php

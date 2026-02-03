@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/master/src/Core/System/SystemConfig/Schema/config.xsd"
+>
+    <card>
+        <title>DSV credentials</title>
+        <title lang="de-DE">DSV-Zugangsdaten</title>
+        <input-field type="text">
+            <name>username</name>
+            <required>true</required>
+            <label>Username</label>
+            <label lang="de-DE">Benutzername</label>
+        </input-field>
+        <input-field type="password">
+            <name>password</name>
+            <required>true</required>
+            <label>Password</label>
+            <label lang="de-DE">Passwort</label>
+        </input-field>
+        <input-field type="text">
+            <name>customerNumber</name>
+            <required>true</required>
+            <label>Customer number</label>
+            <label lang="de-DE">Kundennummer</label>
+            <helpText lang="de-DE">
+                Die Kundennummer ihres Unternehmens, die Sie von DSV erhalten haben. Diese Nummer wird genutzt,
+                um Frachtzahler und Auftraggeber zu bestimmen.
+            </helpText>
+            <helpText>
+                The customer number of your company, which you received from DSV. This number is used to determine
+                the freight payer and the booking party.
+            </helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>useTestingEndpoint</name>
+            <label>Use testing webservice</label>
+            <label lang="de-DE">Nutze Testing-Webservice</label>
+            <helpText lang="de-DE">Nutze den Testing-Webservice von DSV anstatt den Produktive-Webservice.</helpText>
+            <helpText>Use the DSV testing web service instead of the productive web service.</helpText>
+        </input-field>
+    </card>
+</config>

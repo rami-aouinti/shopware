@@ -1,0 +1,13 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\LockingBundle\\Lock\\ExceptionLogger\:\:logException\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Lock/ExceptionLogger.php
+
+		-
+			message: '#^Method Pickware\\LockingBundle\\PickwareLockingBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareLockingBundle.php

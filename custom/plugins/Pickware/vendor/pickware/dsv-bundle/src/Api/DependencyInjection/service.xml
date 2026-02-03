@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<container
+    xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <service
+            id="pickware-dsv.private_file_system_cached_token_retriever"
+            class="Pickware\ShippingBundle\Authentication\PrivateFileSystemCachedTokenRetriever"
+        >
+            <argument type="service" id="clock" />
+            <argument type="service" id="pickware_dsv_bundle.filesystem.private" />
+            <argument type="service" id="Pickware\DsvBundle\Api\Authentication\DsvTokenRetriever" />
+        </service>
+    </services>
+</container>

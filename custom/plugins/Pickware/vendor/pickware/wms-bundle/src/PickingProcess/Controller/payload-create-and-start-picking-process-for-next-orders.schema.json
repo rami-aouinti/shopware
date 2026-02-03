@@ -1,0 +1,78 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "description": "PUT request payload for API route _action/pickware-wms/create-and-start-picking-process-for-next-orders'",
+    "type": "object",
+    "required": ["associations", "pickingProcess", "orderSelectionCriteria", "pickingProfileId"],
+    "properties": {
+        "associations": {
+            "type": "object"
+        },
+        "pickingProcess": {
+            "$ref": "#/definitions/pickingProcess"
+        },
+        "orderSelectionCriteria": {
+            "type": "object"
+        },
+        "pickingProfileId": {
+            "$ref": "#/definitions/uuid"
+        }
+    },
+    "definitions": {
+        "pickingProcess": {
+            "type": "object",
+            "required": ["id", "warehouseId", "deliveries", "pickingMode"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "warehouseId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "deliveries": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/delivery"
+                    },
+                    "minItems": 1
+                },
+                "pickingMode": {
+                    "type": "string",
+                    "enum": ["single", "preCollectedBatchPicking", "pickToBoxBatchPicking", "singleItemOrdersPicking"]
+                },
+                "preCollectingStockContainer": {
+                    "description": "When assigning a stock container here, stock can be pre-collected before it is distributed in the single deliveries.",
+                    "$ref": "#/definitions/stockContainer"
+                }
+            }
+        },
+        "delivery": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "stockContainer": {
+                    "$ref": "#/definitions/stockContainer"
+                }
+            }
+        },
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "stockContainer": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "number": {
+                    "anyOf": [{ "type": "string" }, { "type": "null" }]
+                }
+            }
+        }
+    }
+}

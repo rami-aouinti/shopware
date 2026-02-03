@@ -1,0 +1,43 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\BundleInstaller\\BundleInstaller\:\:install\(\) has parameter \$bundleClassNames with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BundleInstaller.php
+
+		-
+			message: '#^Method Pickware\\BundleInstaller\\BundleInstaller\:\:onAfterActivate\(\) has parameter \$bundleClassNames with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BundleInstaller.php
+
+		-
+			message: '#^Method class@anonymous/BundleInstaller\.unit\.php\:34\:\:getInstance\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/BundleInstaller.unit.php
+
+		-
+			message: '#^Method class@anonymous/BundleInstaller\.unit\.php\:34\:\:setInstance\(\) has parameter \$instance with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/BundleInstaller.unit.php
+
+		-
+			message: '#^Property Pickware\\BundleInstaller\\BundleInstallerTest\:\:\$bundleClassMap type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BundleInstaller.unit.php
+
+		-
+			message: '#^Property class@anonymous/BundleInstaller\.unit\.php\:34\:\:\$instance has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/BundleInstaller.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method uninstall\(\) on class Shopware\\Core\\Framework\\Bundle\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: src/BundleInstaller.unit.php

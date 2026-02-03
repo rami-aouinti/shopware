@@ -1,0 +1,217 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Stock movements",
+    "description": "A set of stock movements to move stock from one location to another",
+    "type": "array",
+    "items": {
+        "$ref": "#/definitions/stockMovement"
+    },
+    "definitions": {
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "stockMovement": {
+            "description": "An object that specifies how much stock of a product should be moved from one location to another",
+            "type": "object",
+            "required": ["id", "productId", "quantity", "source", "destination"],
+            "additionalProperties": false,
+            "properties": {
+                "id": {
+                    "description": "The UUID of the stock movement",
+                    "$ref": "#/definitions/uuid"
+                },
+                "productId": {
+                    "description": "The UUID for the product to move",
+                    "$ref": "#/definitions/uuid"
+                },
+                "quantity": {
+                    "description": "The quantity of stock to move",
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000000000
+                },
+                "comment": {
+                    "description": "A comment for the stock movement to save with the stock movement",
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "source": {
+                    "description": "Where to move the stock from",
+                    "$ref": "#/definitions/stockLocation"
+                },
+                "destination": {
+                    "description": "Where to move the stock to",
+                    "$ref": "#/definitions/stockLocation"
+                },
+                "stockMovementProcessId": {
+                    "description": "The UUID of the stock movement process",
+                    "$ref": "#/definitions/uuid"
+                },
+                "batches": {
+                    "description": "A map from batch UUID to quantity, describing the distribution of the batches in the movement. If provided, the sum of all entries must equal the quantity of the stock movement.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "patternProperties": {
+                        "^[0-9a-f]{32}$": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
+                }
+            }
+        },
+        "stockLocation": {
+            "description": "A location where stock can exist",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "unknown",
+                        "initialization",
+                        "product_total_stock_change",
+                        "stock_correction",
+                        "shopware_migration"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "required": ["warehouse"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "warehouse": {
+                            "$ref": "#/definitions/warehouse"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": ["binLocation"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "binLocation": {
+                            "$ref": "#/definitions/binLocation"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": ["order"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "order": {
+                            "$ref": "#/definitions/order"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": ["returnOrder"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "returnOrder": {
+                            "$ref": "#/definitions/returnOrder"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": ["supplierOrder"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "supplierOrder": {
+                            "$ref": "#/definitions/supplierOrder"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": ["stockContainer"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "stockContainer": {
+                            "$ref": "#/definitions/stockContainer"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": ["goodsReceipt"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "goodsReceipt": {
+                            "$ref": "#/definitions/goodsReceipt"
+                        }
+                    }
+                }
+            ]
+        },
+        "warehouse": {
+            "description": "A warehouse",
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "binLocation": {
+            "description": "A bin location in a warehouse",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "order": {
+            "description": "An order",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "returnOrder": {
+            "description": "A return order",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "supplierOrder": {
+            "description": "A supplier order",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "stockContainer": {
+            "description": "A stock container",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "goodsReceipt": {
+            "description": "A goods receipt",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,91 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\IncompatibilityBundle\\Incompatibility\\Incompatibility\:\:getTranslatedWarnings\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Incompatibility/Incompatibility.php
+
+		-
+			message: '#^Method Pickware\\IncompatibilityBundle\\Incompatibility\\IncompatibilityService\:\:__construct\(\) has parameter \$incompatibilityProviders with no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Incompatibility/IncompatibilityService.php
+
+		-
+			message: '#^Method Pickware\\IncompatibilityBundle\\Incompatibility\\IncompatibilityService\:\:__construct\(\) has parameter \$serviceLocator with generic class Symfony\\Component\\DependencyInjection\\ServiceLocator but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Incompatibility/IncompatibilityService.php
+
+		-
+			message: '#^Method Pickware\\IncompatibilityBundle\\Incompatibility\\IncompatibilityService\:\:getApplicableIncompatibilityWarnings\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Incompatibility/IncompatibilityService.php
+
+		-
+			message: '#^Property Pickware\\IncompatibilityBundle\\Incompatibility\\IncompatibilityServiceTest\:\:\$serviceLocatorMock with generic class Symfony\\Component\\DependencyInjection\\ServiceLocator does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Incompatibility/IncompatibilityService.unit.php
+
+		-
+			message: '#^Unable to resolve the template type T in call to method PHPUnit\\Framework\\TestCase\:\:createMock\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: src/Incompatibility/IncompatibilityService.unit.php
+
+		-
+			message: '#^Method Pickware\\IncompatibilityBundle\\Incompatibility\\PluginIncompatibility\:\:__construct\(\) has parameter \$translatedWarnings with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Incompatibility/PluginIncompatibility.php
+
+		-
+			message: '#^Method Pickware\\IncompatibilityBundle\\Incompatibility\\PluginIncompatibility\:\:getTranslatedWarnings\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Incompatibility/PluginIncompatibility.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(Pickware\\IncompatibilityBundle\\Incompatibility\\Incompatibility\)\: bool\)\|null, Closure\(Pickware\\IncompatibilityBundle\\Incompatibility\\PluginIncompatibility\)\: bool given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Incompatibility/PluginIncompatibilityVerifier.php
+
+		-
+			message: '#^Method Pickware\\IncompatibilityBundle\\Incompatibility\\SalesChannelIncompatibility\:\:__construct\(\) has parameter \$translatedWarnings with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Incompatibility/SalesChannelIncompatibility.php
+
+		-
+			message: '#^Method Pickware\\IncompatibilityBundle\\Incompatibility\\SalesChannelIncompatibility\:\:getTranslatedWarnings\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Incompatibility/SalesChannelIncompatibility.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\)\: mixed\)\|null, Closure\(Shopware\\Core\\System\\SalesChannel\\SalesChannelEntity\)\: string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Incompatibility/SalesChannelIncompatibilityVerifier.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(Pickware\\IncompatibilityBundle\\Incompatibility\\Incompatibility\)\: bool\)\|null, Closure\(Pickware\\IncompatibilityBundle\\Incompatibility\\SalesChannelIncompatibility\)\: bool given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Incompatibility/SalesChannelIncompatibilityVerifier.php
+
+		-
+			message: '#^Parameter \#1 \$incompatibilities of method Pickware\\IncompatibilityBundle\\Incompatibility\\SalesChannelIncompatibilityVerifier\:\:verifyIncompatibilities\(\) expects array\<Pickware\\IncompatibilityBundle\\Incompatibility\\Incompatibility\>, array\<int, DateTime\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Incompatibility/SalesChannelIncompatibilityVerifier.unit.php
+
+		-
+			message: '#^Method Pickware\\IncompatibilityBundle\\PickwareIncompatibilityBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareIncompatibilityBundle.php

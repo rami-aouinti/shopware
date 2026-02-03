@@ -1,0 +1,105 @@
+{% sw_extends '@PickwareErpBundle/documents/barcode_label_layouts/base.html.twig' %}
+
+{% set baseline_width = 60 - (marginsInMillimeter.left + marginsInMillimeter.left) %}
+{% set baseline_height = 40 - (marginsInMillimeter.top + marginsInMillimeter.bottom) %}
+{% set baseline_font_size = 10 %}
+{% set minimum_height_for_margin = 20 %}
+
+{# Dompdf does not support flexible sizes based on height and width directly (e.g. vh or vw). #}
+{# Therefore, we need to manually calculate the font size. #}
+
+{# Calculation of scaling factors for width and height #}
+{% set width_scale_factor = contentDimensions.width / baseline_width %}
+{% set height_scale_factor = contentDimensions.height / baseline_height %}
+
+{# Determine the appropriate scaling factor #}
+{% if width_scale_factor > 1.5 * height_scale_factor %}
+    {# If width changes significantly more than height, limit scaling #}
+    {% set scale_factor = height_scale_factor %}
+{% elseif height_scale_factor > 1.5 * width_scale_factor %}
+    {# If height changes significantly more than width, limit scaling #}
+    {% set scale_factor = width_scale_factor %}
+{% else %}
+    {# Normal scaling if both dimensions change proportionally #}
+    {% set scale_factor = (width_scale_factor + height_scale_factor) / 2 %}
+{% endif %}
+
+{# Calculation of final font size considering the baseline font size #}
+{% set font_size = (baseline_font_size * scale_factor)|number_format(2) %}
+
+{% block css %}
+    {{ parent() }}
+    <style type="text/css">
+        .container {
+            width: {{ contentDimensions.width }}mm;
+            height: {{ contentDimensions.height }}mm;
+            position: relative;
+            top: 0;
+            left: 0;
+            font-size: {{ font_size }}pt;
+            line-height: 1.2; /* Anpassung der Zeilenhöhe */
+            overflow: hidden;
+        }
+
+        .fieldContainer {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .barcode {
+            left: 0;
+            width: {{ contentDimensions.width }}mm;
+            height: {{ (contentDimensions.height / 3) }}mm;
+        }
+
+        .row {
+            position: absolute;
+            top: 50%;
+            width: {{ contentDimensions.width }}mm;
+            height: {{ (contentDimensions.height / 2) }}mm;
+            display: inline-block;
+            margin-top: 3px;
+        }
+
+        .row:first-child {
+            top: 0;
+            margin-top: 0;
+        }
+
+        .relative-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .left {
+            float: left;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .field2 {
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+
+{% block label %}
+    <div class="container">
+        <div class="fieldContainer">
+            <div class="row">
+                {% set word_size = (2 * (contentDimensions.width) / (font_size / 11))|number_format %}
+                <div class="left">
+                    {{ item.field1Value|slice(0, word_size) }}{% if item.field1Value|length > word_size %}...{% endif %}
+                </div>
+            </div>
+            <div class="row">
+                {% set word_size = ((contentDimensions.width) / (font_size / 4))|number_format %}
+                <div class="relative-container">
+                    <img class="barcode" src="{{ item.barcode }}" alt="Barcode" />
+                    <div class="field2">{{ item.field2Value|slice(0, word_size) }}{% if item.field2Value|length > word_size %}...{% endif %}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

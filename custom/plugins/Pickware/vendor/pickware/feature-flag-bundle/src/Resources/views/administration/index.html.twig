@@ -1,0 +1,8 @@
+{% sw_extends '@Administration/administration/index.html.twig' %}
+
+{% block administration_templates %}
+    <script nonce="{{ cspNonce }}">
+        window.PICKWARE_INITIAL_FEATURE_FLAGS_SERIALIZED = '{{ pickwareFeatureGetFeatureFlags()|json_encode|raw }}'
+    </script>
+    {{ parent() }}
+{% endblock %}

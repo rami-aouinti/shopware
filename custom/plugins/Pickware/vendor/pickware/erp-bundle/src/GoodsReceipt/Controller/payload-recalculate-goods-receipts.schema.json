@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Goods receipt recalculate-goods-receipts payload",
+    "description": "POST request payload for api route _action/pickware-erp/goods-receipt/recalculate-goods-receipts",
+    "type": "object",
+    "required": ["goodsReceiptIds"],
+    "additionalProperties": false,
+    "properties": {
+        "goodsReceiptIds": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/uuid"
+            },
+            "minItems": 1
+        }
+    },
+    "definitions": {
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        }
+    }
+}

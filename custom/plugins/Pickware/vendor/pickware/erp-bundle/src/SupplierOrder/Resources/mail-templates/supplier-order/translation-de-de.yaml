@@ -1,0 +1,9 @@
+localeCode: 'de-DE'
+typeName: 'Lieferantenbestellung'
+subject: 'Bestellung {{ supplierOrder.number }}{{ (supplierOrder.supplier.customerNumber is not null) ? " (Kundennummer: " ~ supplierOrder.supplier.customerNumber ~ ")" : "" }}'
+sender: 'Pickware ERP'
+description: 'Lieferantenbestellung'
+contentHtml:
+  fromFile: 'content-de-de.html'
+contentPlain:
+  fromFile: 'content-de-de.txt'

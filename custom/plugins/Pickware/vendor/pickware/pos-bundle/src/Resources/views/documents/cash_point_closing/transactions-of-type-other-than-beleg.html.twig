@@ -1,0 +1,59 @@
+{% block transactions_of_type_other_than_beleg %}
+    <!-- Since we only allow a single currency per cash register. We can use this shortcut to select "the" currency of
+         the cash register -->
+    {% set currencyIsoCode = cashPointClosing.cashStatement.payment.paymentTypes[0].currencyCode %}
+
+    <h1 class="headline">
+        {{ 'pickware-pos.cash-point-closing-document.transactions.title-for-transactions-of-type-other-than-beleg'| trans | sw_sanitize(null, true) }}
+        {% if isPreview %}
+            ({{ 'pickware-pos.cash-point-closing-document.preview'| trans | sw_sanitize(null, true) }})
+        {% endif %}
+    </h1>
+    <hr>
+
+    <table class="pw-pos-table transactions">
+        <tr>
+            <th style="width: 90px">{{ 'pickware-pos.cash-point-closing-document.transactions.created'| trans | sw_sanitize(null, true) }}</th>
+            <th>{{ 'pickware-pos.cash-point-closing-document.transactions.type'| trans | sw_sanitize(null, true) }}</th>
+            <th>{{ 'pickware-pos.cash-point-closing-document.transactions.reference'| trans | sw_sanitize(null, true) }}</th>
+            <th class="right-aligned">{{ 'pickware-pos.cash-point-closing-document.transactions.net'| trans | sw_sanitize(null, true) }}</th>
+            <th class="right-aligned">{{ 'pickware-pos.cash-point-closing-document.transactions.gross'| trans | sw_sanitize(null, true) }}</th>
+            <th>{{ 'pickware-pos.cash-point-closing-document.transactions.user'| trans | sw_sanitize(null, true) }}</th>
+        </tr>
+        {% for transaction in transactionsOfTypeOtherThanBeleg %}
+            <tr class="border-top">
+                <td>{{ transaction.end | format_datetime('short', 'short', locale=localeCode, timezone=timeZone) }}</td>
+                <td>
+                    {% set lineItemTypes = [] %}
+                    {% set lineItemTypesTranslations = [] %}
+                    {% for lineItem in transaction.cashPointClosingTransactionLineItems %}
+                        {% if lineItem.type not in lineItemTypes %}
+                            {% set lineItemTypesTranslations = lineItemTypesTranslations|merge([('pickware-pos.cash-point-closing-document.line-item-type.' ~ (lineItem.type | lower)) | trans | sw_sanitize]) %}
+                            {% set lineItemTypes = lineItemTypes|merge([lineItem.type]) %}
+                        {% endif %}
+                    {% endfor %}
+                    {{ lineItemTypesTranslations | join(', ') }}
+                </td>
+                <td>{{ transaction.number }}</td>
+                <td class="right-aligned">{{ transaction.total.exclVat | currency(transaction.currency.isoCode) }}</td>
+                <td class="right-aligned">{{ transaction.total.inclVat | currency(transaction.currency.isoCode) }}</td>
+                <td>
+                    {% if transaction.user is null %}
+                        {{ transaction.userSnapshot.firstName }} {{ transaction.userSnapshot.lastName }}
+                    {% else %}
+                        {{ transaction.user.firstName }} {{ transaction.user.lastName }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% if (transaction.comment|length > 0) %}
+                <tr>
+                    <td></td>
+                    <td colspan="6">
+                        <b>{{ 'pickware-pos.cash-point-closing-document.transactions.comment'| trans | sw_sanitize(null, true) }}:</b>
+                        {{ transaction.comment }}
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+{% endblock %}

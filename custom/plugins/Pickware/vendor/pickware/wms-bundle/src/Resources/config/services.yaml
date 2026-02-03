@@ -1,0 +1,15 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Pickware\PickwareWms\:
+    resource: '../../'
+    exclude:
+      - '../../**/*Event.php'
+      - '../../**/*Exception.php'
+      - '../../**/*Message.php'
+      - '../../**/*Error.php'
+      - '../../Administration/'
+      - '../../Installation/'
+      - '../../Stocking/StockLocationProvider/BatchPreservingBinLocationWithStockProviderFactory.php'

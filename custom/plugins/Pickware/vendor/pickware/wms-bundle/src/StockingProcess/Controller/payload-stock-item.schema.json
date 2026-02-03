@@ -1,0 +1,74 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "description": "PUT request payload for API route _action/pickware-wms/stock-item",
+    "type": "object",
+    "required": ["stockingProcessId", "productId", "quantity", "stockLocation", "idempotencyKey", "associations"],
+    "properties": {
+        "stockingProcessId": {
+            "$ref": "#/definitions/uuid"
+        },
+        "productId": {
+            "$ref": "#/definitions/uuid"
+        },
+        "batchId": {
+            "$ref": "#/definitions/uuid"
+        },
+        "stockLocation": {
+            "$ref": "#/definitions/stockLocation"
+        },
+        "quantity": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "idempotencyKey": {
+            "$ref": "#/definitions/uuid"
+        },
+        "associations": {
+            "type": "object"
+        }
+    },
+    "definitions": {
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "stockLocation": {
+            "description": "An internal location where stocking is allowed",
+            "oneOf": [
+                {
+                    "type": "object",
+                    "required": ["warehouse"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "warehouse": {
+                            "$ref": "#/definitions/objectWithId"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": ["binLocation"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "binLocation": {
+                            "$ref": "#/definitions/objectWithId"
+                        }
+                    }
+                }
+            ]
+        },
+        "objectWithId": {
+            "description": "An object containing only an ID",
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        }
+    }
+}

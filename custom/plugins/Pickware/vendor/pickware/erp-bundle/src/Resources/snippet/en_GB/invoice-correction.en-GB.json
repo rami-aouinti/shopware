@@ -1,0 +1,7 @@
+{
+    "pickware-erp-starter": {
+        "invoice-correction-document": {
+            "title": "Invoice correction %documentNumber% of invoice %invoiceNumber%"
+        }
+    }
+}

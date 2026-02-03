@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Picking process continue-picking-process payload",
+    "description": "PUT request payload for api route _action/pickware-wms/continue-picking-process",
+    "type": "object",
+    "required": ["associations", "pickingProcessId", "pickingProfileId"],
+    "properties": {
+        "associations": {
+            "type": "object"
+        },
+        "pickingProcessId": {
+            "$ref": "#/definitions/uuid"
+        },
+        "pickingProfileId": {
+            "$ref": "#/definitions/uuid"
+        },
+        "warehouseId": {
+            "$ref": "#/definitions/uuid"
+        }
+    },
+    "definitions": {
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        }
+    }
+}

@@ -1,0 +1,330 @@
+elements:
+  - name: product
+    type: single-select
+    label:
+      de-DE: Produkt
+      en-GB: Product
+    options:
+      - value: '01'
+        label:
+          de-DE: Next Day Air
+          en-GB: Next Day Air
+      - value: '02'
+        label:
+          de-DE: 2nd Day Air
+          en-GB: 2nd Day Air
+      - value: '03'
+        label:
+          de-DE: Ground
+          en-GB: Ground
+      - value: '07'
+        label:
+          de-DE: Express
+          en-GB: Express
+      - value: '08'
+        label:
+          de-DE: Expedited
+          en-GB: Expedited
+      - value: '11'
+        label:
+          de-DE: UPS Standard
+          en-GB: UPS Standard
+      - value: '12'
+        label:
+          de-DE: 3 Day Select
+          en-GB: 3 Day Select
+      - value: '13'
+        label:
+          de-DE: Next Day Air Saver
+          en-GB: Next Day Air Saver
+      - value: '14'
+        label:
+          de-DE: UPS Next Day Air® Early
+          en-GB: UPS Next Day Air® Early
+      - value: '17'
+        label:
+          de-DE: UPS Worldwide Economy DDU
+          en-GB: UPS Worldwide Economy DDU
+      - value: '54'
+        label:
+          de-DE: Express Plus
+          en-GB: Express Plus
+      - value: '59'
+        label:
+          de-DE: 2nd Day Air A.M.
+          en-GB: 2nd Day Air A.M.
+      - value: '65'
+        label:
+          de-DE: UPS Saver
+          en-GB: UPS Saver
+      - value: '71'
+        label:
+          de-DE: UPS Worldwide Express Freight Midday
+          en-GB: UPS Worldwide Express Freight Midday
+      - value: '72'
+        label:
+          de-DE: UPS Worldwide Economy
+          en-GB: UPS Worldwide Economy
+      - value: '74'
+        label:
+          de-DE: UPS Express®12:00
+          en-GB: UPS Express®12:00
+      - value: '82'
+        label:
+          de-DE: UPS Today Standard
+          en-GB: UPS Today Standard
+      - value: '83'
+        label:
+          de-DE: UPS Today Dedicated Courier
+          en-GB: UPS Today Dedicated Courier
+      - value: '84'
+        label:
+          de-DE: UPS Today Intercity
+          en-GB: UPS Today Intercity
+      - value: '85'
+        label:
+          de-DE: UPS Today Express
+          en-GB: UPS Today Express
+      - value: '86'
+        label:
+          de-DE: UPS Today Express Saver
+          en-GB: UPS Today Express Saver
+      - value: '96'
+        label:
+          de-DE: UPS Worldwide Express Freight
+          en-GB: UPS Worldwide Express Freight
+      - value: 'M2'
+        label:
+          de-DE: First Class Mail
+          en-GB: First Class Mail
+      - value: 'M3'
+        label:
+          de-DE: Priority Mail
+          en-GB: Priority Mail
+      - value: 'M4'
+        label:
+          de-DE: Expedited MaiI Innovations
+          en-GB: Expedited MaiI Innovations
+      - value: 'M5'
+        label:
+          de-DE: Priority Mail Innovations
+          en-GB: Priority Mail Innovations
+      - value: 'M6'
+        label:
+          de-DE: Economy Mail Innovations
+          en-GB: Economy Mail Innovations
+    default: '01' # Next Day Air
+
+  - name: packagingType
+    type: single-select
+    label:
+      de-DE: Verpackungstyp
+      en-GB: Packaging Type
+    options:
+      - value: '01'
+        label:
+          de-DE: UPS Letter
+          en-GB: UPS Letter
+      - value: '02'
+        label:
+          de-DE: Customer Supplied Package
+          en-GB: Customer Supplied Package
+      - value: '03'
+        label:
+          de-DE: Tube
+          en-GB: Tube
+      - value: '04'
+        label:
+          de-DE: PAK
+          en-GB: PAK
+      - value: '21'
+        label:
+          de-DE: UPS Express Box
+          en-GB: UPS Express Box
+      - value: '24'
+        label:
+          de-DE: UPS 25KG Box
+          en-GB: UPS 25KG Box
+      - value: '25'
+        label:
+          de-DE: UPS 10KG Box
+          en-GB: UPS 10KG Box
+      - value: '30'
+        label:
+          de-DE: Pallet
+          en-GB: Pallet
+      - value: '2a'
+        label:
+          de-DE: Small Express Box
+          en-GB: Small Express Box
+      - value: '2b'
+        label:
+          de-DE: Medium Express Box
+          en-GB: Medium Express Box
+      - value: '2c'
+        label:
+          de-DE: Large Express Box
+          en-GB: Large Express Box
+      - value: '56'
+        label:
+          de-DE: Flats
+          en-GB: Flats
+      - value: '57'
+        label:
+          de-DE: Parcels
+          en-GB: Parcels
+      - value: '58'
+        label:
+          de-DE: BPM
+          en-GB: BPM
+      - value: '59'
+        label:
+          de-DE: First Class
+          en-GB: First Class
+      - value: '60'
+        label:
+          de-DE: Priority
+          en-GB: Priority
+      - value: '61'
+        label:
+          de-DE: Machineables
+          en-GB: Machineables
+      - value: '62'
+        label:
+          de-DE: Irregulars
+          en-GB: Irregulars
+      - value: '63'
+        label:
+          de-DE: Parcel Post
+          en-GB: Parcel Post
+      - value: '64'
+        label:
+          de-DE: BPM Parcel
+          en-GB: BPM Parcel
+      - value: '65'
+        label:
+          de-DE: Media Mail
+          en-GB: Media Mail
+      - value: '66'
+        label:
+          de-DE: BPM Flat
+          en-GB: BPM Flat
+      - value: '67'
+        label:
+          de-DE: Standard Flat
+          en-GB: Standard Flat
+
+    default: '02' # Customer Supplied Package
+
+  - type: group
+    label:
+      en-GB: General
+      de-DE: Allgemein
+    elements:
+      - name: additionalHandlingRequired
+        type: boolean
+        label:
+          de-DE: Zusätzliche Handhabung notwendig
+          en-GB: Additional handling required
+        default: false
+      - name: deliverOnSaturday
+        type: boolean
+        label:
+          de-DE: Samstagszustellung
+          en-GB: Deliver on Saturday
+        default: false
+        showConditions:
+          product: '07' # Express
+      - name: additionalInsurance
+        type: boolean
+        label:
+          en-GB: Additional insurance
+          de-DE: Zusätzliche Versicherung
+        default: false
+      - name: codEnabled
+        type: boolean
+        label:
+          en-GB: Cash on delivery
+          de-DE: Nachnahme
+        default: false
+        showConditions:
+          $context.isLabelCreation: true
+          $context.isReturnShipment: false
+      - name: codAmount
+        type: number
+        suffix: EUR
+        precision: 2
+        min: 0
+        label:
+          en-GB: Cash on delivery amount
+          de-DE: Nachnahmebetrag
+        default: 0
+        showConditions:
+          $context.isLabelCreation: true
+          codEnabled: true
+      - name: createCommercialInvoice
+        type: boolean
+        label:
+          de-DE: Handelsrechnung erzeugen und übermitteln
+          en-GB: Generate and submit commercial invoice
+        default: false
+      - name: incoterm
+        type: single-select
+        label:
+          de-DE: Incoterm
+          en-GB: Incoterm
+        options:
+          - value: EXW
+            label:
+              de-DE: 'Ab Werk (EXW)'
+              en-GB: 'Ex works (EXW)'
+          - value: FCA
+            label:
+              de-DE: 'Frei Frachtführer (FCA)'
+              en-GB: 'Free carrier (FCA)'
+          - value: CPT
+            label:
+              de-DE: 'Fracht bezahlt bis (CPT)'
+              en-GB: 'Carriage paid to (CPT)'
+          - value: CIP
+            label:
+              de-DE: 'Fracht und Versicherung bezahlt (CIP)'
+              en-GB: 'Carriage insurance paid (CIP)'
+          - value: DDP
+            label:
+              de-DE: 'Frei Haus inkl. Zollabfertigung, Zölle und Steuern (DDP)'
+              en-GB: 'Delivered duty paid (DDP)'
+          - value: FAS
+            label:
+              de-DE: 'Frei Längsseite Schiff (FAS)'
+              en-GB: 'Free Alongside Ship (FAS)'
+          - value: FOB
+            label:
+              de-DE: 'Frei an Board (FOB)'
+              en-GB: 'Free on Board (FOB)'
+          - value: CFR
+            label:
+              de-DE: 'Kosten und Fracht (CFR)'
+              en-GB: 'Cost and Freight (CFR)'
+          - value: CIF
+            label:
+              de-DE: 'Kosten, Versicherung und Fracht (CFI)'
+              en-GB: 'Cost, Insurance and Freight (CFI)'
+          - value: DAF
+            label:
+              de-DE: 'Frei Haus inkl. Zollabfertigung, Zölle und Steuern (DDP)'
+              en-GB: 'Delivered at Frontier (DAF)'
+          - value: DDU
+            label:
+              de-DE: 'Frei Haus exkl. Zollabfertigung, Zölle und Steuern (DDU)'
+              en-GB: 'Delivered duty unpaid (DDU)'
+          - value: DEQ
+            label:
+              de-DE: 'Frei ab Kai (DEQ)'
+              en-GB: 'Delivery ex Quay (DEQ)'
+          - value: DES
+            label:
+              de-DE: 'Frei ab Schiff (DES)'
+              en-GB: 'Delivered ex Ship (DES)'
+        showConditions:
+          createCommercialInvoice: true

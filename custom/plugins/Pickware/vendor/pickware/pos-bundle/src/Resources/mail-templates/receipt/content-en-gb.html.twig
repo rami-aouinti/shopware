@@ -1,0 +1,9 @@
+<div style="font-family:arial; font-size:12px;">
+
+    {% if order.orderCustomer.salutation %}{{ order.orderCustomer.salutation.translated.letterName ~ ' ' }}{% endif %}{{ order.orderCustomer.firstName }} {{ order.orderCustomer.lastName }},<br>
+    <br>
+    Attached to this mail you can find the receipt slip for your purchase with the number: {{ order.orderNumber }}<br>
+    <br>
+    Don't hesitate to contact us if you have any questions.
+    <br>
+</div>

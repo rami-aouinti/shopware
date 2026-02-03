@@ -1,0 +1,19 @@
+{
+    "pickware-wms": {
+        "picking-statistics-deliveries-export": {
+            "file-name": "Picking Dashboard - Picked fulfillment orders %s",
+            "columns": {
+                "delivery-id": "Fulfillment order ID",
+                "delivery-completed-at": "Fulfillment timestamp",
+                "user-name": "User name",
+                "user-roles": "User roles",
+                "order-number": "Order number",
+                "order-sales-channel-name": "Sales channel",
+                "warehouse-name": "Warehouse",
+                "picking-process-number": "Picking process number",
+                "picking-mode": "Picking mode",
+                "picking-profile-name": "Picking profile"
+            }
+        }
+    }
+}

@@ -1,0 +1,74 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Batch creation payload",
+    "description": "POST request payload for api route _action/pickware-erp/create-batch",
+    "type": "object",
+    "required": ["productId"],
+    "additionalProperties": false,
+    "properties": {
+        "id": {
+            "$ref": "#/definitions/uuid"
+        },
+        "productId": {
+            "$ref": "#/definitions/uuid"
+        },
+        "number": {
+            "type": ["string", "null"]
+        },
+        "comment": {
+            "type": ["string", "null"]
+        },
+        "productionDate": {
+            "type": ["string", "null"],
+            "format": "date"
+        },
+        "bestBeforeDate": {
+            "type": ["string", "null"],
+            "format": "date"
+        },
+        "customFields": {
+            "type": ["object", "null"]
+        },
+        "tags": {
+            "type": ["array", "null"],
+            "items": {
+                "type": "object",
+                "required": ["id"],
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "$ref": "#/definitions/uuid"
+                    }
+                }
+            }
+        }
+    },
+    "anyOf": [
+        {
+            "required": ["number"],
+            "properties": {
+                "number": {
+                    "type": "string"
+                }
+            }
+        },
+        {
+            "required": ["bestBeforeDate"],
+            "properties": {
+                "bestBeforeDate": {
+                    "type": "string",
+                    "format": "date"
+                }
+            }
+        }
+    ],
+    "definitions": {
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        }
+    }
+}

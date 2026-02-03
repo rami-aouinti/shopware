@@ -1,0 +1,54 @@
+{
+    "name": "pickware/php-standard-library",
+    "description": "A library with common used functions",
+    "license": "proprietary",
+    "type": "library",
+    "version": "2.25.0",
+    "authors": [
+        {
+            "name": "Pickware",
+            "email": "info@pickware.de"
+        }
+    ],
+    "require": {
+        "php": ">= 8.2"
+    },
+    "require-dev": {
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "2.1.29",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpunit/phpunit": "^9.5.0",
+        "shopware/core": ">=6.6.10.5 <6.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pickware\\PhpStandardLibrary\\": "src"
+        },
+        "files": [
+            "src/Collection/class-alias.php",
+            "src/Exception/functions.php",
+            "src/Language/functions.php",
+            "src/Optional/functions.php",
+            "src/Range/functions.php"
+        ],
+        "exclude-from-classmap": [
+            "**.unit.php"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true,
+            "phpstan/extension-installer": true,
+            "symfony/runtime": true,
+            "viison/composer-git-hooks-installer-plugin": true
+        },
+        "lock": false
+    },
+    "extra": {
+        "ci-min-supported-shopware-version": "6.6.10.5"
+    },
+    "scripts": {
+        "phpstan": "./vendor/bin/phpstan analyse --memory-limit=4G --no-interaction --ansi -c phpstan.neon.dist",
+        "test:unit": "composer install && ./vendor/bin/phpunit --config phpunit.unit.xml --testdox"
+    }
+}

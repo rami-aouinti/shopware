@@ -1,0 +1,28 @@
+{
+    "pickware-erp-starter": {
+        "supplier-order-export": {
+            "file-name": "Lieferantenbestellung %s %s",
+            "columns": {
+                "supplier-product-number": "Lieferantenproduktnummer",
+                "gtin": "EAN",
+                "delivered-quantity": "Liefermenge",
+                "product-number": "Produktnummer",
+                "product-name": "Produktname",
+                "manufacturer": "Hersteller",
+                "manufacturer-number": "Herstellernummer",
+                "manufacturer-name": "Herstellername",
+                "available-stock": "Verfügbar",
+                "min-purchase": "Mindestabnahme",
+                "purchase-steps": "Abnahmeintervall",
+                "quantity": "Menge",
+                "expected-delivery-date": "Erwartetes Lieferdatum",
+                "actual-delivery-date": "Tatsächliches Lieferdatum",
+                "unit-price-net": "EK (netto)",
+                "unit-price-gross": "EK (brutto)",
+                "total-price-net": "Summe (netto)",
+                "total-price-gross": "Summe (brutto)"
+            },
+            "deleted": "gelöscht"
+        }
+    }
+}

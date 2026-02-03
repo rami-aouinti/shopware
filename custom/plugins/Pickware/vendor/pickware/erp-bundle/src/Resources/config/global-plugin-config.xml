@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/master/src/Core/System/SystemConfig/Schema/config.xsd"
+>
+    <card>
+        <title>Display in Shopware Menu</title>
+        <title lang="de-DE">Darstellung im Shopware Menü</title>
+        <component name="pw-erp-top-level-navigation-switch">
+            <name>showTopLevelNavigationEntries</name>
+            <type>bool</type>
+            <label>Show Pickware functionality directly in the menu instead of under Extensions (recommended)</label>
+            <label lang="de-DE">
+                Pickware Funktionen direkt im Menü statt unter Erweiterungen anzeigen (empfohlen).
+            </label>
+            <helpText>Changes to this value require reloading the administration</helpText>
+            <helpText lang="de-DE">Änderungen an diesem Wert erfordern das Neuladen der Administration</helpText>
+        </component>
+    </card>
+    <card>
+        <title>Reorder notification</title>
+        <title lang="de-DE">Meldebestand</title>
+        <input-field type="time">
+            <name>reorderNotificationTime</name>
+            <label>Time of daily reconciliation of stock and reorder level of all products</label>
+            <label lang="de-DE">
+                Zeitpunkt des täglichen Abgleichs von Lagerbestand und Meldebestand aller Produkte
+            </label>
+        </input-field>
+        <component name="pw-erp-reorder-flow-customization-link">
+            <name>flowLink</name>
+        </component>
+    </card>
+    <card>
+        <title>Supplier Orders</title>
+        <title lang="de-DE">Lieferantenbestellungen</title>
+        <input-field type="text">
+            <name>supplierOrderSenderEmailAddress</name>
+            <label>Sender email address for supplier orders</label>
+            <label lang="de-DE">Abweichende Absenderadresse für Lieferantenbestellungen</label>
+            <helpText>
+                Enter an email address to be used as the sender for supplier order emails.
+                If no value is entered, the shop owner's email address from the basic information settings will be used.
+            </helpText>
+            <helpText lang="de-DE">
+                Hinterlege hier eine E-Mail-Adresse, welche als Absender für E-Mails zu Lieferantenbestellungen genutzt
+                wird.
+                Falls keine E-Mail-Adresse eingetragen ist, wird die Shopbetreiber-E-Mail-Adresse aus den Einstellungen
+                der Stammdaten genutzt.
+            </helpText>
+        </input-field>
+        <input-field type="text">
+            <name>supplierOrderRecipientsBcc</name>
+            <label>BCC recipients for supplier orders</label>
+            <label lang="de-DE">BCC-Empfänger für Lieferantenbestellungen</label>
+            <helpText>
+                Provide a comma-separated list of one or more e-mail addresses, which outgoing e-mails to suppliers
+                should additionally be sent to as BCC.
+            </helpText>
+            <helpText lang="de-DE">
+                Hinterlege kommasepariert ein oder mehrere E-Mail-Adressen, an die ausgehende E-Mails an Lieferanten
+                zusätzlich als BCC verschickt werden sollen.
+            </helpText>
+        </input-field>
+        <component name="pw-erp-supplier-order-csv-column-config-field">
+            <name>supplierOrderCsvExportColumns</name>
+            <label>Columns of the CSV file for email dispatch</label>
+            <label lang="de-DE">Spalten der CSV-Datei für den E-Mail-Versand</label>
+            <helpText>
+                This setting defines which columns are included in the automatically generated CSV file that is attached
+                to the supplier order email. Manual CSV exports include all columns that are displayed in the supplier
+                order.
+            </helpText>
+            <helpText lang="de-DE">
+                Diese Einstellung legt fest, welche Spalten in der automatisch generierten CSV-Datei enthalten sind, die
+                beim E-Mail-Versand der Lieferantenbestellung angehängt wird. Manuelle CSV-Exporte enthalten alle in der
+                Lieferantenbestellung eingeblendete Spalten.
+            </helpText>
+            <options>
+                <option>
+                    <id>supplier-product-number</id>
+                </option>
+                <option>
+                    <id>ean</id>
+                </option>
+                <option>
+                    <id>product-number</id>
+                </option>
+                <option>
+                    <id>product-name</id>
+                </option>
+                <option>
+                    <id>manufacturer</id>
+                </option>
+                <option>
+                    <id>manufacturer-number</id>
+                </option>
+                <option>
+                    <id>min-purchase</id>
+                </option>
+                <option>
+                    <id>purchase-steps</id>
+                </option>
+                <option>
+                    <id>quantity</id>
+                </option>
+                <option>
+                    <id>expected-delivery-date</id>
+                </option>
+                <option>
+                    <id>unit-price</id>
+                </option>
+                <option>
+                    <id>total-price</id>
+                </option>
+            </options>
+        </component>
+        <component name="pw-erp-hide-supplier-order-config-based-on-feature-flag">
+            <name>pwErpHideSupplierOrderConfigBasedOnFeatureFlag</name>
+        </component>
+    </card>
+    <card>
+        <title>Stock movement</title>
+        <title lang="de-DE">Warenbewegung</title>
+        <input-field type="textarea">
+            <name>stockMovementComments</name>
+            <label lang="de-DE">Kommentare für Warenbewegungen</label>
+            <label>Comments for stock movements</label>
+            <helpText lang="de-DE">
+                Trage hier Kommentare ein, die zur Schnellauswahl bei Warenbewegungen zur Verfügung stehen sollen.
+                Einzelne Kommentare müssen mit Zeilenumbrüchen getrennt werden.
+            </helpText>
+            <helpText>
+                Enter comments that should be available as quick selection when creating stock movements. Comments must
+                be separated by line breaks.
+            </helpText>
+        </input-field>
+    </card>
+    <card>
+        <title>Performance optimization for system administrators</title>
+        <title lang="de-DE">Optimierung der Performance für Systemadministratoren</title>
+        <input-field type="bool">
+            <name>disableMariaDbQueryOptimizer</name>
+            <label>Disables certain query optimizations of MariaDB (Use ONLY with MariaDB)</label>
+            <label lang="de-DE">
+                Deaktiviert bestimmte Query Optimierungen von MariaDB (NUR mit MariaDB verwenden)
+            </label>
+            <helpText>
+                Switches off the query optimization `split_materialized` in MariaDB. Switching off of this
+                optimization can, depending on the system and data volume, improve or worsen the performance of the
+                improve or worsen performance when evaluating pickability. If you activate this option in a database
+                system other than MariaDB, then the administration of your shop is no longer functional!
+            </helpText>
+            <helpText lang="de-DE">
+                Schaltet die Query Optimierung `split_materialized` in MariaDB aus. Das Ausschalten
+                dieser Optimierung kann je nach System und Datenmenge die Performance bei der Auswertung der
+                Pickbarkeit verbessern oder verschlechtern. Aktivierst du diese Option in einem anderen Datenbanksystem
+                als MariaDB, dann ist die Administration deines Shops nicht mehr funktionsfähig!
+            </helpText>
+        </input-field>
+    </card>
+</config>

@@ -1,0 +1,31 @@
+{% sw_extends '@PickwareErpBundle/documents/barcode_label_layouts/base.html.twig' %}
+
+{% block css %}
+    {{ parent() }}
+    <style type="text/css">
+        .barcode {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: {{ contentDimensions.width }}mm;
+            height: {{ 2 * (contentDimensions.height / 3) }}mm;
+        }
+
+        .field1 {
+            position: absolute;
+            top: {{ 2 * (contentDimensions.height / 3) }}mm;
+            left: 0;
+            width: {{ contentDimensions.width }}mm;
+            height: {{ contentDimensions.height / 3}}mm;
+            text-align: center;
+            line-height: {{ contentDimensions.height / 3}}mm;
+            vertical-align: middle;
+            font-size: 12pt;
+        }
+    </style>
+{% endblock %}
+
+{% block label %}
+    <img class="barcode" src="{{ item.barcode }}" alt="Barcode" />
+    <div class="field1">{{ item.field1Value }}</div>
+{% endblock %}

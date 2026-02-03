@@ -1,0 +1,49 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Return order complete-return-order payload",
+    "description": "POST request payload for api route _action/pickware-erp/complete-return-order",
+    "type": "object",
+    "required": ["returnOrderId", "associations"],
+    "additionalProperties": false,
+    "properties": {
+        "returnOrderId": {
+            "$ref": "#/definitions/uuid"
+        },
+        "stockAdjustments": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/stockAdjustment"
+            }
+        },
+        "associations": {
+            "type": "object"
+        }
+    },
+    "definitions": {
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "stockAdjustment": {
+            "description": "Stock quantities for a single product when completing a return order",
+            "type": "object",
+            "required": ["productId", "restock", "dispose"],
+            "properties": {
+                "productId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "restock": {
+                    "type": "integer",
+                    "min": 0
+                },
+                "dispose": {
+                    "type": "integer",
+                    "min": 0
+                }
+            }
+        }
+    }
+}

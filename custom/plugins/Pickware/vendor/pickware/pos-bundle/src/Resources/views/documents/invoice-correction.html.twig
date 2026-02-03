@@ -1,0 +1,11 @@
+{% sw_extends '@Framework/documents/invoice-correction.html.twig' %}
+
+{% block document_body %}
+    {{ parent() }}
+    {% if config.custom and config.custom.pickwarePosAdditionalElements %}
+        <div class="page_break"></div>
+        {% sw_include '@PickwarePos/documents/components/pos_additional_elements_page.html.twig' with {
+            pickwarePosAdditionalElements: config.custom.pickwarePosAdditionalElements
+        } %}
+    {% endif %}
+{% endblock %}

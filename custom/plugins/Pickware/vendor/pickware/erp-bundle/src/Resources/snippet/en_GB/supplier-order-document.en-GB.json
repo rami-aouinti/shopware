@@ -1,0 +1,25 @@
+{
+    "pickware-erp-starter": {
+        "supplier-order-document": {
+            "file-name": "Supplier order %s",
+            "title": "Supplier order",
+            "summary": {
+                "contact": "Contact",
+                "email": "Email",
+                "phone": "Phone",
+                "destination-warehouse": "Destination warehouse",
+                "supplier-order-number": "Supplier order number",
+                "currency": "Currency",
+                "supplier-number": "Customer no"
+            },
+            "line-items": {
+                "product-number": "Product no",
+                "name": "Product name",
+                "manufacturer": "Manufacturer",
+                "supplier-product-number": "Supplier product no",
+                "quantity": "Quantity",
+                "deleted": "deleted"
+            }
+        }
+    }
+}

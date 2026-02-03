@@ -1,0 +1,14 @@
+{% sw_extends '@Administration/administration/index.html.twig' %}
+
+{% block administration_templates %}
+    <script nonce="{{ cspNonce }}">
+        if (!Object.prototype.hasOwnProperty.call(window, 'Pickware')) {
+            window.Pickware = {};
+        }
+        const windowProperties = JSON.parse('{{ pickwareErpGetAdministrationWindowProperties()|json_encode|raw }}');
+        Object.entries(windowProperties).forEach(([key, value]) => {
+            window.Pickware[key] = value;
+        });
+    </script>
+    {{ parent() }}
+{% endblock %}

@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "description": "PUT request payload for API route _action/pickware-wms/split-picking-process",
+    "type": "object",
+    "required": ["associations", "deliveryIds", "pickingProcessId", "newPickingProcess"],
+    "properties": {
+        "associations": {
+            "type": "object"
+        },
+        "pickingProcessId": {
+            "$ref": "#/definitions/uuid"
+        },
+        "deliveryIds": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/uuid"
+            },
+            "minItems": 1
+        },
+        "newPickingProcess": {
+            "type": "object",
+            "required": ["id", "pickingMode"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "pickingMode": {
+                    "enum": ["single", "preCollectedBatchPicking", "pickToBoxBatchPicking", "singleItemOrdersPicking"]
+                }
+            }
+        }
+    },
+    "definitions": {
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        }
+    }
+}

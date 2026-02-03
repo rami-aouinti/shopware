@@ -1,0 +1,16 @@
+<div style="font-family:arial; font-size:12px;">
+    <br/>
+    <p>
+        {% if salutation is not empty %}
+            {{ salutation.letterName ?? 'Sehr geehrte Frau/Herr' }} {{ [salutation.title ?? '', salutation.firstName ?? '', salutation.lastName ?? ''] | filter(part => part != '') | join(' ') }},
+        {% else %}
+            Sehr geehrte Damen und Herren,
+        {% endif %}
+        <br/>
+        <br/>
+        bitte um Lieferung der im Anhang aufgeführten Artikel.
+        <br/>
+        <br/>
+        Mit freundlichen Grüßen - Ihr Team von {{ shopName }}
+    </p>
+</div>

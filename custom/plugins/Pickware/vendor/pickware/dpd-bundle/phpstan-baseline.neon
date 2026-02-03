@@ -1,0 +1,163 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\DpdBundle\\Adapter\\DpdOrder\:\:encodeParcelInformation\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DpdOrder.php
+
+		-
+			message: '#^Method Pickware\\DpdBundle\\Adapter\\DpdOrder\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DpdOrder.php
+
+		-
+			message: '#^Method Pickware\\DpdBundle\\Adapter\\DpdResponseProcessorTest\:\:createPayloadConstraint\(\) return type with generic class PHPUnit\\Framework\\Constraint\\Callback does not specify its types\: CallbackInput$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Adapter/DpdResponseProcessor.unit.php
+
+		-
+			message: '#^Method Pickware\\DpdBundle\\Adapter\\DpdShipmentConfigTest\:\:shipmentServiceOptionProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DpdShipmentConfig.unit.php
+
+		-
+			message: '#^Method Pickware\\DpdBundle\\Adapter\\DpdShipmentConfigTest\:\:test_appliesTheServiceOptionToTheShipmentArrayWhenRetrievingTheShipmentServiceOptionsAndTheServiceOptionConfigIsSetOnTheShipmentConfig\(\) has parameter \$expectedShipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DpdShipmentConfig.unit.php
+
+		-
+			message: '#^Method Pickware\\DpdBundle\\Adapter\\DpdShipmentConfigTest\:\:test_appliesTheServiceOptionToTheShipmentArrayWhenRetrievingTheShipmentServiceOptionsAndTheServiceOptionConfigIsSetOnTheShipmentConfig\(\) has parameter \$shipmentConfigOptions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/DpdShipmentConfig.unit.php
+
+		-
+			message: '#^Parameter \#1 \$shipmentConfig of class Pickware\\DpdBundle\\Adapter\\DpdShipmentConfig constructor expects array\<string, array\<int\>\|bool\|string\>, array\<string, int\|true\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Adapter/DpdShipmentConfig.unit.php
+
+		-
+			message: '#^@dataProvider timeProvider related method must be public\.$#'
+			identifier: phpunit.dataProviderPublic
+			count: 1
+			path: src/Api/Authentication/DpdTokenRetriever.unit.php
+
+		-
+			message: '#^Method Pickware\\DpdBundle\\Api\\Authentication\\DpdTokenRetrieverTest\:\:timeProvider\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: src/Api/Authentication/DpdTokenRetriever.unit.php
+
+		-
+			message: '#^Method Pickware\\DpdBundle\\Api\\Authentication\\DpdTokenRetrieverTest\:\:timeProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Authentication/DpdTokenRetriever.unit.php
+
+		-
+			message: '#^Method Pickware\\DpdBundle\\Api\\DpdRestApiClientFactory\:\:createRestClient\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/DpdRestApiClientFactory.php
+
+		-
+			message: '#^Method Pickware\\DpdBundle\\Api\\DpdRestApiClientFactory@anonymous/Api/DpdRestApiClientFactory\.unit\.php\:51\:\:createRestClient\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/DpdRestApiClientFactory.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method createRestClient\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: src/Api/DpdRestApiClientFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\DpdBundle\\Api\\DpdSoapApiClientFactory\:\:createSoapClient\(\) has parameter \$soapOptions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/DpdSoapApiClientFactory.php
+
+		-
+			message: '#^Method Pickware\\DpdBundle\\Api\\DpdSoapApiClientFactory\:\:getSoapOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/DpdSoapApiClientFactory.php
+
+		-
+			message: '#^Call to an undefined method Pickware\\DpdBundle\\Api\\DpdSoapApiClientFactory\:\:getDpdSoapClient\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Api/DpdSoapApiClientFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\DpdBundle\\Api\\DpdSoapApiClientFactory\:\:createDpdShipmentServiceApiClient\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 4
+			path: src/Api/DpdSoapApiClientFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\DpdBundle\\Api\\DpdSoapApiClientFactory\:\:createDpdSoapClient\(\) invoked with 5 parameters, 4 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/Api/DpdSoapApiClientFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\DpdBundle\\Api\\DpdSoapApiClientFactory@anonymous/Api/DpdSoapApiClientFactory\.unit\.php\:55\:\:__construct\(\) has parameter \$authenticationSessionServiceMock with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Api/DpdSoapApiClientFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\DpdBundle\\Api\\DpdSoapApiClientFactory@anonymous/Api/DpdSoapApiClientFactory\.unit\.php\:55\:\:createSoapClient\(\) has parameter \$soapOptions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/DpdSoapApiClientFactory.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method createSoapClient\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: src/Api/DpdSoapApiClientFactory.unit.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Psr\\\\Http\\\\Message\\\\ResponseInterface'' and Psr\\Http\\Message\\ResponseInterface will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: src/Api/Handler/DpdRestApiFaultHandlingMiddleware.unit.php
+
+		-
+			message: '#^Property Pickware\\DpdBundle\\Api\\Handler\\DpdRestApiFaultHandlingMiddlewareTest\:\:\$nextRequestHandlerMockCalls type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Handler/DpdRestApiFaultHandlingMiddleware.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method __invoke\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 2
+			path: src/Api/Handler/DpdRestApiMessageLanguageMiddleware.unit.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>authenticationFault" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Api/Handler/DpdShipmentServiceApiAuthRequestHandler.php
+
+		-
+			message: '#^Method Pickware\\DpdBundle\\Api\\Services\\ShipmentServiceOption\:\:__construct\(\) has parameter \$servicePayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/ShipmentServiceOption.php
+
+		-
+			message: '#^Method Pickware\\DpdBundle\\Api\\Services\\ShipmentServiceOption\:\:applyToShipmentArray\(\) has parameter \$shipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/ShipmentServiceOption.php

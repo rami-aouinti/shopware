@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<container
+    xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <service id="Pickware\ShippingBundle\Shipment\ShipmentService" public="true">
+            <argument type="service" id="Pickware\ShippingBundle\Config\ConfigService" />
+            <argument type="service" id="Pickware\DalBundle\EntityManager" />
+            <argument type="service" id="Pickware\ShippingBundle\ParcelHydration\ParcelHydrator" />
+            <argument type="service" id="Pickware\ShippingBundle\Carrier\CarrierAdapterRegistry" />
+            <argument type="service" id="pickware_shipping.parcel_packer" />
+            <argument type="service" id="Pickware\ShippingBundle\AddressCorrecting\AddressCorrectingService" />
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="Pickware\ShippingBundle\Notifications\NotificationService" />
+            <argument type="service" id="Pickware\ShippingBundle\Privacy\PrivacyService" />
+            <argument type="service" id="Pickware\ShippingBundle\Shipment\ShipmentTrackingCodeUpdater" />
+            <argument type="service" id="Pickware\ShippingBundle\Config\ShipmentConfigurationService" />
+        </service>
+        <service id="Pickware\ShippingBundle\Shipment\ShipmentTrackingCodeUpdater" public="true">
+            <argument type="service" id="Pickware\DalBundle\EntityManager" />
+        </service>
+    </services>
+</container>

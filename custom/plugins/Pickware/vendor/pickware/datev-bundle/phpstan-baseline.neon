@@ -1,0 +1,1453 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\DatevBundle\\AccountingDocument\\AccountingDocumentEntityIdChunkCalculator\:\:getEntityIdCountForExportConfig\(\) has parameter \$exportConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AccountingDocument/AccountingDocumentEntityIdChunkCalculator.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\AccountingDocument\\AccountingDocumentExportConfig\:\:__construct\(\) has parameter \$documentTypes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AccountingDocument/AccountingDocumentExportConfig.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\AccountingDocument\\AccountingDocumentExportConfig\:\:fromExportConfig\(\) has parameter \$exportConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AccountingDocument/AccountingDocumentExportConfig.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\AccountingDocument\\AccountingDocumentExportConfig\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AccountingDocument/AccountingDocumentExportConfig.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\AccountingDocument\\AccountingDocumentExportConfig\:\:validate\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AccountingDocument/AccountingDocumentExportConfig.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\AccountingDocument\\AccountingDocumentRecordCreator\:\:createEntryBatchRecords\(\) has parameter \$exportConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AccountingDocument/AccountingDocumentRecordCreator.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\AccountingDocument\\AccountingDocumentRecordCreator\:\:getDocumentNumber\(\) has parameter \$documentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AccountingDocument/AccountingDocumentRecordCreator.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\AccountingDocument\\AccountingDocumentRecordCreator\:\:getInvoiceReferenceInformation\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AccountingDocument/AccountingDocumentRecordCreator.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\AccountingDocument\\AccountingDocumentRecordCreator\:\:validateConfig\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AccountingDocument/AccountingDocumentRecordCreator.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\AccountingDocument\\AccountingDocumentRequest\\AccountingDocumentPriceItemCollection extends generic class Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection but does not specify its types\: Element$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/AccountingDocument/AccountingDocumentRequest/AccountingDocumentPriceItemCollection.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\AccountingDocument\\AccountingDocumentRequest\\AccountingDocumentPriceItemCollection has @implements tag, but does not implement any interface\.$#'
+			identifier: generics.noParent
+			count: 1
+			path: src/AccountingDocument/AccountingDocumentRequest/AccountingDocumentPriceItemCollection.php
+
+		-
+			message: '#^@dataProvider taxStatusExcludingTaxFreeProvider related method must be public\.$#'
+			identifier: phpunit.dataProviderPublic
+			count: 2
+			path: src/AccountingDocument/AccountingDocumentRequest/AccountingDocumentPriceItemCollectionFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\AccountingDocument\\AccountingDocumentRequest\\AccountingDocumentPriceItemCollectionFactoryTest\:\:taxStatusExcludingTaxFreeProvider\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: src/AccountingDocument/AccountingDocumentRequest/AccountingDocumentPriceItemCollectionFactory.unit.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 1
+			path: src/AccountingDocument/AccountingDocumentRequest/AccountingDocumentRequestCalculationContextFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\AccountingDocumentPicture\\Controller\\AccountingDocumentPictureExportController\:\:getAccountingDocumentPackageIndexFileContent\(\) has parameter \$failedDocumentIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AccountingDocumentPicture/Controller/AccountingDocumentPictureExportController.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\AccountingDocumentPicture\\Controller\\AccountingDocumentPictureExportController\:\:getFailedAccountingDocumentsLog\(\) has parameter \$failedDocumentPayloads with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AccountingDocumentPicture/Controller/AccountingDocumentPictureExportController.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\AccountingDocumentPicture\\Controller\\AccountingDocumentPictureExportControllerTest has an uninitialized readonly property \$accountingDocumentPackageIndexFileServiceMock\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/AccountingDocumentPicture/Controller/AccountingDocumentPictureExportController.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\AccountingDocumentPicture\\Controller\\AccountingDocumentPictureExportControllerTest has an uninitialized readonly property \$accountingDocumentPackagePayloadServiceMock\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/AccountingDocumentPicture/Controller/AccountingDocumentPictureExportController.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\AccountingDocumentPicture\\Controller\\AccountingDocumentPictureExportControllerTest has an uninitialized readonly property \$accountingDocumentPictureExportController\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/AccountingDocumentPicture/Controller/AccountingDocumentPictureExportController.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\AccountingDocumentPicture\\Controller\\AccountingDocumentPictureExportControllerTest has an uninitialized readonly property \$accountingDocumentPictureExportDocumentServiceMock\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/AccountingDocumentPicture/Controller/AccountingDocumentPictureExportController.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\AccountingDocumentPicture\\Controller\\AccountingDocumentPictureExportControllerTest has an uninitialized readonly property \$accountingDocumentPictureExportErrorLogFileServiceMock\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/AccountingDocumentPicture/Controller/AccountingDocumentPictureExportController.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\AccountingDocumentPicture\\Controller\\AccountingDocumentPictureExportControllerTest has an uninitialized readonly property \$context\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/AccountingDocumentPicture/Controller/AccountingDocumentPictureExportController.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\AccountingDocumentPicture\\Controller\\AccountingDocumentPictureExportControllerTest\:\:\$accountingDocumentPackageIndexFileServiceMock is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/AccountingDocumentPicture/Controller/AccountingDocumentPictureExportController.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\AccountingDocumentPicture\\Controller\\AccountingDocumentPictureExportControllerTest\:\:\$accountingDocumentPackagePayloadServiceMock is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/AccountingDocumentPicture/Controller/AccountingDocumentPictureExportController.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\AccountingDocumentPicture\\Controller\\AccountingDocumentPictureExportControllerTest\:\:\$accountingDocumentPictureExportController is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/AccountingDocumentPicture/Controller/AccountingDocumentPictureExportController.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\AccountingDocumentPicture\\Controller\\AccountingDocumentPictureExportControllerTest\:\:\$accountingDocumentPictureExportDocumentServiceMock is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/AccountingDocumentPicture/Controller/AccountingDocumentPictureExportController.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\AccountingDocumentPicture\\Controller\\AccountingDocumentPictureExportControllerTest\:\:\$accountingDocumentPictureExportErrorLogFileServiceMock is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/AccountingDocumentPicture/Controller/AccountingDocumentPictureExportController.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\AccountingDocumentPicture\\Controller\\AccountingDocumentPictureExportControllerTest\:\:\$context is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/AccountingDocumentPicture/Controller/AccountingDocumentPictureExportController.unit.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\AccountingDocumentPicture\\Export\\AccountingDocumentFileService\:\:getAccountingDocumentPackageFileMetadata\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AccountingDocumentPicture/Export/AccountingDocumentFileService.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\AccountingDocumentPicture\\Export\\AccountingDocumentFileService\:\:getRawAccountingDocumentPackageFileData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AccountingDocumentPicture/Export/AccountingDocumentFileService.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\AccountingDocumentPicture\\Export\\AccountingDocumentFileMapping constructor invoked with 6 parameters, 4 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/AccountingDocumentPicture/Export/AccountingDocumentPackageIndexFileService.unit.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\AggregationResult\\AggregationResult\:\:getCount\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/AccountingDocumentPicture/Export/AccountingDocumentPackagePayloadService.php
+
+		-
+			message: '#^Property Pickware\\DatevBundle\\AccountingDocumentPicture\\Export\\AccountingDocumentPackagePayloadServiceTest\:\:\$entityRepositoryMock with generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository does not specify its types\: TEntityCollection$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/AccountingDocumentPicture/Export/AccountingDocumentPackagePayloadService.unit.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\AccountingDocumentPicture\\Export\\AccountingDocumentPictureExportDocumentService\:\:getDocumentDownloadsForDocumentPackage\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AccountingDocumentPicture/Export/AccountingDocumentPictureExportDocumentService.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\AccountingDocumentPicture\\Export\\AccountingDocumentPictureExportErrorLogFileService\:\:getFailedAccountingDocumentsLog\(\) has parameter \$failedDocumentPayloads with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/AccountingDocumentPicture/Export/AccountingDocumentPictureExportErrorLogFileService.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\CompanyCodes\\CompanyCodesServiceTest has an uninitialized readonly property \$companyCodesService\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/CompanyCodes/CompanyCodesService.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\CompanyCodes\\CompanyCodesServiceTest has an uninitialized readonly property \$featureFlagServiceMock\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/CompanyCodes/CompanyCodesService.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\CompanyCodes\\CompanyCodesServiceTest\:\:\$companyCodesService is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/CompanyCodes/CompanyCodesService.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\CompanyCodes\\CompanyCodesServiceTest\:\:\$featureFlagServiceMock is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/CompanyCodes/CompanyCodesService.unit.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\CompanyCodes\\SpecificCompanyCodes\:\:createFromCustomFields\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/CompanyCodes/SpecificCompanyCodes.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\CompanyCodes\\SpecificCompanyCodes\:\:createFromCustomFields\(\) has parameter \$customerCustomFields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CompanyCodes/SpecificCompanyCodes.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\CompanyCodes\\SpecificCompanyCodes\:\:createFromCustomFields\(\) has parameter \$customerGroupCustomFields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CompanyCodes/SpecificCompanyCodes.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentCustomer\:\:fromRawCustomerData\(\) has parameter \$customerCustomFields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/AccountAssignment/AccountAssignmentCustomer.php
+
+		-
+			message: '#^Parameter \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition@anonymous/Config/AccountAssignment/AccountRule\.unit\.php\:37\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition@anonymous/Config/AccountAssignment/AccountRule\.unit\.php\:46\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition@anonymous/Config/AccountAssignment/AccountRule\.unit\.php\:52\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountAssignment/AccountRule.unit.php
+
+		-
+			message: '#^Parameter \$messages of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentState constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\EntryBatch\\EntryBatchLogMessage\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<string\> given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Config/AccountAssignment/AccountRule.unit.php
+
+		-
+			message: '#^Parameter \#1 \$items of method Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRuleStack\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\:\:map\(\) expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem@anonymous/Config/AccountAssignment/AccountRuleStack\.unit\.php\:105\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem@anonymous/Config/AccountAssignment/AccountRuleStack\.unit\.php\:99\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountAssignment/AccountRuleStack.unit.php
+
+		-
+			message: '#^Parameter \#1 \$items of method Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRuleStack\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\:\:map\(\) expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem@anonymous/Config/AccountAssignment/AccountRuleStack\.unit\.php\:181\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem@anonymous/Config/AccountAssignment/AccountRuleStack\.unit\.php\:187\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountAssignment/AccountRuleStack.unit.php
+
+		-
+			message: '#^Parameter \#1 \$items of method Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRuleStack\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\:\:map\(\) expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem@anonymous/Config/AccountAssignment/AccountRuleStack\.unit\.php\:29\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem@anonymous/Config/AccountAssignment/AccountRuleStack\.unit\.php\:35\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountAssignment/AccountRuleStack.unit.php
+
+		-
+			message: '#^Parameter \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition@anonymous/Config/AccountAssignment/AccountRuleStack\.unit\.php\:46\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountAssignment/AccountRuleStack.unit.php
+
+		-
+			message: '#^Parameter \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition@anonymous/Config/AccountAssignment/AccountRuleStack\.unit\.php\:58\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountAssignment/AccountRuleStack.unit.php
+
+		-
+			message: '#^Parameter \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition@anonymous/Config/AccountAssignment/AccountRuleStack\.unit\.php\:70\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountAssignment/AccountRuleStack.unit.php
+
+		-
+			message: '#^Parameter \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<mixed\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition@anonymous/Config/AccountAssignment/AccountRuleStack\.unit\.php\:116\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountAssignment/AccountRuleStack.unit.php
+
+		-
+			message: '#^Parameter \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<mixed\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition@anonymous/Config/AccountAssignment/AccountRuleStack\.unit\.php\:128\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountAssignment/AccountRuleStack.unit.php
+
+		-
+			message: '#^Parameter \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<mixed\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition@anonymous/Config/AccountAssignment/AccountRuleStack\.unit\.php\:140\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountAssignment/AccountRuleStack.unit.php
+
+		-
+			message: '#^Parameter \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<mixed\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition@anonymous/Config/AccountAssignment/AccountRuleStack\.unit\.php\:198\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountAssignment/AccountRuleStack.unit.php
+
+		-
+			message: '#^Parameter \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<mixed\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition@anonymous/Config/AccountAssignment/AccountRuleStack\.unit\.php\:210\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountAssignment/AccountRuleStack.unit.php
+
+		-
+			message: '#^Parameter \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<mixed\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition@anonymous/Config/AccountAssignment/AccountRuleStack\.unit\.php\:224\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountAssignment/AccountRuleStack.unit.php
+
+		-
+			message: '#^Parameter \$messageFactory of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects callable\(mixed, Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentMetadata\)\: Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\EntryBatch\\EntryBatchLogMessage\>, Closure\(Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\)\: Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<string\> given\.$#'
+			identifier: argument.type
+			count: 6
+			path: src/Config/AccountAssignment/AccountRuleStack.unit.php
+
+		-
+			message: '#^Interface Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\RevenueAccountCondition extends generic interface Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition but does not specify its types\: Item$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Config/AccountAssignment/Conditions/RevenueAccountCondition.php
+
+		-
+			message: '#^Interface Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\RevenueAccountCondition has @implements tag, but can not implement any interface, must extend from it\.$#'
+			identifier: generics.noParent
+			count: 1
+			path: src/Config/AccountAssignment/Conditions/RevenueAccountCondition.php
+
+		-
+			message: '#^Parameter \#1 \$messageFactory of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects callable\(Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem, Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentMetadata\)\: Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\EntryBatch\\EntryBatchLogMessage\>, Closure\(Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\)\: Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountAssignment/MessageRule.unit.php
+
+		-
+			message: '#^Parameter \#1 \$messageFactory of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects callable\(mixed, Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentMetadata\)\: Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\EntryBatch\\EntryBatchLogMessage\>, Closure\(mixed\)\: array\{\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountAssignment/MessageRule.unit.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<mixed\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition@anonymous/Config/AccountAssignment/MessageRule\.unit\.php\:37\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition@anonymous/Config/AccountAssignment/MessageRule\.unit\.php\:46\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition@anonymous/Config/AccountAssignment/MessageRule\.unit\.php\:52\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountAssignment/MessageRule.unit.php
+
+		-
+			message: '#^Parameter \$messages of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentState constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\EntryBatch\\EntryBatchLogMessage\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<string\> given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Config/AccountAssignment/MessageRule.unit.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 1
+			path: src/Config/AccountAssignment/TaxStatus.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\AccountRuleStackCreationService\:\:createCashMovementAccountRuleStack\(\) should return Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRuleStack\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\CashMovementRequestItem\> but returns Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRuleStack\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\AccountRuleStackCreationService\:\:createCashMovementContraAccountRuleStack\(\) should return Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRuleStack\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\CashMovementRequestItem\> but returns Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRuleStack\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\AccountRuleStackCreationService\:\:createClearingAccountRuleStack\(\) should return Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRuleStack\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\ClearingAccountRequestItem\> but returns Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRuleStack\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\AccountRuleStackCreationService\:\:createDebtorAccountsRuleStack\(\) should return Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRuleStack\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\DebtorAccountRequestItem\> but returns Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRuleStack\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\AccountRuleStackCreationService\:\:getRulesForDefaultRevenueAccounts\(\) should return array\<Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\RevenueAccountRequestItem\>\> but returns list\<Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\AccountRuleStackCreationService\:\:getRulesForIrregularIntraCommunityDeliveries\(\) should return array\<Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\RevenueAccountRequestItem\>\> but returns list\<Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\AccountRuleStackCreationService\:\:getRulesForRevenueAccountsByCountryAndTaxRate\(\) should return array\<Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\RevenueAccountRequestItem\>\> but returns non\-empty\-list\<Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\|Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule\<mixed\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\AccountRuleStackCreationService\:\:getRulesForTaxFreeFallbackRevenueAccounts\(\) should return array\<Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\RevenueAccountRequestItem\>\|Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\RevenueAccountRequestItem\>\> but returns array\{Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule\<mixed\>, Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\AccountRuleStackCreationService\:\:getRulesForThirdCountryDeliveries\(\) should return array\<Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\RevenueAccountRequestItem\>\> but returns list\<Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Parameter \#1 \$messageFactory of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects callable\(mixed, Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentMetadata\)\: Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\EntryBatch\\EntryBatchLogMessage\>, Closure\(\)\: Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentMessage\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Parameter \#1 \$messageFactory of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects callable\(mixed, Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentMetadata\)\: Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\EntryBatch\\EntryBatchLogMessage\>, Closure\(Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\RevenueAccountRequestItem\)\: Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentMessage\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Parameter \#1 \$messageFactory of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects callable\(mixed, Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentMetadata\)\: Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\EntryBatch\\EntryBatchLogMessage\>, Closure\(Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\RevenueAccountRequestItem, Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentMetadata\)\: Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentMessage\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\CountryCondition\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\IntraCommunityCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\CountryCondition\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\IntraCommunityFallbackCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\CountryCondition\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\TaxRateCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\CountryCondition\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\ThirdCountryCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\IntraCommunityCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\TaxFreeCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\TaxRateCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\ThirdCountryCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\ClearingAccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\PaymentMethodCondition\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<mixed\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\CountryCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<mixed\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\CountryCondition\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\TaxFreeCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<mixed\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\HasNoVatIdCondition\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\IntraCommunityCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\Config\\AccountRuleStackCreationServiceTest has an uninitialized readonly property \$featureFlagServiceMock\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Parameter \#1 \$messageFactory of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects callable\(mixed, Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentMetadata\)\: Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\EntryBatch\\EntryBatchLogMessage\>, Closure\(\)\: Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentMessage\> given\.$#'
+			identifier: argument.type
+			count: 4
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Parameter \#1 \$messageFactory of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects callable\(mixed, Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentMetadata\)\: Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\EntryBatch\\EntryBatchLogMessage\>, Closure\(Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\RevenueAccountRequestItem\)\: array\{Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentMessage\} given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Parameter \#1 \$messageFactory of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects callable\(mixed, Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentMetadata\)\: Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\EntryBatch\\EntryBatchLogMessage\>, Closure\(Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\RevenueAccountRequestItem, Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentMetadata\)\: Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountAssignmentMessage\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Parameter \#1 \$sortedRules of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRuleStack constructor expects array\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Rule\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, array\{Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\ClearingAccountRequestItem\>, Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\ClearingAccountRequestItem\>, Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\} given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\CountryCondition\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\IntraCommunityCondition\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\CountryCondition\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\IntraCommunityFallbackCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\CountryCondition\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\TaxRateCondition\> given\.$#'
+			identifier: argument.type
+			count: 6
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\CountryCondition\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\ThirdCountryCondition\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\IntraCommunityCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\TaxFreeCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\TaxRateCondition\> given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Item of Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\AccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\ThirdCountryCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\AccountRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Item\\ClearingAccountRequestItem\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\PaymentMethodCondition\> given\.$#'
+			identifier: argument.type
+			count: 4
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<mixed\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\CountryCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<mixed\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\CountryCondition\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\TaxFreeCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Parameter \#2 \$conditions of class Pickware\\DatevBundle\\Config\\AccountAssignment\\MessageRule constructor expects Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Condition\<mixed\>\>, Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection\<Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\HasNoVatIdCondition\|Pickware\\DatevBundle\\Config\\AccountAssignment\\Conditions\\IntraCommunityCondition\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\Config\\AccountRuleStackCreationServiceTest\:\:\$featureFlagServiceMock is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/Config/AccountRuleStackCreationService.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\Config\\Model\\DatevConfigCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Config/Model/DatevConfigCollection.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\CashMovementAccounts\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/CashMovementAccounts.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\CashMovementAccounts\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/CashMovementAccounts.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\ClearingAccounts\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/ClearingAccounts.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\ClearingAccounts\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/ClearingAccounts.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\CollectiveDebtorAccounts\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/CollectiveDebtorAccounts.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\CollectiveDebtorAccounts\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/CollectiveDebtorAccounts.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\CompanyCodes\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/CompanyCodes.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\ConfigValues\:\:__construct\(\) has parameter \$postingRecord with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/ConfigValues.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\ConfigValues\:\:__construct\(\) has parameter \$revenueAccounts with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/ConfigValues.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\ConfigValues\:\:__construct\(\) has parameter \$revenueAccountsForIntraCommunityDeliveries with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/ConfigValues.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\ConfigValues\:\:__construct\(\) has parameter \$revenueAccountsForThirdCountryDeliveries with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/ConfigValues.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\ConfigValues\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/ConfigValues.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\ConfigValues\:\:getPostingRecord\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/ConfigValues.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\ConfigValues\:\:getRevenueAccounts\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/ConfigValues.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\ConfigValues\:\:getRevenueAccountsForIntraCommunityDeliveries\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/ConfigValues.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\ConfigValues\:\:getRevenueAccountsForThirdCountryDeliveries\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/ConfigValues.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\ConfigValues\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/ConfigValues.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\CostCenters\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/CostCenters.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\PaymentCaptureConfigValues\:\:__construct\(\) has parameter \$idsOfExcludedPaymentMethods with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/PaymentCaptureConfigValues.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\PaymentCaptureConfigValues\:\:__construct\(\) has parameter \$idsOfOrderTransactionStatesForCaptureTypePayment with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/PaymentCaptureConfigValues.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\PaymentCaptureConfigValues\:\:__construct\(\) has parameter \$idsOfOrderTransactionStatesForCaptureTypeRefund with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/PaymentCaptureConfigValues.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\PaymentCaptureConfigValues\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/PaymentCaptureConfigValues.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\PaymentCaptureConfigValues\:\:getIdsOfExcludedPaymentMethods\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/PaymentCaptureConfigValues.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\PaymentCaptureConfigValues\:\:getIdsOfOrderTransactionStatesForCaptureTypePayment\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/PaymentCaptureConfigValues.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\PaymentCaptureConfigValues\:\:getIdsOfOrderTransactionStatesForCaptureTypeRefund\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/PaymentCaptureConfigValues.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Config\\Values\\PaymentCaptureConfigValues\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Config/Values/PaymentCaptureConfigValues.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\CostCenters\\CostCentersServiceTest has an uninitialized readonly property \$costCentersService\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/CostCenters/CostCentersService.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\CostCenters\\CostCentersServiceTest has an uninitialized readonly property \$entityManagerMock\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/CostCenters/CostCentersService.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\CostCenters\\CostCentersServiceTest has an uninitialized readonly property \$featureFlagServiceMock\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/CostCenters/CostCentersService.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\CostCenters\\CostCentersServiceTest\:\:\$costCentersService is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/CostCenters/CostCentersService.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\CostCenters\\CostCentersServiceTest\:\:\$entityManagerMock is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/CostCenters/CostCentersService.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\CostCenters\\CostCentersServiceTest\:\:\$featureFlagServiceMock is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/CostCenters/CostCentersService.unit.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\DependencyInjection\\EntityIdChunkCalculatorRegistry\:\:__construct\(\) has parameter \$entityIdBatchCalculator with no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/DependencyInjection/EntityIdChunkCalculatorRegistry.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\DependencyInjection\\EntryBatchRecordCreatorRegistry\:\:__construct\(\) has parameter \$entryBatchRecordCreators with no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/DependencyInjection/EntryBatchRecordCreatorRegistry.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\EntityIdChunkCalculator\:\:getEntityIdCountForExportConfig\(\) has parameter \$exportConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/EntityIdChunkCalculator.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\EntryBatchLogMessage\:\:__construct\(\) has parameter \$content with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/EntryBatchLogMessage.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\EntryBatchLogMessage\:\:__construct\(\) has parameter \$meta with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/EntryBatchLogMessage.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\EntryBatchLogMessage\:\:getContent\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/EntryBatchLogMessage.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\EntryBatchLogMessage\:\:getMeta\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/EntryBatchLogMessage.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\EntryBatchLogMessage\:\:toImportExportLogEntryPayload\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/EntryBatchLogMessage.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\EntryBatchRecordCollection\:\:getEntries\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/EntryBatchRecordCollection.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\EntryBatchRecordCreator\:\:createEntryBatchRecords\(\) has parameter \$exportConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/EntryBatchRecordCreator.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\EntryBatchRecordCreator\:\:validateConfig\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/EntryBatchRecordCreator.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\ImportExportProfile\\EntryBatchCsvWriter\:\:writeHeader\(\) has parameter \$header with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/ImportExportProfile/EntryBatchCsvWriter.php
+
+		-
+			message: '#^Variable \$resource might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/EntryBatch/ImportExportProfile/EntryBatchCsvWriter.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\ImportExportProfile\\EntryBatchExportConfig\:\:fromExportConfig\(\) has parameter \$exportConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExportConfig.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\ImportExportProfile\\EntryBatchExportConfig\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExportConfig.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\ImportExportProfile\\EntryBatchExportConfig\:\:validate\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExportConfig.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\ImportExportProfile\\EntryBatchExportConfigTest\:\:optionalConfigValueNotSetDataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExportConfig.unit.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\ImportExportProfile\\EntryBatchExportConfigTest\:\:requiredConfigValueNotSetDataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExportConfig.unit.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\ImportExportProfile\\EntryBatchExporter\:\:getEntryBatchRecordExportRows\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExporter.php
+
+		-
+			message: '#^Access to an undefined property Pickware\\DatevBundle\\EntryBatch\\EntityIdChunkCalculator\:\:\$entityIdChunk\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExporter.unit.php
+
+		-
+			message: '#^Access to an undefined property Pickware\\DatevBundle\\EntryBatch\\EntityIdChunkCalculator\:\:\$getEntityIdChunkForExportCalls\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExporter.unit.php
+
+		-
+			message: '#^Access to an undefined property Pickware\\DatevBundle\\EntryBatch\\EntryBatchRecordCreator\:\:\$configValidationErrors\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExporter.unit.php
+
+		-
+			message: '#^Access to an undefined property Pickware\\DatevBundle\\EntryBatch\\EntryBatchRecordCreator\:\:\$createEntryBatchRecordsCalls\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExporter.unit.php
+
+		-
+			message: '#^Access to an undefined property Pickware\\DatevBundle\\EntryBatch\\EntryBatchRecordCreator\:\:\$entryBatchRecordCollection\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExporter.unit.php
+
+		-
+			message: '#^Access to an undefined property Pickware\\DatevBundle\\EntryBatch\\EntryBatchRecordCreator\:\:\$validateConfigCalls\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExporter.unit.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\EntityIdChunkCalculator@anonymous/EntryBatch/ImportExportProfile/EntryBatchExporter\.unit\.php\:94\:\:getEntityIdCountForExportConfig\(\) has parameter \$exportConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExporter.unit.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\EntryBatchRecordCreator@anonymous/EntryBatch/ImportExportProfile/EntryBatchExporter\.unit\.php\:115\:\:createEntryBatchRecords\(\) has parameter \$exportConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExporter.unit.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\EntryBatch\\EntryBatchRecordCreator@anonymous/EntryBatch/ImportExportProfile/EntryBatchExporter\.unit\.php\:115\:\:validateConfig\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExporter.unit.php
+
+		-
+			message: '#^Property Pickware\\DatevBundle\\EntryBatch\\EntityIdChunkCalculator@anonymous/EntryBatch/ImportExportProfile/EntryBatchExporter\.unit\.php\:94\:\:\$entityIdChunk type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExporter.unit.php
+
+		-
+			message: '#^Property Pickware\\DatevBundle\\EntryBatch\\EntityIdChunkCalculator@anonymous/EntryBatch/ImportExportProfile/EntryBatchExporter\.unit\.php\:94\:\:\$getEntityIdChunkForExportCalls type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExporter.unit.php
+
+		-
+			message: '#^Property Pickware\\DatevBundle\\EntryBatch\\EntryBatchRecordCreator@anonymous/EntryBatch/ImportExportProfile/EntryBatchExporter\.unit\.php\:115\:\:\$createEntryBatchRecordsCalls type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExporter.unit.php
+
+		-
+			message: '#^Property Pickware\\DatevBundle\\EntryBatch\\EntryBatchRecordCreator@anonymous/EntryBatch/ImportExportProfile/EntryBatchExporter\.unit\.php\:115\:\:\$validateConfigCalls type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntryBatch/ImportExportProfile/EntryBatchExporter.unit.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\IndividualDebtorAccountInformation\\AccountLabelExport\\AccountLabelExportService\:\:formatRows\(\) has parameter \$rows with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/IndividualDebtorAccountInformation/AccountLabelExport/AccountLabelExportService.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\IndividualDebtorAccountInformation\\BaseDataExport\\BaseDataExportService\:\:formatRows\(\) has parameter \$rows with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/IndividualDebtorAccountInformation/BaseDataExport/BaseDataExportService.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\IndividualDebtorAccountInformation\\Controller\\IndividualDebtorAccountInformationExportControllerTest has an uninitialized readonly property \$accountLabelExportServiceMock\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/IndividualDebtorAccountInformation/Controller/IndividualDebtorAccountInformationExportController.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\IndividualDebtorAccountInformation\\Controller\\IndividualDebtorAccountInformationExportControllerTest has an uninitialized readonly property \$baseDataExportServiceMock\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/IndividualDebtorAccountInformation/Controller/IndividualDebtorAccountInformationExportController.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\IndividualDebtorAccountInformation\\Controller\\IndividualDebtorAccountInformationExportControllerTest has an uninitialized readonly property \$clockMock\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/IndividualDebtorAccountInformation/Controller/IndividualDebtorAccountInformationExportController.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\IndividualDebtorAccountInformation\\Controller\\IndividualDebtorAccountInformationExportControllerTest has an uninitialized readonly property \$context\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/IndividualDebtorAccountInformation/Controller/IndividualDebtorAccountInformationExportController.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\IndividualDebtorAccountInformation\\Controller\\IndividualDebtorAccountInformationExportControllerTest has an uninitialized readonly property \$exportedIndividualDebtorServiceMock\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/IndividualDebtorAccountInformation/Controller/IndividualDebtorAccountInformationExportController.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\IndividualDebtorAccountInformation\\Controller\\IndividualDebtorAccountInformationExportControllerTest has an uninitialized readonly property \$individualDebtorAccountInformationExportController\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/IndividualDebtorAccountInformation/Controller/IndividualDebtorAccountInformationExportController.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\IndividualDebtorAccountInformation\\Controller\\IndividualDebtorAccountInformationExportControllerTest\:\:\$accountLabelExportServiceMock is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/IndividualDebtorAccountInformation/Controller/IndividualDebtorAccountInformationExportController.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\IndividualDebtorAccountInformation\\Controller\\IndividualDebtorAccountInformationExportControllerTest\:\:\$baseDataExportServiceMock is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/IndividualDebtorAccountInformation/Controller/IndividualDebtorAccountInformationExportController.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\IndividualDebtorAccountInformation\\Controller\\IndividualDebtorAccountInformationExportControllerTest\:\:\$clockMock is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/IndividualDebtorAccountInformation/Controller/IndividualDebtorAccountInformationExportController.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\IndividualDebtorAccountInformation\\Controller\\IndividualDebtorAccountInformationExportControllerTest\:\:\$context is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/IndividualDebtorAccountInformation/Controller/IndividualDebtorAccountInformationExportController.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\IndividualDebtorAccountInformation\\Controller\\IndividualDebtorAccountInformationExportControllerTest\:\:\$exportedIndividualDebtorServiceMock is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/IndividualDebtorAccountInformation/Controller/IndividualDebtorAccountInformationExportController.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\IndividualDebtorAccountInformation\\Controller\\IndividualDebtorAccountInformationExportControllerTest\:\:\$individualDebtorAccountInformationExportController is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/IndividualDebtorAccountInformation/Controller/IndividualDebtorAccountInformationExportController.unit.php
+
+		-
+			message: '#^You should use assertTrue\(\) instead of assertSame\(\) when expecting "true"$#'
+			identifier: phpunit.assertTrue
+			count: 1
+			path: src/IndividualDebtorAccountInformation/Controller/IndividualDebtorAccountInformationExportController.unit.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\IndividualDebtorAccountInformation\\ExportedIndividualDebtorService\:\:getIndividualDebtorAccountInformationMap\(\) should return array\<string, string\>\|null but returns array\<string, int\|null\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/IndividualDebtorAccountInformation/ExportedIndividualDebtorService.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\OrderTaxValidation\\Controller\\OrderTaxValidationController\:\:getExportHasIndividualDebtorAccountInformation\(\) has parameter \$orderIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderTaxValidation/Controller/OrderTaxValidationController.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\OrderTaxValidation\\Controller\\OrderTaxValidationControllerTest has an uninitialized readonly property \$OrderTaxValidationController\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/OrderTaxValidation/Controller/OrderTaxValidationController.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\OrderTaxValidation\\Controller\\OrderTaxValidationControllerTest has an uninitialized readonly property \$context\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/OrderTaxValidation/Controller/OrderTaxValidationController.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\OrderTaxValidation\\Controller\\OrderTaxValidationControllerTest has an uninitialized readonly property \$orderTaxInformationValidatorMock\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/OrderTaxValidation/Controller/OrderTaxValidationController.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\OrderTaxValidation\\Controller\\OrderTaxValidationControllerTest\:\:\$OrderTaxValidationController is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/OrderTaxValidation/Controller/OrderTaxValidationController.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\OrderTaxValidation\\Controller\\OrderTaxValidationControllerTest\:\:\$context is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/OrderTaxValidation/Controller/OrderTaxValidationController.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\OrderTaxValidation\\Controller\\OrderTaxValidationControllerTest\:\:\$orderTaxInformationValidatorMock is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/OrderTaxValidation/Controller/OrderTaxValidationController.unit.php
+
+		-
+			message: '#^You should use assertTrue\(\) instead of assertSame\(\) when expecting "true"$#'
+			identifier: phpunit.assertTrue
+			count: 1
+			path: src/OrderTaxValidation/Controller/OrderTaxValidationController.unit.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\OrderTaxValidation\\TaxInformationValidator\:\:areOrdersTaxInformationValid\(\) has parameter \$orderIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderTaxValidation/TaxInformationValidator.php
+
+		-
+			message: '#^If condition is always false\.$#'
+			identifier: if.alwaysFalse
+			count: 1
+			path: src/Payment/ExternalOrderTransactionCapture.php
+
+		-
+			message: '#^If condition is always false\.$#'
+			identifier: if.alwaysFalse
+			count: 1
+			path: src/Payment/ExternalOrderTransactionCapturedEvent.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Payment\\PaymentEntityIdChunkCalculator\:\:getEntityIdCountForExportConfig\(\) has parameter \$exportConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Payment/PaymentEntityIdChunkCalculator.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Payment\\PaymentRecordCreator\:\:createEntryBatchRecords\(\) has parameter \$exportConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Payment/PaymentRecordCreator.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Payment\\PaymentRecordCreator\:\:getPaymentMethodId\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Payment/PaymentRecordCreator.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\Payment\\PaymentRecordCreator\:\:validateConfig\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Payment/PaymentRecordCreator.php
+
+		-
+			message: '#^Variable \$paymentRequestItems in PHPDoc tag @var does not match assigned variable \$items\.$#'
+			identifier: varTag.differentVariable
+			count: 1
+			path: src/Payment/PaymentRecordCreator.php
+
+		-
+			message: '#^Static method PHPUnit\\Framework\\Assert\:\:assertEqualsWithDelta\(\) invoked with named argument \$delta, but it''s not allowed because of @no\-named\-arguments\.$#'
+			identifier: argument.named
+			count: 1
+			path: src/PaymentCapture/Controller/PaymentCaptureController.unit.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PaymentCapture\\DependencyInjection\\PaymentCaptureGeneratorRegistry\:\:__construct\(\) has parameter \$paymentCaptureGenerators with no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PaymentCapture/DependencyInjection/PaymentCaptureGeneratorRegistry.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PaymentCapture\\ExternalOrderTransactionCapturedEvent\:\:__construct\(\) has parameter \$captures with generic class Pickware\\PhpStandardLibrary\\Collection\\ImmutableCollection but does not specify its types\: Element$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PaymentCapture/ExternalOrderTransactionCapturedEvent.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PaymentCapture\\Model\\PaymentCaptureEntity\:\:getUserSnapshot\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PaymentCapture/Model/PaymentCaptureEntity.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PaymentCapture\\Model\\PaymentCaptureEntity\:\:setUserSnapshot\(\) has parameter \$userSnapshot with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PaymentCapture/Model/PaymentCaptureEntity.php
+
+		-
+			message: '#^Property Pickware\\DatevBundle\\PaymentCapture\\Model\\PaymentCaptureEntity\:\:\$userSnapshot type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PaymentCapture/Model/PaymentCaptureEntity.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PaymentCapture\\RegularPaymentCaptureGenerator\:\:getExcludePaymentMethodsCondition\(\) has parameter \$excludedPaymentMethodIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PaymentCapture/RegularPaymentCaptureGenerator.php
+
+		-
+			message: '#^Class Pickware\\ShopwarePlugins\\ShopwareIntegrationTestPlugin\\ShopwareIntegrationTestPlugin not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/PickwareDatevBundle.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PickwareDatevBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareDatevBundle.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosAccountingDocument\\PosAccountingDocumentEntityIdChunkCalculator\:\:getEntityIdCountForExportConfig\(\) has parameter \$exportConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosAccountingDocument/PosAccountingDocumentEntityIdChunkCalculator.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosAccountingDocument\\PosAccountingDocumentEntityIdCount\:\:fromArray\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosAccountingDocument/PosAccountingDocumentEntityIdCount.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosAccountingDocument\\PosAccountingDocumentEntityIdCount\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosAccountingDocument/PosAccountingDocumentEntityIdCount.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosAccountingDocument\\PosAccountingDocumentExportConfig\:\:fromExportConfig\(\) has parameter \$exportConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosAccountingDocument/PosAccountingDocumentExportConfig.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosAccountingDocument\\PosAccountingDocumentExportConfig\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosAccountingDocument/PosAccountingDocumentExportConfig.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosAccountingDocument\\PosAccountingDocumentExportConfig\:\:validate\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosAccountingDocument/PosAccountingDocumentExportConfig.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosAccountingDocument\\PosAccountingDocumentRecordCreator\:\:createEntryBatchRecords\(\) has parameter \$exportConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosAccountingDocument/PosAccountingDocumentRecordCreator.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosAccountingDocument\\PosAccountingDocumentRecordCreator\:\:validateConfig\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosAccountingDocument/PosAccountingDocumentRecordCreator.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''Pickware\\\\PickwareErpStarter\\\\OrderCalculation\\\\CalculatableOrderFactory'' and ''createCalculatableO…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/PosAccountingDocument/PosAccountingDocumentRequest/PosAccountingDocumentRequestCalculationContextFactory.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\PosAccountingDocument\\PosAccountingDocumentRequest\\PosAccountingDocumentRequestCalculationContextFactoryTest has an uninitialized readonly property \$calculatableOrderFactoryMock\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/PosAccountingDocument/PosAccountingDocumentRequest/PosAccountingDocumentRequestCalculationContextFactory.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\PosAccountingDocument\\PosAccountingDocumentRequest\\PosAccountingDocumentRequestCalculationContextFactoryTest has an uninitialized readonly property \$entityManagerMock\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/PosAccountingDocument/PosAccountingDocumentRequest/PosAccountingDocumentRequestCalculationContextFactory.unit.php
+
+		-
+			message: '#^Class Pickware\\DatevBundle\\PosAccountingDocument\\PosAccountingDocumentRequest\\PosAccountingDocumentRequestCalculationContextFactoryTest has an uninitialized readonly property \$posAccountingDocumentRequestCalculationContextFactory\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/PosAccountingDocument/PosAccountingDocumentRequest/PosAccountingDocumentRequestCalculationContextFactory.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\PosAccountingDocument\\PosAccountingDocumentRequest\\PosAccountingDocumentRequestCalculationContextFactoryTest\:\:\$calculatableOrderFactoryMock is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/PosAccountingDocument/PosAccountingDocumentRequest/PosAccountingDocumentRequestCalculationContextFactory.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\PosAccountingDocument\\PosAccountingDocumentRequest\\PosAccountingDocumentRequestCalculationContextFactoryTest\:\:\$entityManagerMock is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/PosAccountingDocument/PosAccountingDocumentRequest/PosAccountingDocumentRequestCalculationContextFactory.unit.php
+
+		-
+			message: '#^Readonly property Pickware\\DatevBundle\\PosAccountingDocument\\PosAccountingDocumentRequest\\PosAccountingDocumentRequestCalculationContextFactoryTest\:\:\$posAccountingDocumentRequestCalculationContextFactory is assigned outside of the constructor\.$#'
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: src/PosAccountingDocument/PosAccountingDocumentRequest/PosAccountingDocumentRequestCalculationContextFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosPayment\\PosPaymentCaptureGenerator\:\:getExcludePaymentMethodsCondition\(\) has parameter \$excludedPaymentMethodIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosPayment/PosPaymentCaptureGenerator.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\DataAbstractionLayer\\Entity\:\:getId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/PosPayment/PosPaymentCaptureService.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosPayment\\PosPaymentCaptureService\:\:createOrderTransactionPaymentCapturePayloads\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosPayment/PosPaymentCaptureService.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosPayment\\PosPaymentCaptureService\:\:createReturnOrderRefundPaymentCapturePayloads\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosPayment/PosPaymentCaptureService.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosPayment\\PosPaymentEntityIdChunkCalculator\:\:getEntityIdCountForExportConfig\(\) has parameter \$exportConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosPayment/PosPaymentEntityIdChunkCalculator.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosPayment\\PosPaymentEntityIdCount\:\:fromArray\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosPayment/PosPaymentEntityIdCount.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosPayment\\PosPaymentEntityIdCount\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosPayment/PosPaymentEntityIdCount.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosPayment\\PosPaymentExportConfig\:\:fromExportConfig\(\) has parameter \$exportConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosPayment/PosPaymentExportConfig.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosPayment\\PosPaymentExportConfig\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosPayment/PosPaymentExportConfig.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosPayment\\PosPaymentExportConfig\:\:validate\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosPayment/PosPaymentExportConfig.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosPayment\\PosPaymentRecordCreator\:\:createEntryBatchRecords\(\) has parameter \$exportConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosPayment/PosPaymentRecordCreator.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosPayment\\PosPaymentRecordCreator\:\:getPaymentMethodId\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/PosPayment/PosPaymentRecordCreator.php
+
+		-
+			message: '#^Method Pickware\\DatevBundle\\PosPayment\\PosPaymentRecordCreator\:\:validateConfig\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/PosPayment/PosPaymentRecordCreator.php
+
+		-
+			message: '#^Variable \$paymentRequestItems in PHPDoc tag @var does not match assigned variable \$items\.$#'
+			identifier: varTag.differentVariable
+			count: 2
+			path: src/PosPayment/PosPaymentRecordCreator.php

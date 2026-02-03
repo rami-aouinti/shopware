@@ -1,0 +1,25 @@
+{
+    "pickware-erp-starter": {
+        "supplier-order-document": {
+            "file-name": "Lieferantenbestellung %s",
+            "title": "Lieferantenbestellung",
+            "summary": {
+                "contact": "Kontakt",
+                "email": "E-Mail",
+                "phone": "Telefon",
+                "destination-warehouse": "Ziellager",
+                "supplier-order-number": "Auftragsnummer Lieferant",
+                "currency": "Währung",
+                "supplier-number": "Kunden-Nr."
+            },
+            "line-items": {
+                "product-number": "Produkt-Nr.",
+                "name": "Produktname",
+                "manufacturer": "Hersteller",
+                "supplier-product-number": "Lieferantenprodukt-Nr.",
+                "quantity": "Menge",
+                "deleted": "gelöscht"
+            }
+        }
+    }
+}

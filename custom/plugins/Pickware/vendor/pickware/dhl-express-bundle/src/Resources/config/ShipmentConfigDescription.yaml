@@ -1,0 +1,145 @@
+elements:
+  - name: product
+    type: single-select
+    label:
+      de-DE: Produkt
+      en-GB: Product
+    options:
+      - value: 'DE'
+        label:
+          de-DE: Domestic Express
+          en-GB: Domestic Express
+      - value: 'WW'
+        label:
+          de-DE: Express Worldwide
+          en-GB: Express Worldwide
+      - value: 'WWE'
+        label:
+          de-DE: Express Worldwide EU
+          en-GB: Express Worldwide EU
+      - value: 'EE'
+        label:
+          de-DE: Express Envelope
+          en-GB: Express Envelope
+      - value: 'ESE'
+        label:
+          de-DE: Express Economy Select EU
+          en-GB: Express Economy Select EU
+      - value: 'ES'
+        label:
+          de-DE: Express Economy Select Non-EU
+          en-GB: Express Economy Select Non-EU
+    default: 'DE' # Domestic Express
+  - name: deliveryTime
+    type: single-select
+    label:
+      de-DE: Zustellung bis
+      en-GB: Delivery until
+    options:
+      - value: '24'
+        label:
+          de-DE: Ende des Tages
+          en-GB: End of day
+      - value: '09'
+        label:
+          de-DE: 09:00
+          en-GB: 09:00
+      - value: '10'
+        label:
+          de-DE: 10:30
+          en-GB: 10:30
+      - value: '12'
+        label:
+          de-DE: 12:00
+          en-GB: 12:00
+    default: '24' # End of day
+    showConditions:
+      product:
+        - 'WW' # Express Worldwide
+        - 'DE' # Domestic Express
+  - name: contentType
+    type: single-select
+    label:
+      de-DE: Sendungstyp
+      en-GB: Content type
+    options:
+      - value: 'doc'
+        label:
+          de-DE: Dokumentensendung
+          en-GB: Documents
+      - value: 'non-doc'
+        label:
+          de-DE: Warensendung
+          en-GB: Packages
+    default: 'doc' # Documents
+    showConditions:
+      product:
+        - 'WW' # Express Worldwide
+
+  - type: group
+    label:
+      en-GB: General
+      de-DE: Allgemein
+    elements:
+      - name: saturdayDelivery
+        type: boolean
+        label:
+          en-GB: Saturday delivery
+          de-DE: Samstagszustellung
+        default: false
+        showConditions:
+          product:
+            - 'DE'
+          deliveryTime:
+            - '24'
+            - '12'
+      - name: additionalInsurance
+        type: boolean
+        label:
+          de-DE: Zusätzliche Versicherung
+          en-GB: Additional insurance
+        default: false
+      - name: insuranceAmount
+        type: number
+        suffix: EUR
+        precision: 2
+        min: 0
+        max: 3500
+        label:
+          en-GB: Insurance amount
+          de-DE: Versicherungsbetrag
+        default: 0
+        showConditions:
+          $context.isLabelCreation: true
+          additionalInsurance: true
+      - name: incoterm
+        type: single-select
+        label:
+          de-DE: Incoterm
+          en-GB: Incoterm
+        options:
+          - value: EXW
+            label:
+              de-DE: 'Ab Werk (EXW)'
+              en-GB: 'Ex works (EXW)'
+          - value: FCA
+            label:
+              de-DE: 'Frei Frachtführer (FCA)'
+              en-GB: 'Free carrier (FCA)'
+          - value: DAP
+            label:
+              de-DE: 'Geliefert benannter Ort (DAP)'
+              en-GB: 'Delivered at place (DAP)'
+          - value: DDP
+            label:
+              de-DE: 'Frei Haus inkl. Zollabfertigung, Zölle und Steuern (DDP)'
+              en-GB: 'Delivered duty paid (DDP)'
+          - value: DDU
+            label:
+              de-DE: 'Frei Haus exkl. Zollabfertigung, Zölle und Steuern (DDU)'
+              en-GB: 'Delivered duty unpaid (DDU)'
+        default: DAP
+        showConditions:
+          product:
+            - 'WW'
+            - 'ES'

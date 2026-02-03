@@ -1,0 +1,43 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\UsageReportBundle\\ApiClient\\UsageReportApiClientException\:\:createInvalidRequestError\(\) has parameter \$usageReportJsonApiError with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiClient/UsageReportApiClientException.php
+
+		-
+			message: '#^Method Pickware\\UsageReportBundle\\Model\\UsageReportOrderEntity\:\:getOrderSnapshot\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Model/UsageReportOrderEntity.php
+
+		-
+			message: '#^Method Pickware\\UsageReportBundle\\Model\\UsageReportOrderEntity\:\:setOrderSnapshot\(\) has parameter \$orderSnapshot with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Model/UsageReportOrderEntity.php
+
+		-
+			message: '#^Property Pickware\\UsageReportBundle\\Model\\UsageReportOrderEntity\:\:\$orderSnapshot type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Model/UsageReportOrderEntity.php
+
+		-
+			message: '#^Method Pickware\\UsageReportBundle\\OrderReport\\UsageReportOrderInitializer\:\:ensureUsageReportOrdersExist\(\) has parameter \$orderIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/OrderReport/UsageReportOrderInitializer.php
+
+		-
+			message: '#^Empty array passed to foreach\.$#'
+			identifier: foreach.emptyArray
+			count: 2
+			path: src/PickwareUsageReportBundle.php
+
+		-
+			message: '#^Method Pickware\\UsageReportBundle\\PickwareUsageReportBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareUsageReportBundle.php

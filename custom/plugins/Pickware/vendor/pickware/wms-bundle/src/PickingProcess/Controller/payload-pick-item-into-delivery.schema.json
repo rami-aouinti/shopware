@@ -1,0 +1,130 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "description": "PUT request payload for API route _action/pickware-wms/pick-item-into-delivery",
+    "type": "object",
+    "required": ["productId", "deliveryId", "stockLocation", "quantity", "stockMovementId", "associations"],
+    "properties": {
+        "productId": {
+            "$ref": "#/definitions/uuid"
+        },
+        "batchId": {
+            "$ref": "#/definitions/uuid"
+        },
+        "deliveryId": {
+            "$ref": "#/definitions/uuid"
+        },
+        "stockLocation": {
+            "$ref": "#/definitions/stockLocation"
+        },
+        "quantity": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "stockMovementId": {
+            "description": "The ID for the resulting stock movement. This is used as an idempotency key for the request.",
+            "$ref": "#/definitions/uuid"
+        },
+        "associations": {
+            "type": "object"
+        },
+        "pickingPropertyRecords": {
+            "type": "array",
+            "items": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/pickingPropertyRecordValue"
+                }
+            }
+        }
+    },
+    "definitions": {
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "stockLocation": {
+            "description": "An internal location where stock can exist for picking",
+            "oneOf": [
+                {
+                    "type": "object",
+                    "required": ["warehouse"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "warehouse": {
+                            "$ref": "#/definitions/warehouse"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": ["binLocation"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "binLocation": {
+                            "$ref": "#/definitions/binLocation"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": ["stockContainer"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "stockContainer": {
+                            "$ref": "#/definitions/stockContainer"
+                        }
+                    }
+                }
+            ]
+        },
+        "warehouse": {
+            "description": "A warehouse",
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "binLocation": {
+            "description": "A bin location in a warehouse",
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "stockContainer": {
+            "description": "A stock container from e.g. a picking process",
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "pickingPropertyRecordValue": {
+            "description": "A picking property with a captured value",
+            "type": "object",
+            "required": ["name", "value"],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255
+                }
+            }
+        }
+    }
+}

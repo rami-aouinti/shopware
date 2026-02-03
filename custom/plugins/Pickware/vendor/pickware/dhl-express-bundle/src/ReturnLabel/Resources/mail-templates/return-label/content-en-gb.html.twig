@@ -1,0 +1,17 @@
+<div style="font-family: Arial, Helvetica, sans-serif;">
+    {{ order.orderCustomer.salutation.letterName }} {{ order.orderCustomer.firstName }} {{ order.orderCustomer.lastName }},<br>
+    <br>
+    {% if returnLabelDocuments|length  > 1 %}
+        Attached to this e-mail you will find {{ returnLabelDocuments|length }} shipping labels from DHL Express for returning
+        your order with the number {{ order.orderNumber }}.<br>
+        Please print them out and use them to claim the free return shipment.<br>
+        Several return labels have been sent to you, as you may need to split your return into several packages to
+        comply with DHL Express's weight limit.<br>
+    {% else %}
+        Attached to this e-mail you will find a shipping label from DHL Express for returning your order with the number {{ order.orderNumber }}.<br>
+        Please print it out and use it to claim the free return shipment.<br>
+        We wish you a pleasant day.<br>
+    {%  endif %}
+    <br>
+    Your team from {{ shopName }}.
+</div>

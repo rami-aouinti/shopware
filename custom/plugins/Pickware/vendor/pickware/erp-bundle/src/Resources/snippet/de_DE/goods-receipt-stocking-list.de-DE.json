@@ -1,0 +1,25 @@
+{
+    "pickware-erp-starter": {
+        "goods-receipt-stocking-list": {
+            "file-name": "Einlagerungsliste %s",
+            "title": "Einlagerungsliste für Wareneingang",
+            "sub-title": "Lager:",
+            "warehouse-label": "%warehouseName% (%warehouseCode%)",
+            "unknown": "unbekannt",
+            "comment": "Kommentar",
+            "empty-list": "Dieser Wareneingang enthält keine Produkte.",
+            "columns": {
+                "bin-location": "Lagerplatz",
+                "product-number": "Produktnummer",
+                "product-name": "Produktname",
+                "quantity": "Anzahl"
+            },
+            "custom-products": {
+                "checkbox": {
+                    "off": "nicht ausgewählt",
+                    "on": "ausgewählt"
+                }
+            }
+        }
+    }
+}

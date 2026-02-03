@@ -1,0 +1,22 @@
+{
+    "pickware-wms": {
+        "shipping-process-receipt": {
+            "file-name": "Beleg fuer Versandvorgang %s",
+            "title": {
+                "deferred": "Zurückgestellter Versandvorgang"
+            },
+            "sub-title": "Lager:",
+            "warehouse-label": "%warehouseName% (%warehouseCode%)",
+            "created-at": "Erstellt am:",
+            "user": "Benutzer:",
+            "product-list-title": {
+                "deferred": "Verbleibende Produkte"
+            },
+            "columns": {
+                "product-number": "Produktnummer",
+                "product": "Produkt",
+                "quantity": "Menge"
+            }
+        }
+    }
+}

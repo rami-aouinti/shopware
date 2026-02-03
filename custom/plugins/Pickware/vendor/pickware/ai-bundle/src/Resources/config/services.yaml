@@ -1,0 +1,15 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Pickware\AiBundle\:
+    resource: '../../'
+    exclude:
+      - '../../**/*Event.php'
+      - '../../**/*Exception.php'
+      - '../../**/*Incompatibility.php'
+      - '../../**/*Message.php'
+      - '../../**/*Error.php'
+      - '../../Administration/'
+      - '../../Installation/'

@@ -1,0 +1,108 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Goods receipt recalculate-goods-receipts payload",
+    "description": "POST request payload for api route _action/pickware-erp/goods-receipt/create-goods-receipt-for-return-order",
+    "type": "object",
+    "required": ["goodsReceiptPayload", "disposeQuantities"],
+    "additionalProperties": false,
+    "properties": {
+        "goodsReceiptPayload": {
+            "$ref": "#/definitions/goodsReceipt"
+        },
+        "disposeQuantities": {
+            "type": "array",
+            "items": {
+                "required": ["productId", "quantity"],
+                "additionalProperties": false,
+                "properties": {
+                    "productId": {
+                        "$ref": "#/definitions/uuid"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "minimum": 0
+                    }
+                }
+            }
+        },
+        "returnOrderId": {
+            "$ref": "#/definitions/uuid"
+        }
+    },
+    "definitions": {
+        "goodsReceipt": {
+            "type": "object",
+            "required": ["id", "warehouseId", "lineItems", "type", "customerId", "returnOrders"],
+            "additionalProperties": false,
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "type": {
+                    "type": "string",
+                    "const": "customer"
+                },
+                "taxStatus": {
+                    "type": "string"
+                },
+                "comment": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "warehouseId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "lineItems": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/lineItem"
+                    }
+                },
+                "customerId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "returnOrders": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 1
+                }
+            }
+        },
+        "lineItem": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "quantity", "productId", "returnOrderId"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "productId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "productSnapshot": {
+                    "type": "object"
+                },
+                "returnOrderId": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        }
+    }
+}

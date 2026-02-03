@@ -1,0 +1,144 @@
+elements:
+  - name: product
+    type: single-select
+    label:
+      de-DE: Produkt
+      en-GB: Product
+    options:
+      - value: '10'
+        label:
+          de-DE: Paket Österreich
+          en-GB: Parcel Austria
+      - value: '14'
+        label:
+          de-DE: Premium light
+          en-GB: Premium light
+      - value: '30'
+        label:
+          de-DE: Premium Select
+          en-GB: Premium Select
+      - value: '65'
+        label:
+          de-DE: Next Day
+          en-GB: Next Day
+      - value: '70'
+        label:
+          de-DE: Paket Plus International
+          en-GB: Paket Plus International
+      - value: '45'
+        label:
+          de-DE: Paket Premium International
+          en-GB: Paket Premium International
+      - value: '69'
+        label:
+          de-DE: Paket Light International
+          en-GB: Paket Light International
+      - value: '47'
+        label:
+          de-DE: Combi-freight Österreich
+          en-GB: Combi-freight Austria
+      - value: '49'
+        label:
+          de-DE: Combi-freight International
+          en-GB: Combi-freight International
+      - value: '31'
+        label:
+          de-DE: Paket Premium Österreich B2B
+          en-GB: Paket Premium Austria B2B
+      - value: '01'
+        label:
+          de-DE: Post Express Österreich
+          en-GB: Post Express Austria
+      - value: '46'
+        label:
+          de-DE: Post Express International
+          en-GB: Post Express International
+      - value: '96'
+        label:
+          de-DE: Kleinpaket 2000
+          en-GB: Small parcel 2000
+      - value: '16'
+        label:
+          de-DE: Kleinpaket 2000 Plus
+          en-GB: Small parcel 2000 Plus
+      - value: '78'
+        label:
+          de-DE: Päckchen M mit Sendungsverfolgung
+          en-GB: Parcel M with tracking
+    default: '10' # Paket Österreich
+
+  - type: group
+    label:
+      en-GB: Services
+      de-DE: Services
+    elements:
+      - name: fragile
+        type: boolean
+        label:
+          en-GB: Fragile
+          de-DE: Zerbrechlich
+        default: false
+      - name: fresh
+        type: boolean
+        label:
+          en-GB: Fresh
+          de-DE: Fresh
+        default: false
+      - name: insured
+        type: boolean
+        label:
+          en-GB: Insured item
+          de-DE: Wertsendung
+        default: false
+      - name: insuranceAmount
+        type: number
+        suffix: EUR
+        precision: 2
+        min: 0
+        max: 3500
+        label:
+          en-GB: Insurance amount
+          de-DE: Versicherungsbetrag
+        showConditions:
+          $context.isLabelCreation: true
+          insured: true
+      - name: codEnabled
+        type: boolean
+        label:
+          en-GB: Cash on delivery
+          de-DE: Nachnahme
+        default: false
+        showConditions:
+          $context.isLabelCreation: true
+      - name: codAmount
+        type: number
+        suffix: EUR
+        precision: 2
+        min: 0
+        label:
+          en-GB: Cash on delivery amount
+          de-DE: Nachnahmebetrag
+        default: 0
+        showConditions:
+          $context.isLabelCreation: true
+          codEnabled: true
+      - name: deliveryInstruction
+        type: text
+        label:
+          en-GB: Delivery instruction
+          de-DE: Zustellanweisung
+        showConditions:
+          $context.isLabelCreation: true
+
+  - name: exportDocuments
+    type: group
+    label:
+      de-DE: Exportdokumente
+      en-GB: Export documents
+    elements:
+      - name: createExportDocuments
+        type: boolean
+        label:
+          en-GB: Create export documents
+          de-DE: Exportdokumente erstellen
+        default: false

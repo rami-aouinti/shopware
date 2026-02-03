@@ -1,0 +1,370 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Cash point closing transaction",
+    "description": "A cash point closing transaction",
+    "type": "object",
+    "required": [
+        "id",
+        "cashRegisterId",
+        "currencyId",
+        "customerId",
+        "buyer",
+        "number",
+        "type",
+        "name",
+        "start",
+        "end",
+        "total",
+        "payment",
+        "comment",
+        "cashPointClosingTransactionLineItems"
+    ],
+    "properties": {
+        "id": {
+            "$ref": "#/definitions/shopwareUuid"
+        },
+        "cashRegisterId": {
+            "$ref": "#/definitions/shopwareUuid"
+        },
+        "cashRegisterFiskalyClientUuid": {
+            "$ref": "#/definitions/uuid"
+        },
+        "currencyId": {
+            "$ref": "#/definitions/shopwareUuid"
+        },
+        "customerId": {
+            "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/shopwareUuid" }]
+        },
+        "buyer": {
+            "$ref": "#/definitions/buyer"
+        },
+        "number": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "type": {
+            "$ref": "#/definitions/transactionTypes"
+        },
+        "name": {
+            "oneOf": [
+                { "type": "null" },
+                {
+                    "type": "string",
+                    "maxLength": 60
+                }
+            ]
+        },
+        "start": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "end": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "total": {
+            "$ref": "#/definitions/total"
+        },
+        "payment": {
+            "$ref": "#/definitions/payment"
+        },
+        "comment": {
+            "oneOf": [
+                { "type": "null" },
+                {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            ]
+        },
+        "cashPointClosingTransactionLineItems": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/transactionLineItem"
+            }
+        },
+        "fiscalizationContext": {
+            "oneOf": [
+                { "type": "null" },
+                { "$ref": "#/definitions/fiskalyAtContext" },
+                { "$ref": "#/definitions/fiskalyDeContext" }
+            ]
+        }
+    },
+    "definitions": {
+        "transactionTypes": {
+            "enum": [
+                "Beleg",
+                "AVTransfer",
+                "AVBestellung",
+                "AVTraining",
+                "AVBelegstorno",
+                "AVBelegabbruch",
+                "AVSachbezug",
+                "AVSonstige",
+                "AVRechnung"
+            ]
+        },
+        "shopwareUuid": {
+            "description": "Shopware's UUID which contains 32 random HEX characters",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "uuid": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        },
+        "currencyCode": {
+            "description": "Currency code in ISO 4217 (3 characters)",
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3,
+            "pattern": "^[A-Z]{3}$"
+        },
+        "countryCode": {
+            "description": "Country code in ISO 3166 alpha-3 (3 characters)",
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3,
+            "pattern": "^[A-Z]{3}$"
+        },
+        "buyer": {
+            "type": "object",
+            "required": ["id", "name", "type"],
+            "additionalProperties": false,
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "enum": ["Kunde", "Mitarbeiter"]
+                }
+            }
+        },
+        "total": {
+            "type": "object",
+            "required": ["inclVat", "exclVat", "vat"],
+            "additionalProperties": false,
+            "properties": {
+                "inclVat": {
+                    "type": "number"
+                },
+                "exclVat": {
+                    "type": "number"
+                },
+                "vat": {
+                    "type": "number"
+                }
+            }
+        },
+        "payment": {
+            "type": "object",
+            "required": ["type", "currencyCode", "amount"],
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "$ref": "#/definitions/paymentTypes"
+                },
+                "currencyCode": {
+                    "$ref": "#/definitions/currencyCode"
+                },
+                "amount": {
+                    "type": "number"
+                }
+            }
+        },
+        "paymentTypes": {
+            "enum": ["Bar", "Unbar", "ECKarte", "Kreditkarte", "ElZahlungsdienstleister", "GuthabenKarte", "Keine"]
+        },
+        "transactionLineItem": {
+            "type": "object",
+            "required": [
+                "id",
+                "productId",
+                "name",
+                "productNumber",
+                "gtin",
+                "voucherId",
+                "referencedCashPointClosingTransactionId",
+                "type",
+                "quantity",
+                "vatTable",
+                "pricePerUnit",
+                "total",
+                "discount"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/shopwareUuid"
+                },
+                "productId": {
+                    "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/shopwareUuid" }]
+                },
+                "name": {
+                    "type": "string"
+                },
+                "productNumber": {
+                    "type": "string"
+                },
+                "gtin": {
+                    "oneOf": [{ "type": "null" }, { "type": "string" }]
+                },
+                "voucherId": {
+                    "oneOf": [{ "type": "null" }, { "type": "string" }]
+                },
+                "referencedCashPointClosingTransactionId": {
+                    "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/shopwareUuid" }]
+                },
+                "type": {
+                    "$ref": "#/definitions/transactionLineItemTypes"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "vatTable": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/vatTableEntry"
+                    }
+                },
+                "pricePerUnit": {
+                    "$ref": "#/definitions/price"
+                },
+                "total": {
+                    "$ref": "#/definitions/price"
+                },
+                "discount": {
+                    "oneOf": [{ "type": "null" }, { "$ref": "#/definitions/price" }]
+                }
+            }
+        },
+        "vatTableEntry": {
+            "type": "object",
+            "required": ["taxRate", "tax", "price"],
+            "additionalProperties": false,
+            "properties": {
+                "taxRate": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 100.0
+                },
+                "tax": {
+                    "type": "number"
+                },
+                "price": {
+                    "type": "number"
+                }
+            }
+        },
+        "transactionLineItemTypes": {
+            "enum": [
+                "Anfangsbestand",
+                "Umsatz",
+                "Pfand",
+                "PfandRueckzahlung",
+                "MehrzweckgutscheinKauf",
+                "MehrzweckgutscheinEinloesung",
+                "EinzweckgutscheinKauf",
+                "EinzweckgutscheinEinloesung",
+                "Forderungsentstehung",
+                "Forderungsaufloesung",
+                "Anzahlungseinstellung",
+                "Anzahlungsaufloesung",
+                "Privateinlage",
+                "Privatentnahme",
+                "Geldtransit",
+                "DifferenzSollIst",
+                "TrinkgeldAG",
+                "TrinkgeldAN",
+                "Auszahlung",
+                "Einzahlung",
+                "Rabatt",
+                "Aufschlag",
+                "Lohnzahlung",
+                "ZuschussEcht",
+                "ZuschussUnecht"
+            ]
+        },
+        "price": {
+            "type": "object",
+            "required": ["inclVat", "exclVat", "vat"],
+            "additionalProperties": false,
+            "properties": {
+                "inclVat": {
+                    "type": "number"
+                },
+                "exclVat": {
+                    "type": "number"
+                },
+                "vat": {
+                    "type": "number"
+                }
+            }
+        },
+        "fiskalyAtContext": {
+            "type": "object",
+            "required": ["fiskalyAt"],
+            "additionalProperties": false,
+            "properties": {
+                "fiskalyAt": {
+                    "type": "object",
+                    "required": ["rksvReceiptNumber"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "rksvReceiptNumber": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "fiskalyDeContext": {
+            "type": "object",
+            "required": ["fiskalyDe"],
+            "additionalProperties": false,
+            "properties": {
+                "fiskalyDe": {
+                    "type": "object",
+                    "required": ["clientUuid", "result"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "clientUuid": {
+                            "$ref": "#/definitions/uuid"
+                        },
+                        "result": {
+                            "oneOf": [
+                                {
+                                    "type": "object",
+                                    "required": ["tssTransactionUuid"],
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "tssTransactionUuid": {
+                                            "$ref": "#/definitions/uuid"
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "object",
+                                    "required": ["error"],
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

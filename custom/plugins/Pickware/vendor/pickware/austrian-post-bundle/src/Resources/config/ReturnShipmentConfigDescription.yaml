@@ -1,0 +1,13 @@
+elements:
+  - name: exportDocuments
+    type: group
+    label:
+      de-DE: Exportdokumente
+      en-GB: Export documents
+    elements:
+      - name: createExportDocuments
+        type: boolean
+        label:
+          en-GB: Create export documents
+          de-DE: Exportdokumente erstellen
+        default: false

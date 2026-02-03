@@ -1,0 +1,67 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\DebugBundle\\PickwareDebugBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareDebugBundle.php
+
+		-
+			message: '#^Function Pickware\\DebugBundle\\Profiling\\trace\(\) has parameter \$tags with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Profiling/Profiling.php
+
+		-
+			message: '#^Unable to resolve the template type TReturn in call to method static method Shopware\\Core\\Profiling\\Profiler\:\:trace\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: src/Profiling/Profiling.php
+
+		-
+			message: '#^Method Pickware\\DebugBundle\\Profiling\\TracingTag\:\:validateTagsArray\(\) has parameter \$tags with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Profiling/TracingTag.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\HttpFoundation\\Response\:\:setData\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/ResponseExceptionListener/ResponseExceptionListenerDecorator.php
+
+		-
+			message: '#^Method Pickware\\DebugBundle\\ResponseExceptionListener\\ResponseExceptionListenerDecorator\:\:removeArgsFromStackTrace\(\) has parameter \$trace with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ResponseExceptionListener/ResponseExceptionListenerDecorator.php
+
+		-
+			message: '#^Method Pickware\\DebugBundle\\ResponseExceptionListener\\ResponseExceptionListenerDecorator\:\:removeArgsFromStackTrace\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ResponseExceptionListener/ResponseExceptionListenerDecorator.php
+
+		-
+			message: '#^Call to an undefined method Pickware\\DebugBundle\\ResponseExceptionListener\\JwtValidator\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 7
+			path: src/ResponseExceptionListener/ResponseExceptionListenerDecoratorTest.unit.php
+
+		-
+			message: '#^Call to an undefined method Pickware\\DebugBundle\\ResponseExceptionListener\\JwtValidator\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/ResponseExceptionListener/ResponseExceptionListenerDecoratorTest.unit.php
+
+		-
+			message: '#^Call to an undefined method Psr\\Log\\LoggerInterface\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 7
+			path: src/ResponseExceptionListener/ResponseExceptionListenerDecoratorTest.unit.php
+
+		-
+			message: '#^Property Pickware\\DebugBundle\\ResponseExceptionListener\\ResponseExceptionListenerDecoratorTest\:\:\$httpSanitizing has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/ResponseExceptionListener/ResponseExceptionListenerDecoratorTest.unit.php

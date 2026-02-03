@@ -1,0 +1,81 @@
+{
+    "name": "pickware/license-bundle",
+    "description": "A bundle for Shopware 6 that provides functionality for working with Pickware customer licenses",
+    "license": "proprietary",
+    "type": "library",
+    "version": "1.7.0",
+    "authors": [
+        {
+            "name": "Pickware GmbH",
+            "email": "info@pickware.de"
+        }
+    ],
+    "require": {
+        "php": ">= 8.2",
+        "league/uri": "^7.5",
+        "pickware/api-error-handling-bundle": "^3.74.0",
+        "pickware/bundle-installer": "^3.15.0",
+        "pickware/dal-bundle": "^5.58.0",
+        "pickware/feature-flag-bundle": "^3.66.0",
+        "pickware/http-utils": "^4.32.0",
+        "pickware/oidc-client-bundle": "^1.5.0",
+        "pickware/php-standard-library": "^2.25.0",
+        "pickware/pickware-account-bundle": "^1.7.0",
+        "pickware/upsell-nudging-bundle": "^1.41.0",
+        "pickware/usage-report-bundle": "^1.7.0",
+        "shopware/core": ">=6.6.10.5 <6.8",
+        "symfony/dependency-injection": "^7.0.0",
+        "symfony/http-foundation": "^7.0.0"
+    },
+    "require-dev": {
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "2.1.29",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpunit/phpunit": "^9.5.0",
+        "pickware/phpstan-extensions": "*@dev",
+        "pickware/unit-testing-tools": "*@dev"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../bundles/*"
+        },
+        {
+            "type": "path",
+            "url": "../../libraries/composer-packages/*"
+        },
+        {
+            "type": "path",
+            "url": "../../libraries-dev/composer-packages/*"
+        },
+        {
+            "type": "path",
+            "url": "../../plugins-dev/*"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Pickware\\LicenseBundle\\": "src",
+            "Pickware\\LicenseBundle\\Test\\TestEntityCreation\\": "test/TestEntityCreation/"
+        },
+        "exclude-from-classmap": [
+            "**.unit.php",
+            "**.intergration.php"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true,
+            "symfony/runtime": true
+        },
+        "lock": false
+    },
+    "extra": {
+        "ci-min-supported-shopware-version": "6.6.10.5"
+    },
+    "scripts": {
+        "phpstan": "./vendor/bin/phpstan analyse --memory-limit=4G --no-interaction --ansi -c phpstan.neon.dist",
+        "test:integration": "${SHOPWARE_DIR}/vendor/bin/phpunit --config phpunit.integration.xml --testdox",
+        "test:unit": "composer install && ./vendor/bin/phpunit --config phpunit.unit.xml --testdox"
+    }
+}

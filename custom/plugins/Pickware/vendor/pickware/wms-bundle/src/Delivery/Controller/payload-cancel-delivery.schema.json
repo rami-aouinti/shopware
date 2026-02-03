@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "description": "PUT request payload for API route _action/pickware-wms/cancel-delivery",
+    "type": "object",
+    "required": ["deliveryId", "associations", "stockReversionAction"],
+    "properties": {
+        "deliveryId": {
+            "$ref": "#/definitions/uuid"
+        },
+        "stockReversionAction": {
+            "type": "string",
+            "enum": ["stock_to_unknown_location", "create_stocking_process"]
+        },
+        "associations": {
+            "type": "object"
+        }
+    },
+    "definitions": {
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        }
+    }
+}

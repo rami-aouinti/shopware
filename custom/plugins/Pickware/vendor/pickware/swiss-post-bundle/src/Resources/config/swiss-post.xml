@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/master/src/Core/System/SystemConfig/Schema/config.xsd"
+>
+    <card>
+        <title>SwissPost credentials</title>
+        <title lang="de-DE">Schweizerische Post Zugangsdaten</title>
+        <input-field type="text">
+            <name>clientId</name>
+            <required>true</required>
+            <label>Client ID</label>
+            <label lang="de-DE">Client-ID</label>
+        </input-field>
+        <input-field type="password">
+            <name>clientSecret</name>
+            <required>true</required>
+            <label>Client Secret</label>
+            <label lang="de-DE">Client-Secret</label>
+        </input-field>
+        <input-field type="text">
+            <name>frankingLicense</name>
+            <label>Franking license</label>
+            <label lang="de-DE">Frankierlizenz</label>
+        </input-field>
+        <input-field type="text">
+            <name>postFrankingLicense</name>
+            <label>Frankinglicense (Mail)</label>
+            <label lang="de-DE">Frankierlizenz (Post)</label>
+            <helpText lang="de-DE">
+                Frankier-Lizenz für die Produkte A-Post Plus, A-Post und B-Post-Einzelsendungen.
+            </helpText>
+            <helpText>Franking license for the A Mail Plus, A Mail and B Mail individual items products.</helpText>
+        </input-field>
+        <input-field type="text">
+            <name>registeredIntlFrankingLicense</name>
+            <label>Frankinglicense (Registered international)</label>
+            <label lang="de-DE">Frankierlizenz (Einschreiben Ausland)</label>
+            <helpText lang="de-DE">Frankier-Lizenz für das Produkt Einschreiben (R) Ausland Priority.</helpText>
+            <helpText>Franking license for the Registered (R) international PRIORITY product.</helpText>
+        </input-field>
+        <input-field type="text">
+            <name>domicilePostOffice</name>
+            <required>true</required>
+            <label>Domicile post office</label>
+            <label lang="de-DE">Domizilpoststelle</label>
+            <helpText lang="de-DE">Ihre Domizilpoststelle mit Postleitzahl und Ort (z.B. '3000 Bern').</helpText>
+            <helpText>The domicile post office including zip code and city (e.g. '3000 Bern').</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>useTestingWebservice</name>
+            <label>Use testing webservice</label>
+            <label lang="de-DE">Nutze Testing-Webservice</label>
+            <helpText lang="de-DE">Es werden Test-Etiketten anstatt von Produktiv-Etiketten erstellt.</helpText>
+            <helpText>Test labels are created instead of production labels.</helpText>
+        </input-field>
+    </card>
+</config>

@@ -1,0 +1,110 @@
+{
+    "name": "pickware/pickware",
+    "description": "Pickware",
+    "license": "proprietary",
+    "type": "shopware-platform-plugin",
+    "version": "1.12.0",
+    "authors": [
+        {
+            "name": "Pickware GmbH",
+            "email": "info@pickware.de"
+        }
+    ],
+    "require": {
+        "php": ">= 8.2",
+        "doctrine/dbal": "^3.6 || ^4.0",
+        "monolog/monolog": "^3.3.1",
+        "pickware/austrian-post-bundle": "^1.56.0",
+        "pickware/bundle-installer": "^3.15.0",
+        "pickware/datev-bundle": "^2.94.0",
+        "pickware/dependency-loader": "^5.16.0",
+        "pickware/dhl-express-bundle": "^3.75.0",
+        "pickware/dpd-bundle": "^2.78.0",
+        "pickware/dsv-bundle": "^1.74.0",
+        "pickware/erp-bundle": "^1.121.0",
+        "pickware/license-bundle": "^1.7.0",
+        "pickware/pos-bundle": "^1.9.0",
+        "pickware/product-set-bundle": "^2.62.0",
+        "pickware/sendcloud-bundle": "^2.75.0",
+        "pickware/swiss-post-bundle": "^2.73.0",
+        "pickware/ups-bundle": "^3.72.0",
+        "pickware/wms-bundle": "^1.44.0",
+        "shopware/core": ">=6.6.10.5 <6.8"
+    },
+    "require-dev": {
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "2.1.29",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpunit/phpunit": "^9.5.0",
+        "pickware/phpstan-extensions": "*@dev",
+        "pickware/unit-testing-tools": "*@dev"
+    },
+    "conflict": {
+        "pickware/pickware-erp-starter": "<4.29.0",
+        "pickware/pickware-pos": "<1.25.0",
+        "pickware/pickware-wms": "<2.40.0",
+        "shopware/core": "6.7.6.0 || 6.7.6.1"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../bundles/*"
+        },
+        {
+            "type": "path",
+            "url": "../../libraries/composer-packages/*"
+        },
+        {
+            "type": "path",
+            "url": "../../libraries-dev/composer-packages/*"
+        },
+        {
+            "type": "path",
+            "url": "../../plugins-dev/*"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Pickware\\Pickware\\": "src/"
+        },
+        "exclude-from-classmap": [
+            "**.unit.php",
+            "**.integration.php"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true,
+            "pickware/dependency-loader": true,
+            "symfony/runtime": true
+        },
+        "platform": {
+            "php": "8.2"
+        }
+    },
+    "extra": {
+        "ci-min-supported-shopware-version": "6.6.10.5",
+        "description": {
+            "de-DE": "Das nahtlos in Shopware integrierte ERP, WMS & POS",
+            "en-GB": "ERP, WMS & POS seamlessly integrated into Shopware"
+        },
+        "label": {
+            "de-DE": "Pickware ERP, WMS & POS",
+            "en-GB": "Pickware ERP, WMS & POS"
+        },
+        "manufacturerLink": {
+            "de-DE": "https://www.pickware.de",
+            "en-GB": "https://www.pickware.com"
+        },
+        "plugin-icon": "src/Resources/config/plugin.png",
+        "shopware-plugin-class": "Pickware\\Pickware\\Pickware",
+        "supportLink": {
+            "de-DE": "https://www.pickware.de/support",
+            "en-GB": "https://www.pickware.com/support"
+        }
+    },
+    "scripts": {
+        "phpstan": "./vendor/bin/phpstan analyse --memory-limit=4G --no-interaction --ansi -c phpstan.neon.dist",
+        "test:unit": "composer install && ./vendor/bin/phpunit --config phpunit.unit.xml --testdox"
+    }
+}

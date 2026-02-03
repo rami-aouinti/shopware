@@ -1,0 +1,127 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\OidcClientBundle\\Client\\AuthorizationUrlGenerationOptions\:\:asArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Client/AuthorizationUrlGenerationOptions.php
+
+		-
+			message: '#^Method Pickware\\OidcClientBundle\\Client\\Oauth2PkceClient\:\:refreshAccessToken\(\) should return League\\OAuth2\\Client\\Token\\AccessToken but returns League\\OAuth2\\Client\\Token\\AccessTokenInterface\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Client/Oauth2PkceClient.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 2
+			path: src/Client/Oauth2PkceClient.unit.php
+
+		-
+			message: '#^Empty array passed to foreach\.$#'
+			identifier: foreach.emptyArray
+			count: 2
+			path: src/PickwareOidcClientBundle.php
+
+		-
+			message: '#^Method Pickware\\OidcClientBundle\\PickwareOidcClientBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareOidcClientBundle.php
+
+		-
+			message: '#^Method Pickware\\OidcClientBundle\\Provider\\OpenIdConnectDiscoveryProvider\:\:getBaseAccessTokenUrl\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Provider/OpenIdConnectDiscoveryProvider.php
+
+		-
+			message: '#^Method Pickware\\OidcClientBundle\\Provider\\OpenIdConnectDiscoveryProvider\:\:getDefaultScopes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Provider/OpenIdConnectDiscoveryProvider.php
+
+		-
+			message: '#^Method Pickware\\OidcClientBundle\\Provider\\OpenIdConnectDiscoveryProvider\:\:getRequiredOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Provider/OpenIdConnectDiscoveryProvider.php
+
+		-
+			message: '#^Method Pickware\\OidcClientBundle\\Provider\\OpenIdConnectDiscoveryProviderUnitTest\:\:setUpProvider\(\) has parameter \$scopes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Provider/OpenIdConnectDiscoveryProvider.unit.php
+
+		-
+			message: '#^Method Pickware\\OidcClientBundle\\Provider\\OpenIdConnectDiscoveryProviderConfigurationUnitTest\:\:createOpenIdConnectDiscoveryProviderConfiguration\(\) has parameter \$scopes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Provider/OpenIdConnectDiscoveryProviderConfiguration.unit.php
+
+		-
+			message: '#^Method Pickware\\OidcClientBundle\\Provider\\OpenIdConnectDiscoveryProviderConfigurationFactory\:\:getCollaborators\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Provider/OpenIdConnectDiscoveryProviderConfigurationFactory.php
+
+		-
+			message: '#^Method Pickware\\OidcClientBundle\\Provider\\OpenIdConnectDiscoveryProviderConfigurationFactory\:\:getDiscoveryProviderOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Provider/OpenIdConnectDiscoveryProviderConfigurationFactory.php
+
+		-
+			message: '#^Method Pickware\\OidcClientBundle\\Provider\\OpenIdConnectDiscoveryProviderConfigurationFactory\:\:getWellKnownConfigFromAuthorizationServer\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Provider/OpenIdConnectDiscoveryProviderConfigurationFactory.php
+
+		-
+			message: '#^Property Pickware\\OidcClientBundle\\Provider\\OpenIdConnectDiscoveryProviderConfigurationFactory\:\:\$wellKnownConfigurationResponse type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Provider/OpenIdConnectDiscoveryProviderConfigurationFactory.php
+
+		-
+			message: '#^@covers value OpenIdConnectDiscoveryProviderConfigurationFactory\:\:getCollaborators references an invalid method\.$#'
+			identifier: phpunit.coversMethod
+			count: 1
+			path: src/Provider/OpenIdConnectDiscoveryProviderConfigurationFactory.unit.php
+
+		-
+			message: '#^@covers value OpenIdConnectDiscoveryProviderConfigurationFactory\:\:getDiscoveryProviderOptions references an invalid method\.$#'
+			identifier: phpunit.coversMethod
+			count: 2
+			path: src/Provider/OpenIdConnectDiscoveryProviderConfigurationFactory.unit.php
+
+		-
+			message: '#^Call to method getDetail\(\) on an unknown class Pickware\\ApiErrorHandlingBundle\\JsonApiErrorTranslating\\LocalizableJsonApiError\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Provider/OpenIdConnectDiscoveryProviderConfigurationFactoryException.php
+
+		-
+			message: '#^Instantiated class Pickware\\ApiErrorHandlingBundle\\JsonApiErrorTranslating\\LocalizableJsonApiError not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Provider/OpenIdConnectDiscoveryProviderConfigurationFactoryException.php
+
+		-
+			message: '#^Method Pickware\\OidcClientBundle\\Provider\\OpenIdConnectDiscoveryProviderConfigurationFactoryException\:\:serializeToJsonApiError\(\) should return Pickware\\HttpUtils\\JsonApi\\JsonApiError but returns Pickware\\ApiErrorHandlingBundle\\JsonApiErrorTranslating\\LocalizableJsonApiError\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Provider/OpenIdConnectDiscoveryProviderConfigurationFactoryException.php
+
+		-
+			message: '#^Parameter \$jsonApiError of method Pickware\\OidcClientBundle\\Provider\\OpenIdConnectDiscoveryProviderConfigurationFactoryException\:\:__construct\(\) has invalid type Pickware\\ApiErrorHandlingBundle\\JsonApiErrorTranslating\\LocalizableJsonApiError\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Provider/OpenIdConnectDiscoveryProviderConfigurationFactoryException.php
+
+		-
+			message: '#^Property Pickware\\OidcClientBundle\\Provider\\OpenIdConnectDiscoveryProviderConfigurationFactoryException\:\:\$jsonApiError has unknown class Pickware\\ApiErrorHandlingBundle\\JsonApiErrorTranslating\\LocalizableJsonApiError as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Provider/OpenIdConnectDiscoveryProviderConfigurationFactoryException.php

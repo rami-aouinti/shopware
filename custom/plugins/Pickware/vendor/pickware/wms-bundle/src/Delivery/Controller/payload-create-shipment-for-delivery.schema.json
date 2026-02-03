@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "description": "PUT request payload for API route _action/pickware-wms/create-shipment-for-delivery",
+    "type": "object",
+    "required": ["deliveryId", "shipmentId", "shipmentBlueprint", "associations"],
+    "additionalProperties": true,
+    "properties": {
+        "deliveryId": {
+            "$ref": "#/definitions/uuid"
+        },
+        "shipmentId": {
+            "$ref": "#/definitions/uuid"
+        },
+        "shipmentBlueprint": {
+            "type": "object"
+        },
+        "associations": {
+            "type": "object"
+        }
+    },
+    "definitions": {
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        }
+    }
+}

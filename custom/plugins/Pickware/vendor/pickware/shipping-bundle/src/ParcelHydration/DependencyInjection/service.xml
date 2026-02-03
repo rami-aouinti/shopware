@@ -1,0 +1,61 @@
+<?xml version="1.0" ?>
+<container
+    xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <service id="Pickware\ShippingBundle\ParcelHydration\Processor\CreateParcelItemsProcessor">
+            <argument id="Pickware\ShippingBundle\Notifications\NotificationService" type="service" />
+        </service>
+        <service id="Pickware\ShippingBundle\ParcelHydration\Processor\SetCustomsInformationProcessor">
+            <argument id="Pickware\ShippingBundle\Notifications\NotificationService" type="service" />
+        </service>
+        <service
+            id="Pickware\ShippingBundle\ParcelHydration\Processor\DistributeDistributableLineItemPricesProcessor"
+        />
+        <service id="Pickware\ShippingBundle\ParcelHydration\Processor\SetCustomsValueFallbackProcessor">
+            <argument type="service" id="Pickware\MoneyBundle\ShopwareCurrencyConverter" />
+        </service>
+        <service id="Pickware\ShippingBundle\ParcelHydration\Processor\DistributeParentPricesProcessor" />
+        <service id="Pickware\ShippingBundle\ParcelHydration\Processor\FilterSupportedParcelItemsProcessor" />
+        <service id="Pickware\ShippingBundle\ParcelHydration\Processor\FilterProductsInParcelProcessor" />
+        <service id="Pickware\ShippingBundle\ParcelHydration\ParcelItemHydrator" constructor="create">
+            <argument id="Pickware\DalBundle\EntityManager" type="service" />
+            <argument id="Pickware\ShippingBundle\Config\ConfigService" type="service" />
+            <argument
+                id="Pickware\ShippingBundle\ParcelHydration\Processor\CreateParcelItemsProcessor"
+                type="service"
+            />
+            <argument
+                id="Pickware\ShippingBundle\ParcelHydration\Processor\SetCustomsInformationProcessor"
+                type="service"
+            />
+            <argument
+                id="Pickware\ShippingBundle\ParcelHydration\Processor\DistributeDistributableLineItemPricesProcessor"
+                type="service"
+            />
+            <argument
+                id="Pickware\ShippingBundle\ParcelHydration\Processor\SetCustomsValueFallbackProcessor"
+                type="service"
+            />
+            <argument
+                id="Pickware\ShippingBundle\ParcelHydration\Processor\DistributeParentPricesProcessor"
+                type="service"
+            />
+            <argument
+                id="Pickware\ShippingBundle\ParcelHydration\Processor\FilterSupportedParcelItemsProcessor"
+                type="service"
+            />
+            <argument
+                id="Pickware\ShippingBundle\ParcelHydration\Processor\FilterProductsInParcelProcessor"
+                type="service"
+            />
+        </service>
+        <service id="Pickware\ShippingBundle\ParcelHydration\ParcelHydrator">
+            <argument id="Pickware\DalBundle\EntityManager" type="service" />
+            <argument id="Pickware\DalBundle\ContextFactory" type="service" />
+            <argument id="Pickware\ShippingBundle\ParcelHydration\ParcelItemHydrator" type="service" />
+        </service>
+    </services>
+</container>

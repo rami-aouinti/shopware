@@ -1,0 +1,19 @@
+{% sw_include '@PickwareErpBundle/documents/components/custom-fields-line-item-row.css.twig' %}
+
+{% if config.pickwareErpProductCustomFields[orderLineItem.productId] is defined %}
+    <tr class="pw-erp-custom-fields-row">
+        <td colspan="2" class="custom-field-content">
+            {% for customField in config.pickwareErpProductCustomFields[orderLineItem.productId] %}
+                {% if not loop.first %} <br> {% endif %}
+                <b>{{ customField.label|sw_sanitize(null, true) }}:</b>
+                {% if customField.type == 'media' %}
+                    <img src="{{ customField.value }}" class="custom-field-media-image" />
+                {% else %}
+                    {{ customField.value|sw_sanitize(null, true)|nl2br }}
+                {% endif %}
+            {% endfor %}
+        </td>
+        <td></td>
+        <td class="picked-cell"></td>
+    </tr>
+{% endif %}

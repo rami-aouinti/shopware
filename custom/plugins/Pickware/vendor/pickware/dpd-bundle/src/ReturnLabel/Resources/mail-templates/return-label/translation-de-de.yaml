@@ -1,0 +1,9 @@
+localeCode: 'de-DE'
+typeName: 'DPD Rücksendeetikett'
+subject: 'Rücksendung der Bestellung {{ order.orderNumber }}'
+sender: '{{ shopName }}'
+description: 'Ein DPD Rücksendeetikett an einen Kunden versenden'
+contentHtml:
+  fromFile: 'content-de-de.html.twig'
+contentPlain:
+  fromFile: 'content-de-de.txt.twig'

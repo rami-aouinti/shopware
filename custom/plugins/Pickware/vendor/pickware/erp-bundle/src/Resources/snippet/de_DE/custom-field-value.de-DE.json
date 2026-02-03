@@ -1,0 +1,14 @@
+{
+    "pickware-erp-starter": {
+        "custom-field-value": {
+            "bool": {
+                "yes": "Ja",
+                "no": "Nein"
+            },
+            "price": {
+                "net": "Netto",
+                "gross": "Brutto"
+            }
+        }
+    }
+}

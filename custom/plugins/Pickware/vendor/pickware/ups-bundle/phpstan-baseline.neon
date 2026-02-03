@@ -1,0 +1,277 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\UpsBundle\\Adapter\\UpsAdapter\:\:enableCashOnDeliveryInShipmentConfig\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/UpsAdapter.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Adapter\\UpsAdapter\:\:getPageFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/UpsAdapter.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Adapter\\UpsAdapter\:\:isCashOnDeliveryEnabledInShipmentConfig\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/UpsAdapter.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Adapter\\UpsLabelFactoryTest\:\:labelSizesProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/UpsLabelFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Adapter\\UpsLabelSize\:\:getDomPdfSize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/UpsLabelSize.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Adapter\\UpsLabelSize\:\:getSupportedPageFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/UpsLabelSize.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Adapter\\UpsResponseProcessorTest\:\:createPayloadConstraint\(\) has parameter \$expected with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/UpsResponseProcessor.unit.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Adapter\\UpsResponseProcessorTest\:\:createPayloadConstraint\(\) return type with generic class PHPUnit\\Framework\\Constraint\\Callback does not specify its types\: CallbackInput$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Adapter/UpsResponseProcessor.unit.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Adapter\\UpsShipmentConfig\:\:__construct\(\) has parameter \$shipmentConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/UpsShipmentConfig.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Adapter\\UpsShipmentConfig\:\:shouldCreateCommercialInvoice\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Adapter/UpsShipmentConfig.php
+
+		-
+			message: '#^Property Pickware\\UpsBundle\\Adapter\\UpsShipmentConfig\:\:\$shipmentConfig type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/UpsShipmentConfig.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Adapter\\UpsShipmentRegistrationService\:\:cancelUpsShipment\(\) has parameter \$shipmentIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/UpsShipmentRegistrationService.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Adapter\\UpsShipmentRegistrationService\:\:registerUpsShipments\(\) has parameter \$shipmentIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/UpsShipmentRegistrationService.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\OAuthMiddlewareTest\:\:requestAuthorizationEqualsTo\(\) return type with generic class PHPUnit\\Framework\\Constraint\\Callback does not specify its types\: CallbackInput$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Api/OAuthMiddleware.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method __invoke\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 2
+			path: src/Api/OAuthMiddleware.unit.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\Services\\AbstractShipmentService\:\:applyToShipmentArray\(\) has parameter \$shipmentOrderArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/AbstractShipmentService.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\Services\\ShipmentRatingOption\:\:applyToShipmentArray\(\) has parameter \$shipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/ShipmentRatingOption.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: null$#'
+			identifier: match.unhandled
+			count: 1
+			path: src/Api/Services/ShipmentServiceOption.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\Services\\ShipmentServiceOption\:\:__construct\(\) has parameter \$serviceValue with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/ShipmentServiceOption.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\Services\\ShipmentServiceOption\:\:applyToShipmentArray\(\) has parameter \$shipmentArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/ShipmentServiceOption.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\Services\\ShipmentServiceOption\:\:convertToAddressArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/ShipmentServiceOption.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\Services\\ShipmentServiceOption\:\:createProducts\(\) has parameter \$items with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/ShipmentServiceOption.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\Services\\ShipmentServiceOption\:\:createProducts\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/Services/ShipmentServiceOption.php
+
+		-
+			message: '#^Parameter \#1 \$array \(array\{CODFundsCode\: ''1'', CODAmount\: array\{CurrencyCode\: string, MonetaryValue\: string\}\}\) to function array_filter does not contain falsy values, the array will always stay the same\.$#'
+			identifier: arrayFilter.same
+			count: 1
+			path: src/Api/Services/ShipmentServiceOption.php
+
+		-
+			message: '#^Parameter \#1 \$array \(array\{array\{FormType\: ''01'', Contacts\: array\{SoldTo\: array\}, Product\: array, InvoiceNumber\: non\-falsy\-string, InvoiceDate\: mixed, PurchaseOrderNumber\: string\|null, TermsOfShipment\: string, ReasonForExport\: string\|null, \.\.\.\}\}\) to function array_filter does not contain falsy values, the array will always stay the same\.$#'
+			identifier: arrayFilter.same
+			count: 1
+			path: src/Api/Services/ShipmentServiceOption.php
+
+		-
+			message: '#^Parameter \#1 \$array \(array\{array\{NotificationCode\: ''6'', EMail\: array\{EMailAddress\: string, Memo\?\: non\-falsy\-string\}\}\}\) to function array_filter does not contain falsy values, the array will always stay the same\.$#'
+			identifier: arrayFilter.same
+			count: 1
+			path: src/Api/Services/ShipmentServiceOption.php
+
+		-
+			message: '#^Parameter \#1 \$array \(array\{array\{NotificationCode\: ''8'', EMail\: array\{EMailAddress\: string\}\}\}\) to function array_filter does not contain falsy values, the array will always stay the same\.$#'
+			identifier: arrayFilter.same
+			count: 1
+			path: src/Api/Services/ShipmentServiceOption.php
+
+		-
+			message: '#^Trying to mock an undefined method __invoke\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 2
+			path: src/Api/TransactionHeaderMiddleware.unit.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\UpsApiClientException\:\:createJsonApiErrorsFromBadResponseException\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/UpsApiClientException.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\UpsApiClientFactory\:\:createClient\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/UpsApiClientFactory.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\UpsApiClientFactory@anonymous/Api/UpsApiClientFactory\.unit\.php\:56\:\:createClient\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/UpsApiClientFactory.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method createClient\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: src/Api/UpsApiClientFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\UpsOAuthApiClientFactory\:\:createClient\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/UpsOAuthApiClientFactory.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\UpsOAuthApiClientFactory@anonymous/Api/UpsOAuthApiClientFactory\.unit\.php\:50\:\:createClient\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/UpsOAuthApiClientFactory.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method createClient\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: src/Api/UpsOAuthApiClientFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\UpsShipment\:\:convertReceiverAddressToArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/UpsShipment.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\UpsShipment\:\:convertShipperAddressToArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/UpsShipment.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\UpsShipment\:\:getPackageServices\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/UpsShipment.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\UpsShipment\:\:getParcels\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/UpsShipment.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\UpsShipment\:\:getShipmentServices\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/UpsShipment.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\UpsShipment\:\:isAccessPointShipment\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Api/UpsShipment.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\UpsShipment\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/UpsShipment.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\UpsShipment\:\:setPackageServices\(\) has parameter \$services with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/UpsShipment.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\Api\\UpsShipment\:\:setShipmentServices\(\) has parameter \$services with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/UpsShipment.php
+
+		-
+			message: '#^Property Pickware\\UpsBundle\\Api\\UpsShipmentTest\:\:\$parcels type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/UpsShipment.unit.php
+
+		-
+			message: '#^Method Pickware\\UpsBundle\\PickwareUpsBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareUpsBundle.php

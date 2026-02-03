@@ -1,0 +1,61 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\AclBundle\\Acl\\AdminAclConfigurationFactory\:\:createConfiguration\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Acl/AdminAclConfigurationFactory.php
+
+		-
+			message: '#^Method Pickware\\AclBundle\\Acl\\AdminAclConfigurationFactory\:\:createFeatureRoles\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Acl/AdminAclConfigurationFactory.php
+
+		-
+			message: '#^Property Pickware\\AclBundle\\Acl\\AdminAclConfigurationFactoryUnitTest\:\:\$featureCategories type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Acl/AdminAclConfigurationFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\AclBundle\\FeaturePermission\\FeaturePermission\:\:__construct\(\) has parameter \$dependencies with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/FeaturePermission/FeaturePermission.php
+
+		-
+			message: '#^Method Pickware\\AclBundle\\FeaturePermission\\FeaturePermission\:\:__construct\(\) has parameter \$privileges with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/FeaturePermission/FeaturePermission.php
+
+		-
+			message: '#^Method Pickware\\AclBundle\\FeaturePermission\\FeaturePermissionsService\:\:__construct\(\) has parameter \$featurePermissionsProviders with no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/FeaturePermission/FeaturePermissionsService.php
+
+		-
+			message: '#^Property Pickware\\AclBundle\\FeaturePermission\\FeaturePermissionsServiceUnitTest\:\:\$categories1 type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/FeaturePermission/FeaturePermissionsService.unit.php
+
+		-
+			message: '#^Property Pickware\\AclBundle\\FeaturePermission\\FeaturePermissionsServiceUnitTest\:\:\$categories2 type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/FeaturePermission/FeaturePermissionsService.unit.php
+
+		-
+			message: '#^Empty array passed to foreach\.$#'
+			identifier: foreach.emptyArray
+			count: 1
+			path: src/PickwareAclBundle.php
+
+		-
+			message: '#^Method Pickware\\AclBundle\\PickwareAclBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareAclBundle.php

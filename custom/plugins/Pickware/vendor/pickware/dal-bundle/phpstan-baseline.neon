@@ -1,0 +1,631 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\DalBundle\\BulkInsert\\Query\:\:execute\(\) has parameter \$dataset with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BulkInsert/Query.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\BulkInsert\\Query\:\:execute\(\) has parameter \$types with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BulkInsert/Query.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\BulkInsert\\Query\:\:transactional\(\) has parameter \$dataset with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BulkInsert/Query.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\BulkInsert\\Query\:\:transactional\(\) has parameter \$types with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BulkInsert/Query.php
+
+		-
+			message: '#^Property Pickware\\DalBundle\\BulkInsert\\Query\:\:\$connection has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/BulkInsert/Query.php
+
+		-
+			message: '#^Function Pickware\\DalBundle\\BulkInsert\\extract_columns\(\) has parameter \$dataset with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BulkInsert/functions.php
+
+		-
+			message: '#^Function Pickware\\DalBundle\\BulkInsert\\extract_columns\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BulkInsert/functions.php
+
+		-
+			message: '#^Function Pickware\\DalBundle\\BulkInsert\\parameters\(\) has parameter \$dataset with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BulkInsert/functions.php
+
+		-
+			message: '#^Function Pickware\\DalBundle\\BulkInsert\\parameters\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BulkInsert/functions.php
+
+		-
+			message: '#^Function Pickware\\DalBundle\\BulkInsert\\quote_columns\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BulkInsert/functions.php
+
+		-
+			message: '#^Function Pickware\\DalBundle\\BulkInsert\\quote_columns\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BulkInsert/functions.php
+
+		-
+			message: '#^Function Pickware\\DalBundle\\BulkInsert\\sql\(\) has parameter \$dataset with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BulkInsert/functions.php
+
+		-
+			message: '#^Function Pickware\\DalBundle\\BulkInsert\\stringify_columns\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BulkInsert/functions.php
+
+		-
+			message: '#^Function Pickware\\DalBundle\\BulkInsert\\types\(\) has parameter \$types with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BulkInsert/functions.php
+
+		-
+			message: '#^Function Pickware\\DalBundle\\BulkInsert\\types\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/BulkInsert/functions.php
+
+		-
+			message: '#^You should use assertFalse\(\) instead of assertSame\(\) when expecting "false"$#'
+			identifier: phpunit.assertFalse
+			count: 3
+			path: src/ContextFactory.unit.php
+
+		-
+			message: '#^You should use assertTrue\(\) instead of assertSame\(\) when expecting "true"$#'
+			identifier: phpunit.assertTrue
+			count: 1
+			path: src/ContextFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\CriteriaJsonSerializer\:\:serializeToArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/CriteriaJsonSerializer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\DalPayloadSerializer\:\:getDalPayload\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DalPayloadSerializer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\DalPayloadSerializer\:\:getDalPayloadFromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DalPayloadSerializer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\DalPayloadSerializer\:\:getDalPayloadFromArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DalPayloadSerializer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\DatabaseBulkInsertService\:\:addOnDuplicateKey\(\) has parameter \$updateColumns with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DatabaseBulkInsertService.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\DatabaseBulkInsertService\:\:insert\(\) has parameter \$dataset with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DatabaseBulkInsertService.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\DatabaseBulkInsertService\:\:insert\(\) has parameter \$types with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DatabaseBulkInsertService.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\DatabaseBulkInsertService\:\:makeUpdateStatementContent\(\) has parameter \$updateColumns with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DatabaseBulkInsertService.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Elasticsearch\\AbstractIndexer\:\:__construct\(\) has parameter \$repository with generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository but does not specify its types\: TEntityCollection$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Elasticsearch/AbstractIndexer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Elasticsearch\\AbstractIndexer\:\:encodeForElasticsearch\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Elasticsearch/AbstractIndexer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Elasticsearch\\AbstractIndexer\:\:encodeForElasticsearch\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Elasticsearch/AbstractIndexer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Elasticsearch\\AbstractIndexer\:\:getQuery\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Elasticsearch/AbstractIndexer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Elasticsearch\\AbstractIndexer\:\:getQuery\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Elasticsearch/AbstractIndexer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Elasticsearch\\AbstractIndexer@anonymous/Elasticsearch/AbstractIndexer\.unit\.php\:106\:\:getQuery\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Elasticsearch/AbstractIndexer.unit.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Elasticsearch\\AbstractIndexer@anonymous/Elasticsearch/AbstractIndexer\.unit\.php\:106\:\:getQuery\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Elasticsearch/AbstractIndexer.unit.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Elasticsearch\\AbstractIndexerTest\:\:createTestIndexer\(\) has parameter \$repository with generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository but does not specify its types\: TEntityCollection$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Elasticsearch/AbstractIndexer.unit.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityCollectionExtension\:\:getField\(\) has parameter \$entityCollection with generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/EntityCollectionExtension.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityCollectionExtension\:\:getField\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityCollectionExtension.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityDeleteRestrictor\:\:__construct\(\) has parameter \$allowedContextScopes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityDeleteRestrictor.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityDeleteRestrictor\:\:__construct\(\) has parameter \$entityDefinitionEntityNames with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityDeleteRestrictor.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityInsertRestrictor\:\:__construct\(\) has parameter \$allowedContextScopes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityInsertRestrictor.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityInsertRestrictor\:\:__construct\(\) has parameter \$entityDefinitionEntityNames with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityInsertRestrictor.php
+
+		-
+			message: '#^Call to an undefined method Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\AggregationResult\\AggregationResult\:\:getCount\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManager\:\:createIfNotExists\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManager\:\:delete\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManager\:\:findAll\(\) has parameter \$associations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManager\:\:findAllIds\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManager\:\:findBy\(\) has parameter \$associations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManager\:\:findByPrimaryKey\(\) has parameter \$associations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManager\:\:findByPrimaryKey\(\) has parameter \$primaryKey with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManager\:\:findFirstBy\(\) has parameter \$associations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManager\:\:findFirstBy\(\) has parameter \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManager\:\:findIdsBy\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManager\:\:findOneBy\(\) has parameter \$associations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManager\:\:getByPrimaryKey\(\) has parameter \$associations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManager\:\:getByPrimaryKey\(\) has parameter \$primaryKey with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManager\:\:getFirstBy\(\) has parameter \$associations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManager\:\:getOneBy\(\) has parameter \$associations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManager\:\:getRepository\(\) return type with generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository does not specify its types\: TEntityCollection$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManager\:\:upsert\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Unable to resolve the template type TReturn in call to method static method Shopware\\Core\\Framework\\DataAbstractionLayer\\Doctrine\\RetryableTransaction\:\:retryable\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertFalse\(\) with false will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: src/EntityManager.unit.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with 1 and 0 will always evaluate to false\.$#'
+			identifier: staticMethod.impossibleType
+			count: 1
+			path: src/EntityManager.unit.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with false will always evaluate to false\.$#'
+			identifier: staticMethod.impossibleType
+			count: 1
+			path: src/EntityManager.unit.php
+
+		-
+			message: '#^Invalid type PHPUnit\\Framework\\MockObject\\MockObject to throw\.$#'
+			identifier: throw.notThrowable
+			count: 1
+			path: src/EntityManager.unit.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManagerTest\:\:criteriaFromArrayDataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.unit.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManagerTest\:\:retryableExceptionDataProvider\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/EntityManager.unit.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManagerTest\:\:test_canCreateACriteriaObjectFromAnArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManager.unit.php
+
+		-
+			message: '#^Unable to resolve the template type T in call to method PHPUnit\\Framework\\TestCase\:\:createMock\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: src/EntityManager.unit.php
+
+		-
+			message: '#^Constructor of class Pickware\\DalBundle\\EntityManagerException has an unused parameter \$previous\.$#'
+			identifier: constructor.unusedParameter
+			count: 1
+			path: src/EntityManagerException.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityManagerException\:\:entityWithCriteriaNotFound\(\) has parameter \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityManagerException.php
+
+		-
+			message: '#^Method Psr\\EventDispatcher\\EventDispatcherInterface\:\:dispatch\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/EntityWriteValidationEventDispatcher.php
+
+		-
+			message: '#^Variable \$entityPreWriteValidationEvent in PHPDoc tag @var does not match assigned variable \$entityWriteValidationEvent\.$#'
+			identifier: varTag.differentVariable
+			count: 1
+			path: src/EntityWriteValidationEventDispatcher.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityWriteValidationEventDispatcherTest\:\:eventClassProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EntityWriteValidationEventDispatcher.unit.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityWriteValidationEventDispatcherTest\:\:test_dispatchesAnEntityWriteValidationEventForEachEntityGivenInTheWriteCommandsWithTheWriteCommandsThatBelongToThatEntityWhenHandlingAWriteValidationEvent\(\) has parameter \$expectedEventClass with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/EntityWriteValidationEventDispatcher.unit.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityWriteValidationEventDispatcherTest\:\:test_dispatchesAnEntityWriteValidationEventForEachEntityGivenInTheWriteCommandsWithTheWriteCommandsThatBelongToThatEntityWhenHandlingAWriteValidationEvent\(\) has parameter \$expectedEventName1 with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/EntityWriteValidationEventDispatcher.unit.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityWriteValidationEventDispatcherTest\:\:test_dispatchesAnEntityWriteValidationEventForEachEntityGivenInTheWriteCommandsWithTheWriteCommandsThatBelongToThatEntityWhenHandlingAWriteValidationEvent\(\) has parameter \$expectedEventName2 with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/EntityWriteValidationEventDispatcher.unit.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\EntityWriteValidationEventDispatcherTest\:\:test_dispatchesAnEntityWriteValidationEventForEachEntityGivenInTheWriteCommandsWithTheWriteCommandsThatBelongToThatEntityWhenHandlingAWriteValidationEvent\(\) has parameter \$incomingEventClass with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/EntityWriteValidationEventDispatcher.unit.php
+
+		-
+			message: '#^Method class@anonymous/EnumSupportingCloneTrait\.unit\.php\:31\:\:__construct\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EnumSupportingCloneTrait.unit.php
+
+		-
+			message: '#^Method class@anonymous/EnumSupportingCloneTrait\.unit\.php\:31\:\:cloneArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EnumSupportingCloneTrait.unit.php
+
+		-
+			message: '#^Method class@anonymous/EnumSupportingCloneTrait\.unit\.php\:31\:\:cloneArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EnumSupportingCloneTrait.unit.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\ExceptionHandling\\InvalidOffsetQueryException\:\:__construct\(\) has parameter \$offset with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/ExceptionHandling/InvalidOffsetQueryException.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\ExceptionHandling\\UniqueIndexExceptionHandler\:\:__construct\(\) has parameter \$uniqueIndexExceptionMappings with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ExceptionHandling/UniqueIndexExceptionHandler.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\ExceptionHandling\\UniqueIndexExceptionMapping\:\:getFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ExceptionHandling/UniqueIndexExceptionMapping.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Field\\EnumFieldSerializer\:\:decode\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Field/EnumFieldSerializer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Field\\EnumFieldSerializer\:\:requiresValidation\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Field/EnumFieldSerializer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Field\\EnumFieldSerializer\:\:validate\(\) has parameter \$constraints with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Field/EnumFieldSerializer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Field\\JsonSerializableObjectFieldSerializer\:\:encodeJson\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Field/JsonSerializableObjectFieldSerializer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Field\\JsonSerializableObjectFieldSerializer\:\:getCachedConstraints\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Field/JsonSerializableObjectFieldSerializer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Field\\JsonSerializableObjectFieldSerializer\:\:getConstraints\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Field/JsonSerializableObjectFieldSerializer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Field\\JsonSerializableObjectFieldSerializer\:\:jsonFieldSerializerDecode\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Field/JsonSerializableObjectFieldSerializer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Field\\JsonSerializableObjectFieldSerializer\:\:jsonFieldSerializerDecode\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Field/JsonSerializableObjectFieldSerializer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Field\\JsonSerializableObjectFieldSerializer\:\:requiresValidation\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Field/JsonSerializableObjectFieldSerializer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Field\\JsonSerializableObjectFieldSerializer\:\:validate\(\) has parameter \$constraints with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Field/JsonSerializableObjectFieldSerializer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Field\\JsonSerializableObjectFieldSerializer\:\:validateMapping\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Field/JsonSerializableObjectFieldSerializer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Field\\JsonSerializableObjectFieldSerializer\:\:validateMapping\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Field/JsonSerializableObjectFieldSerializer.php
+
+		-
+			message: '#^Property Pickware\\DalBundle\\Field\\JsonSerializableObjectFieldSerializer\:\:\$cachedConstraints type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Field/JsonSerializableObjectFieldSerializer.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Field\\NonUuidFkFieldSerializer\:\:decode\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Field/NonUuidFkFieldSerializer.php
+
+		-
+			message: '#^Class Pickware\\DalBundle\\PartialEntityCollection extends generic class Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityCollection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PartialEntityCollection.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\PickwareDalBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareDalBundle.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\RetryableTransaction\:\:retry\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/RetryableTransaction.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\RetryableTransaction\:\:retryable\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/RetryableTransaction.php
+
+		-
+			message: '#^Unable to resolve the template type T in call to method Doctrine\\DBAL\\Connection\:\:transactional\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: src/RetryableTransaction.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\TechnicalNameToIdConverter\:\:convertTechnicalNamesToIdsInOrderDeliveryPayload\(\) has parameter \$orderDeliveryPayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/TechnicalNameToIdConverter.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\TechnicalNameToIdConverter\:\:convertTechnicalNamesToIdsInOrderPayload\(\) has parameter \$orderPayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/TechnicalNameToIdConverter.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\TechnicalNameToIdConverter\:\:convertTechnicalNamesToIdsInOrderTransactionPayload\(\) has parameter \$orderTransactionPayload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/TechnicalNameToIdConverter.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Translation\:\:fromArray\(\) has parameter \$translation with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Translation.php
+
+		-
+			message: '#^Method Pickware\\DalBundle\\Translation\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Translation.php

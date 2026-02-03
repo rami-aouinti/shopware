@@ -1,0 +1,104 @@
+{% sw_extends '@Shopware/documents/base.html.twig' %}
+
+{% block document_base %}
+    {% include '@PickwareErpBundle/documents/invoice-correction.css.twig' %}
+    {{ parent() }}
+{% endblock %}
+
+{% block document_title_tag %}
+    {{ 'pickware-erp-starter.invoice-correction-document.title' | trans({
+        '%documentNumber%': config.documentNumber,
+        '%invoiceNumber%': config.custom.pickwareErpReferencedInvoiceDocumentNumber
+    }) | sw_sanitize(null, true) }}
+{% endblock %}
+
+{% block document_headline %}
+    <h1 class="headline">
+        <span>
+            {{ 'pickware-erp-starter.invoice-correction-document.title' | trans({
+                '%documentNumber%': config.documentNumber,
+                '%invoiceNumber%': config.custom.pickwareErpReferencedInvoiceDocumentNumber
+            }) | sw_sanitize(null, true) }}
+        </span>
+    </h1>
+{% endblock %}
+
+{#
+    This override is needed for the special case where no line item is changed, but the shipping costs changed.
+    In this case, Shopware falsely does not render the 'loop'-block at all, which includes the shipping costs as well
+    as the page header and the table. Thus, we render the block here once, if there are no line items (i.e. total = 0).
+    Slight drawback: An empty line item is rendered before the shipping costs.
+#}
+{% block document_body %}
+    {% set position = 1 %}
+    {% set prefix = '' %}
+    {% set level = 0 %}
+
+    {% if total == 0 %}
+        {% set total = 1 %}
+        {% set onlyShippingCosts = true %}
+        {{ block('loop') }}
+    {% endif %}
+
+    {{ parent() }}
+{% endblock %}
+
+{# This disables the extra empty line item that would be rendered with the extra 'loop' call for the shipping costs above. #}
+{% block document_loop_position %}
+    {% if not onlyShippingCosts %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block document_loop_shipping_costs %}
+    {% if order.shippingTotal != 0 %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block document_payment_shipping_inner %}
+    {{ parent() }}
+
+    {% set shippingAddress = order.deliveries.first.getShippingOrderAddress %}
+
+{#
+    If below mentioned PR is applied, then the intra community delivery label is already displayed in the document base.
+#}
+    {% if shippingAddress.country.isEu === null %}
+        {% block document_intra_community %}
+            {% if config.intraCommunityDelivery %}
+                {{ 'document.intraCommunity'|trans|sw_sanitize(null, true) }}<br>
+            {% endif %}
+        {% endblock %}
+    {% endif %}
+
+    {% set isEu = shippingAddress.country.isEu %}
+    {% if config.pickwareErpDisplayTaxExemptExportLabel
+        and isEu === false
+        and order.price.taxStatus === 'tax-free'
+    %}
+        {{ 'pickware-erp-starter.invoice-document.tax-exempt-export'|trans }}<br>
+    {% endif %}
+{% endblock %}
+
+{% block document_payment_shipping_additional %}{% endblock %}
+{% block document_payment_shipping_service_date_notice %}
+    {{ parent() }}
+{% endblock %}
+
+{# Fix amount total that is corrently display as "order.price.totalPrice" in the original summary.html.twig #}
+{% block document_sum_total_price %}
+    <td class="align-right">{{ order.amountTotal|currency(currencyIsoCode) }}</td>
+{% endblock %}
+
+{% block document_line_item_table_column_label %}
+    {{ parent() }}
+
+    {% sw_include '@PickwareErpBundle/documents/components/picking-properties-line-item-row.html.twig' with { lineItem } %}
+    {% sw_include '@PickwareErpBundle/documents/components/custom-fields-line-item-row.html.twig' with { lineItem, config } %}
+{% endblock %}
+
+{% block shipping_address %}
+    {{ parent() }}
+    {% sw_include '@PickwareErpBundle/documents/components/custom-fields-order.html.twig' with { config } %}
+{% endblock %}

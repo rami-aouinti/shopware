@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "required": ["associations", "goodsReceiptId", "warehouseId"],
+    "properties": {
+        "associations": {
+            "type": "object"
+        },
+        "goodsReceiptId": {
+            "$ref": "#/definitions/uuid"
+        },
+        "warehouseId": {
+            "description": "ID of the warehouse into which the stock of the goods receipt should be moved.",
+            "$ref": "#/definitions/uuid"
+        }
+    },
+    "definitions": {
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        }
+    }
+}

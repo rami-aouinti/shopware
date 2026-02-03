@@ -1,0 +1,151 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\Adapter\\SendcloudAdapter\:\:getPageFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SendcloudAdapter.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\Adapter\\SendcloudAdapterException\:\:failedToCancelParcels\(\) has parameter \$parcelIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SendcloudAdapterException.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\Adapter\\SendcloudLabelSize\:\:getSupportedPageFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SendcloudLabelSize.php
+
+		-
+			message: '#^Static method Pickware\\SendcloudBundle\\Adapter\\SendcloudAdapterException\:\:parcelStatusRetrievalFailed\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/Adapter/SendcloudResponseProcessor.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\Adapter\\SendcloudResponseProcessorTest\:\:createPayloadConstraint\(\) has parameter \$expected with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SendcloudResponseProcessor.unit.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\Adapter\\SendcloudResponseProcessorTest\:\:createPayloadConstraint\(\) return type with generic class PHPUnit\\Framework\\Constraint\\Callback does not specify its types\: CallbackInput$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Adapter/SendcloudResponseProcessor.unit.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\Adapter\\SendcloudShipmentFactory\:\:createSendcloudShipmentFromShipmentBlueprint\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 3
+			path: src/Adapter/SendcloudShipmentFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\Adapter\\SendcloudShipmentRegistrationService\:\:cancelSendcloudShipments\(\) has parameter \$shipmentIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SendcloudShipmentRegistrationService.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\Adapter\\SendcloudShipmentRegistrationService\:\:cancelShipments\(\) has parameter \$parcelIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SendcloudShipmentRegistrationService.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\Adapter\\SendcloudShipmentRegistrationService\:\:registerSendcloudShipments\(\) has parameter \$shipmentIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SendcloudShipmentRegistrationService.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\Adapter\\SendcloudShipmentRegistrationService\:\:rollbackShipmentInSendcloud\(\) has parameter \$parcelIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Adapter/SendcloudShipmentRegistrationService.php
+
+		-
+			message: '#^Trying to mock an undefined method __invoke\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 2
+			path: src/Api/PartnerIdHeaderMiddleware.unit.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\Api\\SendcloudApiClientFactory\:\:createClient\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/SendcloudApiClientFactory.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\Api\\SendcloudApiClientFactory@anonymous/Api/SendcloudApiClientFactory\.unit\.php\:50\:\:createClient\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/SendcloudApiClientFactory.unit.php
+
+		-
+			message: '#^Trying to mock an undefined method createClient\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: src/Api/SendcloudApiClientFactory.unit.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\Api\\SendcloudShipment\:\:createItems\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/SendcloudShipment.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\Api\\SendcloudShipment\:\:createParcels\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/SendcloudShipment.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\Api\\SendcloudShipment\:\:getParcels\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/SendcloudShipment.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\Api\\SendcloudShipment\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/SendcloudShipment.php
+
+		-
+			message: '#^Property Pickware\\SendcloudBundle\\Api\\SendcloudShipmentTest\:\:\$parcels type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Api/SendcloudShipment.unit.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\PickwareSendcloudBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareSendcloudBundle.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\SendcloudException\:\:flatErrors\(\) has parameter \$errors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SendcloudException.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\SendcloudException\:\:flatErrors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SendcloudException.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\SendcloudException@anonymous/SendcloudException\.unit\.php\:27\:\:flatErrorsTest\(\) has parameter \$errors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SendcloudException.unit.php
+
+		-
+			message: '#^Method Pickware\\SendcloudBundle\\SendcloudException@anonymous/SendcloudException\.unit\.php\:27\:\:flatErrorsTest\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SendcloudException.unit.php

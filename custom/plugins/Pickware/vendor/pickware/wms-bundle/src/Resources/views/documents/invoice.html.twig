@@ -1,0 +1,10 @@
+{% sw_extends '@Framework/documents/invoice.html.twig' %}
+
+{% block document_side_info_contents %}
+    {{ parent() }}
+    {% if order and order.orderNumber %}
+        {% sw_include '@PickwareWmsBundle/documents/components/additional_side_info_content.html.twig' with {
+            orderNumber: order.orderNumber
+        } %}
+    {% endif %}
+{% endblock %}

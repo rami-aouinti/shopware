@@ -1,0 +1,49 @@
+monolog:
+  channels: ['pickware_erp']
+
+when@dev:
+  monolog:
+    handlers:
+      # Service name: monolog.logger.pickware_erp
+      pickware_erp:
+        type: stream
+        path: '%kernel.logs_dir%/pickware_erp_%kernel.environment%.log'
+        level: debug
+        channels: ['pickware_erp']
+        bubble: false
+        priority: 150
+      pickware_erp_paper_trail:
+        type: stream
+        path: '%kernel.logs_dir%/pickware_erp_paper_trail_%kernel.environment%.log'
+        channels: ['pickware_erp_paper_trail']
+        level: info
+        bubble: false
+        priority: 150
+
+when@prod:
+  monolog:
+    handlers:
+      # Service name: monolog.logger.pickware_erp
+      pickware_erp:
+        type: fingers_crossed
+        action_level: error
+        handler: pickware_erp_nested
+        buffer_size: 50
+        channels: ['pickware_erp']
+        bubble: false
+        priority: 150
+      pickware_erp_nested:
+        type: rotating_file
+        max_files: 30
+        path: '%kernel.logs_dir%/pickware_erp_%kernel.environment%.log'
+        level: debug
+        bubble: false
+        priority: 150
+      pickware_erp_paper_trail:
+        type: rotating_file
+        max_files: 30
+        path: '%kernel.logs_dir%/pickware_erp_paper_trail_%kernel.environment%.log'
+        channels: ['pickware_erp_paper_trail']
+        level: info
+        bubble: false
+        priority: 150

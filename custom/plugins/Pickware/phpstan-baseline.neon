@@ -1,0 +1,37 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Class Pickware\\PickwareErpPro\\PickwareErpPro not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Pickware.php
+
+		-
+			message: '#^Class Pickware\\PickwareErpStarter\\PickwareErpStarter not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Pickware.php
+
+		-
+			message: '#^Class Pickware\\PickwarePos\\PickwarePos not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Pickware.php
+
+		-
+			message: '#^Class Pickware\\PickwareWms\\PickwareWms not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Pickware.php
+
+		-
+			message: '#^Method Pickware\\Pickware\\Pickware\:\:getDistPackages\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Pickware.php
+
+		-
+			message: '#^Parameter \#2 \$pluginClass of static method Pickware\\InstallationLibrary\\PluginInstallationState\:\:getForPlugin\(\) expects class\-string\<Shopware\\Core\\Framework\\Plugin\>, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Pickware.php

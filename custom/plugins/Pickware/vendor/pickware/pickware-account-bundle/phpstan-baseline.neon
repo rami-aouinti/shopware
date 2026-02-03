@@ -1,0 +1,37 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\PickwareAccountBundle\\ApiClient\\Model\\PickwareLicense\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiClient/Model/PickwareLicense.php
+
+		-
+			message: '#^Method Pickware\\PickwareAccountBundle\\ApiClient\\Model\\PickwareLicenseLease\:\:fromArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiClient/Model/PickwareLicenseLease.php
+
+		-
+			message: '#^Method Pickware\\PickwareAccountBundle\\ApiClient\\Model\\PickwareLicenseLease\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiClient/Model/PickwareLicenseLease.php
+
+		-
+			message: '#^Method Pickware\\PickwareAccountBundle\\ApiClient\\PickwareAccountApiClientException\:\:createInvalidRequestError\(\) has parameter \$pickwareAccountJsonApiError with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ApiClient/PickwareAccountApiClientException.php
+
+		-
+			message: '#^Empty array passed to foreach\.$#'
+			identifier: foreach.emptyArray
+			count: 2
+			path: src/PickwareAccountBundle.php
+
+		-
+			message: '#^Method Pickware\\PickwareAccountBundle\\PickwareAccountBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareAccountBundle.php

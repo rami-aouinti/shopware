@@ -1,0 +1,21 @@
+{
+    "pickware-erp-starter": {
+        "goods-receipt-note": {
+            "file-name": "Goods receipt note %s",
+            "title": "Goods receipt",
+            "sub-title": "Warehouse:",
+            "warehouse-label": "%warehouseName% (%warehouseCode%)",
+            "order": "Order %number%",
+            "comment": "Comment",
+            "columns": {
+                "origin": "Origin",
+                "detail": "Detail"
+            },
+            "goods-receipt-type": {
+                "free": "Free goods receipt",
+                "supplier": "Supplier order %number%",
+                "customer": "Return order %number%"
+            }
+        }
+    }
+}

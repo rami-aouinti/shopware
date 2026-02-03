@@ -1,0 +1,126 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "required": ["associations", "goodsReceipt"],
+    "properties": {
+        "associations": {
+            "type": "object"
+        },
+        "goodsReceipt": {
+            "$ref": "#/definitions/goodsReceipt"
+        }
+    },
+    "definitions": {
+        "goodsReceipt": {
+            "type": "object",
+            "required": ["id", "warehouseId", "lineItems"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "warehouseId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "lineItems": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/lineItem"
+                    }
+                },
+                "supplierId": {
+                    "oneOf": [{ "$ref": "#/definitions/uuid" }, { "type": "null" }]
+                },
+                "supplierOrders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/supplierOrder"
+                    }
+                },
+                "customerId": {
+                    "oneOf": [{ "$ref": "#/definitions/uuid" }, { "type": "null" }]
+                },
+                "returnOrders": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [{ "$ref": "#/definitions/returnOrder" }, { "$ref": "#/definitions/orderReference" }]
+                    }
+                },
+                "comment": {
+                    "oneOf": [{ "type": "string" }, { "type": "null" }]
+                },
+                "documents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/document"
+                    }
+                }
+            }
+        },
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "lineItem": {
+            "type": "object",
+            "required": ["productId", "quantity"],
+            "properties": {
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "productId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "batchId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "returnReason": {
+                    "type": "string"
+                },
+                "quantityToDispose": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        },
+        "supplierOrder": {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "returnOrder": {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "orderReference": {
+            "type": "object",
+            "required": ["orderId"],
+            "properties": {
+                "orderId": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "document": {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        }
+    }
+}

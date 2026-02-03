@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/master/src/Core/System/SystemConfig/Schema/config.xsd"
+>
+    <card>
+        <title lang="de-DE">Grundeinstellungen</title>
+        <title>General settings</title>
+        <component name="sw-entity-single-select">
+            <name>posShippingMethodId</name>
+            <entity>shipping_method</entity>
+            <label lang="de-DE">Versandart für POS-Verkäufe</label>
+            <label>Shipping method for POS orders</label>
+            <helpText lang="de-DE">Mit dieser Versandart werden Verkäufe am POS angelegt.</helpText>
+            <helpText>Orders at the POS get created with this shipping method.</helpText>
+        </component>
+        <component name="pw-pos-customer-select-field">
+            <name>posDefaultCustomerId</name>
+            <entity>customer</entity>
+            <label lang="de-DE">Kundenkonto für POS-Verkäufe</label>
+            <label>Customer account for POS orders</label>
+            <helpText lang="de-DE">
+                Mit diesem Kundenkonto werden Verkäufe automatisch verknüpft, wenn beim Verkauf kein spezifisches
+                Kundenkonto ausgewählt wird.
+            </helpText>
+            <helpText>
+                This customer account is automatically linked to orders if no specific customer account is selected at
+                the time of the order.
+            </helpText>
+            <required>true</required>
+        </component>
+        <component name="sw-entity-single-select">
+            <name>posCashPaymentMethodId</name>
+            <entity>payment_method</entity>
+            <label lang="de-DE">Bar-Zahlungsart</label>
+            <label>Cash payment method</label>
+            <helpText lang="de-DE">Diese Zahlungsart wird an der Kasse als Bar-Zahlungsart verwendet.</helpText>
+            <helpText>This payment method is used as a cash payment method at the POS.</helpText>
+        </component>
+        <component name="pw-pos-entity-multi-select-by-id-field">
+            <name>posCardPaymentMethodIds</name>
+            <entity>payment_method</entity>
+            <label lang="de-DE">EC-/Kreditkarten-Zahlungsarten</label>
+            <label>Debit/credit card payment methods</label>
+            <helpText lang="de-DE">
+                Diese Zahlungsarten werden an der Kasse als Zahlungsart für EC-/Kreditkarte verwendet.
+            </helpText>
+            <helpText>These payment methods are used as card payment method at the POS.</helpText>
+        </component>
+        <component name="pw-pos-entity-multi-select-by-id-field">
+            <name>posOtherPaymentMethodIds</name>
+            <entity>payment_method</entity>
+            <label lang="de-DE">Weitere Zahlungsarten</label>
+            <label>Other payment methods</label>
+            <helpText lang="de-DE">
+                Weitere Zahlungsarten, die in der POS App zur Verfügung stehen sollen, z.B. um Zahlungen mit externen
+                Kartenterminals oder auf Rechnung anzunehmen.
+            </helpText>
+            <helpText>
+                Additional payment methods to be available in the POS (e.g. to accept payments with external card
+                terminals or per invoice).
+            </helpText>
+        </component>
+        <component name="pw-pos-entity-multi-select-by-id-field">
+            <name>posOpenPaymentMethodIds</name>
+            <entity>payment_method</entity>
+            <label lang="de-DE">Zahlungsarten mit Zahlungsstatus "Offen"</label>
+            <label>Payment methods with status "Open"</label>
+            <helpText lang="de-DE">
+                Zahlungsarten, für die Bestellungen mit dem Zahlungsstatus "Offen" angelegt werden sollen (z.B. für Kauf
+                auf Rechnung).
+            </helpText>
+            <helpText>
+                Payment methods for which orders are to be created with the payment status "Open" (e.g. for purchase per
+                invoice).
+            </helpText>
+        </component>
+        <component name="pw-pos-sales-channel-domain-combo-select-by-id-field">
+            <name>posPublicSalesChannelAndDomainId</name>
+            <label lang="de-DE">Verkaufskanal für Mailtemplates bei Neukunden</label>
+            <label>Sales Channel for mail templates for new customers</label>
+            <helpText lang="de-DE">
+                Für Kundenkonten, die in der POS App erstellt werden, wird diese Domain in den E-Mail Vorlagen
+                verwendet. Dieser Verkaufskanal muss eine Storefront haben, da Kunden sonst ihre Registrierung nicht
+                abschließen und Newsletteranmeldungen nicht bestätigen können, nachdem sie am Pickware POS angelegt
+                wurden.
+            </helpText>
+            <helpText>
+                For customer accounts that get created through the POS app, this domain is used in the e-mail templates.
+                This sales channel must have a storefront, otherwise customers will not be able to complete their
+                registration and confirm newsletter signups after they have been created at the Pickware POS.
+            </helpText>
+        </component>
+    </card>
+    <card>
+        <title lang="de-DE">Kassenbon</title>
+        <title>POS Receipt</title>
+        <component name="sw-media-field">
+            <name>posReceiptLogoMediaId</name>
+            <label lang="de-DE">Logo</label>
+            <label>Logo</label>
+            <helpText lang="de-DE">
+                Das Logo wird oben mittig auf dem Kassenbon angezeigt. Das Bild sollte als schwarz-weiße .png-Datei mit
+                einer Breite von höchstens 384 Pixeln vorliegen. Ansonsten wird es automatisch konvertiert.
+            </helpText>
+            <helpText>
+                The logo is displayed at the top center of the POS receipt. The image should be a black-and-white .png
+                file with a width of at most 384 pixels. Otherwise, it will be automatically converted.
+            </helpText>
+        </component>
+        <input-field type="text">
+            <name>taxIdentificationNumber</name>
+            <label lang="de-DE">Umsatzsteuer-Identifikationsnummer (USt-IdNr.)</label>
+            <label>Tax identification number</label>
+            <helpText lang="de-DE">
+                Die Umsatzsteuer-Identifikationsnummer (USt-IdNr.) wird auf dem Kassenbon angezeigt.
+            </helpText>
+            <helpText>The sales tax identification number (VAT ID) is displayed on the POS receipt.</helpText>
+        </input-field>
+        <input-field type="textarea">
+            <name>posReceiptLeftAlignText</name>
+            <label lang="de-DE">Freitext (linksbündig)</label>
+            <label>Free text (aligned left)</label>
+            <helpText lang="de-DE">
+                Trage hier einen Text ein, der auf Kassenbons linksbündig unter der Mehrwertsteuertabelle gedruckt
+                werden soll.
+            </helpText>
+            <helpText>Enter here a text to be printed left-aligned below the VAT table on POS receipts.</helpText>
+        </input-field>
+        <input-field type="textarea">
+            <name>posReceiptCenterAlignText</name>
+            <label lang="de-DE">Freitext (zentiert)</label>
+            <label>Free text (centered)</label>
+            <helpText lang="de-DE">
+                Trage hier einen Text ein, der auf Kassenbons zentriert unter dem linksbündigen Text gedruckt werden
+                soll.
+            </helpText>
+            <helpText>Enter here a text to be printed centered below the left-aligned text on POS receipts.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>posReceiptShowListPrices</name>
+            <label lang="de-DE">Streichpreis auf Kassenbon anzeigen</label>
+            <label>Show list price on receipt</label>
+            <helpText lang="de-DE">
+                Bestimmt ob der Streichpreis eines Produktes auf dem Kassenbon angezeigt werden soll.
+            </helpText>
+            <helpText>Specifies whether the list price of a product should be displayed on the receipt.</helpText>
+        </input-field>
+    </card>
+    <card>
+        <title lang="de-DE">Kasse</title>
+        <title>Cash Register</title>
+        <input-field type="bool">
+            <name>posAutomaticReceiptPrinting</name>
+            <label lang="de-DE">Automatischer Belegdruck</label>
+            <label>Automatic receipt printing</label>
+            <helpText lang="de-DE">Bestimmt ob der Beleg nach jedem Verkauf automatisch gedruckt werden soll.</helpText>
+            <helpText>Determines whether the receipt should be printed automatically after each order.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>posGroupProductVariants</name>
+            <label lang="de-DE">Artikelvarianten zusammenfassen</label>
+            <label>Group product variants</label>
+            <helpText lang="de-DE">
+                Bestimmt ob Varianten desselben Produkts in den Suchergebnissen am POS zusammengefasst dargestellt
+                werden sollen.
+            </helpText>
+            <helpText>
+                Determines whether variants of the same product should be displayed together in the search results at
+                the POS.
+            </helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>posOversellingWarning</name>
+            <label lang="de-DE">Warnung bei Überverkauf anzeigen</label>
+            <label>Show overselling warning</label>
+            <helpText lang="de-DE">
+                Bestimmt, ob an der Kasse eine Warnung erscheint, wenn der physische oder verfügbare Lagerbestand eines
+                Produkts nicht ausreicht, um die gewünschte Menge zu verkaufen.
+            </helpText>
+            <helpText>
+                Determines whether a warning is shown at the POS if the physical or available stock of a product is not
+                sufficient to sell the desired quantity.
+            </helpText>
+        </input-field>
+        <input-field type="textarea">
+            <name>posDepositWithdrawalComments</name>
+            <label lang="de-DE">Kommentare für Ein-/Auszahlung</label>
+            <label>Comments for deposits and withdrawals</label>
+            <helpText lang="de-DE">
+                Trage hier Kommentare ein, die für Ein- und Auszahlungen in der POS App zur Auswahl stehen sollen.
+                Einzelne Kommentare müssen mit Zeilenumbrüchen getrennt werden.
+            </helpText>
+            <helpText>
+                Enter comments that should be available for selection upon performing a deposit or a withdrawal in the
+                POS app. Comments must be separated by line breaks.
+            </helpText>
+        </input-field>
+    </card>
+    <card>
+        <title lang="de-DE">Click &amp; Collect</title>
+        <title>Click &amp; Collect</title>
+        <component name="pw-pos-entity-multi-select-by-id-field">
+            <name>clickAndCollectShippingMethodIds</name>
+            <entity>shipping_method</entity>
+            <label lang="de-DE">Versandarten</label>
+            <label>Shipping methods</label>
+            <required>true</required>
+            <helpText lang="de-DE">
+                Shop-Bestellungen mit einer dieser Versandarten werden am POS als Bestellung zur Abholung angezeigt.
+            </helpText>
+            <helpText>
+                Storefront orders with one of these shipping methods are displayed at the POS as orders for pickup.
+            </helpText>
+        </component>
+        <component name="sw-entity-single-select">
+            <name>clickAndCollectPaymentMethodId</name>
+            <entity>payment_method</entity>
+            <label lang="de-DE">Zahlungsart für "Zahlung bei Abholung"</label>
+            <label>Payment method for payment on collection</label>
+            <required>true</required>
+            <helpText lang="de-DE">
+                Zahlungsart die im Shop ausgewählt werden kann, wenn die Bestellung bei Abholung bezahlt werden soll.
+                Bei der Bezahlung am POS wird die Zahlungsart der Bestellung mit der tatsächlichen Zahlungsart ersetzt.
+            </helpText>
+            <helpText>
+                Payment method that can be selected in the storefront if the order is to be paid at pickup. When paying
+                at POS, the payment method of the order is replaced with the actual payment method.
+            </helpText>
+        </component>
+    </card>
+</config>

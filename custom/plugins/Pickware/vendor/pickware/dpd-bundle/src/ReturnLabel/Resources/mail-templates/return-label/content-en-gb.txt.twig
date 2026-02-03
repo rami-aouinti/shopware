@@ -1,0 +1,13 @@
+{{ order.orderCustomer.salutation.letterName }} {{ order.orderCustomer.firstName }} {{ order.orderCustomer.lastName }},
+
+{% if returnLabelDocuments|length  > 1 %}
+    Attached to this e-mail you will find {{ returnLabelDocuments|length }} shipping label from DPD for returning your order with the number {{ order.orderNumber }}.
+    Please print them out and use them to claim the free return shipment.
+    Several return labels have been sent to you, as you may need to split your return into several packages to comply with DPD's weight limit (20 kg).
+{% else %}
+    Attached to this e-mail you will find a shipping label from DPD for returning your order with the number {{ order.orderNumber }}.
+    Please print it out and use it to claim the free return shipment.
+{%  endif %}
+We wish you a pleasant day.
+
+Your team from {{ shopName }}.

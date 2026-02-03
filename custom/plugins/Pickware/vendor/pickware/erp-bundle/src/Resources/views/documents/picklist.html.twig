@@ -1,0 +1,161 @@
+{% sw_extends '@Shopware/documents/base.html.twig' %}
+
+{% use '@Framework/documents/includes/logo.html.twig' %}
+{% use '@Framework/documents/includes/letter_header.html.twig' %}
+
+{% block document_title_tag %}
+    {{ 'pickware-erp-starter.picklist-document.title' | trans | sw_sanitize(null, true) }} {{ order.orderNumber }}
+{% endblock %}
+
+{% block document_base %}
+    {% include '@PickwareErpBundle/documents/picklist.css.twig' %}
+    {{ parent() }}
+{% endblock %}
+
+{# right side document head #}
+{% block document_side_info_date %}
+    <tr class="right-side-info-sales-channel">
+        <td>
+            {{ 'pickware-erp-starter.picklist-document.header.sales-channel'|trans({'%salesChannel%': order.salesChannel.name})|sw_sanitize(null, true) }}
+        </td>
+    </tr>
+    <tr class="right-side-info-date">
+        <td>
+            {{ 'document.date'|trans({'%date%': config.documentDate|format_date('medium', locale=locale)})|sw_sanitize(null, true) }}
+        </td>
+    </tr>
+{% endblock %}
+
+{# left side document head #}
+{% block document_recipient %}
+    {% set firstDelivery = order.deliveries|first %}
+    {% set shippingAddress = order.addresses.get(firstDelivery.shippingOrderAddressId) %}
+    {% set billingAddress = order.addresses.get(order.billingAddressId) %}
+
+    <table class="addresses-table">
+        <tr>
+            <td class="shipping-address">
+                <div class="address-title">
+                    {{ 'pickware-erp-starter.picklist-document.header.shipping-address'| trans | sw_sanitize(null, true) }}
+                </div>
+                {% if shippingAddress.company %}{{ shippingAddress.company }}<br>{% endif %}
+                {{ shippingAddress.firstName }} {{ shippingAddress.lastName }}<br>
+                {{ shippingAddress.street }}<br>
+                {{ shippingAddress.zipcode }} {{ shippingAddress.city }}<br>
+                {{ shippingAddress.country.name }}<br>
+            </td>
+            <td class="billing-address">
+                <div class="address-title">
+                    {{ 'pickware-erp-starter.picklist-document.header.billing-address'| trans | sw_sanitize(null, true) }}
+                </div>
+                {% if billingAddress.company %}{{ billingAddress.company }}<br>{% endif %}
+                {{ billingAddress.firstName }} {{ billingAddress.lastName }}<br>
+                {{ billingAddress.street }}<br>
+                {{ billingAddress.zipcode }} {{ billingAddress.city }}<br>
+                {{ billingAddress.country.name }}<br>
+            </td>
+        </tr>
+    </table>
+{% endblock %}
+
+{# By overwriting the whole document_body we ignore Shopware's position loop, summary, comment payment_shipping
+   and shipping_address #}
+{% block document_body %}
+    {{ block('logo') }}
+    {{ block('letter_header') }}
+
+    {# Removes the company configuration (company address etc) from the letter_header block #}
+    {% block document_sender_address %}
+    {% endblock %}
+
+    {# document headline is hardcoded since the headline block of the base template is in the first table (which is
+       completely overwritten in this document_body block) #}
+    <div class="document-title-container">
+        <h1>
+            {{ 'pickware-erp-starter.picklist-document.title' | trans | sw_sanitize(null, true) }}
+            <span class="title-ordernumber">{{ order.orderNumber }}</span>
+        </h1>
+        <h2>
+            {{ 'pickware-erp-starter.picklist-document.sub-title' | trans | sw_sanitize(null, true) }}
+            <span class="bold">{{ 'pickware-erp-starter.picklist-document.warehouse-label' | trans({'%warehouseName%': warehouse.name, '%warehouseCode%': warehouse.code}) | sw_sanitize(null, true) }}</span>
+        </h2>
+        {% if config.documentComment is not empty %}
+            <p class="pickingInstruction">
+                <b>{{ 'pickware-erp-starter.picklist-document.document-comment' | trans | sw_sanitize(null, true) }}:</b>
+                {{ config.documentComment | sw_sanitize(null, true) | nl2br }}
+            </p>
+        {% endif %}
+    </div>
+
+    {% if pickingRouteNodes | length !== 0 %}
+
+    {# Check if any route has multiple bin locations in its route (on this page) #}
+    {% set alterantiveBinLocationsExist = false %}
+    {% for pickingRouteNode in pickingRouteNodes %}
+        {% if pickingRouteNode.pickLocations | length > 1 %}
+            {% set alterantiveBinLocationsExist = true %}
+        {% endif %}
+    {% endfor %}
+
+    <div class="line-item-container">
+        <table class="line-item-table">
+            {% sw_include '@Framework/documents/components/picklist-table-head.html.twig' %}
+
+            {% for pickingRouteNode in pickingRouteNodes %}
+                {{ counter.increment() }}
+
+                {% sw_include '@Framework/documents/components/picklist-table-row.html.twig' with {
+                    pickingRouteNode: pickingRouteNode,
+                    customProducts: customProducts,
+                    config,
+                } %}
+
+                {# After n=itemsPerPage picking route nodes have been reached, close the table and add a page break
+                   manually. This is necessary to insert a footer (i.e. the "page count" element). The user can
+                   configure the iemsPerPage if there are too many product with many names/options that require more or
+                   less space per picking route node. #}
+                {% set endReached = counter.counter == (pickingRouteNodes | length) %}
+                {% if counter.counter is divisible by(config.itemsPerPage) and not endReached %}
+                    </table>
+
+                    {% sw_include '@Framework/documents/components/picklist-footer.html.twig' %}
+                    <div class="page_break"></div>
+
+                    <table class="line-item-table">
+                        {% sw_include '@Framework/documents/components/picklist-table-head.html.twig' %}
+                {% endif %}
+            {% endfor %}
+        </table>
+    </div>
+
+    {% else %}
+    <div class="line-item-container">
+        <p id="emptyList">
+            {{ 'pickware-erp-starter.picklist-document.empty-list' | trans | sw_sanitize(null, true) }}
+        </p>
+    </div>
+    {% endif %}
+
+    {% if order.customerComment is not empty %}
+        <p id="customerComment">
+            <b>{{ 'pickware-erp-starter.picklist-document.customer-comment' | trans | sw_sanitize(null, true) }}:</b>
+            <br />
+            {{ order.customerComment | sw_sanitize(null, true) | nl2br }}
+        </p>
+    {% endif %}
+
+    {% if config.documentComment is not empty %}
+        <p id="documentComment" class="pickingInstruction">
+            <b>{{ 'pickware-erp-starter.picklist-document.document-comment' | trans | sw_sanitize(null, true) }}:</b>
+            <br />
+            {{ config.documentComment | sw_sanitize(null, true) | nl2br }}
+        </p>
+    {% endif %}
+
+    {% sw_include '@PickwareErpBundle/documents/components/custom-fields-order.html.twig' with { config } %}
+{% endblock %}
+
+{# Override everything from the footer #}
+{% block footer %}
+    {% sw_include '@Framework/documents/components/picklist-footer.html.twig' %}
+{% endblock %}

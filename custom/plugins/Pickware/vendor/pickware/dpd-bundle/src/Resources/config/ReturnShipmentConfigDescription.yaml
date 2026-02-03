@@ -1,0 +1,44 @@
+elements:
+  - name: product
+    type: single-select
+    label:
+      de-DE: Produkt
+      en-GB: Product
+    options:
+      - value: CL
+        label:
+          de-DE: DPD CLASSIC
+          en-GB: DPD CLASSIC
+      - value: E830
+        label:
+          de-DE: DPD 8:30
+          en-GB: DPD 8:30
+      - value: E10
+        label:
+          de-DE: DPD 10:00
+          en-GB: DPD 10:00
+      - value: E12
+        label:
+          de-DE: DPD 12:00
+          en-GB: DPD 12:00
+      - value: E18
+        label:
+          de-DE: DPD 18:00
+          en-GB: DPD 18:00
+      - value: MAIL
+        label:
+          de-DE: DPD International Mail
+          en-GB: DPD International Mail
+      - value: MAX
+        label:
+          de-DE: DPD MAX
+          en-GB: DPD MAX
+      - value: PL
+        label:
+          de-DE: DPD PARCELLetter
+          en-GB: DPD PARCELLetter
+      - value: PM4
+        label:
+          de-DE: DPD Priority
+          en-GB: DPD Priority
+    default: CL # DPD CLASSIC

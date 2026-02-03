@@ -1,0 +1,92 @@
+{
+    "name": "pickware/mobile-app-auth-bundle",
+    "description": "A bundle for Shopware 6 that contains the Pickware mobile app authentication functionality.",
+    "license": "proprietary",
+    "type": "library",
+    "version": "3.44.0",
+    "authors": [
+        {
+            "name": "Pickware GmbH",
+            "email": "info@pickware.de"
+        }
+    ],
+    "require": {
+        "php": ">= 8.2",
+        "ext-curl": "*",
+        "ext-dom": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "doctrine/dbal": "^3.6 || ^4.0",
+        "league/oauth2-server": "^8.2.4 || ^9.0",
+        "nyholm/psr7": "^1.4.0",
+        "pickware/bundle-installer": "^3.15.0",
+        "pickware/dal-bundle": "^5.61.0",
+        "pickware/installation-library": "^4.71.0",
+        "pickware/php-standard-library": "^2.25.0",
+        "psr/http-message": "^1.1 || ^2.0",
+        "shopware/core": ">=6.6.10.5 <6.8",
+        "symfony/config": "^7.0.0",
+        "symfony/console": "^7.0.0",
+        "symfony/dependency-injection": "^7.0.0",
+        "symfony/event-dispatcher": "^7.0.0",
+        "symfony/http-foundation": "^7.0.0",
+        "symfony/http-kernel": "^7.0.0",
+        "symfony/psr-http-message-bridge": "^7.0.0",
+        "symfony/validator": "^7.0.0"
+    },
+    "require-dev": {
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "2.1.29",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpunit/phpunit": "^9.5.0",
+        "pickware/phpstan-extensions": "*@dev",
+        "pickware/unit-testing-tools": "*@dev",
+        "shopware/administration": ">=6.6.10.5 <6.8"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../bundles/*"
+        },
+        {
+            "type": "path",
+            "url": "../../libraries/composer-packages/*"
+        },
+        {
+            "type": "path",
+            "url": "../../libraries-dev/composer-packages/*"
+        },
+        {
+            "type": "path",
+            "url": "../../plugins-dev/*"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Pickware\\MobileAppAuthBundle\\": "src"
+        },
+        "exclude-from-classmap": [
+            "**.unit.php",
+            "**.integration.php"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "ergebnis/composer-normalize": true,
+            "phpstan/extension-installer": true,
+            "pickware/dependency-loader": true,
+            "symfony/runtime": true,
+            "viison/composer-git-hooks-installer-plugin": true
+        },
+        "lock": false
+    },
+    "extra": {
+        "ci-min-supported-shopware-version": "6.6.10.5"
+    },
+    "scripts": {
+        "phpstan": "./vendor/bin/phpstan analyse --memory-limit=4G --no-interaction --ansi -c phpstan.neon.dist",
+        "test:integration": "${SHOPWARE_DIR}/vendor/bin/phpunit --config phpunit.integration.xml --testdox",
+        "test:unit": "composer install && ./vendor/bin/phpunit --config phpunit.unit.xml --testdox"
+    }
+}

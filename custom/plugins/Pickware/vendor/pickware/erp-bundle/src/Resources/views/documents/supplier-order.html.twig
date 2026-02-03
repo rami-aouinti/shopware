@@ -1,0 +1,143 @@
+{% sw_extends '@Framework/documents/base.html.twig' %}
+
+{% block document_base %}
+    {% include '@PickwareErpBundle/documents/supplier-order.css.twig' %}
+    {{ parent() }}
+{% endblock %}
+
+{% block document_title_tag %}
+    {{ 'pickware-erp-starter.supplier-order-document.title' | trans | sw_sanitize(null, true) }} {{ supplierOrder.number }}
+{% endblock %}
+
+{# Overwrite the whole document body so we can loop order the supplier order line items instead of the "order" #}
+{% block document_body %}
+    {{ block('logo') }}
+
+    {# left side document header (supplier address) #}
+    <div class="left-header">
+        {% set addressParts = config.getAddressParts() %}
+        {% if addressParts is not empty %}
+            {{ addressParts | join(' - ') | sw_sanitize(null, true) }}<br>
+        {% elseif config.companyAddress is defined and config.companyAddress is not empty %}
+            {{ config.companyAddress | sw_sanitize(null, true) }}<br>
+        {% endif %}
+        <br>
+        {% set supplierAddress = supplierOrder.supplier.address %}
+        <b>{{ supplierAddress.company }}</b><br>
+        {% if supplierAddress.department is not empty %}
+            <b>{{ supplierAddress.department }}</b><br>
+        {% endif %}
+        {{ supplierAddress.title }} {{ supplierAddress.firstName }} {{ supplierAddress.lastName }}<br>
+        {{ supplierAddress.street }} {{ supplierAddress.houseNumber }}<br>
+        {% if supplierAddress.addressAddition is not empty %}
+            {{ supplierAddress.addressAddition }}<br>
+        {% endif %}
+        {{ supplierAddress.zipCode }} {{ supplierAddress.city }}<br>
+    </div>
+
+    {# right side document head (warehouse address, basic document information) #}
+    <div class="right-header">
+        <div>
+            {% set warehouseAddress = supplierOrder.warehouse.address %}
+            <b>{{ warehouseAddress.company }}</b><br>
+            {# Note that a warehouse address has no personal information (e.g. first name, last name) #}
+            {{ warehouseAddress.street }} {{ warehouseAddress.houseNumber }}<br>
+            {% if warehouseAddress.addressAddition is not empty %}
+                {{ warehouseAddress.addressAddition }}<br>
+            {% endif %}
+            {{ warehouseAddress.zipCode }} {{ warehouseAddress.city }}<br>
+            <br>
+            {# Company contact from the document configuration #}
+            {{ config.companyPhone | default('') | sw_sanitize(null, true) }}<br>
+            {{ config.companyEmail | default('') | sw_sanitize(null, true) }}<br>
+            {{ config.companyUrl | default('') | sw_sanitize(null, true) }}<br>
+        </div>
+
+        <div>
+            {{ 'pickware-erp-starter.supplier-order-document.summary.supplier-number' | trans | sw_sanitize(null, true) }}:  {{ supplierOrder.supplier.customerNumber }}<br>
+            {# Use Shopware document basic information snippet, but use custom locale setting #}
+            {{ 'document.date'|trans({'%date%': config.documentDate|format_date(pattern="Y/MM/dd", locale=localeCode)})|sw_sanitize(null, true) }}
+        </div>
+    </div>
+
+    {# document headline is hardcoded since the headline block of the base template is in the first table (which is
+       completely overwritten in this document_body block) #}
+    <div class="document-title-container">
+        <div class="supplier-contact">
+            {% set supplierAddress = supplierOrder.supplier.address %}
+            {{ 'pickware-erp-starter.supplier-order-document.summary.contact' | trans | sw_sanitize(null, true) }}:
+            <b>{{ 'pickware-erp-starter.supplier-order-document.summary.email' | trans | sw_sanitize(null, true) }}</b>:
+            {{ supplierAddress.email }}
+            <b>{{ 'pickware-erp-starter.supplier-order-document.summary.phone' | trans | sw_sanitize(null, true) }}</b>:
+            {{ supplierAddress.phone }}<br>
+        </div>
+        <h1>
+            {{ 'pickware-erp-starter.supplier-order-document.title' | trans | sw_sanitize(null, true) }} {{ supplierOrder.number }}
+        </h1>
+    </div>
+
+    <div class="line-item-container">
+        <table class="line-item-table">
+            <thead>
+            <tr class="line-item-table-header">
+                <th>{{ 'pickware-erp-starter.supplier-order-document.line-items.product-number' | trans | sw_sanitize(null, true) }}</th>
+                <th>{{ 'pickware-erp-starter.supplier-order-document.line-items.name' | trans | sw_sanitize(null, true) }}</th>
+                <th>{{ 'pickware-erp-starter.supplier-order-document.line-items.manufacturer' | trans | sw_sanitize(null, true) }}</th>
+                <th>{{ 'pickware-erp-starter.supplier-order-document.line-items.supplier-product-number' | trans | sw_sanitize(null, true) }}</th>
+                <th style="text-align: right;">{{ 'pickware-erp-starter.supplier-order-document.line-items.quantity' | trans | sw_sanitize(null, true) }}</th>
+            </tr>
+            </thead>
+
+            {% for lineItem in supplierOrder.lineItems %}
+                {# Use current product if it exists, otherwise fallback to snapshot #}
+                {% if lineItem.product is defined %}
+                    {% set productName = lineItem.product.id | pickware_erp_product_name({ optionsTemplate: "<br /> <span class=\"variant-description\">{{ options | join(', ') }}</span>" }) | sw_sanitize(null, true) %}
+                    {% set productNumber = lineItem.product.productNumber | sw_sanitize(null, true) %}
+                {% else %}
+                    {% set productName = lineItem.productSnapshot['name'] | sw_sanitize(null, true) %}
+                    {% set productNumber = lineItem.productSnapshot['productNumber'] | sw_sanitize(null, true) %}
+                {% endif %}
+
+                {# Use current productSupplierConfiguration if product exists, otherwise fallback to snapshot #}
+                {% if lineItem.product is defined %}
+                    {% set currentProductSupplierConfiguration = null %}
+                    {% for productSupplierConfiguration in lineItem.product.extensions.pickwareErpProductSupplierConfigurations %}
+                        {% if productSupplierConfiguration.supplierId == supplierOrder.supplierId %}
+                            {% set currentProductSupplierConfiguration = productSupplierConfiguration %}
+                        {% endif %}
+                    {% endfor %}
+                    {% set supplierProductNumber = (currentProductSupplierConfiguration.supplierProductNumber ?? lineItem.productSupplierConfigurationSnapshot.supplierProductNumber ?? "") | sw_sanitize(null, true) %}
+                {% else %}
+                    {% set supplierProductNumber = (lineItem.productSupplierConfigurationSnapshot.supplierProductNumber ?? "") | sw_sanitize(null, true) %}
+                {% endif %}
+
+                {% if lineItem.product is defined %}
+                    <tr class="line-item">
+                        {% set product = lineItem.product %}
+                        <td>{{ productNumber }}</td>
+                        <td>{{ productName | raw }}</td>
+                        <td>{{ product.manufacturer.translated.name ?? '' | sw_sanitize(null, true) }}</td>
+                        <td>{{ supplierProductNumber }}</td>
+                        <td style="text-align: right;">{{ lineItem.quantity }}</td>
+                    </tr>
+                {% else %}
+                    {# show deleted product with a notice if product has been deleted after creation of the supplier order #}
+                    <tr class="line-item" style="font-style: italic">
+                        {% set product = lineItem.productSnapshot %}
+                        <td>{{ productNumber }}</td>
+                        <td>{{ productName | raw }}
+                            ({{ 'pickware-erp-starter.supplier-order-document.line-items.deleted'  | trans | sw_sanitize(null, true) }}
+                            )
+                        </td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td style="text-align: right;">{{ lineItem.quantity }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

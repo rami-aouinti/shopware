@@ -1,0 +1,9 @@
+localeCode: 'en-GB'
+typeName: 'DPD return label'
+subject: 'Return of order {{ order.orderNumber }}'
+sender: '{{ shopName }}'
+description: 'Send a DPD return label to customer'
+contentHtml:
+  fromFile: 'content-en-gb.html.twig'
+contentPlain:
+  fromFile: 'content-en-gb.txt.twig'

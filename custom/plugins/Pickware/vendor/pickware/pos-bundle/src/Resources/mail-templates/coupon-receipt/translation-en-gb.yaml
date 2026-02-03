@@ -1,0 +1,9 @@
+localeCode: 'en-GB'
+typeName: 'CouponReceipt'
+subject: 'Receipt of the coupon for your purchase'
+sender: '{{ shopName }}'
+description: 'Send a coupon receipt to the customer'
+contentHtml:
+  fromFile: 'content-en-gb.html.twig'
+contentPlain:
+  fromFile: 'content-en-gb.txt.twig'

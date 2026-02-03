@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<container
+    xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <service
+            id="pickware_wms.batch_preserving_default_bin_location_provider_factory"
+            class="Pickware\PickwareErpStarter\Stocking\StockLocationProvider\BatchPreservingDefaultBinLocationProviderFactory"
+        >
+            <argument type="service" id="Pickware\DalBundle\EntityManager" />
+            <argument type="service" id="Pickware\FeatureFlagBundle\FeatureFlagService" />
+            <argument type="service" id="pickware_wms.bin_location_property_stock_location_sorter" />
+        </service>
+        <service
+            id="Pickware\PickwareWms\Stocking\StockLocationProvider\BatchPreservingBinLocationWithStockProviderFactory"
+            autowire="true"
+            autoconfigure="true"
+        />
+    </services>
+</container>

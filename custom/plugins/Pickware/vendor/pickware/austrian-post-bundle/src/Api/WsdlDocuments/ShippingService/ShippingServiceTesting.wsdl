@@ -1,0 +1,733 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions name="ShippingService" targetNamespace="http://post.ondot.at"
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata"
+                  xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex"
+                  xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy"
+                  xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract"
+                  xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                  xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://post.ondot.at"
+                  xmlns:wsa10="http://www.w3.org/2005/08/addressing"
+                  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+                  xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing">
+    <wsp:Policy wsu:Id="BasicHttpsBinding_IShippingService_policy">
+        <wsp:ExactlyOne>
+            <wsp:All>
+                <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                    <wsp:Policy>
+                        <sp:TransportToken>
+                            <wsp:Policy>
+                                <sp:HttpsToken RequireClientCertificate="false"/>
+                            </wsp:Policy>
+                        </sp:TransportToken>
+                        <sp:AlgorithmSuite>
+                            <wsp:Policy>
+                                <sp:Basic256/>
+                            </wsp:Policy>
+                        </sp:AlgorithmSuite>
+                        <sp:Layout>
+                            <wsp:Policy>
+                                <sp:Strict/>
+                            </wsp:Policy>
+                        </sp:Layout>
+                    </wsp:Policy>
+                </sp:TransportBinding>
+            </wsp:All>
+        </wsp:ExactlyOne>
+    </wsp:Policy>
+    <wsdl:types>
+        <xs:schema elementFormDefault="qualified" targetNamespace="http://post.ondot.at"
+                   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                   xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/">
+            <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+            <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/"/>
+            <xs:import namespace="http://Core.Model"/>
+            <xs:element name="ImportShipment">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="row" nillable="true" type="q1:ShipmentRow"
+                                    xmlns:q1="http://post.ondot.at"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="ShipmentRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="AlternativeReturnOrgUnitAddress" nillable="true"
+                                type="q2:AddressRow" xmlns:q2="http://post.ondot.at"/>
+                    <xs:element minOccurs="0" name="BusinessDocumentEntryList" nillable="true" type="q3:ArrayOfstring"
+                                xmlns:q3="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+                    <xs:element minOccurs="0" name="ClientID" type="xs:int"/>
+                    <xs:element minOccurs="0" name="ColloList" nillable="true" type="q4:ArrayOfColloRow"
+                                xmlns:q4="http://post.ondot.at"/>
+                    <xs:element minOccurs="0" name="CostCenterThirdPartyID" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="CustomDataBit1" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="CustomDataBit2" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="CustomerProduct" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="CustomsDescription" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="DeliveryInstruction" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="DeliveryServiceThirdPartyID" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="FeatureList" nillable="true"
+                                type="q5:ArrayOfAdditionalInformationRow" xmlns:q5="http://post.ondot.at"/>
+                    <xs:element minOccurs="0" name="MovementReferenceNumber" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Number" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="OURecipientAddress" nillable="true" type="q6:AddressRow"
+                                xmlns:q6="http://post.ondot.at"/>
+                    <xs:element minOccurs="0" name="OUShipperAddress" nillable="true" type="q7:AddressRow"
+                                xmlns:q7="http://post.ondot.at"/>
+                    <xs:element minOccurs="0" name="OUShipperReference1" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="OUShipperReference2" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="OrgUnitGuid" type="ser:guid"/>
+                    <xs:element minOccurs="0" name="OrgUnitID" type="xs:int"/>
+                    <xs:element minOccurs="0" name="PrinterObject" nillable="true" type="q8:PrinterRow"
+                                xmlns:q8="http://post.ondot.at"/>
+                    <xs:element minOccurs="0" name="RefBarcodeType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="ReturnDays" nillable="true" type="xs:int"/>
+                    <xs:element minOccurs="0" name="ReturnModeID" nillable="true" type="xs:int"/>
+                    <xs:element minOccurs="0" name="ReturnOptionID" nillable="true" type="xs:int"/>
+                    <xs:element minOccurs="0" name="ShipmentDocumentEntryList" nillable="true"
+                                type="q9:ArrayOfShipmentDocumentEntry" xmlns:q9="http://Core.Model"/>
+                    <xs:element minOccurs="0" name="ShippingDateTimeFrom" nillable="true" type="xs:dateTime"/>
+                    <xs:element minOccurs="0" name="ShippingDateTimeTo" nillable="true" type="xs:dateTime"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ShipmentRow" nillable="true" type="q10:ShipmentRow" xmlns:q10="http://post.ondot.at"/>
+            <xs:complexType name="AddressRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="AddressLine1" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="AddressLine2" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="City" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="CountryID" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="EORINumber" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Email" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Fax" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Homepage" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="HouseNumber" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Name1" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Name2" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Name3" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Name4" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="PersonalTaxNumber" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="PostalCode" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="ProvinceCode" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Tel1" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Tel2" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="ThirdPartyID" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="VATID" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="AddressRow" nillable="true" type="q11:AddressRow" xmlns:q11="http://post.ondot.at"/>
+            <xs:complexType name="ArrayOfColloRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="ColloRow" nillable="true" type="q12:ColloRow"
+                                xmlns:q12="http://post.ondot.at"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ArrayOfColloRow" nillable="true" type="q13:ArrayOfColloRow"
+                        xmlns:q13="http://post.ondot.at"/>
+            <xs:complexType name="ColloRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="ColloArticleList" nillable="true" type="q14:ArrayOfColloArticleRow"
+                                xmlns:q14="http://post.ondot.at"/>
+                    <xs:element minOccurs="0" name="ColloCodeList" nillable="true" type="q15:ArrayOfColloCodeRow"
+                                xmlns:q15="http://post.ondot.at"/>
+                    <xs:element minOccurs="0" name="Height" nillable="true" type="xs:int"/>
+                    <xs:element minOccurs="0" name="Length" nillable="true" type="xs:int"/>
+                    <xs:element minOccurs="0" name="Weight" nillable="true" type="xs:decimal"/>
+                    <xs:element minOccurs="0" name="Width" nillable="true" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ColloRow" nillable="true" type="q16:ColloRow" xmlns:q16="http://post.ondot.at"/>
+            <xs:complexType name="ArrayOfColloArticleRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="ColloArticleRow" nillable="true"
+                                type="q17:ColloArticleRow" xmlns:q17="http://post.ondot.at"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ArrayOfColloArticleRow" nillable="true" type="q18:ArrayOfColloArticleRow"
+                        xmlns:q18="http://post.ondot.at"/>
+            <xs:complexType name="ColloArticleRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="ArticleName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="ArticleNumber" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="ConsumerUnitNetWeight" nillable="true" type="xs:decimal"/>
+                    <xs:element minOccurs="0" name="CountryOfOriginID" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="CurrencyID" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="CustomsOptionID" nillable="true" type="xs:int"/>
+                    <xs:element minOccurs="0" name="HSTariffNumber" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Quantity" nillable="true" type="xs:decimal"/>
+                    <xs:element minOccurs="0" name="UnitID" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="ValueOfGoodsPerUnit" nillable="true" type="xs:decimal"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ColloArticleRow" nillable="true" type="q19:ColloArticleRow"
+                        xmlns:q19="http://post.ondot.at"/>
+            <xs:complexType name="ArrayOfColloCodeRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="ColloCodeRow" nillable="true"
+                                type="q20:ColloCodeRow" xmlns:q20="http://post.ondot.at"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ArrayOfColloCodeRow" nillable="true" type="q21:ArrayOfColloCodeRow"
+                        xmlns:q21="http://post.ondot.at"/>
+            <xs:complexType name="ColloCodeRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Code" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="NumberTypeID" type="xs:int"/>
+                    <xs:element minOccurs="0" name="OUCarrierThirdPartyID" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ColloCodeRow" nillable="true" type="q22:ColloCodeRow" xmlns:q22="http://post.ondot.at"/>
+            <xs:complexType name="ArrayOfAdditionalInformationRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="AdditionalInformationRow" nillable="true"
+                                type="q23:AdditionalInformationRow" xmlns:q23="http://post.ondot.at"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ArrayOfAdditionalInformationRow" nillable="true"
+                        type="q24:ArrayOfAdditionalInformationRow" xmlns:q24="http://post.ondot.at"/>
+            <xs:complexType name="AdditionalInformationRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="ThirdPartyID" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Value1" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Value2" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Value3" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Value4" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="AdditionalInformationRow" nillable="true" type="q25:AdditionalInformationRow"
+                        xmlns:q25="http://post.ondot.at"/>
+            <xs:complexType name="PrinterRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Encoding" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="LabelFormatID" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="LanguageID" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="PaperLayoutID" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="PrinterRow" nillable="true" type="q26:PrinterRow" xmlns:q26="http://post.ondot.at"/>
+            <xs:element name="ImportShipmentResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ImportShipmentResult" nillable="true" type="q27:ArrayOfColloRow"
+                                    xmlns:q27="http://post.ondot.at"/>
+                        <xs:element minOccurs="0" name="zplLabelData" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="pdfData" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="shipmentDocuments" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="errorCode" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="errorMessage" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ImportShipmentAndGenerateBarcode">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="row" nillable="true" type="q28:ShipmentRow"
+                                    xmlns:q28="http://post.ondot.at"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ImportShipmentAndGenerateBarcodeResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ImportShipmentAndGenerateBarcodeResult" nillable="true"
+                                    type="q29:ArrayOfColloRow" xmlns:q29="http://post.ondot.at"/>
+                        <xs:element minOccurs="0" name="zplLabelData" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="pdfData" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="shipmentDocuments" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="qrCode" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="code128" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="errorCode" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="errorMessage" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ImportShipmentReturnImage">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="row" nillable="true" type="q30:ShipmentRow"
+                                    xmlns:q30="http://post.ondot.at"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ImportShipmentReturnImageResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ImportShipmentReturnImageResult" nillable="true"
+                                    type="q31:ArrayOfColloRow" xmlns:q31="http://post.ondot.at"/>
+                        <xs:element minOccurs="0" name="imageData" nillable="true" type="q32:ArrayOfstring"
+                                    xmlns:q32="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+                        <xs:element minOccurs="0" name="shipmentDocuments" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="errorCode" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="errorMessage" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ImportAddress">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="clientID" type="xs:int"/>
+                        <xs:element minOccurs="0" name="orgUnitID" type="xs:int"/>
+                        <xs:element minOccurs="0" name="orgUnitGuid" type="ser:guid"/>
+                        <xs:element minOccurs="0" name="addresses" nillable="true" type="q33:ArrayOfAddressRow"
+                                    xmlns:q33="http://post.ondot.at"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="ArrayOfAddressRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="AddressRow" nillable="true"
+                                type="q34:AddressRow" xmlns:q34="http://post.ondot.at"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ArrayOfAddressRow" nillable="true" type="q35:ArrayOfAddressRow"
+                        xmlns:q35="http://post.ondot.at"/>
+            <xs:element name="ImportAddressResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="errorCode" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="errorMessage" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="PerformEndOfDay">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="clientID" type="xs:int"/>
+                        <xs:element minOccurs="0" name="orgUnitID" type="xs:int"/>
+                        <xs:element minOccurs="0" name="orgUnitGuid" type="ser:guid"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="PerformEndOfDayResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="PerformEndOfDayResult" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="errorCode" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="errorMessage" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="PerformEndOfDaySelect">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="clientID" type="xs:int"/>
+                        <xs:element minOccurs="0" name="orgUnitID" type="xs:int"/>
+                        <xs:element minOccurs="0" name="orgUnitGuid" type="ser:guid"/>
+                        <xs:element minOccurs="0" name="colloCodeList" nillable="true" type="q36:ArrayOfstring"
+                                    xmlns:q36="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="PerformEndOfDaySelectResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="PerformEndOfDaySelectResult" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="errorList" nillable="true" type="q37:ArrayOfErrorRow"
+                                    xmlns:q37="http://post.ondot.at"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="ArrayOfErrorRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="ErrorRow" nillable="true" type="q38:ErrorRow"
+                                xmlns:q38="http://post.ondot.at"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ArrayOfErrorRow" nillable="true" type="q39:ArrayOfErrorRow"
+                        xmlns:q39="http://post.ondot.at"/>
+            <xs:complexType name="ErrorRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Code" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Reference" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ErrorRow" nillable="true" type="q40:ErrorRow" xmlns:q40="http://post.ondot.at"/>
+            <xs:element name="GetAllowedServicesForCountry">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="clientID" type="xs:int"/>
+                        <xs:element minOccurs="0" name="orgUnitID" type="xs:int"/>
+                        <xs:element minOccurs="0" name="orgUnitGuid" type="ser:guid"/>
+                        <xs:element minOccurs="0" name="countryList" nillable="true" type="q41:ArrayOfstring"
+                                    xmlns:q41="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="GetAllowedServicesForCountryResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="GetAllowedServicesForCountryResult" nillable="true"
+                                    type="q42:ArrayOfCarrierServiceRow" xmlns:q42="http://post.ondot.at"/>
+                        <xs:element minOccurs="0" name="errorCode" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="errorMessage" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="ArrayOfCarrierServiceRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="CarrierServiceRow" nillable="true"
+                                type="q43:CarrierServiceRow" xmlns:q43="http://post.ondot.at"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ArrayOfCarrierServiceRow" nillable="true" type="q44:ArrayOfCarrierServiceRow"
+                        xmlns:q44="http://post.ondot.at"/>
+            <xs:complexType name="CarrierServiceRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Contract" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="FeatureList" nillable="true"
+                                type="q45:ArrayOfAdditionalInformationResult" xmlns:q45="http://post.ondot.at"/>
+                    <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="OrderID" nillable="true" type="xs:int"/>
+                    <xs:element minOccurs="0" name="ThirdPartyID" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="CarrierServiceRow" nillable="true" type="q46:CarrierServiceRow"
+                        xmlns:q46="http://post.ondot.at"/>
+            <xs:complexType name="ArrayOfAdditionalInformationResult">
+                <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="AdditionalInformationResult" nillable="true"
+                                type="q47:AdditionalInformationResult" xmlns:q47="http://post.ondot.at"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ArrayOfAdditionalInformationResult" nillable="true"
+                        type="q48:ArrayOfAdditionalInformationResult" xmlns:q48="http://post.ondot.at"/>
+            <xs:complexType name="AdditionalInformationResult">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="ThirdPartyID" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="AdditionalInformationResult" nillable="true" type="q49:AdditionalInformationResult"
+                        xmlns:q49="http://post.ondot.at"/>
+            <xs:element name="CancelShipments">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="shipments" nillable="true" type="q50:ArrayOfCancelShipmentRow"
+                                    xmlns:q50="http://post.ondot.at"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="ArrayOfCancelShipmentRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="CancelShipmentRow" nillable="true"
+                                type="q51:CancelShipmentRow" xmlns:q51="http://post.ondot.at"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ArrayOfCancelShipmentRow" nillable="true" type="q52:ArrayOfCancelShipmentRow"
+                        xmlns:q52="http://post.ondot.at"/>
+            <xs:complexType name="CancelShipmentRow">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="ClientID" type="xs:int"/>
+                    <xs:element minOccurs="0" name="ColloCodeList" nillable="true" type="q53:ArrayOfstring"
+                                xmlns:q53="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+                    <xs:element minOccurs="0" name="Number" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="OrgUnitGuid" type="ser:guid"/>
+                    <xs:element minOccurs="0" name="OrgUnitID" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="CancelShipmentRow" nillable="true" type="q54:CancelShipmentRow"
+                        xmlns:q54="http://post.ondot.at"/>
+            <xs:element name="CancelShipmentsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="CancelShipmentsResult" nillable="true"
+                                    type="q55:ArrayOfCancelShipmentResult" xmlns:q55="http://post.ondot.at"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="ArrayOfCancelShipmentResult">
+                <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="CancelShipmentResult" nillable="true"
+                                type="q56:CancelShipmentResult" xmlns:q56="http://post.ondot.at"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ArrayOfCancelShipmentResult" nillable="true" type="q57:ArrayOfCancelShipmentResult"
+                        xmlns:q57="http://post.ondot.at"/>
+            <xs:complexType name="CancelShipmentResult">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="CancelSuccessful" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="ErrorCode" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="ErrorMessage" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="Number" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="CancelShipmentResult" nillable="true" type="q58:CancelShipmentResult"
+                        xmlns:q58="http://post.ondot.at"/>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                   targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/"
+                   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                   xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/">
+            <xs:element name="anyType" nillable="true" type="xs:anyType"/>
+            <xs:element name="anyURI" nillable="true" type="xs:anyURI"/>
+            <xs:element name="base64Binary" nillable="true" type="xs:base64Binary"/>
+            <xs:element name="boolean" nillable="true" type="xs:boolean"/>
+            <xs:element name="byte" nillable="true" type="xs:byte"/>
+            <xs:element name="dateTime" nillable="true" type="xs:dateTime"/>
+            <xs:element name="decimal" nillable="true" type="xs:decimal"/>
+            <xs:element name="double" nillable="true" type="xs:double"/>
+            <xs:element name="float" nillable="true" type="xs:float"/>
+            <xs:element name="int" nillable="true" type="xs:int"/>
+            <xs:element name="long" nillable="true" type="xs:long"/>
+            <xs:element name="QName" nillable="true" type="xs:QName"/>
+            <xs:element name="short" nillable="true" type="xs:short"/>
+            <xs:element name="string" nillable="true" type="xs:string"/>
+            <xs:element name="unsignedByte" nillable="true" type="xs:unsignedByte"/>
+            <xs:element name="unsignedInt" nillable="true" type="xs:unsignedInt"/>
+            <xs:element name="unsignedLong" nillable="true" type="xs:unsignedLong"/>
+            <xs:element name="unsignedShort" nillable="true" type="xs:unsignedShort"/>
+            <xs:element name="char" nillable="true" type="tns:char"/>
+            <xs:simpleType name="char">
+                <xs:restriction base="xs:int"/>
+            </xs:simpleType>
+            <xs:element name="duration" nillable="true" type="tns:duration"/>
+            <xs:simpleType name="duration">
+                <xs:restriction base="xs:duration">
+                    <xs:pattern value="\-?P(\d*D)?(T(\d*H)?(\d*M)?(\d*(\.\d*)?S)?)?"/>
+                    <xs:minInclusive value="-P10675199DT2H48M5.4775808S"/>
+                    <xs:maxInclusive value="P10675199DT2H48M5.4775807S"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:element name="guid" nillable="true" type="tns:guid"/>
+            <xs:simpleType name="guid">
+                <xs:restriction base="xs:string">
+                    <xs:pattern value="[\da-fA-F]{8}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{12}"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:attribute name="FactoryType" type="xs:QName"/>
+            <xs:attribute name="Id" type="xs:ID"/>
+            <xs:attribute name="Ref" type="xs:IDREF"/>
+        </xs:schema>
+        <xs:schema elementFormDefault="qualified"
+                   targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays"
+                   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                   xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+            <xs:complexType name="ArrayOfstring">
+                <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ArrayOfstring" nillable="true" type="tns:ArrayOfstring"/>
+        </xs:schema>
+        <xs:schema elementFormDefault="qualified" targetNamespace="http://Core.Model"
+                   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://Core.Model"
+                   xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/">
+            <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/"/>
+            <xs:complexType name="ArrayOfShipmentDocumentEntry">
+                <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="ShipmentDocumentEntry" nillable="true"
+                                type="tns:ShipmentDocumentEntry"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ArrayOfShipmentDocumentEntry" nillable="true" type="tns:ArrayOfShipmentDocumentEntry"/>
+            <xs:complexType name="ShipmentDocumentEntry">
+                <xs:complexContent mixed="false">
+                    <xs:extension base="tns:EntityBase">
+                        <xs:sequence>
+                            <xs:element minOccurs="0" name="DocumentID" type="xs:int"/>
+                            <xs:element minOccurs="0" name="ID" type="xs:int"/>
+                            <xs:element minOccurs="0" name="Number" nillable="true" type="xs:string"/>
+                            <xs:element minOccurs="0" name="Quantity" type="xs:int"/>
+                            <xs:element minOccurs="0" name="ShipmentID" type="xs:int"/>
+                            <xs:element minOccurs="0" name="DocumentDate" nillable="true" type="xs:dateTime"/>
+                        </xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:element name="ShipmentDocumentEntry" nillable="true" type="tns:ShipmentDocumentEntry"/>
+            <xs:complexType name="EntityBase">
+                <xs:sequence/>
+                <xs:attribute ref="ser:Id"/>
+                <xs:attribute ref="ser:Ref"/>
+            </xs:complexType>
+            <xs:element name="EntityBase" nillable="true" type="tns:EntityBase"/>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="IShippingService_ImportShipment_InputMessage">
+        <wsdl:part name="parameters" element="tns:ImportShipment"/>
+    </wsdl:message>
+    <wsdl:message name="IShippingService_ImportShipment_OutputMessage">
+        <wsdl:part name="parameters" element="tns:ImportShipmentResponse"/>
+    </wsdl:message>
+    <wsdl:message name="IShippingService_ImportShipmentAndGenerateBarcode_InputMessage">
+        <wsdl:part name="parameters" element="tns:ImportShipmentAndGenerateBarcode"/>
+    </wsdl:message>
+    <wsdl:message name="IShippingService_ImportShipmentAndGenerateBarcode_OutputMessage">
+        <wsdl:part name="parameters" element="tns:ImportShipmentAndGenerateBarcodeResponse"/>
+    </wsdl:message>
+    <wsdl:message name="IShippingService_ImportShipmentReturnImage_InputMessage">
+        <wsdl:part name="parameters" element="tns:ImportShipmentReturnImage"/>
+    </wsdl:message>
+    <wsdl:message name="IShippingService_ImportShipmentReturnImage_OutputMessage">
+        <wsdl:part name="parameters" element="tns:ImportShipmentReturnImageResponse"/>
+    </wsdl:message>
+    <wsdl:message name="IShippingService_ImportAddress_InputMessage">
+        <wsdl:part name="parameters" element="tns:ImportAddress"/>
+    </wsdl:message>
+    <wsdl:message name="IShippingService_ImportAddress_OutputMessage">
+        <wsdl:part name="parameters" element="tns:ImportAddressResponse"/>
+    </wsdl:message>
+    <wsdl:message name="IShippingService_PerformEndOfDay_InputMessage">
+        <wsdl:part name="parameters" element="tns:PerformEndOfDay"/>
+    </wsdl:message>
+    <wsdl:message name="IShippingService_PerformEndOfDay_OutputMessage">
+        <wsdl:part name="parameters" element="tns:PerformEndOfDayResponse"/>
+    </wsdl:message>
+    <wsdl:message name="IShippingService_PerformEndOfDaySelect_InputMessage">
+        <wsdl:part name="parameters" element="tns:PerformEndOfDaySelect"/>
+    </wsdl:message>
+    <wsdl:message name="IShippingService_PerformEndOfDaySelect_OutputMessage">
+        <wsdl:part name="parameters" element="tns:PerformEndOfDaySelectResponse"/>
+    </wsdl:message>
+    <wsdl:message name="IShippingService_GetAllowedServicesForCountry_InputMessage">
+        <wsdl:part name="parameters" element="tns:GetAllowedServicesForCountry"/>
+    </wsdl:message>
+    <wsdl:message name="IShippingService_GetAllowedServicesForCountry_OutputMessage">
+        <wsdl:part name="parameters" element="tns:GetAllowedServicesForCountryResponse"/>
+    </wsdl:message>
+    <wsdl:message name="IShippingService_CancelShipments_InputMessage">
+        <wsdl:part name="parameters" element="tns:CancelShipments"/>
+    </wsdl:message>
+    <wsdl:message name="IShippingService_CancelShipments_OutputMessage">
+        <wsdl:part name="parameters" element="tns:CancelShipmentsResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="IShippingService">
+        <wsdl:operation name="ImportShipment">
+            <wsdl:input wsaw:Action="http://post.ondot.at/IShippingService/ImportShipment"
+                        message="tns:IShippingService_ImportShipment_InputMessage"/>
+            <wsdl:output wsaw:Action="http://post.ondot.at/IShippingService/ImportShipmentResponse"
+                         message="tns:IShippingService_ImportShipment_OutputMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="ImportShipmentAndGenerateBarcode">
+            <wsdl:input wsaw:Action="http://post.ondot.at/IShippingService/ImportShipmentAndGenerateBarcode"
+                        message="tns:IShippingService_ImportShipmentAndGenerateBarcode_InputMessage"/>
+            <wsdl:output wsaw:Action="http://post.ondot.at/IShippingService/ImportShipmentAndGenerateBarcodeResponse"
+                         message="tns:IShippingService_ImportShipmentAndGenerateBarcode_OutputMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="ImportShipmentReturnImage">
+            <wsdl:input wsaw:Action="http://post.ondot.at/IShippingService/ImportShipmentReturnImage"
+                        message="tns:IShippingService_ImportShipmentReturnImage_InputMessage"/>
+            <wsdl:output wsaw:Action="http://post.ondot.at/IShippingService/ImportShipmentReturnImageResponse"
+                         message="tns:IShippingService_ImportShipmentReturnImage_OutputMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="ImportAddress">
+            <wsdl:input wsaw:Action="http://post.ondot.at/IShippingService/ImportAddress"
+                        message="tns:IShippingService_ImportAddress_InputMessage"/>
+            <wsdl:output wsaw:Action="http://post.ondot.at/IShippingService/ImportAddressResponse"
+                         message="tns:IShippingService_ImportAddress_OutputMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="PerformEndOfDay">
+            <wsdl:input wsaw:Action="http://post.ondot.at/IShippingService/PerformEndOfDay"
+                        message="tns:IShippingService_PerformEndOfDay_InputMessage"/>
+            <wsdl:output wsaw:Action="http://post.ondot.at/IShippingService/PerformEndOfDayResponse"
+                         message="tns:IShippingService_PerformEndOfDay_OutputMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="PerformEndOfDaySelect">
+            <wsdl:input wsaw:Action="http://post.ondot.at/IShippingService/PerformEndOfDaySelect"
+                        message="tns:IShippingService_PerformEndOfDaySelect_InputMessage"/>
+            <wsdl:output wsaw:Action="http://post.ondot.at/IShippingService/PerformEndOfDaySelectResponse"
+                         message="tns:IShippingService_PerformEndOfDaySelect_OutputMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="GetAllowedServicesForCountry">
+            <wsdl:input wsaw:Action="http://post.ondot.at/IShippingService/GetAllowedServicesForCountry"
+                        message="tns:IShippingService_GetAllowedServicesForCountry_InputMessage"/>
+            <wsdl:output wsaw:Action="http://post.ondot.at/IShippingService/GetAllowedServicesForCountryResponse"
+                         message="tns:IShippingService_GetAllowedServicesForCountry_OutputMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="CancelShipments">
+            <wsdl:input wsaw:Action="http://post.ondot.at/IShippingService/CancelShipments"
+                        message="tns:IShippingService_CancelShipments_InputMessage"/>
+            <wsdl:output wsaw:Action="http://post.ondot.at/IShippingService/CancelShipmentsResponse"
+                         message="tns:IShippingService_CancelShipments_OutputMessage"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="BasicHttpsBinding_IShippingService" type="tns:IShippingService">
+        <wsp:PolicyReference URI="#BasicHttpsBinding_IShippingService_policy"/>
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="ImportShipment">
+            <soap:operation soapAction="http://post.ondot.at/IShippingService/ImportShipment" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="ImportShipmentAndGenerateBarcode">
+            <soap:operation soapAction="http://post.ondot.at/IShippingService/ImportShipmentAndGenerateBarcode"
+                            style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="ImportShipmentReturnImage">
+            <soap:operation soapAction="http://post.ondot.at/IShippingService/ImportShipmentReturnImage"
+                            style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="ImportAddress">
+            <soap:operation soapAction="http://post.ondot.at/IShippingService/ImportAddress" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="PerformEndOfDay">
+            <soap:operation soapAction="http://post.ondot.at/IShippingService/PerformEndOfDay" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="PerformEndOfDaySelect">
+            <soap:operation soapAction="http://post.ondot.at/IShippingService/PerformEndOfDaySelect" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetAllowedServicesForCountry">
+            <soap:operation soapAction="http://post.ondot.at/IShippingService/GetAllowedServicesForCountry"
+                            style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="CancelShipments">
+            <soap:operation soapAction="http://post.ondot.at/IShippingService/CancelShipments" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="ShippingService">
+        <wsdl:port name="BasicHttpsBinding_IShippingService" binding="tns:BasicHttpsBinding_IShippingService">
+            <soap:address location="https://abn-plc.post.at/DataService/Post.Webservice/ShippingService.svc/secure"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

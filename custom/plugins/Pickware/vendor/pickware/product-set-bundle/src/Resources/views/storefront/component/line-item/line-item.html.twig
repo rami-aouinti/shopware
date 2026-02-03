@@ -1,0 +1,11 @@
+{% sw_extends '@Storefront/storefront/component/line-item/line-item.html.twig' %}
+{% set isPickwareProductSet = lineItem.type == constant('Pickware\\ProductSetBundle\\Model\\ProductSetDefinition::LINE_ITEM_TYPE') %}
+
+{% block component_line_item_type_include %}
+
+    {% if isPickwareProductSet %}
+        {% sw_include '@Storefront/storefront/component/line-item/type/product.html.twig' %}
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}

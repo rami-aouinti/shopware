@@ -1,0 +1,39 @@
+<div style="font-family: Arial, Helvetica, sans-serif;">
+    Die folgenden Produkte haben ihren Meldebestand erreicht:<br/>
+    <br/>
+    <table style="text-align: left;">
+        <thead>
+        <tr>
+            <th style="padding: 2px 10px 2px 5px; border-left: 0; border-bottom: 1px solid black;">
+                Produktname
+            </th>
+            <th style="padding: 2px 10px 2px 5px; border-left: 1px solid black; border-bottom: 1px solid black;">
+                Produktnummer
+            </th>
+            <th style="padding: 2px 10px 2px 5px; border-left: 1px solid black; border-bottom: 1px solid black;">
+                Meldebestand
+            </th>
+            <th style="padding: 2px 10px 2px 5px; border-left: 1px solid black; border-bottom: 1px solid black;">
+                Bestand
+            </th>
+        </tr>
+        </thead>
+
+        {% for product in products %}
+        <tr>
+            <td style="padding: 2px 10px 2px 5px; border-left: 0;">
+                {{ product.name | sw_sanitize(null, true) }}
+            </td>
+            <td style="padding: 2px 10px 2px 5px; border-left: 1px solid black;">
+                {{ product.productNumber | sw_sanitize(null, true) }}
+            </td>
+            <td style="padding: 2px 10px 2px 5px; border-left: 1px solid black;">
+                {{ product.extensions.pickwareErpPickwareProduct.reorderPoint }}
+            </td>
+            <td style="padding: 2px 10px 2px 5px; border-left: 1px solid black;">
+                {{ product.stock }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/master/src/Core/System/SystemConfig/Schema/config.xsd"
+>
+    <card>
+        <title>UPS credentials</title>
+        <title lang="de-DE">UPS-Zugangsdaten</title>
+        <input-field type="text">
+            <name>clientId</name>
+            <required>true</required>
+            <label>Client ID</label>
+            <label lang="de-DE">Client-ID</label>
+        </input-field>
+        <input-field type="password">
+            <name>clientSecret</name>
+            <required>true</required>
+            <label>Client Secret</label>
+            <label lang="de-DE">Client-Secret</label>
+        </input-field>
+        <input-field type="text">
+            <name>shipperNumber</name>
+            <required>true</required>
+            <label>Customer number</label>
+            <label lang="de-DE">Kundennummer</label>
+        </input-field>
+        <input-field type="bool">
+            <name>useTestingEndpoint</name>
+            <label>Use testing webservice</label>
+            <label lang="de-DE">Nutze Testing-Webservice</label>
+            <helpText lang="de-DE">Nutze den Testing-Webservice von UPS anstatt den Productive-Webservice.</helpText>
+            <helpText>Use the UPS testing web service instead of the productive web service.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>negotiatedRates</name>
+            <label>Negotiated Rates</label>
+            <label lang="de-DE">Ausgehandelte Tarife</label>
+            <helpText lang="de-DE">
+                Falls Sie mit UPS spezielle diskontierte Tarife ausgehandelt haben, muss diese Option aktiviert werden,
+                damit die ausgehandelten Tarife genutzt werden.
+            </helpText>
+            <helpText>
+                If you negotiated discounted shipping rates with UPS, this option has to be activated so that the
+                negotiated rates are used.
+            </helpText>
+        </input-field>
+    </card>
+    <card>
+        <title>Privacy settings</title>
+        <title lang="de-DE">Datenschutzeinstellungen</title>
+        <input-field type="bool">
+            <name>enableDispatchNotification</name>
+            <label lang="de-DE">Versandbenachrichtigung per E-Mail aktivieren</label>
+            <label>Enable dispatch notification via email</label>
+            <helpText lang="de-DE">
+                Wenn aktiviert, sendet UPS eine Versandbenachrichtigung per E-Mail an den Paketempfänger.
+            </helpText>
+            <helpText>If enabled, UPS sends a dispatch notification via email to the parcel receiver.</helpText>
+        </input-field>
+        <input-field type="text">
+            <name>customTextForDispatchNotifications</name>
+            <label>Custom text for automatic dispatch notifications</label>
+            <label lang="de-DE">Benutzerdefinierter Text für Versandbenachrichtigung</label>
+            <helpText lang="de-DE">
+                Der optionale, benutzerdefinierte Text für automatische Versandbenachrichtigungen.
+                UPS fügt diesen in versendete E-Mails ein.
+            </helpText>
+            <helpText>
+                The optional and custom text for automatic dispatch notifications.
+                UPS will insert this text into the sent emails.
+            </helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>enableDeliveryNotification</name>
+            <label lang="de-DE">Zustellbenachrichtigung per E-Mail aktivieren</label>
+            <label>Enable delivery notification via email</label>
+            <helpText lang="de-DE">
+                Wenn aktiviert, sendet UPS eine Zustellbenachrichtigung per E-Mail an den Paketempfänger.
+            </helpText>
+            <helpText>If enabled, UPS sends a delivery notification via email to the parcel receiver.</helpText>
+        </input-field>
+    </card>
+    <card>
+        <title>Label settings</title>
+        <title lang="de-DE">Etiketten-Einstellungen</title>
+        <input-field type="single-select">
+            <name>labelSize</name>
+            <label>Paper size</label>
+            <label lang="de-DE">Papierformat</label>
+            <required>true</required>
+            <options>
+                <option>
+                    <id>A5</id>
+                    <name>DIN A5</name>
+                    <name lang="de-DE">DIN A5</name>
+                </option>
+                <option>
+                    <id>4x6-inch</id>
+                    <name>
+                        102mm x 152mm / 4" x 6" (Label in original size without print border and legal information)
+                    </name>
+                    <name lang="de-DE">
+                        102mm x 152mm / 4" x 6" (Etikett in Originalgröße ohne Druckrand und Rechtshinweise)
+                    </name>
+                </option>
+                <option>
+                    <id>4x7-inch</id>
+                    <name>102mm x 178mm / 4" x 7" (Label in original size without print border)</name>
+                    <name lang="de-DE">102mm x 178mm / 4" x 7" (Etikett in Originalgröße ohne Druckrand)</name>
+                </option>
+            </options>
+        </input-field>
+    </card>
+</config>

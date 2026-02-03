@@ -1,0 +1,61 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Create return orders",
+    "description": "POST request payload for api route _action/pickware-wms/request-and-approve-return-order",
+    "type": "object",
+    "required": ["associations", "returnOrder"],
+    "properties": {
+        "associations": {
+            "type": "object"
+        },
+        "returnOrder": {
+            "$ref": "#/definitions/returnOrder"
+        }
+    },
+    "definitions": {
+        "returnOrder": {
+            "type": "object",
+            "required": ["id", "lineItems", "orderId", "warehouseId"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "lineItems": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/lineItem"
+                    }
+                },
+                "orderId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "warehouseId": {
+                    "$ref": "#/definitions/uuid"
+                }
+            }
+        },
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "lineItem": {
+            "type": "object",
+            "required": ["productId", "quantity", "reason"],
+            "properties": {
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "productId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "reason": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

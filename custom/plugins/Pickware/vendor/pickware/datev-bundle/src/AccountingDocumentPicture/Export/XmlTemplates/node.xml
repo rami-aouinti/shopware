@@ -1,0 +1,3 @@
+<document guid="{GUID}" type="{TYPE}">
+    <extension xsi:type="File" name="{FILENAME}" />
+</document>

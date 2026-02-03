@@ -1,0 +1,62 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Pickware WMS Create batch payload",
+    "description": "PUT request payload for api route _action/pickware-wms/create-batch",
+    "type": "object",
+    "required": ["associations", "batch"],
+    "properties": {
+        "batch": {
+            "$ref": "#/definitions/batch"
+        },
+        "associations": {
+            "type": "object"
+        }
+    },
+    "definitions": {
+        "uuid": {
+            "description": "A UUID in HEX format",
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$"
+        },
+        "batch": {
+            "type": "object",
+            "required": ["id", "productId"],
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "productId": {
+                    "$ref": "#/definitions/uuid"
+                },
+                "number": {
+                    "type": ["string", "null"]
+                },
+                "bestBeforeDate": {
+                    "type": ["string", "null"],
+                    "format": "date"
+                }
+            },
+            "anyOf": [
+                {
+                    "required": ["number"],
+                    "properties": {
+                        "number": {
+                            "type": "string"
+                        }
+                    }
+                },
+                {
+                    "required": ["bestBeforeDate"],
+                    "properties": {
+                        "bestBeforeDate": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

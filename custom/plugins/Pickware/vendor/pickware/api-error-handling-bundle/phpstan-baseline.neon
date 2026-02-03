@@ -1,0 +1,109 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Pickware\\ApiErrorHandlingBundle\\ControllerExceptionHandling\\AdminApiJsonApiErrorSerializableExceptionHandler\:\:getExceptionDetails\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ControllerExceptionHandling/AdminApiJsonApiErrorSerializableExceptionHandler.php
+
+		-
+			message: '#^Method Pickware\\ApiErrorHandlingBundle\\ControllerExceptionHandling\\JsonApiStashedErrorHandlerTest\:\:prepareResponseEvent\(\) has parameter \$requestHeaders with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ControllerExceptionHandling/JsonApiStashedErrorHandler.unit.php
+
+		-
+			message: '#^Method Pickware\\ApiErrorHandlingBundle\\ControllerExceptionHandling\\JsonApiStashedErrorHandlerTest\:\:prepareResponseEvent\(\) has parameter \$responseHeaders with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ControllerExceptionHandling/JsonApiStashedErrorHandler.unit.php
+
+		-
+			message: '#^Class Pickware\\ApiErrorHandlingBundle\\Document\\JsonApiErrorFormattingDocumentGeneratorDecorator extends @final class Shopware\\Core\\Checkout\\Document\\Service\\DocumentGenerator\.$#'
+			identifier: class.extendsFinalByPhpDoc
+			count: 1
+			path: src/Document/JsonApiErrorFormattingDocumentGeneratorDecorator.php
+
+		-
+			message: '#^Method Pickware\\ApiErrorHandlingBundle\\Document\\JsonApiErrorFormattingDocumentGeneratorDecoratorTest\:\:decorationCoverageDataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Document/JsonApiErrorFormattingDocumentGeneratorDecorator.unit.php
+
+		-
+			message: '#^Method Pickware\\ApiErrorHandlingBundle\\Document\\JsonApiErrorFormattingDocumentGeneratorDecoratorTest\:\:test_forwardsAllCallsOfPublicMethodsToTheDecoratedInstance\(\) has parameter \$expectedArguments with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Document/JsonApiErrorFormattingDocumentGeneratorDecorator.unit.php
+
+		-
+			message: '#^Class Pickware\\ApiErrorHandlingBundle\\Document\\PickwareDocumentGenerationResult extends @final class Shopware\\Core\\Checkout\\Document\\DocumentGenerationResult\.$#'
+			identifier: class.extendsFinalByPhpDoc
+			count: 1
+			path: src/Document/PickwareDocumentGenerationResult.php
+
+		-
+			message: '#^Method Pickware\\ApiErrorHandlingBundle\\ErrorStashingService\:\:__construct\(\) has parameter \$errors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ErrorStashingService.php
+
+		-
+			message: '#^Method Pickware\\ApiErrorHandlingBundle\\JsonApiErrorTranslating\\LocalizableJsonApiError\:\:__construct\(\) has parameter \$properties with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApiErrorTranslating/LocalizableJsonApiError.php
+
+		-
+			message: '#^Method Pickware\\ApiErrorHandlingBundle\\JsonApiErrorTranslating\\LocalizableJsonApiError\:\:getPreferredLocalization\(\) has parameter \$locales with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApiErrorTranslating/LocalizableJsonApiError.php
+
+		-
+			message: '#^Method Pickware\\ApiErrorHandlingBundle\\JsonApiErrorTranslating\\LocalizableJsonApiError\:\:getPreferredLocalization\(\) has parameter \$translations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApiErrorTranslating/LocalizableJsonApiError.php
+
+		-
+			message: '#^Method Pickware\\ApiErrorHandlingBundle\\JsonApiErrorTranslating\\LocalizableJsonApiError\:\:localize\(\) has parameter \$locales with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApiErrorTranslating/LocalizableJsonApiError.php
+
+		-
+			message: '#^Method Pickware\\ApiErrorHandlingBundle\\JsonApiErrorTranslating\\LocalizableJsonApiError\:\:setLocalizedLinks\(\) has parameter \$localizedLinks with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApiErrorTranslating/LocalizableJsonApiError.php
+
+		-
+			message: '#^Method Pickware\\ApiErrorHandlingBundle\\JsonApiErrorTranslating\\LocalizableJsonApiError\:\:validateRequiredTranslationsExist\(\) has parameter \$translations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/JsonApiErrorTranslating/LocalizableJsonApiError.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Pickware\\\\ApiErrorHandlingBundle\\\\JsonApiErrorTranslating\\\\LocalizableJsonApiError'' and Pickware\\ApiErrorHandlingBundle\\JsonApiErrorTranslating\\LocalizableJsonApiError will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 2
+			path: src/JsonApiErrorTranslating/LocalizableJsonApiError.unit.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertNotSame\(\) with Pickware\\ApiErrorHandlingBundle\\JsonApiErrorTranslating\\LocalizableJsonApiError and Pickware\\HttpUtils\\JsonApi\\JsonApiError will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: src/JsonApiErrorTranslating/LocalizableJsonApiError.unit.php
+
+		-
+			message: '#^Call to static method createForContainer\(\) on an unknown class Pickware\\InstallationLibrary\\BundleMigrationDropper\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/PickwareApiErrorHandlingBundle.php
+
+		-
+			message: '#^Method Pickware\\ApiErrorHandlingBundle\\PickwareApiErrorHandlingBundle\:\:register\(\) has parameter \$bundleCollection with generic class Shopware\\Core\\Framework\\Struct\\Collection but does not specify its types\: TElement$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PickwareApiErrorHandlingBundle.php
