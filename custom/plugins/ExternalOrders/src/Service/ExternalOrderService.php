@@ -133,14 +133,15 @@ class ExternalOrderService
                     $taxAmount += $calculatedTax->getTax();
                 }
             }
-            $grossTotal = $price?->getTotalPrice() ?? 0.0;
             $quantity = max(1, $lineItem->getQuantity());
-            $netPrice = ($grossTotal - $taxAmount) / $quantity;
+            $grossTotal = $price?->getTotalPrice() ?? 0.0;
+            $grossUnitPrice = $price?->getUnitPrice() ?? ($grossTotal / $quantity);
+            $netUnitPrice = $grossUnitPrice - ($taxAmount / $quantity);
 
             $items[] = [
                 'name' => $lineItem->getLabel() ?? $lineItem->getId(),
                 'quantity' => $lineItem->getQuantity(),
-                'netPrice' => $netPrice,
+                'netPrice' => $netUnitPrice,
                 'taxRate' => $taxRate,
                 'grossPrice' => $grossTotal,
                 'totalPrice' => $grossTotal,
