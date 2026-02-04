@@ -58,7 +58,7 @@
 
                 <sw-data-grid
                     v-if="orders.length > 0"
-                    :dataSource="orders"
+                    :data-source="orders"
                     :columns="columns"
                     :loading="isLoading"
                     :showSelection="true"
@@ -199,7 +199,7 @@
 
                     <sw-card title="Bestellprodukte" class="external-orders__detail-card">
                         <sw-data-grid
-                            :dataSource="selectedOrder.items"
+                            :data-source="selectedOrder.items"
                             :columns="[
                                 { property: 'name', label: 'Produktname' },
                                 { property: 'quantity', label: 'Menge' },
@@ -227,7 +227,7 @@
 
                     <sw-card title="Statusverlauf" class="external-orders__detail-card">
                         <sw-data-grid
-                            :dataSource="selectedOrder.statusHistory"
+                            :data-source="selectedOrder.statusHistory"
                             :columns="[
                                 { property: 'status', label: 'Status' },
                                 { property: 'date', label: 'Datum' },
