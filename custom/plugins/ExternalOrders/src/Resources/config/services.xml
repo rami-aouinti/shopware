@@ -5,7 +5,9 @@
     <services>
         <defaults autowire="true" autoconfigure="true" />
 
-        <service id="ExternalOrders\Service\ExternalOrderService" />
+        <service id="ExternalOrders\Service\ExternalOrderService">
+            <argument type="service" id="order.repository" />
+        </service>
         <service id="ExternalOrders\Controller\ExternalOrderController" public="true" />
     </services>
 </container>
