@@ -213,14 +213,18 @@ Component.register('external-orders-list', {
                 this.isLoading = false;
             }
         },
-        onPageChange({ page, limit }) {
-            this.page = page;
-            this.limit = limit;
-        },
-        onSort({ sortBy, sortDirection }) {
-            this.sortBy = sortBy;
-            this.sortDirection = sortDirection;
-            this.page = 1;
+        onPageChange(payload) {
+            if (typeof payload === 'number') {
+                this.page = payload;
+                return;
+            }
+
+            const { page, limit } = payload ?? {};
+            const nextPage = typeof page === 'number' ? page : this.page;
+            const nextLimit = typeof limit === 'number' ? limit : this.limit;
+
+            this.page = nextPage;
+            this.limit = nextLimit;
         },
         onSearch() {
             this.page = 1;
@@ -250,10 +254,6 @@ Component.register('external-orders-list', {
                 return value;
             }
             return String(value).toLowerCase();
-        },
-
-        onPageChange(page) {
-            this.page = page;
         },
 
         onSortColumn(column) {
