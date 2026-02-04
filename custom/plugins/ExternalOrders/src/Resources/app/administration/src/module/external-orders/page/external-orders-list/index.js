@@ -66,9 +66,11 @@ Component.register('external-orders-list', {
                     search: this.searchTerm?.trim() || null,
                 });
 
-                const orders = Array.isArray(response?.orders) ? response.orders : [];
+                const payload = response?.data?.data ?? response?.data ?? response;
+
+                const orders = Array.isArray(payload?.orders) ? payload.orders : [];
                 this.orders = orders;
-                this.summary = response?.summary ?? {
+                this.summary = payload?.summary ?? {
                     orderCount: orders.length,
                     totalRevenue: 0,
                     totalItems: orders.reduce((sum, order) => sum + (order.totalItems || 0), 0),
