@@ -31,7 +31,7 @@ Component.register('external-orders-list', {
                 { id: 'peg', label: 'PEG' },
             ],
             activeChannel: 'all',
-            searchTerm: '',
+            tableSearchTerm: '',
             selectedOrder: null,
             showDetailModal: false,
         };
@@ -49,6 +49,26 @@ Component.register('external-orders-list', {
                 { property: 'actions', label: 'Ansicht', sortable: false, width: '90px' },
             ];
         },
+        filteredOrders() {
+            const searchTerm = this.tableSearchTerm.trim().toLowerCase();
+
+            if (!searchTerm) {
+                return this.orders;
+            }
+
+            return this.orders.filter((order) => {
+                const values = [
+                    order.orderNumber,
+                    order.customerName,
+                    order.orderReference,
+                    order.email,
+                    order.statusLabel,
+                    order.date,
+                ];
+
+                return values.some((value) => String(value ?? '').toLowerCase().includes(searchTerm));
+            });
+        },
     },
 
     created() {
@@ -63,7 +83,6 @@ Component.register('external-orders-list', {
                 const selectedChannel = this.activeChannel === 'all' ? null : this.activeChannel;
                 const response = await this.externalOrderService.list({
                     channel: selectedChannel,
-                    search: this.searchTerm?.trim() || null,
                 });
 
                 const payload = response?.data?.data ?? response?.data ?? response;
