@@ -355,59 +355,171 @@ Component.register('external-orders-list', {
             return 'neutral';
         },
         exportSelectedOrdersPdf() {
-            if (!this.selectedOrders.length) {
+            const orders = this.getOrdersForExport();
+            if (!orders.length) {
                 this.createNotificationWarning({
-                    title: 'Keine Bestellungen ausgewählt',
-                    message: 'Bitte wählen Sie mindestens eine Bestellung aus.',
+                    title: 'Keine Bestellungen gefunden',
+                    message: 'Für den aktuellen Filter sind keine Bestellungen verfügbar.',
                 });
                 return;
             }
 
-            const lines = this.buildExportLines();
+            const lines = this.buildExportLines(orders);
             const pdfData = this.buildSimplePdf(lines);
             this.downloadBlob('external-orders.pdf', 'application/pdf', pdfData);
         },
         exportSelectedOrdersExcel() {
-            if (!this.selectedOrders.length) {
+            const orders = this.getOrdersForExport();
+            if (!orders.length) {
                 this.createNotificationWarning({
-                    title: 'Keine Bestellungen ausgewählt',
-                    message: 'Bitte wählen Sie mindestens eine Bestellung aus.',
+                    title: 'Keine Bestellungen gefunden',
+                    message: 'Für den aktuellen Filter sind keine Bestellungen verfügbar.',
                 });
                 return;
             }
 
-            const rows = this.buildExportRows();
+            const rows = this.buildExportRows(orders);
             const csv = this.buildCsv(rows);
             this.downloadBlob('external-orders.csv', 'text/csv;charset=utf-8;', csv);
         },
-        buildExportRows() {
+        getOrdersForExport() {
+            return this.selectedOrders.length > 0 ? this.selectedOrders : this.filteredOrders;
+        },
+        buildExportRows(orders) {
             const header = [
-                'BestellNr',
+                'Bestellnummer',
                 'Kundenname',
-                'AuftragsNr',
-                'Email',
+                'Land',
+                'Zahlungsmethode',
                 'Datum',
                 'Bestellstatus',
+                'Stück',
+                'Summe',
             ];
 
-            const rows = this.selectedOrders.map((order) => ([
-                order.orderNumber,
-                order.customerName,
-                order.orderReference,
-                order.email,
-                order.date,
-                order.statusLabel,
+            const rows = orders.map((order) => ([
+                order.orderNumber ?? '',
+                order.customerName ?? '',
+                this.getOrderCountry(order),
+                this.getOrderPaymentMethod(order),
+                this.formatDateForExport(order.date),
+                order.statusLabel ?? '',
+                this.getOrderItemCount(order),
+                this.formatNumberForExport(this.getOrderTotal(order)),
             ]));
 
             return [header, ...rows];
         },
-        buildExportLines() {
-            const rows = this.buildExportRows();
-            return rows.map((row) => row.map((value) => String(value ?? '')).join(' | '));
+        buildExportLines(orders) {
+            const rows = this.buildExportRows(orders);
+            const formattedRows = rows.map((row) => row.map((value) => String(value ?? '')));
+            const columnWidths = formattedRows[0].map((_, index) => {
+                const longest = Math.max(...formattedRows.map((row) => row[index].length));
+                return Math.min(Math.max(longest, 6), 24);
+            });
+
+            const paddedRows = formattedRows.map((row) => row.map((value, index) => {
+                const trimmed = value.length > columnWidths[index]
+                    ? `${value.slice(0, columnWidths[index] - 1)}…`
+                    : value;
+                return trimmed.padEnd(columnWidths[index]);
+            }));
+
+            const headerLine = paddedRows[0].join(' | ');
+            const separatorLine = columnWidths.map((width) => '-'.repeat(width)).join('-|-');
+            const bodyLines = paddedRows.slice(1).map((row) => row.join(' | '));
+
+            return [
+                this.buildExportSummaryLine(orders),
+                headerLine,
+                separatorLine,
+                ...bodyLines,
+            ];
         },
         buildCsv(rows) {
             const escapeValue = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
             return rows.map((row) => row.map(escapeValue).join(',')).join('\n');
+        },
+        buildExportSummaryLine(orders) {
+            const totalItems = orders.reduce((sum, order) => sum + this.getOrderItemCount(order), 0);
+            const totalRevenue = orders.reduce((sum, order) => sum + this.getOrderTotal(order), 0);
+            const dateRange = this.getExportDateRange(orders);
+            const revenueLabel = this.formatCurrency(totalRevenue);
+
+            return [
+                'Shopbestellungen',
+                dateRange ? `${dateRange}` : null,
+                `${orders.length} Bestellungen`,
+                `${revenueLabel} Gesamtumsatz`,
+                `${totalItems} Stück`,
+            ].filter(Boolean).join(' | ');
+        },
+        getExportDateRange(orders) {
+            const timestamps = orders
+                .map((order) => this.parseOrderDate(order.date))
+                .filter((value) => Number.isFinite(value));
+
+            if (!timestamps.length) {
+                return '';
+            }
+
+            const min = new Date(Math.min(...timestamps));
+            const max = new Date(Math.max(...timestamps));
+
+            return `${this.formatDateForExport(min)} - ${this.formatDateForExport(max)}`;
+        },
+        parseOrderDate(value) {
+            if (!value) {
+                return NaN;
+            }
+            const normalized = String(value).replace(' ', 'T');
+            const parsed = Date.parse(normalized);
+            return Number.isNaN(parsed) ? NaN : parsed;
+        },
+        formatDateForExport(value) {
+            if (!value) {
+                return '';
+            }
+            if (value instanceof Date) {
+                return value.toLocaleDateString('de-DE');
+            }
+            const parsed = this.parseOrderDate(value);
+            if (Number.isNaN(parsed)) {
+                return String(value);
+            }
+            return new Date(parsed).toISOString().slice(0, 10);
+        },
+        formatNumberForExport(value) {
+            const numeric = typeof value === 'number' ? value : Number(value);
+            if (!Number.isFinite(numeric)) {
+                return '';
+            }
+            return new Intl.NumberFormat('de-DE', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }).format(numeric);
+        },
+        getOrderCountry(order) {
+            return order?.billingAddress?.country
+                ?? order?.shippingAddress?.country
+                ?? order?.country
+                ?? '';
+        },
+        getOrderPaymentMethod(order) {
+            return order?.payment?.method
+                ?? order?.paymentMethod
+                ?? order?.payment
+                ?? '';
+        },
+        getOrderItemCount(order) {
+            return order?.totalItems ?? order?.itemsCount ?? order?.items?.length ?? 0;
+        },
+        getOrderTotal(order) {
+            return order?.totalPrice
+                ?? order?.totalRevenue
+                ?? order?.amountTotal
+                ?? order?.priceTotal
+                ?? 0;
         },
         buildSimplePdf(lines) {
             const fontSize = 10;
@@ -435,7 +547,7 @@ Component.register('external-orders-list', {
             objects.push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
             objects.push('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');
             objects.push('3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 5 0 R /Resources << /Font << /F1 4 0 R >> >> >>\nendobj\n');
-            objects.push('4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n');
+            objects.push('4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>\nendobj\n');
             objects.push(`5 0 obj\n<< /Length ${stream.length} >>\nstream\n${stream}\nendstream\nendobj\n`);
 
             let pdf = '%PDF-1.4\n';

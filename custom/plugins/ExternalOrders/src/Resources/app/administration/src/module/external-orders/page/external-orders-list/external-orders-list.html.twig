@@ -43,18 +43,16 @@
                         <sw-button
                             variant="primary"
                             size="small"
-                            :disabled="selectedOrders.length === 0"
                             @click="exportSelectedOrdersPdf"
                         >
-                            PDF herunterladen ({{ selectedOrders.length }})
+                            PDF herunterladen ({{ selectedOrders.length > 0 ? selectedOrders.length : filteredOrders.length }})
                         </sw-button>
                         <sw-button
                             variant="secondary"
                             size="small"
-                            :disabled="selectedOrders.length === 0"
                             @click="exportSelectedOrdersExcel"
                         >
-                            Excel herunterladen ({{ selectedOrders.length }})
+                            Excel herunterladen ({{ selectedOrders.length > 0 ? selectedOrders.length : filteredOrders.length }})
                         </sw-button>
                     </div>
                 </div>
