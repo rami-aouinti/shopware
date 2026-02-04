@@ -63,13 +63,16 @@
             <sw-card>
                 <div class="external-orders__filters-bar">
                     <div class="external-orders__filters">
-                        <sw-button variant="secondary" size="small">Filter löschen</sw-button>
+                        <sw-button variant="primary" size="small">
+                            <sw-icon name="regular-filter" size="16" />
+                            Filter löschen
+                        </sw-button>
                         <sw-datepicker placeholder="Start Datum" class="external-orders__date" size="small" />
                         <sw-datepicker placeholder="End Datum" class="external-orders__date" size="small" />
                         <sw-button variant="primary" size="small">Anwenden</sw-button>
                     </div>
                     <div class="external-orders__filters-actions">
-                        <sw-text-field
+                        <sw-search-bar
                             v-model="tableSearchTerm"
                             placeholder="Suche"
                             class="external-orders__search"
