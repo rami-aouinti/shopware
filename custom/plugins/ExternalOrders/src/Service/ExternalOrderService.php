@@ -161,6 +161,11 @@ class ExternalOrderService
         $shippingTotal = (float) $order->getShippingTotal();
         $taxTotal = $amountTotal - $amountNet;
 
+        $customerGroupName = 'N/A';
+        if ($orderCustomer !== null && method_exists($orderCustomer, 'getCustomerGroup')) {
+            $customerGroupName = $orderCustomer->getCustomerGroup()?->getName() ?? 'N/A';
+        }
+
         return [
             'orderNumber' => $order->getOrderNumber(),
             'customer' => [
@@ -168,7 +173,7 @@ class ExternalOrderService
                 'firstName' => $orderCustomer?->getFirstName() ?? 'N/A',
                 'lastName' => $orderCustomer?->getLastName() ?? 'N/A',
                 'email' => $orderCustomer?->getEmail() ?? 'N/A',
-                'group' => $orderCustomer?->getCustomerGroup()?->getName() ?? 'N/A',
+                'group' => $customerGroupName,
             ],
             'billingAddress' => [
                 'company' => $billingAddress?->getCompany() ?? 'N/A',
