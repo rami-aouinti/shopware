@@ -119,14 +119,14 @@
     &__filters-bar {
         display: flex;
         flex-wrap: nowrap;
-        gap: 16px;
+        gap: 12px;
         align-items: center;
         justify-content: space-between;
-        padding: 16px;
+        padding: 12px;
         margin-bottom: 16px;
-        background: #f8fafc;
-        border-radius: 12px;
-        border: 1px solid #e5eaf1;
+        background: #ffffff;
+        border-radius: 8px;
+        border: 1px solid #d7dde5;
     }
 
     &__filters,
@@ -148,12 +148,12 @@
     }
 
     &__date {
-        width: 160px;
+        width: 180px;
     }
 
     &__search {
         flex: 1;
-        min-width: 220px;
+        min-width: 320px;
     }
 
     &__action {
