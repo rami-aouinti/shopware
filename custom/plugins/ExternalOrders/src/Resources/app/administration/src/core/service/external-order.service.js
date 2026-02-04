@@ -20,7 +20,8 @@ class ExternalOrderService extends ApiService {
             params,
         });
 
-        return ApiService.handleResponse(response);
+        const data = ApiService.handleResponse(response) ?? response?.data;
+        return data?.data ?? data;
     }
 
     async detail(orderId) {
@@ -28,7 +29,8 @@ class ExternalOrderService extends ApiService {
             headers: this.getBasicHeaders(),
         });
 
-        return ApiService.handleResponse(response);
+        const data = ApiService.handleResponse(response) ?? response?.data;
+        return data?.data ?? data;
     }
 }
 

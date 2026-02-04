@@ -61,23 +61,25 @@ Component.register('external-orders-list', {
 
             try {
                 const selectedChannel = this.activeChannel === 'all' ? null : this.activeChannel;
-                const { orders, summary } = await this.externalOrderService.list({
+                const response = await this.externalOrderService.list({
                     channel: selectedChannel,
                     search: this.searchTerm?.trim() || null,
                 });
 
-                if (orders.length === 0 && !this.searchTerm?.trim()) {
-                    const fallback = this.buildFakeOrders();
-                    this.orders = fallback.orders;
-                    this.summary = fallback.summary;
-                } else {
-                    this.orders = orders;
-                    this.summary = summary;
-                }
+                const orders = Array.isArray(response?.orders) ? response.orders : [];
+                this.orders = orders;
+                this.summary = response?.summary ?? {
+                    orderCount: orders.length,
+                    totalRevenue: 0,
+                    totalItems: orders.reduce((sum, order) => sum + (order.totalItems || 0), 0),
+                };
             } catch (error) {
-                const fallback = this.buildFakeOrders();
-                this.orders = fallback.orders;
-                this.summary = fallback.summary;
+                this.orders = [];
+                this.summary = {
+                    orderCount: 0,
+                    totalRevenue: 0,
+                    totalItems: 0,
+                };
                 this.createNotificationError({
                     title: 'Bestellungen konnten nicht geladen werden',
                     message: error?.message || 'Bitte prüfen Sie die Verbindung zu den externen APIs.',
