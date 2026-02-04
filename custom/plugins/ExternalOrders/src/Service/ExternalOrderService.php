@@ -2,237 +2,221 @@
 
 namespace ExternalOrders\Service;
 
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 
 class ExternalOrderService
 {
+    public function __construct(private readonly EntityRepository $orderRepository)
+    {
+    }
+
     public function fetchOrders(Context $context, ?string $channel = null, ?string $search = null): array
     {
-        $orders = $this->getSampleOrders();
-
-        if ($channel !== null && $channel !== '') {
-            $orders = array_filter($orders, static fn (array $order): bool => $order['channel'] === $channel);
-        }
+        $criteria = new Criteria();
+        $criteria->setLimit(50);
+        $criteria->addSorting(new FieldSorting('orderDateTime', FieldSorting::DESCENDING));
+        $criteria->addAssociations([
+            'orderCustomer',
+            'billingAddress',
+            'deliveries.shippingOrderAddress',
+            'deliveries.shippingMethod',
+            'transactions.paymentMethod',
+            'lineItems',
+            'stateMachineState',
+        ]);
 
         if ($search !== null && $search !== '') {
-            $needle = mb_strtolower($search);
-            $orders = array_filter($orders, static function (array $order) use ($needle): bool {
-                return str_contains(mb_strtolower($order['orderNumber']), $needle)
-                    || str_contains(mb_strtolower($order['customerName']), $needle)
-                    || str_contains(mb_strtolower($order['email']), $needle)
-                    || str_contains(mb_strtolower($order['orderReference']), $needle);
-            });
+            $criteria->addFilter(new MultiFilter(MultiFilter::CONNECTION_OR, [
+                new ContainsFilter('orderNumber', $search),
+                new ContainsFilter('orderCustomer.firstName', $search),
+                new ContainsFilter('orderCustomer.lastName', $search),
+                new ContainsFilter('orderCustomer.email', $search),
+            ]));
         }
 
-        $orders = array_values($orders);
+        $orders = [];
+        $totalRevenue = 0.0;
+        $totalItems = 0;
+
+        foreach ($this->orderRepository->search($criteria, $context)->getEntities() as $order) {
+            $orders[] = $this->mapOrderListItem($order);
+            $totalRevenue += (float) $order->getAmountTotal();
+            $totalItems += $this->countItems($order);
+        }
 
         return [
-            'summary' => $this->buildSummary($orders),
+            'summary' => [
+                'orderCount' => count($orders),
+                'totalRevenue' => $totalRevenue,
+                'totalItems' => $totalItems,
+            ],
             'orders' => $orders,
         ];
     }
 
     public function fetchOrderDetail(Context $context, string $orderId): ?array
     {
-        foreach ($this->getSampleOrders() as $order) {
-            if ($order['id'] === $orderId) {
-                return $order['detail'];
+        $criteria = new Criteria([$orderId]);
+        $criteria->addAssociations([
+            'orderCustomer',
+            'billingAddress',
+            'deliveries.shippingOrderAddress',
+            'deliveries.shippingMethod',
+            'transactions.paymentMethod',
+            'lineItems',
+            'stateMachineState',
+        ]);
+
+        $order = $this->orderRepository->search($criteria, $context)->first();
+
+        return $order ? $this->mapOrderDetail($order) : null;
+    }
+
+    private function mapOrderListItem(OrderEntity $order): array
+    {
+        $orderCustomer = $order->getOrderCustomer();
+        $customerName = $orderCustomer
+            ? trim($orderCustomer->getFirstName() . ' ' . $orderCustomer->getLastName())
+            : 'N/A';
+        $email = $orderCustomer?->getEmail() ?? 'N/A';
+        $state = $order->getStateMachineState();
+
+        return [
+            'id' => $order->getId(),
+            'channel' => $order->getSalesChannelId() ?? 'unknown',
+            'orderNumber' => $order->getOrderNumber(),
+            'customerName' => $customerName,
+            'orderReference' => $order->getOrderNumber(),
+            'email' => $email,
+            'date' => $order->getOrderDateTime()?->format('Y-m-d H:i') ?? '',
+            'status' => $state?->getTechnicalName() ?? 'processing',
+            'statusLabel' => $state?->getName() ?? 'Processing',
+            'totalItems' => $this->countItems($order),
+        ];
+    }
+
+    private function mapOrderDetail(OrderEntity $order): array
+    {
+        $orderCustomer = $order->getOrderCustomer();
+        $billingAddress = $order->getBillingAddress();
+        $delivery = $order->getDeliveries()?->first();
+        $shippingAddress = $delivery?->getShippingOrderAddress();
+        $paymentMethod = $order->getTransactions()?->last()?->getPaymentMethod();
+        $shippingMethod = $delivery?->getShippingMethod();
+        $state = $order->getStateMachineState();
+        $orderDate = $order->getOrderDateTime()?->format('Y-m-d H:i') ?? '';
+
+        $items = [];
+        foreach ($order->getLineItems() ?? [] as $lineItem) {
+            $price = $lineItem->getPrice();
+            $taxRate = 0.0;
+            if ($price && $price->getCalculatedTaxes()->count() > 0) {
+                $taxRate = $price->getCalculatedTaxes()->first()->getTaxRate();
             }
+
+            $items[] = [
+                'name' => $lineItem->getLabel() ?? $lineItem->getId(),
+                'quantity' => $lineItem->getQuantity(),
+                'netPrice' => $price?->getNetPrice() ?? 0.0,
+                'taxRate' => $taxRate,
+                'grossPrice' => $price?->getTotalPrice() ?? 0.0,
+                'totalPrice' => $price?->getTotalPrice() ?? 0.0,
+            ];
         }
 
-        return null;
-    }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private function getSampleOrders(): array
-    {
-        return [
+        $statusHistory = [
             [
-                'id' => 'order-1008722',
-                'channel' => 'ebay_de',
-                'orderNumber' => '1008722',
-                'customerName' => 'Andreas Nanke',
-                'orderReference' => '446487',
-                'email' => '43ad1d549beae3625950@members.ebay.com',
-                'date' => '2025-12-30 09:31',
-                'status' => 'processing',
-                'statusLabel' => 'Bezahlt / in Bearbeitung',
-                'totalItems' => 1,
-                'detail' => $this->buildSampleDetail(
-                    '1008722',
-                    'Andreas',
-                    'Nanke',
-                    'Genossenschaftsstraße 13',
-                    '29356',
-                    'Bröckel',
-                    'Germany',
-                    'ebay',
-                    '446487'
-                ),
-            ],
-            [
-                'id' => 'order-1008721',
-                'channel' => 'ebay_de',
-                'orderNumber' => '1008721',
-                'customerName' => 'Frank Sagert',
-                'orderReference' => '446480',
-                'email' => '010eb3cea0c0a1c80a10@members.ebay.com',
-                'date' => '2025-12-30 08:46',
-                'status' => 'processing',
-                'statusLabel' => 'Bezahlt / in Bearbeitung',
-                'totalItems' => 2,
-                'detail' => $this->buildSampleDetail(
-                    '1008721',
-                    'Frank',
-                    'Sagert',
-                    'Kabelweg 9',
-                    '22299',
-                    'Hamburg',
-                    'Germany',
-                    'ebay',
-                    '446480'
-                ),
-            ],
-            [
-                'id' => 'order-1008716',
-                'channel' => 'kaufland',
-                'orderNumber' => '1008716',
-                'customerName' => 'Karsten Stieler',
-                'orderReference' => '446447',
-                'email' => '43aab48bab92e321f662@members.kaufland.de',
-                'date' => '2025-12-29 22:33',
-                'status' => 'processing',
-                'statusLabel' => 'Bezahlt / in Bearbeitung',
-                'totalItems' => 1,
-                'detail' => $this->buildSampleDetail(
-                    '1008716',
-                    'Karsten',
-                    'Stieler',
-                    'Marienstraße 12',
-                    '40213',
-                    'Düsseldorf',
-                    'Germany',
-                    'kaufland',
-                    '446447'
-                ),
+                'status' => $state?->getName() ?? 'Processing',
+                'date' => $orderDate,
+                'comment' => $order->getCustomerComment() ?? '',
             ],
         ];
-    }
 
-    private function buildSummary(array $orders): array
-    {
-        $totalItems = array_sum(array_map(static fn (array $order): int => $order['totalItems'], $orders));
+        $amountTotal = (float) $order->getAmountTotal();
+        $amountNet = (float) $order->getAmountNet();
+        $shippingTotal = (float) $order->getShippingTotal();
+        $taxTotal = $amountTotal - $amountNet;
 
         return [
-            'orderCount' => count($orders),
-            'totalRevenue' => 1584.19,
-            'totalItems' => $totalItems,
-        ];
-    }
-
-    private function buildSampleDetail(
-        string $orderNumber,
-        string $firstName,
-        string $lastName,
-        string $street,
-        string $zip,
-        string $city,
-        string $country,
-        string $shippingMethod,
-        string $reference
-    ): array {
-        return [
-            'orderNumber' => $orderNumber,
+            'orderNumber' => $order->getOrderNumber(),
             'customer' => [
-                'number' => 'N/A',
-                'firstName' => $firstName,
-                'lastName' => $lastName,
-                'email' => strtolower($firstName) . '.' . strtolower($lastName) . '@example.com',
-                'group' => 'E-Commerce',
+                'number' => $orderCustomer?->getCustomerNumber() ?? 'N/A',
+                'firstName' => $orderCustomer?->getFirstName() ?? 'N/A',
+                'lastName' => $orderCustomer?->getLastName() ?? 'N/A',
+                'email' => $orderCustomer?->getEmail() ?? 'N/A',
+                'group' => $orderCustomer?->getCustomerGroup()?->getName() ?? 'N/A',
             ],
             'billingAddress' => [
-                'company' => 'N/A',
-                'street' => $street,
-                'zip' => $zip,
-                'city' => $city,
-                'country' => $country,
+                'company' => $billingAddress?->getCompany() ?? 'N/A',
+                'street' => $billingAddress?->getStreet() ?? 'N/A',
+                'zip' => $billingAddress?->getZipcode() ?? 'N/A',
+                'city' => $billingAddress?->getCity() ?? 'N/A',
+                'country' => $billingAddress?->getCountry()?->getName() ?? 'N/A',
             ],
             'shippingAddress' => [
-                'name' => $firstName . ' ' . $lastName,
-                'street' => $street,
-                'zipCity' => $zip . ' ' . $city,
-                'country' => $country,
+                'name' => $shippingAddress?->getFirstName() && $shippingAddress?->getLastName()
+                    ? trim($shippingAddress->getFirstName() . ' ' . $shippingAddress->getLastName())
+                    : ($shippingAddress?->getCompany() ?? 'N/A'),
+                'street' => $shippingAddress?->getStreet() ?? 'N/A',
+                'zipCity' => $shippingAddress
+                    ? trim(($shippingAddress->getZipcode() ?? '') . ' ' . ($shippingAddress->getCity() ?? ''))
+                    : 'N/A',
+                'country' => $shippingAddress?->getCountry()?->getName() ?? 'N/A',
             ],
             'payment' => [
-                'method' => $shippingMethod,
-                'code' => 'N/A',
+                'method' => $paymentMethod?->getName() ?? 'N/A',
+                'code' => $paymentMethod?->getTechnicalName() ?? 'N/A',
                 'dueDate' => 'N/A',
                 'outstanding' => 'N/A',
                 'settled' => 'N/A',
                 'extra' => 'N/A',
             ],
             'shipping' => [
-                'method' => $shippingMethod,
-                'carrier' => 'DHL',
-                'trackingNumbers' => ['003404342343', '003404342344'],
+                'method' => $shippingMethod?->getName() ?? 'N/A',
+                'carrier' => $shippingMethod?->getName() ?? 'N/A',
+                'trackingNumbers' => $delivery?->getTrackingCodes() ?? [],
             ],
             'additional' => [
-                'orderDate' => '2025-12-30 09:31',
-                'status' => 'Bezahlt / in Bearbeitung',
+                'orderDate' => $orderDate,
+                'status' => $state?->getName() ?? 'Processing',
                 'orderType' => 'N/A',
-                'notes' => 'N/A',
+                'notes' => $order->getCustomerComment() ?? 'N/A',
                 'consultant' => 'N/A',
                 'tenant' => 'N/A',
-                'san6OrderNumber' => 'SAN6-' . $reference,
-                'orgaEntries' => ['Orga 1043', 'Orga 7784'],
-                'documents' => ['Rechnung_1008722.pdf', 'Lieferschein_1008722.pdf'],
-                'pdmsId' => 'PDMS-19444',
-                'pdmsVariant' => 'Variante 3',
-                'topmArticleNumber' => 'TOPM-9443',
-                'topmExecution' => 'Ausführung A',
+                'san6OrderNumber' => $order->getOrderNumber(),
+                'orgaEntries' => [],
+                'documents' => [],
+                'pdmsId' => 'N/A',
+                'pdmsVariant' => 'N/A',
+                'topmArticleNumber' => 'N/A',
+                'topmExecution' => 'N/A',
                 'statusHistorySource' => 'Shopware',
             ],
-            'items' => [
-                [
-                    'name' => 'HYPAFIX Hautfreundliches Klebevlies',
-                    'quantity' => 1,
-                    'netPrice' => 19.32,
-                    'taxRate' => 19,
-                    'grossPrice' => 22.99,
-                    'totalPrice' => 22.99,
-                ],
-            ],
-            'statusHistory' => [
-                [
-                    'status' => 'Bezahlt / in Bearbeitung',
-                    'date' => '2025-12-30 09:31',
-                    'comment' => 'magnalister-Verarbeitung (eBay) eBayOrderID: 205396841131',
-                ],
-                [
-                    'status' => 'INTERN (Bearbeitung offen)',
-                    'date' => '2025-12-30 09:45',
-                    'comment' => 'Auftragsnr.:' . $reference,
-                ],
-                [
-                    'status' => 'Versendet',
-                    'date' => '2026-01-08 16:03',
-                    'comment' => 'Trackingnummer: 003404342343',
-                ],
-                [
-                    'status' => 'Bestellung abgeschlossen',
-                    'date' => '2026-01-13 16:02',
-                    'comment' => 'N/A',
-                ],
-            ],
+            'items' => $items,
+            'statusHistory' => $statusHistory,
             'totals' => [
-                'items' => 22.99,
-                'shipping' => 0.0,
-                'sum' => 22.99,
-                'tax' => 3.67,
-                'net' => 19.32,
+                'items' => (float) $order->getPositionPrice(),
+                'shipping' => $shippingTotal,
+                'sum' => $amountTotal,
+                'tax' => $taxTotal,
+                'net' => $amountNet,
             ],
         ];
+    }
+
+    private function countItems(OrderEntity $order): int
+    {
+        $totalItems = 0;
+        foreach ($order->getLineItems() ?? [] as $lineItem) {
+            $totalItems += $lineItem->getQuantity();
+        }
+
+        return $totalItems;
     }
 }

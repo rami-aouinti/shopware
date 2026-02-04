@@ -22,6 +22,7 @@ Component.register('external-orders-list', {
                 totalItems: 0,
             },
             channels: [
+                { id: 'all', label: 'Alle' },
                 { id: 'b2b', label: 'B2B-Shop' },
                 { id: 'ebay_de', label: 'Ebay.de' },
                 { id: 'ebay_at', label: 'Ebay.at' },
@@ -29,7 +30,7 @@ Component.register('external-orders-list', {
                 { id: 'zonami', label: 'Zonami' },
                 { id: 'peg', label: 'PEG' },
             ],
-            activeChannel: 'ebay_de',
+            activeChannel: 'all',
             searchTerm: '',
             selectedOrder: null,
             showDetailModal: false,
@@ -59,14 +60,26 @@ Component.register('external-orders-list', {
             this.isLoading = true;
 
             try {
-                const { orders, summary } = await this.externalOrderService.list({
-                    channel: this.activeChannel,
+                const selectedChannel = this.activeChannel === 'all' ? null : this.activeChannel;
+                const response = await this.externalOrderService.list({
+                    channel: selectedChannel,
                     search: this.searchTerm?.trim() || null,
                 });
 
+                const orders = Array.isArray(response?.orders) ? response.orders : [];
                 this.orders = orders;
-                this.summary = summary;
+                this.summary = response?.summary ?? {
+                    orderCount: orders.length,
+                    totalRevenue: 0,
+                    totalItems: orders.reduce((sum, order) => sum + (order.totalItems || 0), 0),
+                };
             } catch (error) {
+                this.orders = [];
+                this.summary = {
+                    orderCount: 0,
+                    totalRevenue: 0,
+                    totalItems: 0,
+                };
                 this.createNotificationError({
                     title: 'Bestellungen konnten nicht geladen werden',
                     message: error?.message || 'Bitte prüfen Sie die Verbindung zu den externen APIs.',

@@ -57,6 +57,7 @@
                 </div>
 
                 <sw-data-grid
+                    v-if="orders.length > 0"
                     :dataSource="orders"
                     :columns="columns"
                     :loading="isLoading"
@@ -80,6 +81,12 @@
                         </sw-button>
                     </template>
                 </sw-data-grid>
+                <sw-empty-state
+                    v-else
+                    icon="regular-shopping-cart"
+                    title="Keine Bestellungen gefunden"
+                    subline="Es wurden keine Bestellungen für die aktuelle Auswahl geladen."
+                />
             </sw-card>
 
             <sw-modal
