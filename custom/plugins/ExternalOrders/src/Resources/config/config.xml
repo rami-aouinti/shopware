@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/trunk/src/Core/System/SystemConfig/Schema/config.xsd">
+    <card>
+        <title lang="en-GB">External Orders</title>
+        <title lang="de-DE">Externe Bestellungen</title>
+
+        <input-field type="int" name="defaultColumnsPerPage">
+            <label lang="en-GB">Default columns per page</label>
+            <label lang="de-DE">Standardspalten pro Seite</label>
+            <defaultValue>25</defaultValue>
+        </input-field>
+
+        <input-field type="text" name="pageNameDe">
+            <label lang="en-GB">Page name (German)</label>
+            <label lang="de-DE">Seitenname (Deutsch)</label>
+            <defaultValue>Externe Bestellungen</defaultValue>
+        </input-field>
+
+        <input-field type="text" name="pageNameEn">
+            <label lang="en-GB">Page name (English)</label>
+            <label lang="de-DE">Seitenname (Englisch)</label>
+            <defaultValue>External Orders</defaultValue>
+        </input-field>
+    </card>
+</config>
