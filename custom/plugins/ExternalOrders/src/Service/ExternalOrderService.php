@@ -133,14 +133,15 @@ class ExternalOrderService
                     $taxAmount += $calculatedTax->getTax();
                 }
             }
-            $grossTotal = $price?->getTotalPrice() ?? 0.0;
             $quantity = max(1, $lineItem->getQuantity());
-            $netPrice = ($grossTotal - $taxAmount) / $quantity;
+            $grossTotal = $price?->getTotalPrice() ?? 0.0;
+            $grossUnitPrice = $price?->getUnitPrice() ?? ($grossTotal / $quantity);
+            $netUnitPrice = $grossUnitPrice - ($taxAmount / $quantity);
 
             $items[] = [
                 'name' => $lineItem->getLabel() ?? $lineItem->getId(),
                 'quantity' => $lineItem->getQuantity(),
-                'netPrice' => $netPrice,
+                'netPrice' => $netUnitPrice,
                 'taxRate' => $taxRate,
                 'grossPrice' => $grossTotal,
                 'totalPrice' => $grossTotal,
@@ -160,6 +161,11 @@ class ExternalOrderService
         $shippingTotal = (float) $order->getShippingTotal();
         $taxTotal = $amountTotal - $amountNet;
 
+        $customerGroupName = 'N/A';
+        if ($orderCustomer !== null && method_exists($orderCustomer, 'getCustomerGroup')) {
+            $customerGroupName = $orderCustomer->getCustomerGroup()?->getName() ?? 'N/A';
+        }
+
         return [
             'orderNumber' => $order->getOrderNumber(),
             'customer' => [
@@ -167,7 +173,7 @@ class ExternalOrderService
                 'firstName' => $orderCustomer?->getFirstName() ?? 'N/A',
                 'lastName' => $orderCustomer?->getLastName() ?? 'N/A',
                 'email' => $orderCustomer?->getEmail() ?? 'N/A',
-                'group' => $orderCustomer?->getCustomerGroup()?->getName() ?? 'N/A',
+                'group' => $customerGroupName,
             ],
             'billingAddress' => [
                 'company' => $billingAddress?->getCompany() ?? 'N/A',
