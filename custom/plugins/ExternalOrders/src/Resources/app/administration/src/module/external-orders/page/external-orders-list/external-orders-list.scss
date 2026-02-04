@@ -1,5 +1,6 @@
 .external-orders {
-    :global(.sw-page__main-content-inner) {
+    :global(.sw-page__main-content-inner),
+    :global(.sw-page__side-content-inner) {
         position: relative;
         height: auto;
         min-height: 100%;
