@@ -68,13 +68,27 @@ Component.register('external-orders-list', {
 
                 const payload = response?.data?.data ?? response?.data ?? response;
 
-                const orders = Array.isArray(payload?.orders) ? payload.orders : [];
-                this.orders = orders;
-                this.summary = payload?.summary ?? {
-                    orderCount: orders.length,
-                    totalRevenue: 0,
-                    totalItems: orders.reduce((sum, order) => sum + (order.totalItems || 0), 0),
-                };
+                const apiOrders = Array.isArray(payload?.orders) ? payload.orders : [];
+                const fakePayload = this.buildFakeOrders();
+                const mergedOrders = apiOrders.length > 0
+                    ? [...apiOrders, ...fakePayload.orders]
+                    : fakePayload.orders;
+
+                this.orders = mergedOrders;
+
+                if (payload?.summary) {
+                    this.summary = {
+                        orderCount: mergedOrders.length,
+                        totalRevenue: (payload.summary.totalRevenue || 0) + fakePayload.summary.totalRevenue,
+                        totalItems: (payload.summary.totalItems || 0) + fakePayload.summary.totalItems,
+                    };
+                } else {
+                    this.summary = {
+                        orderCount: mergedOrders.length,
+                        totalRevenue: fakePayload.summary.totalRevenue,
+                        totalItems: mergedOrders.reduce((sum, order) => sum + (order.totalItems || 0), 0),
+                    };
+                }
             } catch (error) {
                 this.orders = [];
                 this.summary = {
