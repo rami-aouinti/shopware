@@ -1,4 +1,9 @@
 .external-orders {
+    :global(.sw-page__main-content-inner) {
+        min-height: 100%;
+        overflow: visible;
+    }
+
     &__channels {
         margin-bottom: 24px;
     }
