@@ -111,7 +111,7 @@
 
     &__filters-bar {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: 16px;
         align-items: center;
         justify-content: space-between;
@@ -125,9 +125,19 @@
     &__filters,
     &__filters-actions {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: 12px;
         align-items: center;
+    }
+
+    &__filters {
+        flex: 0 0 auto;
+    }
+
+    &__filters-actions {
+        flex: 1;
+        justify-content: flex-end;
+        min-width: 0;
     }
 
     &__date {
@@ -135,7 +145,8 @@
     }
 
     &__search {
-        min-width: 260px;
+        flex: 1;
+        min-width: 220px;
     }
 
     &__action {
