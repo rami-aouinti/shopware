@@ -73,12 +73,49 @@ Component.register('external-orders-list', {
     computed: {
         columns() {
             return [
-                { property: 'orderNumber', dataIndex: 'orderNumber', label: 'BestellNr', sortable: true, primary: true },
-                { property: 'customerName', dataIndex: 'customerName', label: 'Kundenname', sortable: true },
-                { property: 'orderReference', dataIndex: 'orderReference', label: 'AuftragsNr', sortable: true },
-                { property: 'email', dataIndex: 'email', label: 'Email', sortable: true },
-                { property: 'date', dataIndex: 'date', label: 'Datum', sortable: true },
-                { property: 'statusLabel', dataIndex: 'statusLabel', label: 'Bestellstatus', sortable: true },
+                {
+                    property: 'orderNumber',
+                    dataIndex: 'orderNumber',
+                    sortBy: 'orderNumber',
+                    label: 'BestellNr',
+                    sortable: true,
+                    primary: true,
+                },
+                {
+                    property: 'customerName',
+                    dataIndex: 'customerName',
+                    sortBy: 'customerName',
+                    label: 'Kundenname',
+                    sortable: true,
+                },
+                {
+                    property: 'orderReference',
+                    dataIndex: 'orderReference',
+                    sortBy: 'orderReference',
+                    label: 'AuftragsNr',
+                    sortable: true,
+                },
+                {
+                    property: 'email',
+                    dataIndex: 'email',
+                    sortBy: 'email',
+                    label: 'Email',
+                    sortable: true,
+                },
+                {
+                    property: 'date',
+                    dataIndex: 'date',
+                    sortBy: 'date',
+                    label: 'Datum',
+                    sortable: true,
+                },
+                {
+                    property: 'statusLabel',
+                    dataIndex: 'statusLabel',
+                    sortBy: 'statusLabel',
+                    label: 'Bestellstatus',
+                    sortable: true,
+                },
                 { property: 'actions', label: 'Ansicht', sortable: false, width: '90px' },
             ];
         },
