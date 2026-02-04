@@ -88,7 +88,7 @@
                     :sort-direction="sortDirection"
                     :showSelection="true"
                     identifier="external-orders"
-                    @column-sort="onSort"
+                    @column-sort="onSortColumn"
                     @selection-change="onSelectionChange"
                 >
                     <template #column-statusLabel="{ item }">
@@ -124,10 +124,6 @@
                     title="Keine Bestellungen gefunden"
                     subline="Es wurden keine Bestellungen für die aktuelle Auswahl geladen."
                 />
-
-                <div v-if="filteredOrders.length > 0" class="external-orders__pagination">
-                    <sw-pagination v-bind="{ total: filteredOrders.length, page, limit }" @page-change="onPageChange" />
-                </div>
             </sw-card>
 
             <sw-modal
