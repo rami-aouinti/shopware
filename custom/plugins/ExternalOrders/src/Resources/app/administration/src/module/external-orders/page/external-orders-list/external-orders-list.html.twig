@@ -39,14 +39,14 @@
             </sw-card>
 
             <sw-card>
-                <div class="external-orders__filters">
-                    <div class="external-orders__filter-group">
+                <div class="external-orders__filters-bar">
+                    <div class="external-orders__filters">
                         <sw-button variant="secondary" size="small">Filter löschen</sw-button>
-                        <sw-datepicker placeholder="Start Datum" class="external-orders__date" />
-                        <sw-datepicker placeholder="End Datum" class="external-orders__date" />
+                        <sw-datepicker placeholder="Start Datum" class="external-orders__date" size="small" />
+                        <sw-datepicker placeholder="End Datum" class="external-orders__date" size="small" />
                         <sw-button variant="primary" size="small">Anwenden</sw-button>
                     </div>
-                    <div class="external-orders__filter-group">
+                    <div class="external-orders__filters-actions">
                         <sw-text-field
                             v-model="tableSearchTerm"
                             placeholder="Suche in Bestellungen"
@@ -59,12 +59,16 @@
                 </div>
 
                 <sw-data-grid
-                    v-if="filteredOrders.length > 0"
-                    :data-source="filteredOrders"
+                    v-if="paginatedOrders.length > 0"
+                    :data-source="paginatedOrders"
                     :columns="columns"
                     :loading="isLoading"
                     :showSelection="true"
+                    :sort-by="sortBy"
+                    :sort-direction="sortDirection"
                     identifier="external-orders"
+                    class="external-orders__table"
+                    @column-sort="onSortColumn"
                 >
                     <template #column-statusLabel="{ item }">
                         <sw-label :variant="statusVariant(item.status)" size="small">
@@ -81,6 +85,16 @@
                         >
                             <sw-icon name="regular-eye" size="16" />
                         </sw-button>
+                    </template>
+
+                    <template #pagination>
+                        <sw-pagination
+                            :page="page"
+                            :limit="limit"
+                            :total="paginationTotal"
+                            :total-visible="7"
+                            @page-change="onPageChange"
+                        />
                     </template>
                 </sw-data-grid>
                 <sw-empty-state

@@ -1,8 +1,16 @@
 {
     "name": "external/orders",
     "description": "External orders overview for marketplaces",
+    "version": "1.0.0",
     "type": "shopware-platform-plugin",
     "license": "proprietary",
+    "authors": [
+        {
+            "name": "Mohamed Rami Aouinti",
+            "email": "mohamed.rami.aouinti@first-medical.de",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "shopware/core": "*"
     },
@@ -16,6 +24,18 @@
         "label": {
             "en-GB": "External Orders",
             "de-DE": "Externe Bestellungen"
+        },
+        "description": {
+            "de-DE": "Bietet in der Administration eine zentrale Übersicht über externe Bestellungen aus Marktplätzen, inklusive Filter, Suchfunktion, Detailansicht und aggregierter Kennzahlen.",
+            "en-GB": "Provides a central administration overview for external marketplace orders, including filters, search, detail view, and aggregated metrics."
+        },
+        "manufacturerLink": {
+            "de-DE": "mailto:mohamed.rami.aouinti@first-medical.de",
+            "en-GB": "mailto:mohamed.rami.aouinti@first-medical.de"
+        },
+        "supportLink": {
+            "de-DE": "mailto:mohamed.rami.aouinti@first-medical.de",
+            "en-GB": "mailto:mohamed.rami.aouinti@first-medical.de"
         }
     }
 }
