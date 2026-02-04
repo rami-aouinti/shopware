@@ -7,6 +7,13 @@
         overflow: visible;
     }
 
+    :global(.sw-page__main-content-inner) {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding-left: 32px;
+        padding-right: 32px;
+    }
+
     &__channels {
         margin-bottom: 24px;
     }
