@@ -126,17 +126,24 @@ class ExternalOrderService
         foreach ($order->getLineItems() ?? [] as $lineItem) {
             $price = $lineItem->getPrice();
             $taxRate = 0.0;
+            $taxAmount = 0.0;
             if ($price && $price->getCalculatedTaxes()->count() > 0) {
                 $taxRate = $price->getCalculatedTaxes()->first()->getTaxRate();
+                foreach ($price->getCalculatedTaxes() as $calculatedTax) {
+                    $taxAmount += $calculatedTax->getTax();
+                }
             }
+            $grossTotal = $price?->getTotalPrice() ?? 0.0;
+            $quantity = max(1, $lineItem->getQuantity());
+            $netPrice = ($grossTotal - $taxAmount) / $quantity;
 
             $items[] = [
                 'name' => $lineItem->getLabel() ?? $lineItem->getId(),
                 'quantity' => $lineItem->getQuantity(),
-                'netPrice' => $price?->getNetPrice() ?? 0.0,
+                'netPrice' => $netPrice,
                 'taxRate' => $taxRate,
-                'grossPrice' => $price?->getTotalPrice() ?? 0.0,
-                'totalPrice' => $price?->getTotalPrice() ?? 0.0,
+                'grossPrice' => $grossTotal,
+                'totalPrice' => $grossTotal,
             ];
         }
 
