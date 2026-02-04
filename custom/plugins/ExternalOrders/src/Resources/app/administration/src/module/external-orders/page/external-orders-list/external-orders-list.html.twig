@@ -40,8 +40,22 @@
                         </div>
                     </div>
                     <div class="external-orders__summary-actions">
-                        <sw-button variant="primary" size="small" disabled>PDF herunterladen</sw-button>
-                        <sw-button variant="secondary" size="small" disabled>Excel herunterladen</sw-button>
+                        <sw-button
+                            variant="primary"
+                            size="small"
+                            :disabled="selectedOrders.length === 0"
+                            @click="exportSelectedOrdersPdf"
+                        >
+                            PDF herunterladen ({{ selectedOrders.length }})
+                        </sw-button>
+                        <sw-button
+                            variant="secondary"
+                            size="small"
+                            :disabled="selectedOrders.length === 0"
+                            @click="exportSelectedOrdersExcel"
+                        >
+                            Excel herunterladen ({{ selectedOrders.length }})
+                        </sw-button>
                     </div>
                 </div>
             </sw-card>
@@ -76,8 +90,8 @@
                     :sort-by="sortBy"
                     :sort-direction="sortDirection"
                     identifier="external-orders"
-                    class="external-orders__table"
-                    @column-sort="onSortColumn"
+                    @column-sort="onSort"
+                    @selection-change="onSelectionChange"
                 >
                     <template #column-statusLabel="{ item }">
                         <sw-label :variant="statusVariant(item.status)" size="small">

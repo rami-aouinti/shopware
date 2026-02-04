@@ -16,6 +16,7 @@ Component.register('external-orders-list', {
         return {
             isLoading: false,
             orders: [],
+            selectedOrders: [],
             summary: {
                 orderCount: 0,
                 totalRevenue: 0,
@@ -165,6 +166,7 @@ Component.register('external-orders-list', {
         async loadOrders() {
             this.isLoading = true;
             this.page = 1;
+            this.selectedOrders = [];
 
             try {
                 const selectedChannel = this.activeChannel || null;
@@ -222,6 +224,12 @@ Component.register('external-orders-list', {
         },
         onSearch() {
             this.page = 1;
+        },
+        onSelectionChange(selection) {
+            const items = Array.isArray(selection)
+                ? selection
+                : selection?.selection ?? selection?.items ?? selection?.data ?? [];
+            this.selectedOrders = Array.isArray(items) ? items : [];
         },
         normalizeSortValue(value) {
             if (value === null || value === undefined) {
@@ -301,6 +309,127 @@ Component.register('external-orders-list', {
                 return 'danger';
             }
             return 'neutral';
+        },
+        exportSelectedOrdersPdf() {
+            if (!this.selectedOrders.length) {
+                this.createNotificationWarning({
+                    title: 'Keine Bestellungen ausgewählt',
+                    message: 'Bitte wählen Sie mindestens eine Bestellung aus.',
+                });
+                return;
+            }
+
+            const lines = this.buildExportLines();
+            const pdfData = this.buildSimplePdf(lines);
+            this.downloadBlob('external-orders.pdf', 'application/pdf', pdfData);
+        },
+        exportSelectedOrdersExcel() {
+            if (!this.selectedOrders.length) {
+                this.createNotificationWarning({
+                    title: 'Keine Bestellungen ausgewählt',
+                    message: 'Bitte wählen Sie mindestens eine Bestellung aus.',
+                });
+                return;
+            }
+
+            const rows = this.buildExportRows();
+            const csv = this.buildCsv(rows);
+            this.downloadBlob('external-orders.csv', 'text/csv;charset=utf-8;', csv);
+        },
+        buildExportRows() {
+            const header = [
+                'BestellNr',
+                'Kundenname',
+                'AuftragsNr',
+                'Email',
+                'Datum',
+                'Bestellstatus',
+            ];
+
+            const rows = this.selectedOrders.map((order) => ([
+                order.orderNumber,
+                order.customerName,
+                order.orderReference,
+                order.email,
+                order.date,
+                order.statusLabel,
+            ]));
+
+            return [header, ...rows];
+        },
+        buildExportLines() {
+            const rows = this.buildExportRows();
+            return rows.map((row) => row.map((value) => String(value ?? '')).join(' | '));
+        },
+        buildCsv(rows) {
+            const escapeValue = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
+            return rows.map((row) => row.map(escapeValue).join(',')).join('\n');
+        },
+        buildSimplePdf(lines) {
+            const fontSize = 10;
+            const lineHeight = 14;
+            const startX = 50;
+            const startY = 800 - lineHeight;
+
+            const escapedLines = lines.map((line) => this.escapePdfText(line));
+            const textLines = escapedLines.map((line, index) => {
+                if (index === 0) {
+                    return `(${line}) Tj`;
+                }
+                return `0 -${lineHeight} Td (${line}) Tj`;
+            }).join('\n');
+
+            const stream = [
+                'BT',
+                `/F1 ${fontSize} Tf`,
+                `1 0 0 1 ${startX} ${startY} Tm`,
+                textLines,
+                'ET',
+            ].join('\n');
+
+            const objects = [];
+            objects.push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+            objects.push('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');
+            objects.push('3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 5 0 R /Resources << /Font << /F1 4 0 R >> >> >>\nendobj\n');
+            objects.push('4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n');
+            objects.push(`5 0 obj\n<< /Length ${stream.length} >>\nstream\n${stream}\nendstream\nendobj\n`);
+
+            let pdf = '%PDF-1.4\n';
+            const offsets = [];
+            const encoder = new TextEncoder();
+
+            objects.forEach((object) => {
+                offsets.push(encoder.encode(pdf).length);
+                pdf += object;
+            });
+
+            const xrefStart = encoder.encode(pdf).length;
+            pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+            offsets.forEach((offset) => {
+                pdf += `${String(offset).padStart(10, '0')} 00000 n \n`;
+            });
+            pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefStart}\n%%EOF`;
+
+            return encoder.encode(pdf);
+        },
+        escapePdfText(text) {
+            return String(text)
+                .replace(/\\/g, '\\\\')
+                .replace(/\(/g, '\\(')
+                .replace(/\)/g, '\\)');
+        },
+        downloadBlob(filename, mimeType, content) {
+            const blob = content instanceof Uint8Array
+                ? new Blob([content], { type: mimeType })
+                : new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         },
 
         getSortValue(order, sortBy) {
