@@ -5,19 +5,22 @@
         <title lang="en-GB">External Orders</title>
         <title lang="de-DE">Externe Bestellungen</title>
 
-        <input-field type="int" name="defaultColumnsPerPage">
+        <input-field type="int">
+            <name>defaultColumnsPerPage</name>
             <label lang="en-GB">Default columns per page</label>
             <label lang="de-DE">Standardspalten pro Seite</label>
             <defaultValue>25</defaultValue>
         </input-field>
 
-        <input-field type="text" name="pageNameDe">
+        <input-field type="text">
+            <name>pageNameDe</name>
             <label lang="en-GB">Page name (German)</label>
             <label lang="de-DE">Seitenname (Deutsch)</label>
             <defaultValue>Externe Bestellungen</defaultValue>
         </input-field>
 
-        <input-field type="text" name="pageNameEn">
+        <input-field type="text">
+            <name>pageNameEn</name>
             <label lang="en-GB">Page name (English)</label>
             <label lang="de-DE">Seitenname (Englisch)</label>
             <defaultValue>External Orders</defaultValue>
