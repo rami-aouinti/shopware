@@ -129,5 +129,56 @@ Component.register('external-orders-list', {
             return 'neutral';
         },
 
+        buildFakeOrders() {
+            const orders = [
+                {
+                    id: 'order-1008722',
+                    channel: 'ebay_de',
+                    orderNumber: '1008722',
+                    customerName: 'Andreas Nanke',
+                    orderReference: '446487',
+                    email: '43ad1d549beae3625950@members.ebay.com',
+                    date: '2025-12-30 09:31',
+                    status: 'processing',
+                    statusLabel: 'Bezahlt / in Bearbeitung',
+                    totalItems: 1,
+                },
+                {
+                    id: 'order-1008721',
+                    channel: 'ebay_de',
+                    orderNumber: '1008721',
+                    customerName: 'Frank Sagert',
+                    orderReference: '446480',
+                    email: '010eb3cea0c0a1c80a10@members.ebay.com',
+                    date: '2025-12-30 08:46',
+                    status: 'processing',
+                    statusLabel: 'Bezahlt / in Bearbeitung',
+                    totalItems: 2,
+                },
+                {
+                    id: 'order-1008716',
+                    channel: 'kaufland',
+                    orderNumber: '1008716',
+                    customerName: 'Karsten Stieler',
+                    orderReference: '446447',
+                    email: '43aab48bab92e321f662@members.kaufland.de',
+                    date: '2025-12-29 22:33',
+                    status: 'processing',
+                    statusLabel: 'Bezahlt / in Bearbeitung',
+                    totalItems: 1,
+                },
+            ];
+            const totalItems = orders.reduce((sum, order) => sum + order.totalItems, 0);
+
+            return {
+                orders,
+                summary: {
+                    orderCount: orders.length,
+                    totalRevenue: 1584.19,
+                    totalItems,
+                },
+            };
+        },
+
     },
 });
