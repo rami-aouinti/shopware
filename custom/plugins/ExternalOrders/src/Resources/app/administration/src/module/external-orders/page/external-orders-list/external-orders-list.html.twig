@@ -47,13 +47,20 @@
                         <sw-button variant="primary" size="small">Anwenden</sw-button>
                     </div>
                     <div class="external-orders__filter-group">
+                        <sw-text-field
+                            v-model="tableSearchTerm"
+                            placeholder="Suche in Bestellungen"
+                            size="small"
+                            class="external-orders__search"
+                            resettable
+                        />
                         <sw-button variant="secondary" size="small">Testmarkierung Anwenden</sw-button>
                     </div>
                 </div>
 
                 <sw-data-grid
-                    v-if="orders.length > 0"
-                    :data-source="orders"
+                    v-if="filteredOrders.length > 0"
+                    :data-source="filteredOrders"
                     :columns="columns"
                     :loading="isLoading"
                     :showSelection="true"
