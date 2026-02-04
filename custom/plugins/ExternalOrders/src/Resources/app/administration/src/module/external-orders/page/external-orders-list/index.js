@@ -22,15 +22,43 @@ Component.register('external-orders-list', {
                 totalItems: 0,
             },
             channels: [
-                { id: 'all', label: 'Alle' },
-                { id: 'b2b', label: 'B2B-Shop' },
-                { id: 'ebay_de', label: 'Ebay.de' },
-                { id: 'ebay_at', label: 'Ebay.at' },
-                { id: 'kaufland', label: 'Kaufland' },
-                { id: 'zonami', label: 'Zonami' },
-                { id: 'peg', label: 'PEG' },
+                {
+                    id: 'b2b',
+                    label: 'First-medical-shop.de',
+                    logo: 'http://controlling.first-medical.de:8480/assets/images/b2b1.png',
+                },
+                {
+                    id: 'ebay_de',
+                    label: 'Ebay.DE',
+                    logo: 'http://controlling.first-medical.de:8480/assets/images/ebay1.png',
+                },
+                {
+                    id: 'kaufland',
+                    label: 'KaufLand',
+                    logo: 'http://controlling.first-medical.de:8480/assets/images/kaufland1.png',
+                },
+                {
+                    id: 'ebay_at',
+                    label: 'Ebay.AT',
+                    logo: 'http://controlling.first-medical.de:8480/assets/images/ebayAT.png',
+                },
+                {
+                    id: 'zonami',
+                    label: 'Zonami',
+                    logo: 'http://controlling.first-medical.de:8480/assets/images/zonami1.png',
+                },
+                {
+                    id: 'peg',
+                    label: 'PEG',
+                    logo: 'http://controlling.first-medical.de:8480/assets/images/peg2.png',
+                },
+                {
+                    id: 'bezb',
+                    label: 'BEZB',
+                    logo: 'http://controlling.first-medical.de:8480/assets/images/bezb1.png',
+                },
             ],
-            activeChannel: 'all',
+            activeChannel: 'b2b',
             tableSearchTerm: '',
             selectedOrder: null,
             showDetailModal: false,
@@ -53,8 +81,17 @@ Component.register('external-orders-list', {
                 { property: 'actions', label: 'Ansicht', sortable: false, width: '90px' },
             ];
         },
+        activeChannelLabel() {
+            return this.channels.find((channel) => channel.id === this.activeChannel)?.label || '';
+        },
         filteredOrders() {
             const searchTerm = this.tableSearchTerm.trim().toLowerCase();
+            const channelOrders = this.orders.filter((order) => {
+                if (!order.channel) {
+                    return true;
+                }
+                return order.channel === this.activeChannel;
+            });
 
             const channelFilter = this.activeChannel === 'all' ? null : this.activeChannel;
             const filtered = this.orders.filter((order) => {
@@ -127,9 +164,10 @@ Component.register('external-orders-list', {
     methods: {
         async loadOrders() {
             this.isLoading = true;
+            this.page = 1;
 
             try {
-                const selectedChannel = this.activeChannel === 'all' ? null : this.activeChannel;
+                const selectedChannel = this.activeChannel || null;
                 const response = await this.externalOrderService.list({
                     channel: selectedChannel,
                 });
@@ -172,6 +210,31 @@ Component.register('external-orders-list', {
             } finally {
                 this.isLoading = false;
             }
+        },
+        onPageChange({ page, limit }) {
+            this.page = page;
+            this.limit = limit;
+        },
+        onSort({ sortBy, sortDirection }) {
+            this.sortBy = sortBy;
+            this.sortDirection = sortDirection;
+            this.page = 1;
+        },
+        onSearch() {
+            this.page = 1;
+        },
+        normalizeSortValue(value) {
+            if (value === null || value === undefined) {
+                return '';
+            }
+            if (this.sortBy === 'date') {
+                const parsedDate = new Date(String(value).replace(' ', 'T'));
+                return Number.isNaN(parsedDate.getTime()) ? value : parsedDate.getTime();
+            }
+            if (typeof value === 'number') {
+                return value;
+            }
+            return String(value).toLowerCase();
         },
 
         onPageChange(page) {

@@ -7,29 +7,37 @@
         <template #content>
             <sw-card class="external-orders__channels">
                 <div class="external-orders__channel-tabs">
-                    <sw-button
+                    <button
                         v-for="channel in channels"
                         :key="channel.id"
-                        :variant="activeChannel === channel.id ? 'primary' : 'secondary'"
-                        size="small"
-                        class="external-orders__channel-button"
+                        class="external-orders__channel-tab"
+                        :class="{ 'is--active': activeChannel === channel.id }"
+                        type="button"
                         @click="activeChannel = channel.id; loadOrders()"
                     >
-                        {{ channel.label }}
-                    </sw-button>
+                        <span class="external-orders__channel-logo">
+                            <img :src="channel.logo" :alt="channel.label" />
+                        </span>
+                        <span class="external-orders__channel-label">{{ channel.label }}</span>
+                    </button>
                 </div>
                 <div class="external-orders__summary">
-                    <div class="external-orders__summary-item">
-                        <span class="external-orders__summary-label">Bestellungen</span>
-                        <span class="external-orders__summary-value">{{ summary.orderCount }}</span>
+                    <div class="external-orders__summary-title">
+                        <span>Bestellungen aus {{ activeChannelLabel }}</span>
                     </div>
-                    <div class="external-orders__summary-item">
-                        <span class="external-orders__summary-label">Gesamtumsatz</span>
-                        <span class="external-orders__summary-value">{{ formatCurrency(summary.totalRevenue) }}</span>
-                    </div>
-                    <div class="external-orders__summary-item">
-                        <span class="external-orders__summary-label">Stück</span>
-                        <span class="external-orders__summary-value">{{ summary.totalItems }}</span>
+                    <div class="external-orders__summary-metrics">
+                        <div class="external-orders__summary-item">
+                            <span class="external-orders__summary-label">Bestellungen</span>
+                            <span class="external-orders__summary-value">{{ summary.orderCount }}</span>
+                        </div>
+                        <div class="external-orders__summary-item">
+                            <span class="external-orders__summary-label">Gesamtumsatz</span>
+                            <span class="external-orders__summary-value">{{ formatCurrency(summary.totalRevenue) }}</span>
+                        </div>
+                        <div class="external-orders__summary-item">
+                            <span class="external-orders__summary-label">Stück</span>
+                            <span class="external-orders__summary-value">{{ summary.totalItems }}</span>
+                        </div>
                     </div>
                     <div class="external-orders__summary-actions">
                         <sw-button variant="primary" size="small" disabled>PDF herunterladen</sw-button>
@@ -49,10 +57,9 @@
                     <div class="external-orders__filters-actions">
                         <sw-text-field
                             v-model="tableSearchTerm"
-                            placeholder="Suche in Bestellungen"
-                            size="small"
+                            placeholder="Suche"
                             class="external-orders__search"
-                            resettable
+                            @search="onSearch"
                         />
                         <sw-button variant="secondary" size="small">Testmarkierung Anwenden</sw-button>
                     </div>
@@ -63,6 +70,8 @@
                     :data-source="paginatedOrders"
                     :columns="columns"
                     :loading="isLoading"
+                    :sort-by="sortBy"
+                    :sort-direction="sortDirection"
                     :showSelection="true"
                     :sort-by="sortBy"
                     :sort-direction="sortDirection"
@@ -103,6 +112,10 @@
                     title="Keine Bestellungen gefunden"
                     subline="Es wurden keine Bestellungen für die aktuelle Auswahl geladen."
                 />
+
+                <div v-if="filteredOrders.length > 0" class="external-orders__pagination">
+                    <sw-pagination v-bind="{ total: filteredOrders.length, page, limit }" @page-change="onPageChange" />
+                </div>
             </sw-card>
 
             <sw-modal
