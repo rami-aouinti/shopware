@@ -226,10 +226,17 @@ Component.register('external-orders-list', {
             this.page = 1;
         },
         onSelectionChange(selection) {
-            const items = Array.isArray(selection)
-                ? selection
-                : selection?.selection ?? selection?.items ?? selection?.data ?? [];
-            this.selectedOrders = Array.isArray(items) ? items : [];
+            if (Array.isArray(selection)) {
+                this.selectedOrders = selection;
+                return;
+            }
+
+            const selectionBucket = selection?.selection ?? selection?.items ?? selection?.data ?? selection ?? {};
+            const items = Array.isArray(selectionBucket)
+                ? selectionBucket
+                : Object.values(selectionBucket);
+
+            this.selectedOrders = items.filter(Boolean);
         },
         normalizeSortValue(value) {
             if (value === null || value === undefined) {
