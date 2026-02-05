@@ -38,11 +38,16 @@ class LieferzeitenSyncCommand extends Command
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('isActive', true));
+        $criteria->addAssociation('package.order.orderCustomer');
 
         $trackingNumbers = $this->trackingNumberRepository->search($criteria, $context);
 
         foreach ($trackingNumbers as $trackingNumber) {
             if (!$trackingNumber->getTrackingNumber()) {
+                continue;
+            }
+
+            if ($this->isTestOrder($trackingNumber->getPackage()?->getOrder())) {
                 continue;
             }
 
@@ -56,5 +61,17 @@ class LieferzeitenSyncCommand extends Command
         $output->writeln(sprintf('Synced %d tracking numbers.', $trackingNumbers->count()));
 
         return Command::SUCCESS;
+    }
+
+    private function isTestOrder(?\Shopware\Core\Checkout\Order\OrderEntity $order): bool
+    {
+        if (!$order) {
+            return false;
+        }
+
+        $orderNumber = strtoupper((string) $order->getOrderNumber());
+        $customerEmail = strtolower((string) $order->getOrderCustomer()?->getEmail());
+
+        return str_contains($orderNumber, 'TEST') || str_contains($customerEmail, 'test');
     }
 }

@@ -499,6 +499,15 @@ Shopware.Component.register('lieferzeiten-management-page', {
             position.supplierDeliveryUpdatedAt = new Date().toISOString();
             position.supplierDeliveryUpdatedById = currentUser?.id || null;
             this.orderPositionRepository.save(position, Shopware.Context.api).then(() => {
+                const historyEntry = this.dateHistoryRepository.create(Shopware.Context.api);
+                historyEntry.orderPositionId = position.id;
+                historyEntry.type = 'supplier_delivery';
+                historyEntry.rangeStart = position.supplierDeliveryStart;
+                historyEntry.rangeEnd = position.supplierDeliveryEnd;
+                historyEntry.comment = position.supplierDeliveryComment || null;
+                historyEntry.createdById = currentUser?.id || null;
+                this.dateHistoryRepository.save(historyEntry, Shopware.Context.api);
+
                 const startWeek = this.getWeekNumber(position.supplierDeliveryStart);
                 const endWeek = this.getWeekNumber(position.supplierDeliveryEnd);
                 this.createNotificationSuccess({

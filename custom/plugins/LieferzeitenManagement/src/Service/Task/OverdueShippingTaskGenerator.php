@@ -42,6 +42,7 @@ class OverdueShippingTaskGenerator
         $criteria->addFilter(new RangeFilter('latestShippingAt', [RangeFilter::LTE => $now->format(DATE_ATOM)]));
         $criteria->addFilter(new EqualsFilter('shippedAt', null));
         $criteria->addAssociation('order');
+        $criteria->addAssociation('order.orderCustomer');
 
         $packages = $this->packageRepository->search($criteria, $context);
 
@@ -54,6 +55,10 @@ class OverdueShippingTaskGenerator
             }
 
             if ($this->taskExists($orderId, $package->getId(), $context)) {
+                continue;
+            }
+
+            if ($this->isTestOrder($package->getOrder())) {
                 continue;
             }
 
@@ -86,6 +91,18 @@ class OverdueShippingTaskGenerator
         }
 
         return $created;
+    }
+
+    private function isTestOrder(?\Shopware\Core\Checkout\Order\OrderEntity $order): bool
+    {
+        if (!$order) {
+            return false;
+        }
+
+        $orderNumber = strtoupper((string) $order->getOrderNumber());
+        $customerEmail = strtolower((string) $order->getOrderCustomer()?->getEmail());
+
+        return str_contains($orderNumber, 'TEST') || str_contains($customerEmail, 'test');
     }
 
     private function taskExists(string $orderId, string $packageId, Context $context): bool
