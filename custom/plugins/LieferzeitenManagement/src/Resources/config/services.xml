@@ -117,6 +117,10 @@
             <argument type="service" id="LieferzeitenManagement\Service\Task\OverdueShippingTaskGenerator" />
         </service>
 
+        <service id="LieferzeitenManagement\Service\Stats\LieferzeitenStatsAggregationService" />
+
+        <service id="LieferzeitenManagement\Api\LieferzeitenStatsController">
+            <tag name="controller.service_arguments" />
         <service id="LieferzeitenManagement\Service\Task\TaskCompletionNotifier" />
 
         <service id="LieferzeitenManagement\Subscriber\TaskCompletionSubscriber">
