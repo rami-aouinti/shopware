@@ -133,6 +133,10 @@
                     <template #column-order.orderCustomer.firstName="{ item }">
                         {{ item.order?.orderCustomer?.firstName }} {{ item.order?.orderCustomer?.lastName }}
                     </template>
+                    <template #column-additionalCustomerNames="{ item }">
+                        <span v-if="item.additionalCustomerNames">{{ item.additionalCustomerNames }}</span>
+                        <span v-else>-</span>
+                    </template>
                     <template #column-paymentInfo="{ item }">
                         {{ formatPaymentInfo(item.order) }}
                     </template>
@@ -163,6 +167,9 @@
                         >
                             {{ item.trackingNumber }}
                         </sw-button>
+                        <span v-else-if="shouldShowInternalShipping(item)">
+                            {{ $t('lieferzeiten-management.general.trackingInternalShipping') }}
+                        </span>
                         <span v-else>-</span>
                     </template>
                     <template #column-supplierDelivery="{ item }">
@@ -228,12 +235,33 @@
                         />
                     </template>
                     <template #column-deliveryUpdatedBy="{ item }">
-                        <div>
-                            {{ getUserLabel(item.newDeliveryUpdatedBy) }}
+                        <div
+                            v-if="item.newDeliveryUpdatedBy || item.newDeliveryUpdatedAt"
+                            class="lieferzeiten-management-page__position-block"
+                        >
+                            <div><strong>{{ $t('lieferzeiten-management.general.updateLabelNewDelivery') }}</strong></div>
+                            <div>
+                                {{ getUserLabel(item.newDeliveryUpdatedBy) }}
+                            </div>
+                            <div v-if="item.newDeliveryUpdatedAt">
+                                <sw-time-ago :date="item.newDeliveryUpdatedAt" />
+                            </div>
                         </div>
-                        <div v-if="item.newDeliveryUpdatedAt">
-                            <sw-time-ago :date="item.newDeliveryUpdatedAt" />
+                        <div
+                            v-for="position in getOrderPositions(item)"
+                            v-if="position.supplierDeliveryUpdatedBy || position.supplierDeliveryUpdatedAt"
+                            :key="position.id"
+                            class="lieferzeiten-management-page__position-block"
+                        >
+                            <div><strong>{{ $t('lieferzeiten-management.general.updateLabelSupplierDelivery') }}</strong></div>
+                            <div>
+                                {{ getUserLabel(position.supplierDeliveryUpdatedBy) }}
+                            </div>
+                            <div v-if="position.supplierDeliveryUpdatedAt">
+                                <sw-time-ago :date="position.supplierDeliveryUpdatedAt" />
+                            </div>
                         </div>
+                        <div v-if="!hasAnyDeliveryUpdates(item)">-</div>
                     </template>
                     <template #column-actions="{ item }">
                         <div

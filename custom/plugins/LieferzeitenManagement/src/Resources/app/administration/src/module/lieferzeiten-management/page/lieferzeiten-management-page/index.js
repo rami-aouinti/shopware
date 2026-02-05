@@ -76,6 +76,10 @@ Shopware.Component.register('lieferzeiten-management-page', {
                     label: this.$t('lieferzeiten-management.general.columnCustomerName'),
                 },
                 {
+                    property: 'additionalCustomerNames',
+                    label: this.$t('lieferzeiten-management.general.columnAdditionalCustomerNames'),
+                },
+                {
                     property: 'paymentInfo',
                     label: this.$t('lieferzeiten-management.general.columnPayment'),
                 },
@@ -375,6 +379,7 @@ Shopware.Component.register('lieferzeiten-management-page', {
             criteria.addAssociation('order.transactions.paymentMethod');
             criteria.addAssociation('trackingNumbers');
             criteria.addAssociation('packagePositions.orderPosition');
+            criteria.addAssociation('packagePositions.orderPosition.supplierDeliveryUpdatedBy');
             criteria.addAssociation('newDeliveryUpdatedBy');
             criteria.addFilter(Criteria.not('OR', [
                 Criteria.contains('order.orderNumber', 'TEST'),
@@ -599,6 +604,32 @@ Shopware.Component.register('lieferzeiten-management-page', {
             }
 
             return `${user.firstName || ''} ${user.lastName || ''}`.trim();
+        },
+
+        hasExternalTracking(item) {
+            if (!item) {
+                return false;
+            }
+
+            return Boolean(item.trackingNumber || (item.trackingNumbers && item.trackingNumbers.length));
+        },
+
+        shouldShowInternalShipping(item) {
+            if (this.hasExternalTracking(item)) {
+                return false;
+            }
+
+            return Boolean(item?.shippedAt);
+        },
+
+        hasAnyDeliveryUpdates(item) {
+            if (item?.newDeliveryUpdatedBy || item?.newDeliveryUpdatedAt) {
+                return true;
+            }
+
+            return this.getOrderPositions(item).some((position) => {
+                return position?.supplierDeliveryUpdatedBy || position?.supplierDeliveryUpdatedAt;
+            });
         },
 
         openTrackingModal(item) {
