@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://www.shopware.com/schemas/config/1.0/config.xsd">
+    <card>
+        <title>San6 API</title>
+        <input-field type="text" name="san6ApiBaseUrl" label="San6 API Base URL"/>
+        <input-field type="text" name="san6ApiToken" label="San6 API Token"/>
+    </card>
+    <card>
+        <title>Tracking API</title>
+        <input-field type="text" name="trackingApiBaseUrl" label="Tracking API Base URL"/>
+        <input-field type="text" name="trackingApiToken" label="Tracking API Token"/>
+    </card>
+</config>
