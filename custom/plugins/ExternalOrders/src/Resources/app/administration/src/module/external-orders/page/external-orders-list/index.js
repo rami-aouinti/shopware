@@ -8,7 +8,7 @@ const { Component, Mixin } = Shopware;
 Component.register('external-orders-list', {
     template,
 
-    inject: ['externalOrderService'],
+    inject: ['externalOrderService', 'systemConfigApiService'],
 
     mixins: [
         Mixin.getByName('notification'),
@@ -25,6 +25,7 @@ Component.register('external-orders-list', {
             },
             pdfIcon,
             excelIcon,
+            channelSources: {},
             channels: [
                 {
                     id: 'b2b',
@@ -150,6 +151,9 @@ Component.register('external-orders-list', {
         activeChannelLabel() {
             return this.channels.find((channel) => channel.id === this.activeChannel)?.label || '';
         },
+        activeChannelSource() {
+            return this.channelSources[this.activeChannel] || '';
+        },
         filteredOrders() {
             const searchTerm = this.tableSearchTerm.trim().toLowerCase();
             const channelOrders = this.orders.filter((order) => {
@@ -235,10 +239,36 @@ Component.register('external-orders-list', {
     },
 
     created() {
-        this.loadOrders();
+        this.initializePage();
     },
 
     methods: {
+        async initializePage() {
+            await this.loadOverviewConfiguration();
+            await this.loadOrders();
+        },
+        async loadOverviewConfiguration() {
+            try {
+                const config = await this.systemConfigApiService.getValues('ExternalOrders');
+                const getConfigValue = (key) => config?.[`ExternalOrders.config.${key}`] ?? '';
+
+                this.channelSources = {
+                    b2b: getConfigValue('sourceB2b'),
+                    ebay_de: getConfigValue('sourceEbayDe'),
+                    kaufland: getConfigValue('sourceKaufland'),
+                    ebay_at: getConfigValue('sourceEbayAt'),
+                    zonami: getConfigValue('sourceZonami'),
+                    peg: getConfigValue('sourcePeg'),
+                    bezb: getConfigValue('sourceBezb'),
+                };
+            } catch (error) {
+                this.channelSources = {};
+                this.createNotificationWarning({
+                    title: 'Konfiguration konnte nicht geladen werden',
+                    message: error?.message || 'Die Quellen der Übersichten konnten nicht geladen werden.',
+                });
+            }
+        },
         async loadOrders() {
             this.isLoading = true;
             this.page = 1;

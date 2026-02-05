@@ -25,6 +25,12 @@
                     <div class="external-orders__summary-title">
                         <span>Bestellungen aus {{ activeChannelLabel }}</span>
                     </div>
+                    <div
+                        v-if="activeChannelSource"
+                        class="external-orders__summary-source"
+                    >
+                        Quelle: {{ activeChannelSource }}
+                    </div>
                     <div class="external-orders__summary-metrics">
                         <div class="external-orders__summary-item">
                             <span class="external-orders__summary-label">Bestellungen</span>

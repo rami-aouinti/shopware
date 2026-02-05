@@ -111,6 +111,13 @@
         min-width: 0;
     }
 
+    &__summary-source {
+        font-size: 12px;
+        color: #52667a;
+        margin-top: 4px;
+        grid-column: 1 / 2;
+    }
+
     &__summary-metrics {
         display: flex;
         flex-wrap: wrap;
