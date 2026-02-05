@@ -1,17 +1,18 @@
 .external-orders {
-    :global(.sw-page__main-content-inner),
-    :global(.sw-page__side-content-inner) {
-        position: relative;
-        height: auto;
-        min-height: 100%;
-        overflow: visible;
+    &__header {
+        padding: 24px 32px 16px;
+        border-bottom: 1px solid #d7dde5;
+
+        h2 {
+            margin: 0;
+        }
     }
 
-    :global(.sw-page__main-content-inner) {
+    :global(.sw-page__main-content) {
         max-width: 1600px;
         margin: 0 auto;
-        padding-left: 32px;
-        padding-right: 32px;
+        padding: 24px 32px 32px;
+        overflow: visible;
     }
 
     &__channels {

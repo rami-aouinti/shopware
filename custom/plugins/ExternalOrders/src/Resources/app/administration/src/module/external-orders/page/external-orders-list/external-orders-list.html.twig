@@ -1,10 +1,10 @@
 <div class="external-orders">
-    <sw-page>
-        <template #smart-bar-header>
-            <h2>Bestellübersichten</h2>
-        </template>
+    <header class="external-orders__header">
+        <h2>Bestellübersichten</h2>
+    </header>
 
-        <template #content>
+    <main id="main" class="sw-page__main-content" tabindex="-1">
+        <div class="external-orders__page">
             <sw-card class="external-orders__channels">
                 <div class="external-orders__channel-tabs">
                     <button
@@ -302,6 +302,6 @@
                     </sw-card>
                 </div>
             </sw-modal>
-        </template>
-    </sw-page>
+        </div>
+    </main>
 </div>
