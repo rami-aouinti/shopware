@@ -34,4 +34,26 @@ class San6Client
 
         return $response->toArray(false);
     }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function fetchOrderPositions(): array
+    {
+        $baseUrl = $this->systemConfigService->getString('LieferzeitenManagement.config.san6ApiBaseUrl');
+        $token = $this->systemConfigService->getString('LieferzeitenManagement.config.san6ApiToken');
+
+        if ($baseUrl === '' || $token === '') {
+            return [];
+        }
+
+        $response = $this->httpClient->request('GET', rtrim($baseUrl, '/') . '/order-positions', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $token,
+                'Accept' => 'application/json',
+            ],
+        ]);
+
+        return $response->toArray(false);
+    }
 }

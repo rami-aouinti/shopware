@@ -3,6 +3,7 @@
 namespace LieferzeitenManagement\Command;
 
 use LieferzeitenManagement\Service\San6SyncService;
+use LieferzeitenManagement\Service\OrderPositionSyncService;
 use LieferzeitenManagement\Service\TrackingSyncService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -24,6 +25,7 @@ class LieferzeitenSyncCommand extends Command
      */
     public function __construct(
         private readonly San6SyncService $san6SyncService,
+        private readonly OrderPositionSyncService $orderPositionSyncService,
         private readonly TrackingSyncService $trackingSyncService,
         private readonly EntityRepository $trackingNumberRepository
     ) {
@@ -35,6 +37,7 @@ class LieferzeitenSyncCommand extends Command
         $context = Context::createDefaultContext();
 
         $this->san6SyncService->sync($context);
+        $this->orderPositionSyncService->sync($context);
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('isActive', true));

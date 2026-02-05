@@ -47,6 +47,14 @@
             <argument type="service" id="LieferzeitenManagement\Service\Deadline\DeadlineResolver" />
         </service>
 
+        <service id="LieferzeitenManagement\Service\OrderPositionSyncService">
+            <argument type="service" id="LieferzeitenManagement\Service\San6Client" />
+            <argument type="service" id="order.repository" />
+            <argument type="service" id="lieferzeiten_order_position.repository" />
+            <argument type="service" id="lieferzeiten_package.repository" />
+            <argument type="service" id="lieferzeiten_package_position.repository" />
+        </service>
+
         <service id="LieferzeitenManagement\Service\TrackingSyncService">
             <argument type="service" id="LieferzeitenManagement\Service\TrackingClient" />
             <argument type="service" id="lieferzeiten_tracking_event.repository" />
@@ -66,6 +74,7 @@
 
         <service id="LieferzeitenManagement\Command\LieferzeitenSyncCommand">
             <argument type="service" id="LieferzeitenManagement\Service\San6SyncService" />
+            <argument type="service" id="LieferzeitenManagement\Service\OrderPositionSyncService" />
             <argument type="service" id="LieferzeitenManagement\Service\TrackingSyncService" />
             <argument type="service" id="lieferzeiten_tracking_number.repository" />
         </service>
