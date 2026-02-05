@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <defaults autowire="true" autoconfigure="true" />
+
+        <service id="LieferzeitenManagement\Core\Content\OrderPosition\LieferzeitenOrderPositionDefinition">
+            <tag name="shopware.entity.definition" />
+        </service>
+        <service id="LieferzeitenManagement\Core\Content\Package\LieferzeitenPackageDefinition">
+            <tag name="shopware.entity.definition" />
+        </service>
+        <service id="LieferzeitenManagement\Core\Content\PackagePosition\LieferzeitenPackagePositionDefinition">
+            <tag name="shopware.entity.definition" />
+        </service>
+        <service id="LieferzeitenManagement\Core\Content\DateHistory\LieferzeitenDateHistoryDefinition">
+            <tag name="shopware.entity.definition" />
+        </service>
+        <service id="LieferzeitenManagement\Core\Content\ActivityLog\LieferzeitenActivityLogDefinition">
+            <tag name="shopware.entity.definition" />
+        </service>
+        <service id="LieferzeitenManagement\Core\Content\Task\LieferzeitenTaskDefinition">
+            <tag name="shopware.entity.definition" />
+        </service>
+        <service id="LieferzeitenManagement\Core\Content\Settings\LieferzeitenSettingsDefinition">
+            <tag name="shopware.entity.definition" />
+        </service>
+        <service id="LieferzeitenManagement\Core\Content\NotificationSettings\LieferzeitenNotificationSettingsDefinition">
+            <tag name="shopware.entity.definition" />
+        </service>
+    </services>
+</container>
