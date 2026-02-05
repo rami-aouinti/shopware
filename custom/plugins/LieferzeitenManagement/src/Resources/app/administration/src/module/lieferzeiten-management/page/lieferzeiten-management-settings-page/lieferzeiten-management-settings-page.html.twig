@@ -1,0 +1,49 @@
+{% block lieferzeiten_management_settings_page %}
+    <sw-page class="lieferzeiten-management-settings-page">
+        <template #smart-bar-header>
+            <h2>{{ $t('lieferzeiten-management.settings.title') }}</h2>
+        </template>
+
+        <template #smart-bar-actions>
+            <sw-button variant="primary" @click="addMapping">
+                {{ $t('lieferzeiten-management.settings.addMapping') }}
+            </sw-button>
+        </template>
+
+        <sw-card :title="$t('lieferzeiten-management.settings.mappingTitle')">
+            <sw-loader v-if="isLoading" />
+            <div v-else class="lieferzeiten-management-settings-page__list">
+                <p v-if="!items.length" class="lieferzeiten-management-settings-page__empty">
+                    {{ $t('lieferzeiten-management.settings.emptyState') }}
+                </p>
+
+                <div
+                    v-for="item in items"
+                    :key="item.id"
+                    class="lieferzeiten-management-settings-page__row"
+                >
+                    <sw-entity-single-select
+                        v-model="item.salesChannelId"
+                        entity="sales_channel"
+                        :label="$t('lieferzeiten-management.settings.salesChannelLabel')"
+                        :placeholder="$t('lieferzeiten-management.settings.salesChannelPlaceholder')"
+                    />
+                    <sw-single-select
+                        v-model="item.area"
+                        :options="areaOptions"
+                        :label="$t('lieferzeiten-management.settings.areaLabel')"
+                        :placeholder="$t('lieferzeiten-management.settings.areaPlaceholder')"
+                    />
+                    <div class="lieferzeiten-management-settings-page__actions">
+                        <sw-button size="small" variant="primary" @click="saveMapping(item)">
+                            {{ $t('global.default.save') }}
+                        </sw-button>
+                        <sw-button size="small" variant="danger" @click="deleteMapping(item)">
+                            {{ $t('global.default.delete') }}
+                        </sw-button>
+                    </div>
+                </div>
+            </div>
+        </sw-card>
+    </sw-page>
+{% endblock %}
