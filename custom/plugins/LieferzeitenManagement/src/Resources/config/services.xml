@@ -75,7 +75,7 @@
         <service id="LieferzeitenManagement\Service\Status\StatusSyncBackService">
             <argument type="service" id="order.repository" />
             <argument type="service" id="lieferzeiten_sync_log.repository" />
-            <argument type="service" id="state_machine.registry" />
+            <argument type="service" id="state_machine.repository" />
         </service>
 
         <service id="LieferzeitenManagement\Service\San6Client" />
