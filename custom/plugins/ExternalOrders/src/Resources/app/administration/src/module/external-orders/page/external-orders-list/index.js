@@ -1,4 +1,6 @@
 import template from './external-orders-list.html.twig';
+import pdfIcon from '../../icons/external-orders-pdf.svg';
+import excelIcon from '../../icons/external-orders-excel.svg';
 import './external-orders-list.scss';
 
 const { Component, Mixin } = Shopware;
@@ -21,6 +23,8 @@ Component.register('external-orders-list', {
                 totalRevenue: 0,
                 totalItems: 0,
             },
+            pdfIcon,
+            excelIcon,
             channels: [
                 {
                     id: 'b2b',
