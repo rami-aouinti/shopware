@@ -294,8 +294,17 @@ Shopware.Component.register('lieferzeiten-management-page', {
             });
         },
 
-        createAdditionalDeliveryRequest(item) {
-            if (!item) {
+        nextBusinessDay(date) {
+            const next = new Date(date);
+            next.setDate(next.getDate() + 1);
+            while (next.getDay() === 0 || next.getDay() === 6) {
+                next.setDate(next.getDate() + 1);
+            }
+            return next;
+        },
+
+        createAdditionalDeliveryRequest(item, position) {
+            if (!item || !position) {
                 return;
             }
 
@@ -308,8 +317,10 @@ Shopware.Component.register('lieferzeiten-management-page', {
                 task.status = 'open';
                 task.orderId = item.orderId || item.order?.id || null;
                 task.packageId = item.id;
+                task.orderPositionId = position.id;
                 task.assignedUserId = assignedUserId;
                 task.createdById = currentUser?.id || null;
+                task.dueDate = this.nextBusinessDay(new Date()).toISOString();
 
                 return this.taskRepository.save(task, Shopware.Context.api);
             }).then(() => {

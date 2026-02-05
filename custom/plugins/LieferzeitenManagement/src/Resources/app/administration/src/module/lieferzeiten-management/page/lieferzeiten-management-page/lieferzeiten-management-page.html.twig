@@ -235,14 +235,20 @@
                         </div>
                     </template>
                     <template #column-actions="{ item }">
-                        <sw-button
-                            size="small"
-                            variant="primary"
-                            :disabled="creatingTaskIds[item.id]"
-                            @click="createAdditionalDeliveryRequest(item)"
+                        <div
+                            v-for="position in getOrderPositions(item)"
+                            :key="position.id"
+                            class="lieferzeiten-management-page__position-block"
                         >
-                            {{ $t('lieferzeiten-management.general.actionRequestAdditionalDelivery') }}
-                        </sw-button>
+                            <sw-button
+                                size="small"
+                                variant="primary"
+                                :disabled="creatingTaskIds[item.id]"
+                                @click="createAdditionalDeliveryRequest(item, position)"
+                            >
+                                {{ $t('lieferzeiten-management.general.actionRequestAdditionalDelivery') }}
+                            </sw-button>
+                        </div>
                     </template>
                 </sw-entity-listing>
             </sw-card>
