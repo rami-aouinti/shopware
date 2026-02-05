@@ -37,9 +37,11 @@ Shopware.Component.register('lieferzeiten-management-page', {
             dateHistoryRepository: null,
             taskRepository: null,
             taskAssignmentRepository: null,
+            settingsRepository: null,
             creatingTaskIds: {},
             selectedArea: null,
             selectedView: null,
+            settingsByArea: {},
             areaOptions: [
                 { value: 'first-medical', label: this.$t('lieferzeiten-management.general.areaFirstMedical') },
                 { value: 'e-commerce', label: this.$t('lieferzeiten-management.general.areaECommerce') },
@@ -80,6 +82,10 @@ Shopware.Component.register('lieferzeiten-management-page', {
                 {
                     property: 'orderStatus',
                     label: this.$t('lieferzeiten-management.general.columnOrderStatus'),
+                },
+                {
+                    property: 'businessStatusLabel',
+                    label: this.$t('lieferzeiten-management.general.columnBusinessStatus'),
                 },
                 {
                     property: 'san6OrderNumber',
@@ -181,13 +187,38 @@ Shopware.Component.register('lieferzeiten-management-page', {
         this.dateHistoryRepository = this.repositoryFactory.create('lieferzeiten_date_history');
         this.taskRepository = this.repositoryFactory.create('lieferzeiten_task');
         this.taskAssignmentRepository = this.repositoryFactory.create('lieferzeiten_task_assignment');
+        this.settingsRepository = this.repositoryFactory.create('lieferzeiten_settings');
         this.restoreSelection();
-        if (!this.needsSelection) {
-            this.loadPackages();
-        }
+        this.loadAreaMappings().then(() => {
+            if (!this.needsSelection) {
+                this.loadPackages();
+            }
+        });
     },
 
     methods: {
+        loadAreaMappings() {
+            const criteria = new Criteria(1, 250);
+            criteria.addAssociation('salesChannel');
+
+            return this.settingsRepository.search(criteria, Shopware.Context.api).then((result) => {
+                const mapping = {};
+                result.forEach((setting) => {
+                    if (!setting.area || !setting.salesChannelId) {
+                        return;
+                    }
+
+                    if (!mapping[setting.area]) {
+                        mapping[setting.area] = [];
+                    }
+
+                    mapping[setting.area].push(setting.salesChannelId);
+                });
+
+                this.settingsByArea = mapping;
+            });
+        },
+
         restoreSelection() {
             const stored = localStorage.getItem('lieferzeiten-management.selection');
             if (!stored) {
@@ -214,7 +245,9 @@ Shopware.Component.register('lieferzeiten-management-page', {
         onSelectionChange() {
             this.persistSelection();
             if (!this.needsSelection) {
-                this.onRefresh();
+                this.loadAreaMappings().then(() => {
+                    this.onRefresh();
+                });
             }
         },
 
@@ -380,6 +413,15 @@ Shopware.Component.register('lieferzeiten-management-page', {
                 criteria.addFilter(Criteria.equalsAny('order.stateMachineState.technicalName', ['open', 'in_progress']));
             }
 
+            if (this.selectedArea) {
+                const salesChannelIds = this.settingsByArea[this.selectedArea] || [];
+                if (salesChannelIds.length) {
+                    criteria.addFilter(Criteria.equalsAny('order.salesChannelId', salesChannelIds));
+                } else {
+                    criteria.addFilter(Criteria.equals('order.salesChannelId', null));
+                }
+            }
+
             if (this.shippedFrom || this.shippedTo) {
                 criteria.addFilter(Criteria.range('shippedAt', {
                     gte: this.shippedFrom || undefined,
@@ -457,6 +499,29 @@ Shopware.Component.register('lieferzeiten-management-page', {
             const method = transaction.paymentMethod?.name || '-';
             const paidAt = transaction.paidAt ? this.$d(new Date(transaction.paidAt)) : '-';
             return `${method} • ${paidAt}`;
+        },
+
+        formatBusinessStatus(item) {
+            if (!item) {
+                return '-';
+            }
+
+            const label = item.businessStatusLabel ?? '';
+            const code = item.businessStatusCode ?? '';
+
+            if (label && code !== '') {
+                return `${label} (${code})`;
+            }
+
+            if (label) {
+                return label;
+            }
+
+            if (code !== '') {
+                return String(code);
+            }
+
+            return '-';
         },
 
         onNewDeliveryChange(item) {

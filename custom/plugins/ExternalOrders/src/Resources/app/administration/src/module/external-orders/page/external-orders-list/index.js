@@ -16,7 +16,6 @@ Component.register('external-orders-list', {
         return {
             isLoading: false,
             orders: [],
-            selectedOrders: [],
             summary: {
                 orderCount: 0,
                 totalRevenue: 0,
@@ -61,6 +60,24 @@ Component.register('external-orders-list', {
             ],
             activeChannel: 'b2b',
             tableSearchTerm: '',
+            columnFilterMatchMode: 'all',
+            columnFilterMatchOptions: [
+                { value: 'all', label: 'Match All' },
+            ],
+            columnFilterOperatorOptions: [
+                { value: 'startsWith', label: 'Starts with' },
+                { value: 'contains', label: 'Contains' },
+                { value: 'equals', label: 'Equals' },
+            ],
+            columnFilters: {
+                orderNumber: { value: '', operator: 'startsWith' },
+                customerName: { value: '', operator: 'startsWith' },
+                orderReference: { value: '', operator: 'startsWith' },
+                email: { value: '', operator: 'startsWith' },
+                date: { value: '', operator: 'startsWith' },
+                statusLabel: { value: '', operator: 'startsWith' },
+            },
+            activeColumnFilter: null,
             selectedOrder: null,
             showDetailModal: false,
             page: 1,
@@ -151,11 +168,13 @@ Component.register('external-orders-list', {
                 return String(channelValue ?? '').toLowerCase() === channelFilter;
             });
 
+            const columnFiltered = this.applyColumnFilters(filtered);
+
             if (!searchTerm) {
-                return filtered;
+                return columnFiltered;
             }
 
-            return filtered.filter((order) => {
+            return columnFiltered.filter((order) => {
                 const values = [
                     order.orderNumber,
                     order.customerName,
@@ -199,6 +218,15 @@ Component.register('external-orders-list', {
         activeChannel() {
             this.page = 1;
         },
+        columnFilterMatchMode() {
+            this.page = 1;
+        },
+        columnFilters: {
+            handler() {
+                this.page = 1;
+            },
+            deep: true,
+        },
     },
 
     created() {
@@ -209,7 +237,6 @@ Component.register('external-orders-list', {
         async loadOrders() {
             this.isLoading = true;
             this.page = 1;
-            this.selectedOrders = [];
 
             try {
                 const selectedChannel = this.activeChannel || null;
@@ -272,18 +299,72 @@ Component.register('external-orders-list', {
         onSearch() {
             this.page = 1;
         },
-        onSelectionChange(selection) {
-            if (Array.isArray(selection)) {
-                this.selectedOrders = selection;
+        resetFilters() {
+            this.tableSearchTerm = '';
+            this.columnFilterMatchMode = 'all';
+            Object.keys(this.columnFilters).forEach((key) => {
+                this.columnFilters[key].value = '';
+                this.columnFilters[key].operator = 'startsWith';
+            });
+            this.page = 1;
+        },
+        toggleColumnFilter(columnKey) {
+            if (this.activeColumnFilter === columnKey) {
+                this.activeColumnFilter = null;
                 return;
             }
+            this.activeColumnFilter = columnKey;
+        },
+        applyColumnFilter() {
+            this.page = 1;
+            this.activeColumnFilter = null;
+        },
+        clearColumnFilter(columnKey) {
+            if (!this.columnFilters[columnKey]) {
+                return;
+            }
+            this.columnFilters[columnKey].value = '';
+            this.columnFilters[columnKey].operator = 'startsWith';
+            this.activeColumnFilter = null;
+        },
+        isColumnFilterActive(columnKey) {
+            const filter = this.columnFilters[columnKey];
+            return Boolean(filter && String(filter.value ?? '').trim());
+        },
+        applyColumnFilters(orders) {
+            const activeFilters = Object.entries(this.columnFilters)
+                .filter(([, filter]) => String(filter.value ?? '').trim().length > 0);
 
-            const selectionBucket = selection?.selection ?? selection?.items ?? selection?.data ?? selection ?? {};
-            const items = Array.isArray(selectionBucket)
-                ? selectionBucket
-                : Object.values(selectionBucket);
+            if (!activeFilters.length) {
+                return orders;
+            }
 
-            this.selectedOrders = items.filter(Boolean);
+            return orders.filter((order) => activeFilters.every(([columnKey, filter]) => {
+                const value = this.getColumnFilterValue(order, columnKey);
+                return this.matchesColumnFilter(value, filter);
+            }));
+        },
+        getColumnFilterValue(order, columnKey) {
+            return order?.[columnKey] ?? '';
+        },
+        matchesColumnFilter(value, filter) {
+            const candidate = String(value ?? '').toLowerCase();
+            const needle = String(filter.value ?? '').toLowerCase();
+            const operator = filter.operator ?? 'startsWith';
+
+            if (!needle) {
+                return true;
+            }
+
+            if (operator === 'equals') {
+                return candidate === needle;
+            }
+
+            if (operator === 'contains') {
+                return candidate.includes(needle);
+            }
+
+            return candidate.startsWith(needle);
         },
         normalizeSortValue(value, sortBy = this.sortBy) {
             if (value === null || value === undefined) {
@@ -392,7 +473,7 @@ Component.register('external-orders-list', {
             this.downloadBlob('external-orders.csv', 'text/csv;charset=utf-8;', csv);
         },
         getOrdersForExport() {
-            return this.selectedOrders.length > 0 ? this.selectedOrders : this.filteredOrders;
+            return this.filteredOrders;
         },
         buildExportRows(orders) {
             const header = [

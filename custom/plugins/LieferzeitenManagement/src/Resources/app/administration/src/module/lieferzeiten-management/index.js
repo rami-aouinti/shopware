@@ -1,4 +1,5 @@
 import './page/lieferzeiten-management-page';
+import './page/lieferzeiten-management-settings-page';
 import './page/lieferzeiten-management-stats-page';
 
 Shopware.Module.register('lieferzeiten-management', {
@@ -17,6 +18,10 @@ Shopware.Module.register('lieferzeiten-management', {
             component: 'lieferzeiten-management-stats-page',
             path: 'stats',
         },
+        settings: {
+            component: 'lieferzeiten-management-settings-page',
+            path: 'settings',
+        },
     },
     navigation: [
         {
@@ -32,6 +37,13 @@ Shopware.Module.register('lieferzeiten-management', {
             path: 'lieferzeiten.management.stats',
             parent: 'sw-order',
             position: 111,
+        },
+        {
+            id: 'lieferzeiten-management-settings',
+            label: 'lieferzeiten-management.settings.navigationLabel',
+            path: 'lieferzeiten.management.settings',
+            parent: 'sw-order',
+            position: 112,
         },
     ],
 });
@@ -82,6 +94,7 @@ Shopware.Locale.extend('en-GB', {
             columnCustomerName: 'Customer',
             columnPayment: 'Payment',
             columnOrderStatus: 'Order status',
+            columnBusinessStatus: 'Business status',
             columnSan6OrderNumber: 'San6 order number',
             columnSan6PositionNumber: 'San6 position',
             columnQuantity: 'Quantity',
@@ -103,6 +116,21 @@ Shopware.Locale.extend('en-GB', {
             newDeliveryEnd: 'New delivery end',
             newDeliveryComment: 'New delivery comment',
             trackingHistoryTitle: 'Tracking history',
+        },
+        settings: {
+            title: 'Delivery time settings',
+            navigationLabel: 'Delivery time settings',
+            mappingTitle: 'Sales channel mapping',
+            addMapping: 'Add mapping',
+            emptyState: 'No sales channel mappings found.',
+            salesChannelLabel: 'Sales channel',
+            salesChannelPlaceholder: 'Select sales channel',
+            areaLabel: 'Area',
+            areaPlaceholder: 'Select area',
+            saveSuccess: 'Mapping saved.',
+            saveError: 'Mapping could not be saved.',
+            deleteSuccess: 'Mapping deleted.',
+            deleteError: 'Mapping could not be deleted.',
         },
         stats: {
             title: 'Delivery times statistics',
@@ -165,6 +193,7 @@ Shopware.Locale.extend('de-DE', {
             columnCustomerName: 'Kunde',
             columnPayment: 'Zahlart & Zahlungseingang',
             columnOrderStatus: 'Status',
+            columnBusinessStatus: 'Statut métier',
             columnSan6OrderNumber: 'San6 Auftragsnummer',
             columnSan6PositionNumber: 'San6 Auftragsposition',
             columnQuantity: 'Stückzahl',
@@ -186,6 +215,21 @@ Shopware.Locale.extend('de-DE', {
             newDeliveryEnd: 'Neuer Liefertermin Ende',
             newDeliveryComment: 'Kommentar',
             trackingHistoryTitle: 'Sendungsverlauf',
+        },
+        settings: {
+            title: 'Lieferzeiten Einstellungen',
+            navigationLabel: 'Lieferzeiten Einstellungen',
+            mappingTitle: 'Sales-Channel-Zuordnung',
+            addMapping: 'Zuordnung hinzufügen',
+            emptyState: 'Keine Sales-Channel-Zuordnungen gefunden.',
+            salesChannelLabel: 'Sales Channel',
+            salesChannelPlaceholder: 'Sales Channel auswählen',
+            areaLabel: 'Bereich',
+            areaPlaceholder: 'Bereich auswählen',
+            saveSuccess: 'Zuordnung gespeichert.',
+            saveError: 'Zuordnung konnte nicht gespeichert werden.',
+            deleteSuccess: 'Zuordnung gelöscht.',
+            deleteError: 'Zuordnung konnte nicht gelöscht werden.',
         },
         stats: {
             title: 'Lieferzeiten-Statistiken',

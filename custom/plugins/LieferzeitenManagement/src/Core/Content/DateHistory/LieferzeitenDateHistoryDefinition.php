@@ -9,6 +9,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\CreatedAtField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\LongTextField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
@@ -42,7 +43,7 @@ class LieferzeitenDateHistoryDefinition extends EntityDefinition
             new StringField('type', 'type'),
             new DateField('range_start', 'rangeStart'),
             new DateField('range_end', 'rangeEnd'),
-            new StringField('comment', 'comment'),
+            new LongTextField('comment', 'comment'),
             new FkField('created_by_id', 'createdById', UserDefinition::class),
             new CreatedAtField(),
             new ManyToOneAssociationField('orderPosition', 'order_position_id', LieferzeitenOrderPositionDefinition::class, 'id', false),
