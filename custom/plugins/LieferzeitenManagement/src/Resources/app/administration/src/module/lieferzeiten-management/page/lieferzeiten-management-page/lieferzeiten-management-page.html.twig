@@ -25,104 +25,105 @@
                 </div>
             </sw-modal>
 
-            <sw-card :title="$t('lieferzeiten-management.general.filtersTitle')" class="lieferzeiten-management-page__filters">
-                <div class="lieferzeiten-management-page__filters-grid">
-                    <sw-text-field
-                        v-model="orderNumberFilter"
-                        :label="$t('lieferzeiten-management.general.filterOrderNumber')"
-                        @change="onRefresh"
-                    />
-                    <sw-text-field
-                        v-model="san6PackageFilter"
-                        :label="$t('lieferzeiten-management.general.filterSan6Package')"
-                        @change="onRefresh"
-                    />
-                    <sw-text-field
-                        v-model="san6OrderNumberFilter"
-                        :label="$t('lieferzeiten-management.general.filterSan6OrderNumber')"
-                        @change="onRefresh"
-                    />
-                    <sw-text-field
-                        v-model="trackingFilter"
-                        :label="$t('lieferzeiten-management.general.filterTracking')"
-                        @change="onRefresh"
-                    />
-                    <sw-text-field
-                        v-model="packageStatusFilter"
-                        :label="$t('lieferzeiten-management.general.filterPackageStatus')"
-                        @change="onRefresh"
-                    />
-                    <sw-text-field
-                        v-model="orderStatusFilter"
-                        :label="$t('lieferzeiten-management.general.filterOrderStatus')"
-                        @change="onRefresh"
-                    />
-                    <sw-datepicker
-                        v-model="shippedFrom"
-                        date-type="date"
-                        :label="$t('lieferzeiten-management.general.filterShippedFrom')"
-                        @change="onRefresh"
-                    />
-                    <sw-datepicker
-                        v-model="shippedTo"
-                        date-type="date"
-                        :label="$t('lieferzeiten-management.general.filterShippedTo')"
-                        @change="onRefresh"
-                    />
-                    <sw-datepicker
-                        v-model="deliveredFrom"
-                        date-type="date"
-                        :label="$t('lieferzeiten-management.general.filterDeliveredFrom')"
-                        @change="onRefresh"
-                    />
-                    <sw-datepicker
-                        v-model="deliveredTo"
-                        date-type="date"
-                        :label="$t('lieferzeiten-management.general.filterDeliveredTo')"
-                        @change="onRefresh"
-                    />
-                </div>
-            </sw-card>
+            <template v-if="!needsSelection">
+                <sw-card :title="$t('lieferzeiten-management.general.filtersTitle')" class="lieferzeiten-management-page__filters">
+                    <div class="lieferzeiten-management-page__filters-grid">
+                        <sw-text-field
+                            v-model="orderNumberFilter"
+                            :label="$t('lieferzeiten-management.general.filterOrderNumber')"
+                            @change="onRefresh"
+                        />
+                        <sw-text-field
+                            v-model="san6PackageFilter"
+                            :label="$t('lieferzeiten-management.general.filterSan6Package')"
+                            @change="onRefresh"
+                        />
+                        <sw-text-field
+                            v-model="san6OrderNumberFilter"
+                            :label="$t('lieferzeiten-management.general.filterSan6OrderNumber')"
+                            @change="onRefresh"
+                        />
+                        <sw-text-field
+                            v-model="trackingFilter"
+                            :label="$t('lieferzeiten-management.general.filterTracking')"
+                            @change="onRefresh"
+                        />
+                        <sw-text-field
+                            v-model="packageStatusFilter"
+                            :label="$t('lieferzeiten-management.general.filterPackageStatus')"
+                            @change="onRefresh"
+                        />
+                        <sw-text-field
+                            v-model="orderStatusFilter"
+                            :label="$t('lieferzeiten-management.general.filterOrderStatus')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="shippedFrom"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterShippedFrom')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="shippedTo"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterShippedTo')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="deliveredFrom"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterDeliveredFrom')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="deliveredTo"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterDeliveredTo')"
+                            @change="onRefresh"
+                        />
+                    </div>
+                </sw-card>
 
-            <sw-card :title="$t('lieferzeiten-management.general.kpiTitle')" class="lieferzeiten-management-page__kpis">
-                <div class="sw-grid sw-grid--gap">
-                    <div class="sw-card-section">
-                        <p class="sw-card__title">
-                            {{ $t('lieferzeiten-management.general.kpiOpenOrders') }}
-                        </p>
-                        <p class="sw-card__content">
-                            {{ kpiOpenOrdersTotal }}
-                        </p>
+                <sw-card :title="$t('lieferzeiten-management.general.kpiTitle')" class="lieferzeiten-management-page__kpis">
+                    <div class="sw-grid sw-grid--gap">
+                        <div class="sw-card-section">
+                            <p class="sw-card__title">
+                                {{ $t('lieferzeiten-management.general.kpiOpenOrders') }}
+                            </p>
+                            <p class="sw-card__content">
+                                {{ kpiOpenOrdersTotal }}
+                            </p>
+                        </div>
+                        <div class="sw-card-section">
+                            <p class="sw-card__title">
+                                {{ $t('lieferzeiten-management.general.kpiOverdueShipping') }}
+                            </p>
+                            <p class="sw-card__content">
+                                {{ kpiOverdueShipping }}
+                            </p>
+                        </div>
+                        <div class="sw-card-section">
+                            <p class="sw-card__title">
+                                {{ $t('lieferzeiten-management.general.kpiOverdueDelivery') }}
+                            </p>
+                            <p class="sw-card__content">
+                                {{ kpiOverdueDelivery }}
+                            </p>
+                        </div>
                     </div>
-                    <div class="sw-card-section">
-                        <p class="sw-card__title">
-                            {{ $t('lieferzeiten-management.general.kpiOverdueShipping') }}
-                        </p>
-                        <p class="sw-card__content">
-                            {{ kpiOverdueShipping }}
-                        </p>
-                    </div>
-                    <div class="sw-card-section">
-                        <p class="sw-card__title">
-                            {{ $t('lieferzeiten-management.general.kpiOverdueDelivery') }}
-                        </p>
-                        <p class="sw-card__content">
-                            {{ kpiOverdueDelivery }}
-                        </p>
-                    </div>
-                </div>
-            </sw-card>
+                </sw-card>
 
-            <sw-card>
-                <sw-entity-listing
-                    :items="items"
-                    :repository="repository"
-                    :columns="columns"
-                    :isLoading="isLoading"
-                    :total="total"
-                    :showSelection="false"
-                    @page-change="onPageChange"
-                >
+                <sw-card>
+                    <sw-entity-listing
+                        :items="items"
+                        :repository="repository"
+                        :columns="columns"
+                        :isLoading="isLoading"
+                        :total="total"
+                        :showSelection="false"
+                        @page-change="onPageChange"
+                    >
                     <template #column-order.orderNumber="{ item }">
                         {{ item.order?.orderNumber }}
                     </template>
@@ -250,8 +251,9 @@
                             </sw-button>
                         </div>
                     </template>
-                </sw-entity-listing>
-            </sw-card>
+                    </sw-entity-listing>
+                </sw-card>
+            </template>
 
             <sw-modal
                 v-if="isTrackingModalOpen"

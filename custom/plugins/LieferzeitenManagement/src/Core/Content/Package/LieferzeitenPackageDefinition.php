@@ -56,7 +56,7 @@ class LieferzeitenPackageDefinition extends EntityDefinition
             new LongTextField('additional_customer_names', 'additionalCustomerNames'),
             new DateField('new_delivery_start', 'newDeliveryStart'),
             new DateField('new_delivery_end', 'newDeliveryEnd'),
-            new StringField('new_delivery_comment', 'newDeliveryComment'),
+            new LongTextField('new_delivery_comment', 'newDeliveryComment'),
             new FkField('new_delivery_updated_by_id', 'newDeliveryUpdatedById', UserDefinition::class),
             new DateTimeField('new_delivery_updated_at', 'newDeliveryUpdatedAt'),
             new CreatedAtField(),
