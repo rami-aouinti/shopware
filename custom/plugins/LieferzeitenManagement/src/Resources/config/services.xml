@@ -38,5 +38,22 @@
         <service id="LieferzeitenManagement\Core\Content\TaskAssignment\LieferzeitenTaskAssignmentDefinition">
             <tag name="shopware.entity.definition" />
         </service>
+
+        <service id="LieferzeitenManagement\Service\San6SyncService">
+            <argument type="service" id="LieferzeitenManagement\Service\San6Client" />
+            <argument type="service" id="lieferzeiten_package.repository" />
+            <argument type="service" id="lieferzeiten_tracking_number.repository" />
+        </service>
+
+        <service id="LieferzeitenManagement\Service\TrackingSyncService">
+            <argument type="service" id="LieferzeitenManagement\Service\TrackingClient" />
+            <argument type="service" id="lieferzeiten_tracking_event.repository" />
+        </service>
+
+        <service id="LieferzeitenManagement\Command\LieferzeitenSyncCommand">
+            <argument type="service" id="LieferzeitenManagement\Service\San6SyncService" />
+            <argument type="service" id="LieferzeitenManagement\Service\TrackingSyncService" />
+            <argument type="service" id="lieferzeiten_tracking_number.repository" />
+        </service>
     </services>
 </container>
