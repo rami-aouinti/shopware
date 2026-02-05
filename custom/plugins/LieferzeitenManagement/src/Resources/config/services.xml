@@ -51,6 +51,8 @@
             <argument type="service" id="lieferzeiten_tracking_event.repository" />
         </service>
 
+        <service id="LieferzeitenManagement\Service\San6Client" />
+
         <service id="LieferzeitenManagement\Service\Deadline\DeadlineCalculator" />
 
         <service id="LieferzeitenManagement\Service\Deadline\DeadlineResolver">
