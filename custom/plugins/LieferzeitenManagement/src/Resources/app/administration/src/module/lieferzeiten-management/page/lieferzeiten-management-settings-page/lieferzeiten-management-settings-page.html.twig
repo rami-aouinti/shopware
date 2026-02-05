@@ -45,5 +45,50 @@
                 </div>
             </div>
         </sw-card>
+
+        <sw-card :title="$t('lieferzeiten-management.settings.notificationTitle')">
+            <template #header-right>
+                <sw-button size="small" variant="primary" @click="addNotificationSetting">
+                    {{ $t('lieferzeiten-management.settings.notificationAdd') }}
+                </sw-button>
+            </template>
+            <sw-loader v-if="notificationIsLoading" />
+            <div v-else class="lieferzeiten-management-settings-page__list">
+                <p v-if="!notificationItems.length" class="lieferzeiten-management-settings-page__empty">
+                    {{ $t('lieferzeiten-management.settings.notificationEmptyState') }}
+                </p>
+
+                <div
+                    v-for="item in notificationItems"
+                    :key="item.id"
+                    class="lieferzeiten-management-settings-page__row"
+                >
+                    <sw-entity-single-select
+                        v-model="item.salesChannelId"
+                        entity="sales_channel"
+                        :label="$t('lieferzeiten-management.settings.salesChannelLabel')"
+                        :placeholder="$t('lieferzeiten-management.settings.salesChannelPlaceholder')"
+                    />
+                    <sw-single-select
+                        v-model="item.notificationKey"
+                        :options="notificationOptions"
+                        :label="$t('lieferzeiten-management.settings.notificationTypeLabel')"
+                        :placeholder="$t('lieferzeiten-management.settings.notificationTypePlaceholder')"
+                    />
+                    <sw-switch-field
+                        v-model="item.enabled"
+                        :label="$t('lieferzeiten-management.settings.notificationEnabledLabel')"
+                    />
+                    <div class="lieferzeiten-management-settings-page__actions">
+                        <sw-button size="small" variant="primary" @click="saveNotificationSetting(item)">
+                            {{ $t('global.default.save') }}
+                        </sw-button>
+                        <sw-button size="small" variant="danger" @click="deleteNotificationSetting(item)">
+                            {{ $t('global.default.delete') }}
+                        </sw-button>
+                    </div>
+                </div>
+            </div>
+        </sw-card>
     </sw-page>
 {% endblock %}
