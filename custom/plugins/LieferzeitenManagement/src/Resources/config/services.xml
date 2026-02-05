@@ -38,6 +38,9 @@
         <service id="LieferzeitenManagement\Core\Content\TaskAssignment\LieferzeitenTaskAssignmentDefinition">
             <tag name="shopware.entity.definition" />
         </service>
+        <service id="LieferzeitenManagement\Core\Content\SyncLog\LieferzeitenSyncLogDefinition">
+            <tag name="shopware.entity.definition" />
+        </service>
 
         <service id="LieferzeitenManagement\Service\San6SyncService">
             <argument type="service" id="LieferzeitenManagement\Service\San6Client" />
@@ -45,6 +48,8 @@
             <argument type="service" id="lieferzeiten_tracking_number.repository" />
             <argument type="service" id="order.repository" />
             <argument type="service" id="LieferzeitenManagement\Service\Deadline\DeadlineResolver" />
+            <argument type="service" id="LieferzeitenManagement\Service\Status\StatusResolver" />
+            <argument type="service" id="LieferzeitenManagement\Service\Status\StatusSyncBackService" />
         </service>
 
         <service id="LieferzeitenManagement\Service\OrderPositionSyncService">
@@ -60,11 +65,28 @@
             <argument type="service" id="lieferzeiten_tracking_event.repository" />
             <argument type="service" id="lieferzeiten_tracking_number.repository" />
             <argument type="service" id="LieferzeitenManagement\Service\Notification\NotificationEventDispatcher" />
+            <argument type="service" id="lieferzeiten_package.repository" />
+            <argument type="service" id="LieferzeitenManagement\Service\TrackingStatusInterpreter" />
+            <argument type="service" id="LieferzeitenManagement\Service\OrderCompletionUpdater" />
+        </service>
+
+        <service id="LieferzeitenManagement\Service\Status\StatusResolver" />
+
+        <service id="LieferzeitenManagement\Service\Status\StatusSyncBackService">
+            <argument type="service" id="order.repository" />
+            <argument type="service" id="lieferzeiten_sync_log.repository" />
+            <argument type="service" id="state_machine.registry" />
         </service>
 
         <service id="LieferzeitenManagement\Service\San6Client" />
 
         <service id="LieferzeitenManagement\Service\TrackingClient" />
+
+        <service id="LieferzeitenManagement\Service\TrackingStatusInterpreter" />
+
+        <service id="LieferzeitenManagement\Service\OrderCompletionUpdater">
+            <argument type="service" id="lieferzeiten_package.repository" />
+        </service>
 
         <service id="LieferzeitenManagement\Service\Deadline\DeadlineCalculator" />
 
@@ -107,6 +129,26 @@
         <service id="LieferzeitenManagement\Subscriber\LieferzeitenOrderPlacedSubscriber" />
         <service id="LieferzeitenManagement\Subscriber\LieferzeitenDateHistoryWrittenSubscriber">
             <argument type="service" id="lieferzeiten_date_history.repository" />
+        <service id="LieferzeitenManagement\Service\Stats\LieferzeitenStatsAggregationService" />
+
+        <service id="LieferzeitenManagement\Api\LieferzeitenStatsController">
+            <tag name="controller.service_arguments" />
+        <service id="LieferzeitenManagement\Service\Task\TaskCompletionNotifier" />
+
+        <service id="LieferzeitenManagement\Subscriber\TaskCompletionSubscriber">
+            <argument type="service" id="lieferzeiten_task.repository" />
+            <argument type="service" id="LieferzeitenManagement\Service\Task\TaskCompletionNotifier" />
+            <tag name="kernel.event_subscriber" />
+        </service>
+
+        <service id="LieferzeitenManagement\ScheduledTask\OverdueShippingScheduledTask">
+            <tag name="shopware.scheduled.task" />
+        </service>
+
+        <service id="LieferzeitenManagement\ScheduledTask\OverdueShippingScheduledTaskHandler">
+            <argument type="service" id="scheduled_task.repository" />
+            <argument type="service" id="LieferzeitenManagement\Service\Task\OverdueShippingTaskGenerator" />
+            <tag name="messenger.message_handler" />
         </service>
     </services>
 </container>

@@ -7,6 +7,7 @@ use LieferzeitenManagement\Core\Content\TrackingNumber\LieferzeitenTrackingNumbe
 use LieferzeitenManagement\Core\Notification\Event\LieferzeitenTrackingAvailableEvent;
 use LieferzeitenManagement\Core\Notification\NotificationKey;
 use LieferzeitenManagement\Service\Notification\NotificationEventDispatcher;
+use LieferzeitenManagement\Core\Content\Package\LieferzeitenPackageDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -17,12 +18,16 @@ class TrackingSyncService
     /**
      * @param EntityRepository<LieferzeitenTrackingEventDefinition> $trackingEventRepository
      * @param EntityRepository<LieferzeitenTrackingNumberDefinition> $trackingNumberRepository
+     * @param EntityRepository<LieferzeitenPackageDefinition> $packageRepository
      */
     public function __construct(
         private readonly TrackingClient $trackingClient,
         private readonly EntityRepository $trackingEventRepository,
         private readonly EntityRepository $trackingNumberRepository,
         private readonly NotificationEventDispatcher $notificationEventDispatcher,
+        private readonly EntityRepository $packageRepository,
+        private readonly TrackingStatusInterpreter $trackingStatusInterpreter,
+        private readonly OrderCompletionUpdater $orderCompletionUpdater
     ) {
     }
 
@@ -30,21 +35,31 @@ class TrackingSyncService
     {
         $events = $this->trackingClient->fetchTrackingEvents($trackingNumber);
 
-        if ($events === []) {
-            return;
+        if ($events !== []) {
+            $payloads = [];
+
+            foreach ($events as $event) {
+                $payloads[] = [
+                    'id' => $event['id'] ?? Uuid::randomHex(),
+                    'trackingNumberId' => $trackingNumberId,
+                    'status' => $event['status'] ?? null,
+                    'description' => $event['description'] ?? null,
+                    'occurredAt' => $event['occurredAt'] ?? null,
+                    'payload' => $event,
+                ];
+            }
+
+            $this->trackingEventRepository->upsert($payloads, $context);
         }
 
-        $payloads = [];
+        $criteria = new Criteria([$trackingNumberId]);
+        $criteria->addAssociation('package');
 
-        foreach ($events as $event) {
-            $payloads[] = [
-                'id' => $event['id'] ?? Uuid::randomHex(),
-                'trackingNumberId' => $trackingNumberId,
-                'status' => $event['status'] ?? null,
-                'description' => $event['description'] ?? null,
-                'occurredAt' => $event['occurredAt'] ?? null,
-                'payload' => $event,
-            ];
+        $trackingNumberEntity = $this->trackingNumberRepository->search($criteria, $context)->first();
+        $package = $trackingNumberEntity?->getPackage();
+
+        if (!$package || !$package->getId()) {
+            return;
         }
 
         $this->trackingEventRepository->upsert($payloads, $context);
@@ -67,5 +82,23 @@ class TrackingSyncService
             NotificationKey::TRACKING_AVAILABLE,
             $context,
         );
+        $fallbackDeliveredAt = $package->getDeliveredAt()?->format(DATE_ATOM);
+        $result = $this->trackingStatusInterpreter->interpret(
+            $events,
+            $package->getTrackingStatus(),
+            $fallbackDeliveredAt
+        );
+
+        $this->packageRepository->upsert([
+            [
+                'id' => $package->getId(),
+                'trackingStatus' => $result->status,
+                'deliveredAt' => $result->deliveredAt,
+            ],
+        ], $context);
+
+        if ($package->getOrderId()) {
+            $this->orderCompletionUpdater->update($package->getOrderId(), $context);
+        }
     }
 }

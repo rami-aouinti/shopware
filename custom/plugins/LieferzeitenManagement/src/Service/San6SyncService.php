@@ -5,6 +5,8 @@ namespace LieferzeitenManagement\Service;
 use LieferzeitenManagement\Core\Content\Package\LieferzeitenPackageDefinition;
 use LieferzeitenManagement\Core\Content\TrackingNumber\LieferzeitenTrackingNumberDefinition;
 use LieferzeitenManagement\Service\Deadline\DeadlineResolver;
+use LieferzeitenManagement\Service\Status\StatusResolver;
+use LieferzeitenManagement\Service\Status\StatusSyncBackService;
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -24,7 +26,9 @@ class San6SyncService
         private readonly EntityRepository $packageRepository,
         private readonly EntityRepository $trackingNumberRepository,
         private readonly EntityRepository $orderRepository,
-        private readonly DeadlineResolver $deadlineResolver
+        private readonly DeadlineResolver $deadlineResolver,
+        private readonly StatusResolver $statusResolver,
+        private readonly StatusSyncBackService $statusSyncBackService
     ) {
     }
 
@@ -49,6 +53,10 @@ class San6SyncService
             }
 
             $packageId = $package['id'] ?? Uuid::randomHex();
+            $statusSource = empty($package['trackingStatus'])
+                ? StatusResolver::SOURCE_SAN6
+                : StatusResolver::SOURCE_TRACKING_INTERNAL;
+            $businessStatus = $this->statusResolver->resolveForSource($statusSource);
 
             $packagePayloads[] = [
                 'id' => $packageId,
@@ -60,8 +68,27 @@ class San6SyncService
                 'trackingNumber' => $package['trackingNumber'] ?? null,
                 'trackingProvider' => $package['trackingProvider'] ?? null,
                 'trackingStatus' => $package['trackingStatus'] ?? null,
+                'businessStatusCode' => $businessStatus['code'],
+                'businessStatusLabel' => $businessStatus['label'],
+                'businessStatusSource' => $businessStatus['source'],
                 ...$this->deadlineResolver->resolveForOrder($package['orderId'], $context),
             ];
+
+            if (!empty($package['deliveredAt'])) {
+                $this->statusSyncBackService->syncBackForOrderId(
+                    $package['orderId'],
+                    StatusResolver::STATUS_COMPLETED,
+                    $businessStatus['source'],
+                    $context
+                );
+            } elseif (!empty($package['shippedAt'])) {
+                $this->statusSyncBackService->syncBackForOrderId(
+                    $package['orderId'],
+                    StatusResolver::STATUS_SHIPPED,
+                    $businessStatus['source'],
+                    $context
+                );
+            }
 
             if (!empty($package['trackingNumber'])) {
                 $this->deactivateExistingTrackingNumbers($packageId, $context);

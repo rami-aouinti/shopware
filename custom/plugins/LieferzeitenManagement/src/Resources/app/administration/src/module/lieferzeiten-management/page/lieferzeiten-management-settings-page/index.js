@@ -19,6 +19,11 @@ Shopware.Component.register('lieferzeiten-management-settings-page', {
             notificationItems: [],
             isLoading: false,
             notificationIsLoading: false,
+            taskAssignmentRepository: null,
+            items: [],
+            taskAssignments: [],
+            isLoading: false,
+            isAssignmentLoading: false,
             areaOptions: [
                 { value: 'first-medical', label: this.$t('lieferzeiten-management.general.areaFirstMedical') },
                 { value: 'e-commerce', label: this.$t('lieferzeiten-management.general.areaECommerce') },
@@ -37,6 +42,9 @@ Shopware.Component.register('lieferzeiten-management-settings-page', {
                     value: 'delivery_date_changed',
                     label: this.$t('lieferzeiten-management.settings.notificationDeliveryDateChanged'),
                 },
+            taskTypeOptions: [
+                { value: 'shipping_overdue', label: this.$t('lieferzeiten-management.settings.taskTypeShippingOverdue') },
+                { value: 'additional_delivery_request', label: this.$t('lieferzeiten-management.settings.taskTypeAdditionalDelivery') },
             ],
         };
     },
@@ -46,6 +54,9 @@ Shopware.Component.register('lieferzeiten-management-settings-page', {
         this.notificationSettingsRepository = this.repositoryFactory.create('lieferzeiten_notification_settings');
         this.loadSettings();
         this.loadNotificationSettings();
+        this.taskAssignmentRepository = this.repositoryFactory.create('lieferzeiten_task_assignment');
+        this.loadSettings();
+        this.loadTaskAssignments();
     },
 
     methods: {
@@ -72,6 +83,19 @@ Shopware.Component.register('lieferzeiten-management-settings-page', {
             });
         },
 
+        loadTaskAssignments() {
+            this.isAssignmentLoading = true;
+            const criteria = new Criteria(1, 250);
+            criteria.addAssociation('salesChannel');
+            criteria.addAssociation('assignedUser');
+
+            this.taskAssignmentRepository.search(criteria, Shopware.Context.api).then((result) => {
+                this.taskAssignments = result;
+            }).finally(() => {
+                this.isAssignmentLoading = false;
+            });
+        },
+
         addMapping() {
             const setting = this.settingsRepository.create(Shopware.Context.api);
             this.items.unshift(setting);
@@ -80,6 +104,11 @@ Shopware.Component.register('lieferzeiten-management-settings-page', {
             const setting = this.notificationSettingsRepository.create(Shopware.Context.api);
             setting.enabled = true;
             this.notificationItems.unshift(setting);
+        },
+
+        addTaskAssignment() {
+            const assignment = this.taskAssignmentRepository.create(Shopware.Context.api);
+            this.taskAssignments.unshift(assignment);
         },
 
         saveMapping(item) {
@@ -111,6 +140,21 @@ Shopware.Component.register('lieferzeiten-management-settings-page', {
             });
         },
 
+        saveTaskAssignment(item) {
+            this.taskAssignmentRepository.save(item, Shopware.Context.api).then(() => {
+                this.createNotificationSuccess({
+                    title: this.$t('global.default.success'),
+                    message: this.$t('lieferzeiten-management.settings.taskAssignmentSaveSuccess'),
+                });
+                this.loadTaskAssignments();
+            }).catch(() => {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: this.$t('lieferzeiten-management.settings.taskAssignmentSaveError'),
+                });
+            });
+        },
+
         deleteMapping(item) {
             if (!item?.id) {
                 return;
@@ -130,6 +174,8 @@ Shopware.Component.register('lieferzeiten-management-settings-page', {
             });
         },
         deleteNotificationSetting(item) {
+
+        deleteTaskAssignment(item) {
             if (!item?.id) {
                 return;
             }
@@ -144,6 +190,16 @@ Shopware.Component.register('lieferzeiten-management-settings-page', {
                 this.createNotificationError({
                     title: this.$t('global.default.error'),
                     message: this.$t('lieferzeiten-management.settings.notificationDeleteError'),
+            this.taskAssignmentRepository.delete(item.id, Shopware.Context.api).then(() => {
+                this.createNotificationSuccess({
+                    title: this.$t('global.default.success'),
+                    message: this.$t('lieferzeiten-management.settings.taskAssignmentDeleteSuccess'),
+                });
+                this.loadTaskAssignments();
+            }).catch(() => {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: this.$t('lieferzeiten-management.settings.taskAssignmentDeleteError'),
                 });
             });
         },

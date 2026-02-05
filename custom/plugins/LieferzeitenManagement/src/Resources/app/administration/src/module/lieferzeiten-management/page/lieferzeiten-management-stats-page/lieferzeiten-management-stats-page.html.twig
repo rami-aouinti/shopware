@@ -5,31 +5,28 @@
                 <p>{{ $t('lieferzeiten-management.stats.description') }}</p>
             </sw-card>
 
-            <sw-card :title="$t('lieferzeiten-management.stats.kpiTitle')">
+            <sw-card :title="$t('lieferzeiten-management.stats.kpiTitle')" :isLoading="isLoading">
                 <div class="sw-grid sw-grid--gap">
                     <div class="sw-card-section">
                         <p class="sw-card__title">{{ $t('lieferzeiten-management.stats.kpiAverageLeadTime') }}</p>
-                        <p class="sw-card__content">-</p>
+                        <p class="sw-card__content">{{ formattedAverageLeadTime }}</p>
                     </div>
                     <div class="sw-card-section">
                         <p class="sw-card__title">{{ $t('lieferzeiten-management.stats.kpiOverdueRate') }}</p>
-                        <p class="sw-card__content">-</p>
+                        <p class="sw-card__content">{{ formattedOverdueRate }}</p>
                     </div>
                     <div class="sw-card-section">
                         <p class="sw-card__title">{{ $t('lieferzeiten-management.stats.kpiVolume') }}</p>
-                        <p class="sw-card__content">-</p>
+                        <p class="sw-card__content">{{ formattedVolume }}</p>
                     </div>
                 </div>
             </sw-card>
 
-            <sw-card :title="$t('lieferzeiten-management.stats.tableTitle')">
+            <sw-card :title="$t('lieferzeiten-management.stats.tableTitle')" :isLoading="isLoading">
                 <sw-data-grid
-                    :dataSource="[]"
+                    :dataSource="rows"
                     :showSelection="false"
-                    :columns="[
-                        { property: 'metric', label: $t('lieferzeiten-management.stats.columnMetric') },
-                        { property: 'value', label: $t('lieferzeiten-management.stats.columnValue') },
-                    ]"
+                    :columns="columns"
                 />
             </sw-card>
         </template>
