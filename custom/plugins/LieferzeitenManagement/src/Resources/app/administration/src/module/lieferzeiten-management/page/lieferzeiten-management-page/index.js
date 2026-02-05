@@ -519,6 +519,8 @@ Shopware.Component.register('lieferzeiten-management-page', {
                 historyEntry.createdById = currentUser?.id || null;
                 this.dateHistoryRepository.save(historyEntry, Shopware.Context.api);
 
+                this.closeAdditionalDeliveryTasks(position.id);
+
                 const startWeek = this.getWeekNumber(position.supplierDeliveryStart);
                 const endWeek = this.getWeekNumber(position.supplierDeliveryEnd);
                 this.createNotificationSuccess({
@@ -528,6 +530,28 @@ Shopware.Component.register('lieferzeiten-management-page', {
                         endWeek,
                     }),
                 });
+            });
+        },
+
+        closeAdditionalDeliveryTasks(orderPositionId) {
+            const criteria = new Criteria(1, 25);
+            criteria.addFilter(Criteria.equals('orderPositionId', orderPositionId));
+            criteria.addFilter(Criteria.equals('type', 'additional_delivery_request'));
+            criteria.addFilter(Criteria.equals('status', 'open'));
+
+            this.taskRepository.search(criteria, Shopware.Context.api).then((result) => {
+                if (!result.length) {
+                    return;
+                }
+
+                const now = new Date().toISOString();
+                const payload = result.map((task) => ({
+                    id: task.id,
+                    status: 'completed',
+                    completedAt: now,
+                }));
+
+                return this.taskRepository.saveAll(payload, Shopware.Context.api);
             });
         },
 
