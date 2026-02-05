@@ -64,6 +64,7 @@
             <argument type="service" id="LieferzeitenManagement\Service\TrackingClient" />
             <argument type="service" id="lieferzeiten_tracking_event.repository" />
             <argument type="service" id="lieferzeiten_tracking_number.repository" />
+            <argument type="service" id="LieferzeitenManagement\Service\Notification\NotificationEventDispatcher" />
             <argument type="service" id="lieferzeiten_package.repository" />
             <argument type="service" id="LieferzeitenManagement\Service\TrackingStatusInterpreter" />
             <argument type="service" id="LieferzeitenManagement\Service\OrderCompletionUpdater" />
@@ -117,6 +118,17 @@
             <argument type="service" id="LieferzeitenManagement\Service\Task\OverdueShippingTaskGenerator" />
         </service>
 
+        <service id="LieferzeitenManagement\Service\Notification\NotificationSettingsResolver">
+            <argument type="service" id="lieferzeiten_notification_settings.repository" />
+        </service>
+        <service id="LieferzeitenManagement\Service\Notification\NotificationEventDispatcher">
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="LieferzeitenManagement\Service\Notification\NotificationSettingsResolver" />
+        </service>
+
+        <service id="LieferzeitenManagement\Subscriber\LieferzeitenOrderPlacedSubscriber" />
+        <service id="LieferzeitenManagement\Subscriber\LieferzeitenDateHistoryWrittenSubscriber">
+            <argument type="service" id="lieferzeiten_date_history.repository" />
         <service id="LieferzeitenManagement\Service\Stats\LieferzeitenStatsAggregationService" />
 
         <service id="LieferzeitenManagement\Api\LieferzeitenStatsController">

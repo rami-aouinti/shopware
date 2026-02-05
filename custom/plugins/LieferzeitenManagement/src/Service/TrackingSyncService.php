@@ -4,6 +4,9 @@ namespace LieferzeitenManagement\Service;
 
 use LieferzeitenManagement\Core\Content\TrackingEvent\LieferzeitenTrackingEventDefinition;
 use LieferzeitenManagement\Core\Content\TrackingNumber\LieferzeitenTrackingNumberDefinition;
+use LieferzeitenManagement\Core\Notification\Event\LieferzeitenTrackingAvailableEvent;
+use LieferzeitenManagement\Core\Notification\NotificationKey;
+use LieferzeitenManagement\Service\Notification\NotificationEventDispatcher;
 use LieferzeitenManagement\Core\Content\Package\LieferzeitenPackageDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -21,6 +24,7 @@ class TrackingSyncService
         private readonly TrackingClient $trackingClient,
         private readonly EntityRepository $trackingEventRepository,
         private readonly EntityRepository $trackingNumberRepository,
+        private readonly NotificationEventDispatcher $notificationEventDispatcher,
         private readonly EntityRepository $packageRepository,
         private readonly TrackingStatusInterpreter $trackingStatusInterpreter,
         private readonly OrderCompletionUpdater $orderCompletionUpdater
@@ -58,6 +62,26 @@ class TrackingSyncService
             return;
         }
 
+        $this->trackingEventRepository->upsert($payloads, $context);
+
+        $criteria = new Criteria([$trackingNumberId]);
+        $criteria->addAssociation('package.order.orderCustomer');
+
+        $trackingNumberEntity = $this->trackingNumberRepository->search($criteria, $context)->first();
+        $order = $trackingNumberEntity?->getPackage()?->getOrder();
+        $salesChannelId = $order?->getSalesChannelId();
+
+        if (!$order || !$salesChannelId) {
+            return;
+        }
+
+        $flowEvent = LieferzeitenTrackingAvailableEvent::createFromOrder($context, $order, $trackingNumber);
+        $this->notificationEventDispatcher->dispatchIfEnabled(
+            $flowEvent,
+            $salesChannelId,
+            NotificationKey::TRACKING_AVAILABLE,
+            $context,
+        );
         $fallbackDeliveredAt = $package->getDeliveredAt()?->format(DATE_ATOM);
         $result = $this->trackingStatusInterpreter->interpret(
             $events,
