@@ -116,12 +116,16 @@ export default {
         },
 
         getOrderColumns() {
-            const columns = this.$super('getOrderColumns');
+            const columns = this.$super('getOrderColumns').map((column) => ({
+                ...column,
+                sortable: true,
+            }));
+
             columns.unshift({
                 property: 'pwErpOrderPickabilityStatus',
                 label: this.$t('sw-order-list.pw-erp.pickability-column.label'),
                 allowResize: false,
-                sortable: false,
+                sortable: true,
                 align: 'center',
                 width: '70px',
             });
@@ -135,6 +139,11 @@ export default {
 <style lang="scss">
 .sw-order-list__content{
     .pw-erp-hide-column-context-menu + .sw-context-button{
+        display: none;
+    }
+
+    .sw-data-grid__cell--actions,
+    .sw-data-grid__header--actions{
         display: none;
     }
 }
