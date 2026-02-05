@@ -88,6 +88,7 @@
                     :sort-by="sortBy"
                     :sort-direction="sortDirection"
                     :showSelection="true"
+                    class="external-orders__table"
                     identifier="external-orders"
                     @column-sort="onSortColumn"
                     @selection-change="onSelectionChange"
@@ -119,6 +120,18 @@
                         />
                     </template>
                 </sw-data-grid>
+                <div
+                    v-if="paginatedOrders.length > 0"
+                    class="external-orders__pagination"
+                >
+                    <sw-pagination
+                        :page="page"
+                        :limit="limit"
+                        :total="paginationTotal"
+                        :total-visible="7"
+                        @page-change="onPageChange"
+                    />
+                </div>
                 <sw-empty-state
                     v-else
                     icon="regular-shopping-cart"
