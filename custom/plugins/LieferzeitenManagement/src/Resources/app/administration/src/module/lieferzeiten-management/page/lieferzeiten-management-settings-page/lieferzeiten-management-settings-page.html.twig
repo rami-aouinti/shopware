@@ -34,6 +34,23 @@
                         :label="$t('lieferzeiten-management.settings.areaLabel')"
                         :placeholder="$t('lieferzeiten-management.settings.areaPlaceholder')"
                     />
+                    <sw-number-field
+                        v-model="item.latestShippingOffsetDays"
+                        :label="$t('lieferzeiten-management.settings.latestShippingOffsetLabel')"
+                        :placeholder="$t('lieferzeiten-management.settings.latestShippingOffsetPlaceholder')"
+                        :min="0"
+                    />
+                    <sw-number-field
+                        v-model="item.latestDeliveryOffsetDays"
+                        :label="$t('lieferzeiten-management.settings.latestDeliveryOffsetLabel')"
+                        :placeholder="$t('lieferzeiten-management.settings.latestDeliveryOffsetPlaceholder')"
+                        :min="0"
+                    />
+                    <sw-text-field
+                        v-model="item.cutoffTime"
+                        :label="$t('lieferzeiten-management.settings.cutoffTimeLabel')"
+                        :placeholder="$t('lieferzeiten-management.settings.cutoffTimePlaceholder')"
+                    />
                     <div class="lieferzeiten-management-settings-page__actions">
                         <sw-button size="small" variant="primary" @click="saveMapping(item)">
                             {{ $t('global.default.save') }}
