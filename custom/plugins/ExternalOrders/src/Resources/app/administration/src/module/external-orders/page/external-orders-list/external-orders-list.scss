@@ -1,4 +1,5 @@
-:global(.external-orders) {
+:global {
+    .external-orders {
     :global(.external-orders__page .sw-page__main-content),
     :global(.external-orders__page .sw-page__side-content),
     :global(.sw-page__main-content-inner.external-orders__page),
@@ -259,9 +260,10 @@
         gap: 8px;
     }
 
-    &__totals-row {
-        display: flex;
-        justify-content: space-between;
-        font-weight: 500;
+        &__totals-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 500;
+        }
     }
 }
