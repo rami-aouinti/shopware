@@ -374,8 +374,7 @@ Component.register('external-orders-list', {
                 return;
             }
 
-            const lines = this.buildExportLines(orders);
-            const pdfData = this.buildSimplePdf(lines);
+            const pdfData = this.buildTablePdf(orders);
             this.downloadBlob('external-orders.pdf', 'application/pdf', pdfData);
         },
         exportSelectedOrdersExcel() {
@@ -531,33 +530,67 @@ Component.register('external-orders-list', {
                 ?? order?.priceTotal
                 ?? 0;
         },
-        buildSimplePdf(lines) {
+        buildTablePdf(orders) {
+            const rows = this.buildExportRows(orders);
+            const summaryLine = this.buildExportSummaryLine(orders);
             const fontSize = 10;
-            const lineHeight = 14;
-            const startX = 50;
-            const startY = 800 - lineHeight;
+            const lineHeight = 18;
+            const pageWidth = 595;
+            const pageHeight = 842;
+            const marginX = 30;
+            const marginTop = 40;
+            const startY = pageHeight - marginTop;
+            const tableTop = startY - (lineHeight * 2);
 
-            const escapedLines = lines.map((line) => this.escapePdfText(line));
-            const textLines = escapedLines.map((line, index) => {
-                if (index === 0) {
-                    return `(${line}) Tj`;
-                }
-                return `0 -${lineHeight} Td (${line}) Tj`;
-            }).join('\n');
+            const columnWidths = this.getPdfColumnWidths(rows, pageWidth - marginX * 2);
+            const totalTableWidth = columnWidths.reduce((sum, width) => sum + width, 0);
+            const xPositions = columnWidths.reduce((positions, width) => {
+                const last = positions[positions.length - 1];
+                positions.push(last + width);
+                return positions;
+            }, [marginX]);
 
-            const stream = [
-                'BT',
-                `/F1 ${fontSize} Tf`,
-                `1 0 0 1 ${startX} ${startY} Tm`,
-                textLines,
-                'ET',
-            ].join('\n');
+            const tableHeight = rows.length * lineHeight;
+            const tableBottom = tableTop - tableHeight;
 
+            const contentParts = [];
+            contentParts.push('BT');
+            contentParts.push(`/F1 ${fontSize} Tf`);
+            contentParts.push(`1 0 0 1 ${marginX} ${startY} Tm`);
+            contentParts.push(`(${this.escapePdfText(summaryLine)}) Tj`);
+            contentParts.push('ET');
+
+            contentParts.push('0.5 w');
+            xPositions.forEach((x) => {
+                contentParts.push(`${x} ${tableTop} m ${x} ${tableBottom} l S`);
+            });
+            for (let rowIndex = 0; rowIndex <= rows.length; rowIndex += 1) {
+                const y = tableTop - (rowIndex * lineHeight);
+                contentParts.push(`${marginX} ${y} m ${marginX + totalTableWidth} ${y} l S`);
+            }
+
+            const maxCharsForWidth = (width) => Math.floor((width - 8) / (fontSize * 0.6));
+            rows.forEach((row, rowIndex) => {
+                const textY = tableTop - ((rowIndex + 1) * lineHeight) + 6;
+                row.forEach((value, columnIndex) => {
+                    const cellX = xPositions[columnIndex] + 4;
+                    const width = columnWidths[columnIndex];
+                    const rawText = String(value ?? '');
+                    const trimmed = this.trimPdfText(rawText, maxCharsForWidth(width));
+                    contentParts.push('BT');
+                    contentParts.push(`/F1 ${fontSize} Tf`);
+                    contentParts.push(`1 0 0 1 ${cellX} ${textY} Tm`);
+                    contentParts.push(`(${this.escapePdfText(trimmed)}) Tj`);
+                    contentParts.push('ET');
+                });
+            });
+
+            const stream = contentParts.join('\n');
             const objects = [];
             objects.push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
             objects.push('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');
             objects.push('3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 5 0 R /Resources << /Font << /F1 4 0 R >> >> >>\nendobj\n');
-            objects.push('4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>\nendobj\n');
+            objects.push('4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n');
             objects.push(`5 0 obj\n<< /Length ${stream.length} >>\nstream\n${stream}\nendstream\nendobj\n`);
 
             let pdf = '%PDF-1.4\n';
@@ -577,6 +610,26 @@ Component.register('external-orders-list', {
             pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefStart}\n%%EOF`;
 
             return encoder.encode(pdf);
+        },
+        getPdfColumnWidths(rows, availableWidth) {
+            const maxLengths = rows[0].map((_, index) => Math.max(...rows.map((row) => String(row[index] ?? '').length)));
+            const minWidths = [60, 120, 55, 85, 65, 110, 40, 60];
+            const baseWidths = maxLengths.map((length, index) => Math.max(minWidths[index], length * 6));
+            const totalWidth = baseWidths.reduce((sum, width) => sum + width, 0);
+            const scale = totalWidth > availableWidth ? (availableWidth / totalWidth) : 1;
+            return baseWidths.map((width) => Math.floor(width * scale));
+        },
+        trimPdfText(text, maxChars) {
+            if (maxChars <= 0) {
+                return '';
+            }
+            if (text.length <= maxChars) {
+                return text;
+            }
+            if (maxChars === 1) {
+                return '…';
+            }
+            return `${text.slice(0, maxChars - 1)}…`;
         },
         escapePdfText(text) {
             return String(text)
