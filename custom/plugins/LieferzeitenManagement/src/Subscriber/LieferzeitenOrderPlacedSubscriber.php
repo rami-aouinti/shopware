@@ -5,7 +5,7 @@ namespace LieferzeitenManagement\Subscriber;
 use LieferzeitenManagement\Core\Notification\Event\LieferzeitenOrderCreatedEvent;
 use LieferzeitenManagement\Core\Notification\NotificationKey;
 use LieferzeitenManagement\Service\Notification\NotificationEventDispatcher;
-use Shopware\Core\Checkout\Cart\Order\CheckoutOrderPlacedEvent;
+use Shopware\Core\Checkout\Order\Event\CheckoutOrderPlacedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class LieferzeitenOrderPlacedSubscriber implements EventSubscriberInterface
