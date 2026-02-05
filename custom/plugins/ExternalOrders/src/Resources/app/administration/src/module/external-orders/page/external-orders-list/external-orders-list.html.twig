@@ -501,7 +501,7 @@
 
             <sw-modal
                 v-if="showDetailModal && selectedOrder"
-                title="Bestellübersicht für {{ selectedOrder.orderNumber }}"
+                :title="`Bestellübersicht für ${selectedOrder.orderNumber}`"
                 variant="large"
                 class="external-orders__detail-modal"
                 @modal-close="closeDetail"
