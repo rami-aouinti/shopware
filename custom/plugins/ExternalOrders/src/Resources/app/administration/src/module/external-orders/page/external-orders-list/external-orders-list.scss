@@ -186,6 +186,12 @@
         }
     }
 
+    &__pagination {
+        display: flex;
+        justify-content: flex-end;
+        padding: 12px 16px 4px;
+    }
+
     &__detail {
         display: flex;
         flex-direction: column;
