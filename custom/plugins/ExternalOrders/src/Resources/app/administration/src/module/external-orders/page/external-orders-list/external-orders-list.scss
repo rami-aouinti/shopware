@@ -9,13 +9,7 @@
     }
 
     :global(.external-orders__page .sw-page__main-content-inner),
-    :global(.external-orders__page .sw-page__side-content-inner) {
-        position: relative;
-        height: auto;
-        min-height: 100%;
-        overflow: visible !important;
-    }
-
+    :global(.external-orders__page .sw-page__side-content-inner),
     :global(.sw-page__main-content-inner.external-orders__page),
     :global(.sw-page__side-content-inner.external-orders__page),
     :global(.external-orders .sw-page__main-content-inner.external-orders__page),
