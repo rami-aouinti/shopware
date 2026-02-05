@@ -1,8 +1,6 @@
 .external-orders {
     :global(.external-orders__page .sw-page__main-content),
     :global(.external-orders__page .sw-page__side-content),
-    :global(.sw-page__main-content-inner.external-orders__page),
-    :global(.sw-page__side-content-inner.external-orders__page),
     :global(.external-orders .sw-page__main-content-inner.external-orders__page),
     :global(.external-orders .sw-page__side-content-inner.external-orders__page) {
         overflow: visible !important;
@@ -10,8 +8,6 @@
 
     :global(.external-orders__page .sw-page__main-content-inner),
     :global(.external-orders__page .sw-page__side-content-inner),
-    :global(.sw-page__main-content-inner.external-orders__page),
-    :global(.sw-page__side-content-inner.external-orders__page),
     :global(.external-orders .sw-page__main-content-inner.external-orders__page),
     :global(.external-orders .sw-page__side-content-inner.external-orders__page) {
         position: relative;
