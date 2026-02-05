@@ -661,16 +661,16 @@ Component.register('external-orders-list', {
         buildTablePdf(orders) {
             const rows = this.buildExportRows(orders);
             const summaryLine = this.buildExportSummaryLine(orders);
-            const fontSize = 10;
-            const lineHeight = 18;
             const pageWidth = 595;
             const pageHeight = 842;
             const marginX = 30;
             const marginTop = 40;
             const startY = pageHeight - marginTop;
+            const availableWidth = pageWidth - marginX * 2;
+            const { columnWidths, scale } = this.getPdfColumnWidths(rows, availableWidth);
+            const fontSize = Math.max(8, Math.floor(10 * scale));
+            const lineHeight = Math.max(14, Math.round(fontSize * 1.8));
             const tableTop = startY - (lineHeight * 2);
-
-            const columnWidths = this.getPdfColumnWidths(rows, pageWidth - marginX * 2);
             const totalTableWidth = columnWidths.reduce((sum, width) => sum + width, 0);
             const xPositions = columnWidths.reduce((positions, width) => {
                 const last = positions[positions.length - 1];
@@ -697,11 +697,11 @@ Component.register('external-orders-list', {
                 contentParts.push(`${marginX} ${y} m ${marginX + totalTableWidth} ${y} l S`);
             }
 
-            const maxCharsForWidth = (width) => Math.floor((width - 8) / (fontSize * 0.6));
+            const maxCharsForWidth = (width) => Math.floor((width - 6) / (fontSize * 0.55));
             rows.forEach((row, rowIndex) => {
-                const textY = tableTop - ((rowIndex + 1) * lineHeight) + 6;
+                const textY = tableTop - ((rowIndex + 1) * lineHeight) + Math.round(fontSize * 0.6);
                 row.forEach((value, columnIndex) => {
-                    const cellX = xPositions[columnIndex] + 4;
+                    const cellX = xPositions[columnIndex] + 3;
                     const width = columnWidths[columnIndex];
                     const rawText = String(value ?? '');
                     const trimmed = this.trimPdfText(rawText, maxCharsForWidth(width));
@@ -741,11 +741,14 @@ Component.register('external-orders-list', {
         },
         getPdfColumnWidths(rows, availableWidth) {
             const maxLengths = rows[0].map((_, index) => Math.max(...rows.map((row) => String(row[index] ?? '').length)));
-            const minWidths = [60, 120, 55, 85, 65, 110, 40, 60];
+            const minWidths = [60, 120, 55, 95, 65, 110, 45, 70];
             const baseWidths = maxLengths.map((length, index) => Math.max(minWidths[index], length * 6));
             const totalWidth = baseWidths.reduce((sum, width) => sum + width, 0);
             const scale = totalWidth > availableWidth ? (availableWidth / totalWidth) : 1;
-            return baseWidths.map((width) => Math.floor(width * scale));
+            return {
+                columnWidths: baseWidths.map((width) => Math.floor(width * scale)),
+                scale,
+            };
         },
         trimPdfText(text, maxChars) {
             if (maxChars <= 0) {
