@@ -80,6 +80,7 @@ Component.register('external-orders-list', {
                     label: 'BestellNr',
                     sortable: true,
                     primary: true,
+                    allowResize: true,
                 },
                 {
                     property: 'customerName',
@@ -87,6 +88,7 @@ Component.register('external-orders-list', {
                     sortBy: 'customerName',
                     label: 'Kundenname',
                     sortable: true,
+                    allowResize: true,
                 },
                 {
                     property: 'orderReference',
@@ -94,6 +96,7 @@ Component.register('external-orders-list', {
                     sortBy: 'orderReference',
                     label: 'AuftragsNr',
                     sortable: true,
+                    allowResize: true,
                 },
                 {
                     property: 'email',
@@ -101,6 +104,7 @@ Component.register('external-orders-list', {
                     sortBy: 'email',
                     label: 'Email',
                     sortable: true,
+                    allowResize: true,
                 },
                 {
                     property: 'date',
@@ -108,6 +112,7 @@ Component.register('external-orders-list', {
                     sortBy: 'date',
                     label: 'Datum',
                     sortable: true,
+                    allowResize: true,
                 },
                 {
                     property: 'statusLabel',
@@ -115,6 +120,7 @@ Component.register('external-orders-list', {
                     sortBy: 'statusLabel',
                     label: 'Bestellstatus',
                     sortable: true,
+                    allowResize: true,
                 },
                 { property: 'actions', label: 'Ansicht', sortable: false, width: '90px' },
             ];
