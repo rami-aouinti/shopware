@@ -34,6 +34,8 @@ class LieferzeitenPackageEntity extends Entity
 
     protected ?string $trackingStatus = null;
 
+    protected ?string $additionalCustomerNames = null;
+
     protected ?\DateTimeInterface $newDeliveryStart = null;
 
     protected ?\DateTimeInterface $newDeliveryEnd = null;
@@ -152,6 +154,16 @@ class LieferzeitenPackageEntity extends Entity
     public function setTrackingStatus(?string $trackingStatus): void
     {
         $this->trackingStatus = $trackingStatus;
+    }
+
+    public function getAdditionalCustomerNames(): ?string
+    {
+        return $this->additionalCustomerNames;
+    }
+
+    public function setAdditionalCustomerNames(?string $additionalCustomerNames): void
+    {
+        $this->additionalCustomerNames = $additionalCustomerNames;
     }
 
     public function getNewDeliveryStart(): ?\DateTimeInterface
