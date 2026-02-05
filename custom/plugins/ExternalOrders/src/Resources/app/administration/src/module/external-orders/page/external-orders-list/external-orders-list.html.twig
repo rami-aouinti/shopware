@@ -45,7 +45,18 @@
                             size="small"
                             @click="exportSelectedOrdersPdf"
                         >
-                            <sw-icon name="regular-file-pdf" size="16" class="external-orders__download-icon" />
+                            <svg
+                                class="external-orders__download-icon"
+                                viewBox="0 0 16 16"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    d="M4.5 1.5h5l3 3V14a.5.5 0 0 1-.5.5h-7A.5.5 0 0 1 4.5 14V1.5z"
+                                />
+                                <path d="M9.5 1.5V5h3" />
+                                <path d="M6 8h4" />
+                                <path d="M6 10.5h4" />
+                            </svg>
                             PDF herunterladen ({{ selectedOrders.length > 0 ? selectedOrders.length : filteredOrders.length }})
                         </sw-button>
                         <sw-button
@@ -53,7 +64,17 @@
                             size="small"
                             @click="exportSelectedOrdersExcel"
                         >
-                            <sw-icon name="regular-file-excel" size="16" class="external-orders__download-icon" />
+                            <svg
+                                class="external-orders__download-icon"
+                                viewBox="0 0 16 16"
+                                aria-hidden="true"
+                            >
+                                <rect x="2.5" y="3" width="11" height="10" rx="1" />
+                                <path d="M2.5 6.5h11" />
+                                <path d="M2.5 10h11" />
+                                <path d="M6 3v10" />
+                                <path d="M10 3v10" />
+                            </svg>
                             Excel herunterladen ({{ selectedOrders.length > 0 ? selectedOrders.length : filteredOrders.length }})
                         </sw-button>
                     </div>
