@@ -1,6 +1,16 @@
 import './page/external-orders-list';
+import pdfIcon from './icons/external-orders-pdf.svg';
+import excelIcon from './icons/external-orders-excel.svg';
 
 const { Module } = Shopware;
+
+const iconRegistry = Shopware.Service('iconRegistry')
+    ?? Shopware.Application.getContainer('service')?.iconRegistry;
+
+if (iconRegistry?.register) {
+    iconRegistry.register('external-orders-pdf', pdfIcon);
+    iconRegistry.register('external-orders-excel', excelIcon);
+}
 
 Module.register('external-orders', {
     type: 'plugin',
