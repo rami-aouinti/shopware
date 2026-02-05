@@ -4,6 +4,16 @@
             <sw-card :title="$t('lieferzeiten-management.general.filtersTitle')" class="lieferzeiten-management-page__filters">
                 <div class="lieferzeiten-management-page__filters-grid">
                     <sw-text-field
+                        v-model="orderNumberFilter"
+                        :label="$t('lieferzeiten-management.general.filterOrderNumber')"
+                        @change="onRefresh"
+                    />
+                    <sw-text-field
+                        v-model="san6PackageFilter"
+                        :label="$t('lieferzeiten-management.general.filterSan6Package')"
+                        @change="onRefresh"
+                    />
+                    <sw-text-field
                         v-model="trackingFilter"
                         :label="$t('lieferzeiten-management.general.filterTracking')"
                         @change="onRefresh"
@@ -49,8 +59,50 @@
                     :total="total"
                     :showSelection="false"
                     @page-change="onPageChange"
-                />
+                >
+                    <template #column-order.orderNumber="{ item }">
+                        {{ item.order?.orderNumber }}
+                    </template>
+                    <template #column-order.orderDateTime="{ item }">
+                        <sw-time-ago :date="item.order?.orderDateTime" />
+                    </template>
+                    <template #column-order.orderCustomer.firstName="{ item }">
+                        {{ item.order?.orderCustomer?.firstName }} {{ item.order?.orderCustomer?.lastName }}
+                    </template>
+                    <template #column-trackingNumber="{ item }">
+                        <sw-button
+                            v-if="item.trackingNumber"
+                            variant="link"
+                            size="small"
+                            @click="openTrackingModal(item)"
+                        >
+                            {{ item.trackingNumber }}
+                        </sw-button>
+                        <span v-else>-</span>
+                    </template>
+                </sw-entity-listing>
             </sw-card>
+
+            <sw-modal
+                v-if="isTrackingModalOpen"
+                :title="$t('lieferzeiten-management.general.trackingHistoryTitle')"
+                @modal-close="closeTrackingModal"
+            >
+                <p v-if="trackingModalNumber"><strong>{{ trackingModalNumber }}</strong></p>
+                <sw-data-grid
+                    v-if="trackingEvents && trackingEvents.length"
+                    :dataSource="trackingEvents"
+                    :showSelection="false"
+                    :columns="[
+                        { property: 'occurredAt', label: 'Date' },
+                        { property: 'status', label: 'Status' },
+                        { property: 'description', label: 'Description' },
+                    ]"
+                />
+                <p v-else>
+                    {{ $t('global.default.empty') }}
+                </p>
+            </sw-modal>
         </template>
     </sw-page>
 {% endblock %}

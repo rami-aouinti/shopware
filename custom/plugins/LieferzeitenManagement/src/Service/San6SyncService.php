@@ -6,6 +6,8 @@ use LieferzeitenManagement\Core\Content\Package\LieferzeitenPackageDefinition;
 use LieferzeitenManagement\Core\Content\TrackingNumber\LieferzeitenTrackingNumberDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class San6SyncService
@@ -52,6 +54,8 @@ class San6SyncService
             ];
 
             if (!empty($package['trackingNumber'])) {
+                $this->deactivateExistingTrackingNumbers($packageId, $context);
+
                 $trackingPayloads[] = [
                     'id' => Uuid::randomHex(),
                     'packageId' => $packageId,
@@ -69,5 +73,28 @@ class San6SyncService
         if ($trackingPayloads !== []) {
             $this->trackingNumberRepository->upsert($trackingPayloads, $context);
         }
+    }
+
+    private function deactivateExistingTrackingNumbers(string $packageId, Context $context): void
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('packageId', $packageId));
+        $criteria->addFilter(new EqualsFilter('isActive', true));
+
+        $existing = $this->trackingNumberRepository->search($criteria, $context);
+
+        if ($existing->count() === 0) {
+            return;
+        }
+
+        $payload = [];
+        foreach ($existing as $trackingNumber) {
+            $payload[] = [
+                'id' => $trackingNumber->getId(),
+                'isActive' => false,
+            ];
+        }
+
+        $this->trackingNumberRepository->upsert($payload, $context);
     }
 }
