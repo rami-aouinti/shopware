@@ -62,6 +62,15 @@
 
             <sw-card>
                 <div class="external-orders__filters-bar">
+                    <div class="external-orders__search-row">
+                        <sw-search-bar
+                            v-model="tableSearchTerm"
+                            placeholder="Suche Bestellungen"
+                            :show-search-types="false"
+                            class="external-orders__search"
+                            @search="onSearch"
+                        />
+                    </div>
                     <div class="external-orders__filters-row">
                         <div class="external-orders__filters">
                             <sw-button variant="primary" size="small">
@@ -71,15 +80,6 @@
                             <sw-datepicker placeholder="Start Datum" class="external-orders__date" size="small" date-type="date" />
                             <sw-datepicker placeholder="End Datum" class="external-orders__date" size="small" date-type="date" />
                             <sw-button variant="primary" size="small">Anwenden</sw-button>
-                        </div>
-                        <div class="external-orders__filters-actions">
-                            <sw-search-bar
-                                v-model="tableSearchTerm"
-                                placeholder="Suche Bestellungen"
-                                :show-search-types="false"
-                                class="external-orders__search"
-                                @search="onSearch"
-                            />
                         </div>
                     </div>
                 </div>

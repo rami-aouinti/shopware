@@ -158,7 +158,7 @@
         flex-wrap: nowrap;
         gap: 12px;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-start;
     }
 
     &__search-row {
@@ -166,8 +166,7 @@
         align-items: center;
     }
 
-    &__filters,
-    &__filters-actions {
+    &__filters {
         display: flex;
         flex-wrap: nowrap;
         gap: 12px;
@@ -176,12 +175,6 @@
 
     &__filters {
         flex: 0 0 auto;
-    }
-
-    &__filters-actions {
-        flex: 1;
-        justify-content: flex-end;
-        min-width: 0;
     }
 
     &__date {
