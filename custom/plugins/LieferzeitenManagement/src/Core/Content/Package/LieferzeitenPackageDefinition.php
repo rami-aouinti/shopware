@@ -12,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\DateField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\LongTextField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\UpdatedAtField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
@@ -52,6 +53,7 @@ class LieferzeitenPackageDefinition extends EntityDefinition
             new StringField('tracking_number', 'trackingNumber'),
             new StringField('tracking_provider', 'trackingProvider'),
             new StringField('tracking_status', 'trackingStatus'),
+            new LongTextField('additional_customer_names', 'additionalCustomerNames'),
             new DateField('new_delivery_start', 'newDeliveryStart'),
             new DateField('new_delivery_end', 'newDeliveryEnd'),
             new StringField('new_delivery_comment', 'newDeliveryComment'),
