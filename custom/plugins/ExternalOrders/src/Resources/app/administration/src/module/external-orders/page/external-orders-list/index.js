@@ -80,6 +80,7 @@ Component.register('external-orders-list', {
                     label: 'BestellNr',
                     sortable: true,
                     primary: true,
+                    allowResize: true,
                 },
                 {
                     property: 'customerName',
@@ -87,6 +88,7 @@ Component.register('external-orders-list', {
                     sortBy: 'customerName',
                     label: 'Kundenname',
                     sortable: true,
+                    allowResize: true,
                 },
                 {
                     property: 'orderReference',
@@ -94,6 +96,7 @@ Component.register('external-orders-list', {
                     sortBy: 'orderReference',
                     label: 'AuftragsNr',
                     sortable: true,
+                    allowResize: true,
                 },
                 {
                     property: 'email',
@@ -101,6 +104,7 @@ Component.register('external-orders-list', {
                     sortBy: 'email',
                     label: 'Email',
                     sortable: true,
+                    allowResize: true,
                 },
                 {
                     property: 'date',
@@ -108,6 +112,7 @@ Component.register('external-orders-list', {
                     sortBy: 'date',
                     label: 'Datum',
                     sortable: true,
+                    allowResize: true,
                 },
                 {
                     property: 'statusLabel',
@@ -115,6 +120,7 @@ Component.register('external-orders-list', {
                     sortBy: 'statusLabel',
                     label: 'Bestellstatus',
                     sortable: true,
+                    allowResize: true,
                 },
                 { property: 'actions', label: 'Ansicht', sortable: false, width: '90px' },
             ];
@@ -279,18 +285,22 @@ Component.register('external-orders-list', {
 
             this.selectedOrders = items.filter(Boolean);
         },
-        normalizeSortValue(value) {
+        normalizeSortValue(value, sortBy = this.sortBy) {
             if (value === null || value === undefined) {
                 return '';
             }
-            if (this.sortBy === 'date') {
-                const parsedDate = new Date(String(value).replace(' ', 'T'));
-                return Number.isNaN(parsedDate.getTime()) ? value : parsedDate.getTime();
+            if (String(sortBy).toLowerCase().includes('date')) {
+                const parsedDate = this.parseOrderDate(value);
+                return Number.isNaN(parsedDate) ? String(value) : parsedDate;
             }
             if (typeof value === 'number') {
                 return value;
             }
-            return String(value).toLowerCase();
+            const normalized = String(value).trim();
+            if (/^-?\d+(\.\d+)?$/.test(normalized)) {
+                return Number(normalized);
+            }
+            return normalized.toLowerCase();
         },
 
         onSortColumn(column) {
@@ -594,17 +604,7 @@ Component.register('external-orders-list', {
             }
 
             const value = order?.[sortBy];
-
-            if (sortBy.toLowerCase().includes('date')) {
-                const parsed = Date.parse(value);
-                return Number.isNaN(parsed) ? value ?? '' : parsed;
-            }
-
-            if (typeof value === 'number') {
-                return value;
-            }
-
-            return String(value ?? '').toLowerCase();
+            return this.normalizeSortValue(value, sortBy);
         },
 
         buildFakeOrders() {
