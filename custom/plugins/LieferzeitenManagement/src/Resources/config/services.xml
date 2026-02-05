@@ -93,5 +93,23 @@
         <service id="LieferzeitenManagement\Command\LieferzeitenGenerateTasksCommand">
             <argument type="service" id="LieferzeitenManagement\Service\Task\OverdueShippingTaskGenerator" />
         </service>
+
+        <service id="LieferzeitenManagement\Service\Task\TaskCompletionNotifier" />
+
+        <service id="LieferzeitenManagement\Subscriber\TaskCompletionSubscriber">
+            <argument type="service" id="lieferzeiten_task.repository" />
+            <argument type="service" id="LieferzeitenManagement\Service\Task\TaskCompletionNotifier" />
+            <tag name="kernel.event_subscriber" />
+        </service>
+
+        <service id="LieferzeitenManagement\ScheduledTask\OverdueShippingScheduledTask">
+            <tag name="shopware.scheduled.task" />
+        </service>
+
+        <service id="LieferzeitenManagement\ScheduledTask\OverdueShippingScheduledTaskHandler">
+            <argument type="service" id="scheduled_task.repository" />
+            <argument type="service" id="LieferzeitenManagement\Service\Task\OverdueShippingTaskGenerator" />
+            <tag name="messenger.message_handler" />
+        </service>
     </services>
 </container>
