@@ -13,6 +13,7 @@
     }
 
     :global(.sw-page__main-content-inner) {
+        display: contents;
         max-width: 1600px;
         margin: 0 auto;
         padding-left: 32px;
