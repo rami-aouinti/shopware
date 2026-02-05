@@ -176,14 +176,14 @@
                                 date-type="date"
                                 size="small"
                                 :placeholder="$t('lieferzeiten-management.general.supplierDeliveryStart')"
-                                @change="onSupplierDeliveryChange(position)"
+                                @change="onSupplierDeliveryChange(position, item)"
                             />
                             <sw-datepicker
                                 v-model="position.supplierDeliveryEnd"
                                 date-type="date"
                                 size="small"
                                 :placeholder="$t('lieferzeiten-management.general.supplierDeliveryEnd')"
-                                @change="onSupplierDeliveryChange(position)"
+                                @change="onSupplierDeliveryChange(position, item)"
                             />
                         </div>
                     </template>
@@ -197,7 +197,7 @@
                                 v-model="position.supplierDeliveryComment"
                                 size="small"
                                 :placeholder="$t('lieferzeiten-management.general.supplierDeliveryComment')"
-                                @change="onSupplierDeliveryChange(position)"
+                                @change="onSupplierDeliveryChange(position, item)"
                             />
                         </div>
                     </template>
@@ -208,6 +208,7 @@
                                 date-type="date"
                                 size="small"
                                 :placeholder="$t('lieferzeiten-management.general.newDeliveryStart')"
+                                :disabled="!hasSupplierDelivery(item)"
                                 @change="onNewDeliveryChange(item)"
                             />
                             <sw-datepicker
@@ -215,6 +216,7 @@
                                 date-type="date"
                                 size="small"
                                 :placeholder="$t('lieferzeiten-management.general.newDeliveryEnd')"
+                                :disabled="!hasSupplierDelivery(item)"
                                 @change="onNewDeliveryChange(item)"
                             />
                         </div>
