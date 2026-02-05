@@ -7,6 +7,10 @@ Shopware.Component.register('lieferzeiten-management-page', {
 
     inject: ['repositoryFactory'],
 
+    mixins: [
+        Shopware.Mixin.getByName('notification'),
+    ],
+
     data() {
         return {
             repository: null,
@@ -30,6 +34,21 @@ Shopware.Component.register('lieferzeiten-management-page', {
             trackingEvents: null,
             trackingModalNumber: '',
             orderPositionRepository: null,
+            dateHistoryRepository: null,
+            taskRepository: null,
+            taskAssignmentRepository: null,
+            creatingTaskIds: {},
+            selectedArea: null,
+            selectedView: null,
+            areaOptions: [
+                { value: 'first-medical', label: this.$t('lieferzeiten-management.general.areaFirstMedical') },
+                { value: 'e-commerce', label: this.$t('lieferzeiten-management.general.areaECommerce') },
+                { value: 'medical-solutions', label: this.$t('lieferzeiten-management.general.areaMedicalSolutions') },
+            ],
+            viewOptions: [
+                { value: 'all', label: this.$t('lieferzeiten-management.general.viewAllOrders') },
+                { value: 'open', label: this.$t('lieferzeiten-management.general.viewOpenOrders') },
+            ],
         };
     },
 
@@ -118,7 +137,40 @@ Shopware.Component.register('lieferzeiten-management-page', {
                     property: 'deliveryUpdatedBy',
                     label: this.$t('lieferzeiten-management.general.columnUpdatedBy'),
                 },
+                {
+                    property: 'actions',
+                    label: this.$t('lieferzeiten-management.general.columnActions'),
+                    align: 'center',
+                },
             ];
+        },
+
+        needsSelection() {
+            return !this.selectedArea || !this.selectedView;
+        },
+
+        kpiOpenOrdersTotal() {
+            if (!this.items) {
+                return 0;
+            }
+
+            return this.items.length;
+        },
+
+        kpiOverdueShipping() {
+            if (!this.items) {
+                return 0;
+            }
+
+            return this.items.filter((item) => this.isOverdue(item?.latestShippingAt, item?.shippedAt)).length;
+        },
+
+        kpiOverdueDelivery() {
+            if (!this.items) {
+                return 0;
+            }
+
+            return this.items.filter((item) => this.isOverdue(item?.latestDeliveryAt, item?.deliveredAt)).length;
         },
     },
 
@@ -126,10 +178,155 @@ Shopware.Component.register('lieferzeiten-management-page', {
         this.repository = this.repositoryFactory.create('lieferzeiten_package');
         this.trackingEventRepository = this.repositoryFactory.create('lieferzeiten_tracking_event');
         this.orderPositionRepository = this.repositoryFactory.create('lieferzeiten_order_position');
-        this.loadPackages();
+        this.dateHistoryRepository = this.repositoryFactory.create('lieferzeiten_date_history');
+        this.taskRepository = this.repositoryFactory.create('lieferzeiten_task');
+        this.taskAssignmentRepository = this.repositoryFactory.create('lieferzeiten_task_assignment');
+        this.restoreSelection();
+        if (!this.needsSelection) {
+            this.loadPackages();
+        }
     },
 
     methods: {
+        restoreSelection() {
+            const stored = localStorage.getItem('lieferzeiten-management.selection');
+            if (!stored) {
+                return;
+            }
+
+            try {
+                const parsed = JSON.parse(stored);
+                this.selectedArea = parsed.selectedArea || null;
+                this.selectedView = parsed.selectedView || null;
+            } catch (error) {
+                this.selectedArea = null;
+                this.selectedView = null;
+            }
+        },
+
+        persistSelection() {
+            localStorage.setItem('lieferzeiten-management.selection', JSON.stringify({
+                selectedArea: this.selectedArea,
+                selectedView: this.selectedView,
+            }));
+        },
+
+        onSelectionChange() {
+            this.persistSelection();
+            if (!this.needsSelection) {
+                this.onRefresh();
+            }
+        },
+
+        isOverdue(latestDate, completedDate) {
+            if (!latestDate || completedDate) {
+                return false;
+            }
+
+            return new Date(latestDate).getTime() < Date.now();
+        },
+
+        getRangeDays(startDate, endDate) {
+            const start = new Date(startDate).setHours(0, 0, 0, 0);
+            const end = new Date(endDate).setHours(0, 0, 0, 0);
+            const diffMs = end - start;
+            return Math.floor(diffMs / 86400000) + 1;
+        },
+
+        getWeekNumber(dateValue) {
+            const date = new Date(dateValue);
+            const target = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNumber = target.getUTCDay() || 7;
+            target.setUTCDate(target.getUTCDate() + 4 - dayNumber);
+            const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
+            return Math.ceil((((target - yearStart) / 86400000) + 1) / 7);
+        },
+
+        validateRange(startDate, endDate, minDays, maxDays, labelKey) {
+            if (!startDate || !endDate) {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: this.$t('lieferzeiten-management.general.validationRangeRequired', {
+                        label: this.$t(labelKey),
+                    }),
+                });
+                return false;
+            }
+
+            if (new Date(startDate).getTime() > new Date(endDate).getTime()) {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: this.$t('lieferzeiten-management.general.validationRangeOrder'),
+                });
+                return false;
+            }
+
+            const rangeDays = this.getRangeDays(startDate, endDate);
+            if (rangeDays < minDays || rangeDays > maxDays) {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: this.$t('lieferzeiten-management.general.validationRangeLength', {
+                        label: this.$t(labelKey),
+                        min: minDays,
+                        max: maxDays,
+                    }),
+                });
+                return false;
+            }
+
+            return true;
+        },
+
+        resolveAssignedUserId(item) {
+            const criteria = new Criteria(1, 1);
+            criteria.addFilter(Criteria.equals('taskType', 'additional_delivery_request'));
+
+            if (this.selectedArea) {
+                criteria.addFilter(Criteria.equals('area', this.selectedArea));
+            }
+
+            if (item?.order?.salesChannelId) {
+                criteria.addFilter(Criteria.equals('salesChannelId', item.order.salesChannelId));
+            }
+
+            return this.taskAssignmentRepository.search(criteria, Shopware.Context.api).then((result) => {
+                return result.first()?.assignedUserId || null;
+            });
+        },
+
+        createAdditionalDeliveryRequest(item) {
+            if (!item) {
+                return;
+            }
+
+            this.$set(this.creatingTaskIds, item.id, true);
+            const currentUser = Shopware.State.get('session')?.currentUser;
+
+            this.resolveAssignedUserId(item).then((assignedUserId) => {
+                const task = this.taskRepository.create(Shopware.Context.api);
+                task.type = 'additional_delivery_request';
+                task.status = 'open';
+                task.orderId = item.orderId || item.order?.id || null;
+                task.packageId = item.id;
+                task.assignedUserId = assignedUserId;
+                task.createdById = currentUser?.id || null;
+
+                return this.taskRepository.save(task, Shopware.Context.api);
+            }).then(() => {
+                this.createNotificationSuccess({
+                    title: this.$t('global.default.success'),
+                    message: this.$t('lieferzeiten-management.general.taskCreateSuccess'),
+                });
+            }).catch(() => {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: this.$t('lieferzeiten-management.general.taskCreateError'),
+                });
+            }).finally(() => {
+                this.$set(this.creatingTaskIds, item.id, false);
+            });
+        },
+
         buildCriteria() {
             const criteria = new Criteria(this.page, this.limit);
             criteria.addAssociation('order');
@@ -139,6 +336,10 @@ Shopware.Component.register('lieferzeiten-management-page', {
             criteria.addAssociation('trackingNumbers');
             criteria.addAssociation('packagePositions.orderPosition');
             criteria.addAssociation('newDeliveryUpdatedBy');
+            criteria.addFilter(Criteria.not('OR', [
+                Criteria.contains('order.orderNumber', 'TEST'),
+                Criteria.contains('order.orderCustomer.email', 'test'),
+            ]));
 
             if (this.orderNumberFilter) {
                 criteria.addFilter(Criteria.contains('order.orderNumber', this.orderNumberFilter));
@@ -164,6 +365,10 @@ Shopware.Component.register('lieferzeiten-management-page', {
                 criteria.addFilter(Criteria.contains('order.stateMachineState.name', this.orderStatusFilter));
             }
 
+            if (this.selectedView === 'open') {
+                criteria.addFilter(Criteria.equalsAny('order.stateMachineState.technicalName', ['open', 'in_progress']));
+            }
+
             if (this.shippedFrom || this.shippedTo) {
                 criteria.addFilter(Criteria.range('shippedAt', {
                     gte: this.shippedFrom || undefined,
@@ -182,6 +387,12 @@ Shopware.Component.register('lieferzeiten-management-page', {
         },
 
         loadPackages() {
+            if (this.needsSelection) {
+                this.items = null;
+                this.total = 0;
+                return;
+            }
+
             this.isLoading = true;
             const criteria = this.buildCriteria();
 
@@ -238,17 +449,66 @@ Shopware.Component.register('lieferzeiten-management-page', {
         },
 
         onNewDeliveryChange(item) {
+            if (!this.validateRange(
+                item.newDeliveryStart,
+                item.newDeliveryEnd,
+                1,
+                4,
+                'lieferzeiten-management.general.columnNewDelivery',
+            )) {
+                return;
+            }
+
             const currentUser = Shopware.State.get('session')?.currentUser;
             item.newDeliveryUpdatedAt = new Date().toISOString();
             item.newDeliveryUpdatedById = currentUser?.id || null;
-            this.repository.save(item, Shopware.Context.api);
+            this.repository.save(item, Shopware.Context.api).then(() => {
+                const historyEntry = this.dateHistoryRepository.create(Shopware.Context.api);
+                historyEntry.packageId = item.id;
+                historyEntry.type = 'new_delivery';
+                historyEntry.rangeStart = item.newDeliveryStart;
+                historyEntry.rangeEnd = item.newDeliveryEnd;
+                historyEntry.comment = item.newDeliveryComment || null;
+                historyEntry.createdById = currentUser?.id || null;
+                this.dateHistoryRepository.save(historyEntry, Shopware.Context.api);
+
+                const startWeek = this.getWeekNumber(item.newDeliveryStart);
+                const endWeek = this.getWeekNumber(item.newDeliveryEnd);
+                this.createNotificationSuccess({
+                    title: this.$t('global.default.success'),
+                    message: this.$t('lieferzeiten-management.general.saveNewDeliverySuccess', {
+                        startWeek,
+                        endWeek,
+                    }),
+                });
+            });
         },
 
         onSupplierDeliveryChange(position) {
+            if (!this.validateRange(
+                position.supplierDeliveryStart,
+                position.supplierDeliveryEnd,
+                1,
+                14,
+                'lieferzeiten-management.general.columnSupplierDelivery',
+            )) {
+                return;
+            }
+
             const currentUser = Shopware.State.get('session')?.currentUser;
             position.supplierDeliveryUpdatedAt = new Date().toISOString();
             position.supplierDeliveryUpdatedById = currentUser?.id || null;
-            this.orderPositionRepository.save(position, Shopware.Context.api);
+            this.orderPositionRepository.save(position, Shopware.Context.api).then(() => {
+                const startWeek = this.getWeekNumber(position.supplierDeliveryStart);
+                const endWeek = this.getWeekNumber(position.supplierDeliveryEnd);
+                this.createNotificationSuccess({
+                    title: this.$t('global.default.success'),
+                    message: this.$t('lieferzeiten-management.general.saveSupplierDeliverySuccess', {
+                        startWeek,
+                        endWeek,
+                    }),
+                });
+            });
         },
 
         getUserLabel(user) {

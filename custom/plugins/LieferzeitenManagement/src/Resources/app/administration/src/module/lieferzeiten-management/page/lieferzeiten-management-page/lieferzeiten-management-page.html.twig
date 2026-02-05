@@ -1,6 +1,30 @@
 {% block lieferzeiten_management_page %}
     <sw-page class="lieferzeiten-management-page">
         <template #content>
+            <sw-modal
+                v-if="needsSelection"
+                :title="$t('lieferzeiten-management.general.selectionTitle')"
+                :showCloseButton="false"
+                :disableBackdropClick="true"
+            >
+                <div class="sw-grid sw-grid--gap">
+                    <sw-single-select
+                        v-model="selectedArea"
+                        :options="areaOptions"
+                        :label="$t('lieferzeiten-management.general.selectionAreaLabel')"
+                        :placeholder="$t('lieferzeiten-management.general.selectionAreaPlaceholder')"
+                        @change="onSelectionChange"
+                    />
+                    <sw-single-select
+                        v-model="selectedView"
+                        :options="viewOptions"
+                        :label="$t('lieferzeiten-management.general.selectionViewLabel')"
+                        :placeholder="$t('lieferzeiten-management.general.selectionViewPlaceholder')"
+                        @change="onSelectionChange"
+                    />
+                </div>
+            </sw-modal>
+
             <sw-card :title="$t('lieferzeiten-management.general.filtersTitle')" class="lieferzeiten-management-page__filters">
                 <div class="lieferzeiten-management-page__filters-grid">
                     <sw-text-field
@@ -57,6 +81,35 @@
                         :label="$t('lieferzeiten-management.general.filterDeliveredTo')"
                         @change="onRefresh"
                     />
+                </div>
+            </sw-card>
+
+            <sw-card :title="$t('lieferzeiten-management.general.kpiTitle')" class="lieferzeiten-management-page__kpis">
+                <div class="sw-grid sw-grid--gap">
+                    <div class="sw-card-section">
+                        <p class="sw-card__title">
+                            {{ $t('lieferzeiten-management.general.kpiOpenOrders') }}
+                        </p>
+                        <p class="sw-card__content">
+                            {{ kpiOpenOrdersTotal }}
+                        </p>
+                    </div>
+                    <div class="sw-card-section">
+                        <p class="sw-card__title">
+                            {{ $t('lieferzeiten-management.general.kpiOverdueShipping') }}
+                        </p>
+                        <p class="sw-card__content">
+                            {{ kpiOverdueShipping }}
+                        </p>
+                    </div>
+                    <div class="sw-card-section">
+                        <p class="sw-card__title">
+                            {{ $t('lieferzeiten-management.general.kpiOverdueDelivery') }}
+                        </p>
+                        <p class="sw-card__content">
+                            {{ kpiOverdueDelivery }}
+                        </p>
+                    </div>
                 </div>
             </sw-card>
 
@@ -180,6 +233,16 @@
                         <div v-if="item.newDeliveryUpdatedAt">
                             <sw-time-ago :date="item.newDeliveryUpdatedAt" />
                         </div>
+                    </template>
+                    <template #column-actions="{ item }">
+                        <sw-button
+                            size="small"
+                            variant="primary"
+                            :disabled="creatingTaskIds[item.id]"
+                            @click="createAdditionalDeliveryRequest(item)"
+                        >
+                            {{ $t('lieferzeiten-management.general.actionRequestAdditionalDelivery') }}
+                        </sw-button>
                     </template>
                 </sw-entity-listing>
             </sw-card>
