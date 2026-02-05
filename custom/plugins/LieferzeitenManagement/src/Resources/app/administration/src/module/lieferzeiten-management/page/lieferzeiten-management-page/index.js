@@ -26,10 +26,20 @@ Shopware.Component.register('lieferzeiten-management-page', {
             trackingFilter: '',
             packageStatusFilter: '',
             orderStatusFilter: '',
+            businessStatusFilter: '',
+            updatedByFilter: '',
             shippedFrom: null,
             shippedTo: null,
             deliveredFrom: null,
             deliveredTo: null,
+            latestShippingFrom: null,
+            latestShippingTo: null,
+            latestDeliveryFrom: null,
+            latestDeliveryTo: null,
+            supplierDeliveryStartFilter: null,
+            supplierDeliveryEndFilter: null,
+            newDeliveryStartFilter: null,
+            newDeliveryEndFilter: null,
             isTrackingModalOpen: false,
             trackingEvents: null,
             trackingModalNumber: '',
@@ -403,7 +413,10 @@ Shopware.Component.register('lieferzeiten-management-page', {
             }
 
             if (this.trackingFilter) {
-                criteria.addFilter(Criteria.contains('trackingNumber', this.trackingFilter));
+                criteria.addFilter(Criteria.multi('OR', [
+                    Criteria.contains('trackingNumber', this.trackingFilter),
+                    Criteria.contains('trackingNumbers.trackingNumber', this.trackingFilter),
+                ]));
             }
 
             if (this.packageStatusFilter) {
@@ -412,6 +425,22 @@ Shopware.Component.register('lieferzeiten-management-page', {
 
             if (this.orderStatusFilter) {
                 criteria.addFilter(Criteria.contains('order.stateMachineState.name', this.orderStatusFilter));
+            }
+
+            if (this.businessStatusFilter) {
+                criteria.addFilter(Criteria.multi('OR', [
+                    Criteria.contains('packageStatus', this.businessStatusFilter),
+                    Criteria.contains('trackingStatus', this.businessStatusFilter),
+                ]));
+            }
+
+            if (this.updatedByFilter) {
+                criteria.addFilter(Criteria.multi('OR', [
+                    Criteria.contains('newDeliveryUpdatedBy.firstName', this.updatedByFilter),
+                    Criteria.contains('newDeliveryUpdatedBy.lastName', this.updatedByFilter),
+                    Criteria.contains('newDeliveryUpdatedBy.username', this.updatedByFilter),
+                    Criteria.contains('newDeliveryUpdatedBy.email', this.updatedByFilter),
+                ]));
             }
 
             if (this.selectedView === 'open') {
@@ -438,6 +467,44 @@ Shopware.Component.register('lieferzeiten-management-page', {
                 criteria.addFilter(Criteria.range('deliveredAt', {
                     gte: this.deliveredFrom || undefined,
                     lte: this.deliveredTo || undefined,
+                }));
+            }
+
+            if (this.latestShippingFrom || this.latestShippingTo) {
+                criteria.addFilter(Criteria.range('latestShippingAt', {
+                    gte: this.latestShippingFrom || undefined,
+                    lte: this.latestShippingTo || undefined,
+                }));
+            }
+
+            if (this.latestDeliveryFrom || this.latestDeliveryTo) {
+                criteria.addFilter(Criteria.range('latestDeliveryAt', {
+                    gte: this.latestDeliveryFrom || undefined,
+                    lte: this.latestDeliveryTo || undefined,
+                }));
+            }
+
+            if (this.supplierDeliveryStartFilter) {
+                criteria.addFilter(Criteria.range('packagePositions.orderPosition.supplierDeliveryStart', {
+                    gte: this.supplierDeliveryStartFilter || undefined,
+                }));
+            }
+
+            if (this.supplierDeliveryEndFilter) {
+                criteria.addFilter(Criteria.range('packagePositions.orderPosition.supplierDeliveryEnd', {
+                    lte: this.supplierDeliveryEndFilter || undefined,
+                }));
+            }
+
+            if (this.newDeliveryStartFilter) {
+                criteria.addFilter(Criteria.range('newDeliveryStart', {
+                    gte: this.newDeliveryStartFilter || undefined,
+                }));
+            }
+
+            if (this.newDeliveryEndFilter) {
+                criteria.addFilter(Criteria.range('newDeliveryEnd', {
+                    lte: this.newDeliveryEndFilter || undefined,
                 }));
             }
 

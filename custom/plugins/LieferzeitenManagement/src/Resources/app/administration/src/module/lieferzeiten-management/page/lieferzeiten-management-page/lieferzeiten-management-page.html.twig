@@ -58,6 +58,16 @@
                             :label="$t('lieferzeiten-management.general.filterOrderStatus')"
                             @change="onRefresh"
                         />
+                        <sw-text-field
+                            v-model="businessStatusFilter"
+                            :label="$t('lieferzeiten-management.general.filterBusinessStatus')"
+                            @change="onRefresh"
+                        />
+                        <sw-text-field
+                            v-model="updatedByFilter"
+                            :label="$t('lieferzeiten-management.general.filterUpdatedBy')"
+                            @change="onRefresh"
+                        />
                         <sw-datepicker
                             v-model="shippedFrom"
                             date-type="date"
@@ -80,6 +90,54 @@
                             v-model="deliveredTo"
                             date-type="date"
                             :label="$t('lieferzeiten-management.general.filterDeliveredTo')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="latestShippingFrom"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterLatestShippingFrom')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="latestShippingTo"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterLatestShippingTo')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="latestDeliveryFrom"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterLatestDeliveryFrom')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="latestDeliveryTo"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterLatestDeliveryTo')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="supplierDeliveryStartFilter"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterSupplierDeliveryStart')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="supplierDeliveryEndFilter"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterSupplierDeliveryEnd')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="newDeliveryStartFilter"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterNewDeliveryStart')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="newDeliveryEndFilter"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterNewDeliveryEnd')"
                             @change="onRefresh"
                         />
                     </div>
