@@ -294,8 +294,17 @@ Shopware.Component.register('lieferzeiten-management-page', {
             });
         },
 
-        createAdditionalDeliveryRequest(item) {
-            if (!item) {
+        nextBusinessDay(date) {
+            const next = new Date(date);
+            next.setDate(next.getDate() + 1);
+            while (next.getDay() === 0 || next.getDay() === 6) {
+                next.setDate(next.getDate() + 1);
+            }
+            return next;
+        },
+
+        createAdditionalDeliveryRequest(item, position) {
+            if (!item || !position) {
                 return;
             }
 
@@ -308,8 +317,10 @@ Shopware.Component.register('lieferzeiten-management-page', {
                 task.status = 'open';
                 task.orderId = item.orderId || item.order?.id || null;
                 task.packageId = item.id;
+                task.orderPositionId = position.id;
                 task.assignedUserId = assignedUserId;
                 task.createdById = currentUser?.id || null;
+                task.dueDate = this.nextBusinessDay(new Date()).toISOString();
 
                 return this.taskRepository.save(task, Shopware.Context.api);
             }).then(() => {
@@ -499,6 +510,15 @@ Shopware.Component.register('lieferzeiten-management-page', {
             position.supplierDeliveryUpdatedAt = new Date().toISOString();
             position.supplierDeliveryUpdatedById = currentUser?.id || null;
             this.orderPositionRepository.save(position, Shopware.Context.api).then(() => {
+                const historyEntry = this.dateHistoryRepository.create(Shopware.Context.api);
+                historyEntry.orderPositionId = position.id;
+                historyEntry.type = 'supplier_delivery';
+                historyEntry.rangeStart = position.supplierDeliveryStart;
+                historyEntry.rangeEnd = position.supplierDeliveryEnd;
+                historyEntry.comment = position.supplierDeliveryComment || null;
+                historyEntry.createdById = currentUser?.id || null;
+                this.dateHistoryRepository.save(historyEntry, Shopware.Context.api);
+
                 const startWeek = this.getWeekNumber(position.supplierDeliveryStart);
                 const endWeek = this.getWeekNumber(position.supplierDeliveryEnd);
                 this.createNotificationSuccess({

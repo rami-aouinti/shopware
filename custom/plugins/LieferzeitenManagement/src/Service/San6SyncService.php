@@ -5,6 +5,7 @@ namespace LieferzeitenManagement\Service;
 use LieferzeitenManagement\Core\Content\Package\LieferzeitenPackageDefinition;
 use LieferzeitenManagement\Core\Content\TrackingNumber\LieferzeitenTrackingNumberDefinition;
 use LieferzeitenManagement\Service\Deadline\DeadlineResolver;
+use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -16,11 +17,13 @@ class San6SyncService
     /**
      * @param EntityRepository<LieferzeitenPackageDefinition> $packageRepository
      * @param EntityRepository<LieferzeitenTrackingNumberDefinition> $trackingNumberRepository
+     * @param EntityRepository<OrderDefinition> $orderRepository
      */
     public function __construct(
         private readonly San6Client $san6Client,
         private readonly EntityRepository $packageRepository,
         private readonly EntityRepository $trackingNumberRepository,
+        private readonly EntityRepository $orderRepository,
         private readonly DeadlineResolver $deadlineResolver
     ) {
     }
@@ -38,6 +41,10 @@ class San6SyncService
 
         foreach ($packages as $package) {
             if (!isset($package['orderId'])) {
+                continue;
+            }
+
+            if ($this->isTestOrder($package['orderId'], $context)) {
                 continue;
             }
 
@@ -76,6 +83,23 @@ class San6SyncService
         if ($trackingPayloads !== []) {
             $this->trackingNumberRepository->upsert($trackingPayloads, $context);
         }
+    }
+
+    private function isTestOrder(string $orderId, Context $context): bool
+    {
+        $criteria = new Criteria([$orderId]);
+        $criteria->addAssociation('orderCustomer');
+
+        $order = $this->orderRepository->search($criteria, $context)->first();
+
+        if (!$order) {
+            return false;
+        }
+
+        $orderNumber = strtoupper((string) $order->getOrderNumber());
+        $customerEmail = strtolower((string) $order->getOrderCustomer()?->getEmail());
+
+        return str_contains($orderNumber, 'TEST') || str_contains($customerEmail, 'test');
     }
 
     private function deactivateExistingTrackingNumbers(string $packageId, Context $context): void
