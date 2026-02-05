@@ -43,6 +43,7 @@
             <argument type="service" id="LieferzeitenManagement\Service\San6Client" />
             <argument type="service" id="lieferzeiten_package.repository" />
             <argument type="service" id="lieferzeiten_tracking_number.repository" />
+            <argument type="service" id="LieferzeitenManagement\Service\Deadline\DeadlineResolver" />
         </service>
 
         <service id="LieferzeitenManagement\Service\TrackingSyncService">
@@ -50,10 +51,33 @@
             <argument type="service" id="lieferzeiten_tracking_event.repository" />
         </service>
 
+        <service id="LieferzeitenManagement\Service\Deadline\DeadlineCalculator" />
+
+        <service id="LieferzeitenManagement\Service\Deadline\DeadlineResolver">
+            <argument type="service" id="order.repository" />
+            <argument type="service" id="lieferzeiten_settings.repository" />
+            <argument type="service" id="LieferzeitenManagement\Service\Deadline\DeadlineCalculator" />
+        </service>
+
         <service id="LieferzeitenManagement\Command\LieferzeitenSyncCommand">
             <argument type="service" id="LieferzeitenManagement\Service\San6SyncService" />
             <argument type="service" id="LieferzeitenManagement\Service\TrackingSyncService" />
             <argument type="service" id="lieferzeiten_tracking_number.repository" />
+        </service>
+
+        <service id="LieferzeitenManagement\Service\Task\TaskAssignmentResolver">
+            <argument type="service" id="lieferzeiten_task_assignment.repository" />
+        </service>
+
+        <service id="LieferzeitenManagement\Service\Task\OverdueShippingTaskGenerator">
+            <argument type="service" id="lieferzeiten_package.repository" />
+            <argument type="service" id="lieferzeiten_task.repository" />
+            <argument type="service" id="order.repository" />
+            <argument type="service" id="LieferzeitenManagement\Service\Task\TaskAssignmentResolver" />
+        </service>
+
+        <service id="LieferzeitenManagement\Command\LieferzeitenGenerateTasksCommand">
+            <argument type="service" id="LieferzeitenManagement\Service\Task\OverdueShippingTaskGenerator" />
         </service>
     </services>
 </container>

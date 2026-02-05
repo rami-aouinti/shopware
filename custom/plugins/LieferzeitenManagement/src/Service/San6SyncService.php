@@ -4,6 +4,7 @@ namespace LieferzeitenManagement\Service;
 
 use LieferzeitenManagement\Core\Content\Package\LieferzeitenPackageDefinition;
 use LieferzeitenManagement\Core\Content\TrackingNumber\LieferzeitenTrackingNumberDefinition;
+use LieferzeitenManagement\Service\Deadline\DeadlineResolver;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -19,7 +20,8 @@ class San6SyncService
     public function __construct(
         private readonly San6Client $san6Client,
         private readonly EntityRepository $packageRepository,
-        private readonly EntityRepository $trackingNumberRepository
+        private readonly EntityRepository $trackingNumberRepository,
+        private readonly DeadlineResolver $deadlineResolver
     ) {
     }
 
@@ -51,6 +53,7 @@ class San6SyncService
                 'trackingNumber' => $package['trackingNumber'] ?? null,
                 'trackingProvider' => $package['trackingProvider'] ?? null,
                 'trackingStatus' => $package['trackingStatus'] ?? null,
+                ...$this->deadlineResolver->resolveForOrder($package['orderId'], $context),
             ];
 
             if (!empty($package['trackingNumber'])) {
