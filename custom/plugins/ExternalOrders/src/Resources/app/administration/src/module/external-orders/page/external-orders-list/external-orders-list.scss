@@ -1,4 +1,13 @@
 .external-orders {
+    width: 100%;
+
+    :global(.sw-page__content) {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+    }
+
     &__header {
         padding: 24px 32px 16px;
         border-bottom: 1px solid #d7dde5;
@@ -14,6 +23,16 @@
         margin: 0;
         padding: 24px 32px 32px;
         overflow: visible;
+    }
+
+    &__page {
+        width: 100%;
+        max-width: none;
+    }
+
+    &__channels,
+    :global(.sw-card) {
+        width: 100%;
     }
 
     &__channels {
@@ -190,6 +209,7 @@
         display: flex;
         justify-content: flex-end;
         padding: 12px 16px 4px;
+        margin-top: 8px;
     }
 
     &__detail {

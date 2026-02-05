@@ -87,7 +87,7 @@
                     :loading="isLoading"
                     :sort-by="sortBy"
                     :sort-direction="sortDirection"
-                    :showSelection="true"
+                    :show-selection="true"
                     class="external-orders__table"
                     identifier="external-orders"
                     @column-sort="onSortColumn"
@@ -110,15 +110,6 @@
                         </sw-button>
                     </template>
 
-                    <template #pagination>
-                        <sw-pagination
-                            :page="page"
-                            :limit="limit"
-                            :total="paginationTotal"
-                            :total-visible="7"
-                            @page-change="onPageChange"
-                        />
-                    </template>
                 </sw-data-grid>
                 <div
                     v-if="paginatedOrders.length > 0"
