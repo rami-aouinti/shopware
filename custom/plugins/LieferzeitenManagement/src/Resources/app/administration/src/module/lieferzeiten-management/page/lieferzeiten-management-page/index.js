@@ -478,6 +478,16 @@ Shopware.Component.register('lieferzeiten-management-page', {
                 .filter((position) => position);
         },
 
+        hasSupplierDelivery(item) {
+            return this.getOrderPositions(item).some((position) => {
+                return position.supplierDeliveryStart && position.supplierDeliveryEnd;
+            });
+        },
+
+        hasNewDelivery(item) {
+            return Boolean(item?.newDeliveryStart && item?.newDeliveryEnd);
+        },
+
         getLatestTransaction(order) {
             if (!order?.transactions?.length) {
                 return null;
@@ -525,6 +535,16 @@ Shopware.Component.register('lieferzeiten-management-page', {
         },
 
         onNewDeliveryChange(item) {
+            if (!item?.newDeliveryUpdatedAt && !this.hasSupplierDelivery(item)) {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: this.$t('lieferzeiten-management.general.validationRangeRequired', {
+                        label: this.$t('lieferzeiten-management.general.columnSupplierDelivery'),
+                    }),
+                });
+                return;
+            }
+
             if (!this.validateRange(
                 item.newDeliveryStart,
                 item.newDeliveryEnd,
@@ -535,32 +555,68 @@ Shopware.Component.register('lieferzeiten-management-page', {
                 return;
             }
 
-            const currentUser = Shopware.State.get('session')?.currentUser;
-            item.newDeliveryUpdatedAt = new Date().toISOString();
-            item.newDeliveryUpdatedById = currentUser?.id || null;
-            this.repository.save(item, Shopware.Context.api).then(() => {
-                const historyEntry = this.dateHistoryRepository.create(Shopware.Context.api);
-                historyEntry.packageId = item.id;
-                historyEntry.type = 'new_delivery';
-                historyEntry.rangeStart = item.newDeliveryStart;
-                historyEntry.rangeEnd = item.newDeliveryEnd;
-                historyEntry.comment = item.newDeliveryComment || null;
-                historyEntry.createdById = currentUser?.id || null;
-                this.dateHistoryRepository.save(historyEntry, Shopware.Context.api);
+            const positionsToSave = this.getOrderPositions(item).filter((position) => {
+                return !position.supplierDeliveryUpdatedAt
+                    && position.supplierDeliveryStart
+                    && position.supplierDeliveryEnd;
+            });
 
-                const startWeek = this.getWeekNumber(item.newDeliveryStart);
-                const endWeek = this.getWeekNumber(item.newDeliveryEnd);
-                this.createNotificationSuccess({
-                    title: this.$t('global.default.success'),
-                    message: this.$t('lieferzeiten-management.general.saveNewDeliverySuccess', {
-                        startWeek,
-                        endWeek,
-                    }),
+            if (positionsToSave.length) {
+                for (const position of positionsToSave) {
+                    if (!this.validateRange(
+                        position.supplierDeliveryStart,
+                        position.supplierDeliveryEnd,
+                        1,
+                        14,
+                        'lieferzeiten-management.general.columnSupplierDelivery',
+                    )) {
+                        return;
+                    }
+                }
+            }
+
+            const currentUser = Shopware.State.get('session')?.currentUser;
+            const saveSupplierPromise = positionsToSave.length
+                ? Promise.all(positionsToSave.map((position) => this.saveSupplierDelivery(position, false)))
+                : Promise.resolve();
+
+            saveSupplierPromise.then(() => {
+                item.newDeliveryUpdatedAt = new Date().toISOString();
+                item.newDeliveryUpdatedById = currentUser?.id || null;
+                this.repository.save(item, Shopware.Context.api).then(() => {
+                    const historyEntry = this.dateHistoryRepository.create(Shopware.Context.api);
+                    historyEntry.packageId = item.id;
+                    historyEntry.type = 'new_delivery';
+                    historyEntry.rangeStart = item.newDeliveryStart;
+                    historyEntry.rangeEnd = item.newDeliveryEnd;
+                    historyEntry.comment = item.newDeliveryComment || null;
+                    historyEntry.createdById = currentUser?.id || null;
+                    this.dateHistoryRepository.save(historyEntry, Shopware.Context.api);
+
+                    const startWeek = this.getWeekNumber(item.newDeliveryStart);
+                    const endWeek = this.getWeekNumber(item.newDeliveryEnd);
+                    this.createNotificationSuccess({
+                        title: this.$t('global.default.success'),
+                        message: this.$t('lieferzeiten-management.general.saveNewDeliverySuccess', {
+                            startWeek,
+                            endWeek,
+                        }),
+                    });
                 });
             });
         },
 
-        onSupplierDeliveryChange(position) {
+        onSupplierDeliveryChange(position, item) {
+            if (!position?.supplierDeliveryUpdatedAt && !this.hasNewDelivery(item)) {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: this.$t('lieferzeiten-management.general.validationRangeRequired', {
+                        label: this.$t('lieferzeiten-management.general.columnNewDelivery'),
+                    }),
+                });
+                return;
+            }
+
             if (!this.validateRange(
                 position.supplierDeliveryStart,
                 position.supplierDeliveryEnd,
@@ -571,10 +627,14 @@ Shopware.Component.register('lieferzeiten-management-page', {
                 return;
             }
 
+            this.saveSupplierDelivery(position, true);
+        },
+
+        saveSupplierDelivery(position, showNotification) {
             const currentUser = Shopware.State.get('session')?.currentUser;
             position.supplierDeliveryUpdatedAt = new Date().toISOString();
             position.supplierDeliveryUpdatedById = currentUser?.id || null;
-            this.orderPositionRepository.save(position, Shopware.Context.api).then(() => {
+            return this.orderPositionRepository.save(position, Shopware.Context.api).then(() => {
                 const historyEntry = this.dateHistoryRepository.create(Shopware.Context.api);
                 historyEntry.orderPositionId = position.id;
                 historyEntry.type = 'supplier_delivery';
@@ -585,6 +645,10 @@ Shopware.Component.register('lieferzeiten-management-page', {
                 this.dateHistoryRepository.save(historyEntry, Shopware.Context.api);
 
                 this.closeAdditionalDeliveryTasks(position.id);
+
+                if (!showNotification) {
+                    return;
+                }
 
                 const startWeek = this.getWeekNumber(position.supplierDeliveryStart);
                 const endWeek = this.getWeekNumber(position.supplierDeliveryEnd);
