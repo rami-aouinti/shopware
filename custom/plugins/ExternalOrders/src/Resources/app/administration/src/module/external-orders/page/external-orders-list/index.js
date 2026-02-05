@@ -447,8 +447,22 @@ Component.register('external-orders-list', {
             ];
         },
         buildCsv(rows) {
-            const escapeValue = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
-            return rows.map((row) => row.map(escapeValue).join(',')).join('\n');
+            const delimiter = ';';
+            const escapeValue = (value) => {
+                const stringValue = String(value ?? '');
+                const escapedValue = stringValue.replace(/"/g, '""');
+                const needsEscaping = stringValue.includes(delimiter)
+                    || stringValue.includes('\n')
+                    || stringValue.includes('\r')
+                    || stringValue.includes('"');
+                return needsEscaping ? `"${escapedValue}"` : escapedValue;
+            };
+
+            const content = rows
+                .map((row) => row.map(escapeValue).join(delimiter))
+                .join('\r\n');
+
+            return `\ufeff${content}`;
         },
         buildExportSummaryLine(orders) {
             const totalItems = orders.reduce((sum, order) => sum + this.getOrderItemCount(order), 0);
