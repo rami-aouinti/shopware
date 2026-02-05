@@ -53,6 +53,8 @@
 
         <service id="LieferzeitenManagement\Service\San6Client" />
 
+        <service id="LieferzeitenManagement\Service\TrackingClient" />
+
         <service id="LieferzeitenManagement\Service\Deadline\DeadlineCalculator" />
 
         <service id="LieferzeitenManagement\Service\Deadline\DeadlineResolver">
