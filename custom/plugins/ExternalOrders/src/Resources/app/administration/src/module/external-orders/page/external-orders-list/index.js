@@ -79,6 +79,7 @@ Component.register('external-orders-list', {
             },
             activeColumnFilter: null,
             selectedOrder: null,
+            selectedOrders: [],
             showDetailModal: false,
             page: 1,
             limit: 10,
