@@ -29,5 +29,14 @@
         <service id="LieferzeitenManagement\Core\Content\NotificationSettings\LieferzeitenNotificationSettingsDefinition">
             <tag name="shopware.entity.definition" />
         </service>
+        <service id="LieferzeitenManagement\Core\Content\TrackingNumber\LieferzeitenTrackingNumberDefinition">
+            <tag name="shopware.entity.definition" />
+        </service>
+        <service id="LieferzeitenManagement\Core\Content\TrackingEvent\LieferzeitenTrackingEventDefinition">
+            <tag name="shopware.entity.definition" />
+        </service>
+        <service id="LieferzeitenManagement\Core\Content\TaskAssignment\LieferzeitenTaskAssignmentDefinition">
+            <tag name="shopware.entity.definition" />
+        </service>
     </services>
 </container>

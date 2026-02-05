@@ -184,6 +184,52 @@ class Migration1731000000InitialSchema extends MigrationStep
                 CONSTRAINT `fk.lieferzeiten_notification_settings.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
+
+        $connection->executeStatement('
+            CREATE TABLE IF NOT EXISTS `lieferzeiten_tracking_number` (
+                `id` BINARY(16) NOT NULL,
+                `package_id` BINARY(16) NOT NULL,
+                `tracking_number` VARCHAR(255) NULL,
+                `tracking_provider` VARCHAR(255) NULL,
+                `is_active` TINYINT(1) NOT NULL DEFAULT 0,
+                `created_at` DATETIME(3) NOT NULL,
+                PRIMARY KEY (`id`),
+                KEY `idx.lieferzeiten_tracking_number.package_id` (`package_id`),
+                CONSTRAINT `fk.lieferzeiten_tracking_number.package_id` FOREIGN KEY (`package_id`) REFERENCES `lieferzeiten_package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        ');
+
+        $connection->executeStatement('
+            CREATE TABLE IF NOT EXISTS `lieferzeiten_tracking_event` (
+                `id` BINARY(16) NOT NULL,
+                `tracking_number_id` BINARY(16) NOT NULL,
+                `status` VARCHAR(255) NULL,
+                `description` VARCHAR(255) NULL,
+                `occurred_at` DATETIME(3) NULL,
+                `payload` JSON NULL,
+                `created_at` DATETIME(3) NOT NULL,
+                PRIMARY KEY (`id`),
+                KEY `idx.lieferzeiten_tracking_event.tracking_number_id` (`tracking_number_id`),
+                CONSTRAINT `fk.lieferzeiten_tracking_event.tracking_number_id` FOREIGN KEY (`tracking_number_id`) REFERENCES `lieferzeiten_tracking_number` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        ');
+
+        $connection->executeStatement('
+            CREATE TABLE IF NOT EXISTS `lieferzeiten_task_assignment` (
+                `id` BINARY(16) NOT NULL,
+                `sales_channel_id` BINARY(16) NULL,
+                `area` VARCHAR(255) NULL,
+                `task_type` VARCHAR(255) NULL,
+                `assigned_user_id` BINARY(16) NULL,
+                `created_at` DATETIME(3) NOT NULL,
+                `updated_at` DATETIME(3) NULL,
+                PRIMARY KEY (`id`),
+                KEY `idx.lieferzeiten_task_assignment.sales_channel_id` (`sales_channel_id`),
+                KEY `idx.lieferzeiten_task_assignment.assigned_user_id` (`assigned_user_id`),
+                CONSTRAINT `fk.lieferzeiten_task_assignment.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+                CONSTRAINT `fk.lieferzeiten_task_assignment.assigned_user_id` FOREIGN KEY (`assigned_user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        ');
     }
 
     public function updateDestructive(Connection $connection): void

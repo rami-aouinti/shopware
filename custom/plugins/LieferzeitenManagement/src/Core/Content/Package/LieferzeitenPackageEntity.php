@@ -4,6 +4,7 @@ namespace LieferzeitenManagement\Core\Content\Package;
 
 use LieferzeitenManagement\Core\Content\DateHistory\LieferzeitenDateHistoryCollection;
 use LieferzeitenManagement\Core\Content\PackagePosition\LieferzeitenPackagePositionCollection;
+use LieferzeitenManagement\Core\Content\TrackingNumber\LieferzeitenTrackingNumberCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
@@ -50,6 +51,8 @@ class LieferzeitenPackageEntity extends Entity
     protected ?LieferzeitenPackagePositionCollection $packagePositions = null;
 
     protected ?LieferzeitenDateHistoryCollection $dateHistories = null;
+
+    protected ?LieferzeitenTrackingNumberCollection $trackingNumbers = null;
 
     public function getOrderId(): ?string
     {
@@ -239,5 +242,15 @@ class LieferzeitenPackageEntity extends Entity
     public function setDateHistories(?LieferzeitenDateHistoryCollection $dateHistories): void
     {
         $this->dateHistories = $dateHistories;
+    }
+
+    public function getTrackingNumbers(): ?LieferzeitenTrackingNumberCollection
+    {
+        return $this->trackingNumbers;
+    }
+
+    public function setTrackingNumbers(?LieferzeitenTrackingNumberCollection $trackingNumbers): void
+    {
+        $this->trackingNumbers = $trackingNumbers;
     }
 }

@@ -4,6 +4,7 @@ namespace LieferzeitenManagement\Core\Content\Package;
 
 use LieferzeitenManagement\Core\Content\DateHistory\LieferzeitenDateHistoryDefinition;
 use LieferzeitenManagement\Core\Content\PackagePosition\LieferzeitenPackagePositionDefinition;
+use LieferzeitenManagement\Core\Content\TrackingNumber\LieferzeitenTrackingNumberDefinition;
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\CreatedAtField;
@@ -62,6 +63,7 @@ class LieferzeitenPackageDefinition extends EntityDefinition
             new ManyToOneAssociationField('newDeliveryUpdatedBy', 'new_delivery_updated_by_id', UserDefinition::class, 'id', false),
             new OneToManyAssociationField('packagePositions', LieferzeitenPackagePositionDefinition::class, 'package_id'),
             new OneToManyAssociationField('dateHistories', LieferzeitenDateHistoryDefinition::class, 'package_id'),
+            new OneToManyAssociationField('trackingNumbers', LieferzeitenTrackingNumberDefinition::class, 'package_id'),
         ]);
     }
 }
