@@ -14,6 +14,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\LongTextField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\UpdatedAtField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
@@ -50,7 +51,7 @@ class LieferzeitenOrderPositionDefinition extends EntityDefinition
             new IntField('quantity', 'quantity'),
             new DateField('supplier_delivery_start', 'supplierDeliveryStart'),
             new DateField('supplier_delivery_end', 'supplierDeliveryEnd'),
-            new StringField('supplier_delivery_comment', 'supplierDeliveryComment'),
+            new LongTextField('supplier_delivery_comment', 'supplierDeliveryComment'),
             new FkField('supplier_delivery_updated_by_id', 'supplierDeliveryUpdatedById', UserDefinition::class),
             new DateTimeField('supplier_delivery_updated_at', 'supplierDeliveryUpdatedAt'),
             new CreatedAtField(),
