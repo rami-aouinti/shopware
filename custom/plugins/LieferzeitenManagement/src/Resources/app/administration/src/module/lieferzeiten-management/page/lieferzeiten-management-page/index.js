@@ -37,9 +37,11 @@ Shopware.Component.register('lieferzeiten-management-page', {
             dateHistoryRepository: null,
             taskRepository: null,
             taskAssignmentRepository: null,
+            settingsRepository: null,
             creatingTaskIds: {},
             selectedArea: null,
             selectedView: null,
+            settingsByArea: {},
             areaOptions: [
                 { value: 'first-medical', label: this.$t('lieferzeiten-management.general.areaFirstMedical') },
                 { value: 'e-commerce', label: this.$t('lieferzeiten-management.general.areaECommerce') },
@@ -181,13 +183,38 @@ Shopware.Component.register('lieferzeiten-management-page', {
         this.dateHistoryRepository = this.repositoryFactory.create('lieferzeiten_date_history');
         this.taskRepository = this.repositoryFactory.create('lieferzeiten_task');
         this.taskAssignmentRepository = this.repositoryFactory.create('lieferzeiten_task_assignment');
+        this.settingsRepository = this.repositoryFactory.create('lieferzeiten_settings');
         this.restoreSelection();
-        if (!this.needsSelection) {
-            this.loadPackages();
-        }
+        this.loadAreaMappings().then(() => {
+            if (!this.needsSelection) {
+                this.loadPackages();
+            }
+        });
     },
 
     methods: {
+        loadAreaMappings() {
+            const criteria = new Criteria(1, 250);
+            criteria.addAssociation('salesChannel');
+
+            return this.settingsRepository.search(criteria, Shopware.Context.api).then((result) => {
+                const mapping = {};
+                result.forEach((setting) => {
+                    if (!setting.area || !setting.salesChannelId) {
+                        return;
+                    }
+
+                    if (!mapping[setting.area]) {
+                        mapping[setting.area] = [];
+                    }
+
+                    mapping[setting.area].push(setting.salesChannelId);
+                });
+
+                this.settingsByArea = mapping;
+            });
+        },
+
         restoreSelection() {
             const stored = localStorage.getItem('lieferzeiten-management.selection');
             if (!stored) {
@@ -214,7 +241,9 @@ Shopware.Component.register('lieferzeiten-management-page', {
         onSelectionChange() {
             this.persistSelection();
             if (!this.needsSelection) {
-                this.onRefresh();
+                this.loadAreaMappings().then(() => {
+                    this.onRefresh();
+                });
             }
         },
 
@@ -378,6 +407,15 @@ Shopware.Component.register('lieferzeiten-management-page', {
 
             if (this.selectedView === 'open') {
                 criteria.addFilter(Criteria.equalsAny('order.stateMachineState.technicalName', ['open', 'in_progress']));
+            }
+
+            if (this.selectedArea) {
+                const salesChannelIds = this.settingsByArea[this.selectedArea] || [];
+                if (salesChannelIds.length) {
+                    criteria.addFilter(Criteria.equalsAny('order.salesChannelId', salesChannelIds));
+                } else {
+                    criteria.addFilter(Criteria.equals('order.salesChannelId', null));
+                }
             }
 
             if (this.shippedFrom || this.shippedTo) {
