@@ -26,10 +26,20 @@ Shopware.Component.register('lieferzeiten-management-page', {
             trackingFilter: '',
             packageStatusFilter: '',
             orderStatusFilter: '',
+            businessStatusFilter: '',
+            updatedByFilter: '',
             shippedFrom: null,
             shippedTo: null,
             deliveredFrom: null,
             deliveredTo: null,
+            latestShippingFrom: null,
+            latestShippingTo: null,
+            latestDeliveryFrom: null,
+            latestDeliveryTo: null,
+            supplierDeliveryStartFilter: null,
+            supplierDeliveryEndFilter: null,
+            newDeliveryStartFilter: null,
+            newDeliveryEndFilter: null,
             isTrackingModalOpen: false,
             trackingEvents: null,
             trackingModalNumber: '',
@@ -76,12 +86,20 @@ Shopware.Component.register('lieferzeiten-management-page', {
                     label: this.$t('lieferzeiten-management.general.columnCustomerName'),
                 },
                 {
+                    property: 'additionalCustomerNames',
+                    label: this.$t('lieferzeiten-management.general.columnAdditionalCustomerNames'),
+                },
+                {
                     property: 'paymentInfo',
                     label: this.$t('lieferzeiten-management.general.columnPayment'),
                 },
                 {
                     property: 'orderStatus',
                     label: this.$t('lieferzeiten-management.general.columnOrderStatus'),
+                },
+                {
+                    property: 'businessStatusLabel',
+                    label: this.$t('lieferzeiten-management.general.columnBusinessStatus'),
                 },
                 {
                     property: 'san6OrderNumber',
@@ -375,6 +393,7 @@ Shopware.Component.register('lieferzeiten-management-page', {
             criteria.addAssociation('order.transactions.paymentMethod');
             criteria.addAssociation('trackingNumbers');
             criteria.addAssociation('packagePositions.orderPosition');
+            criteria.addAssociation('packagePositions.orderPosition.supplierDeliveryUpdatedBy');
             criteria.addAssociation('newDeliveryUpdatedBy');
             criteria.addFilter(Criteria.not('OR', [
                 Criteria.contains('order.orderNumber', 'TEST'),
@@ -394,7 +413,10 @@ Shopware.Component.register('lieferzeiten-management-page', {
             }
 
             if (this.trackingFilter) {
-                criteria.addFilter(Criteria.contains('trackingNumber', this.trackingFilter));
+                criteria.addFilter(Criteria.multi('OR', [
+                    Criteria.contains('trackingNumber', this.trackingFilter),
+                    Criteria.contains('trackingNumbers.trackingNumber', this.trackingFilter),
+                ]));
             }
 
             if (this.packageStatusFilter) {
@@ -403,6 +425,22 @@ Shopware.Component.register('lieferzeiten-management-page', {
 
             if (this.orderStatusFilter) {
                 criteria.addFilter(Criteria.contains('order.stateMachineState.name', this.orderStatusFilter));
+            }
+
+            if (this.businessStatusFilter) {
+                criteria.addFilter(Criteria.multi('OR', [
+                    Criteria.contains('packageStatus', this.businessStatusFilter),
+                    Criteria.contains('trackingStatus', this.businessStatusFilter),
+                ]));
+            }
+
+            if (this.updatedByFilter) {
+                criteria.addFilter(Criteria.multi('OR', [
+                    Criteria.contains('newDeliveryUpdatedBy.firstName', this.updatedByFilter),
+                    Criteria.contains('newDeliveryUpdatedBy.lastName', this.updatedByFilter),
+                    Criteria.contains('newDeliveryUpdatedBy.username', this.updatedByFilter),
+                    Criteria.contains('newDeliveryUpdatedBy.email', this.updatedByFilter),
+                ]));
             }
 
             if (this.selectedView === 'open') {
@@ -429,6 +467,44 @@ Shopware.Component.register('lieferzeiten-management-page', {
                 criteria.addFilter(Criteria.range('deliveredAt', {
                     gte: this.deliveredFrom || undefined,
                     lte: this.deliveredTo || undefined,
+                }));
+            }
+
+            if (this.latestShippingFrom || this.latestShippingTo) {
+                criteria.addFilter(Criteria.range('latestShippingAt', {
+                    gte: this.latestShippingFrom || undefined,
+                    lte: this.latestShippingTo || undefined,
+                }));
+            }
+
+            if (this.latestDeliveryFrom || this.latestDeliveryTo) {
+                criteria.addFilter(Criteria.range('latestDeliveryAt', {
+                    gte: this.latestDeliveryFrom || undefined,
+                    lte: this.latestDeliveryTo || undefined,
+                }));
+            }
+
+            if (this.supplierDeliveryStartFilter) {
+                criteria.addFilter(Criteria.range('packagePositions.orderPosition.supplierDeliveryStart', {
+                    gte: this.supplierDeliveryStartFilter || undefined,
+                }));
+            }
+
+            if (this.supplierDeliveryEndFilter) {
+                criteria.addFilter(Criteria.range('packagePositions.orderPosition.supplierDeliveryEnd', {
+                    lte: this.supplierDeliveryEndFilter || undefined,
+                }));
+            }
+
+            if (this.newDeliveryStartFilter) {
+                criteria.addFilter(Criteria.range('newDeliveryStart', {
+                    gte: this.newDeliveryStartFilter || undefined,
+                }));
+            }
+
+            if (this.newDeliveryEndFilter) {
+                criteria.addFilter(Criteria.range('newDeliveryEnd', {
+                    lte: this.newDeliveryEndFilter || undefined,
                 }));
             }
 
@@ -474,6 +550,16 @@ Shopware.Component.register('lieferzeiten-management-page', {
                 .filter((position) => position);
         },
 
+        hasSupplierDelivery(item) {
+            return this.getOrderPositions(item).some((position) => {
+                return position.supplierDeliveryStart && position.supplierDeliveryEnd;
+            });
+        },
+
+        hasNewDelivery(item) {
+            return Boolean(item?.newDeliveryStart && item?.newDeliveryEnd);
+        },
+
         getLatestTransaction(order) {
             if (!order?.transactions?.length) {
                 return null;
@@ -497,7 +583,40 @@ Shopware.Component.register('lieferzeiten-management-page', {
             return `${method} • ${paidAt}`;
         },
 
+        formatBusinessStatus(item) {
+            if (!item) {
+                return '-';
+            }
+
+            const label = item.businessStatusLabel ?? '';
+            const code = item.businessStatusCode ?? '';
+
+            if (label && code !== '') {
+                return `${label} (${code})`;
+            }
+
+            if (label) {
+                return label;
+            }
+
+            if (code !== '') {
+                return String(code);
+            }
+
+            return '-';
+        },
+
         onNewDeliveryChange(item) {
+            if (!item?.newDeliveryUpdatedAt && !this.hasSupplierDelivery(item)) {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: this.$t('lieferzeiten-management.general.validationRangeRequired', {
+                        label: this.$t('lieferzeiten-management.general.columnSupplierDelivery'),
+                    }),
+                });
+                return;
+            }
+
             if (!this.validateRange(
                 item.newDeliveryStart,
                 item.newDeliveryEnd,
@@ -508,32 +627,68 @@ Shopware.Component.register('lieferzeiten-management-page', {
                 return;
             }
 
-            const currentUser = Shopware.State.get('session')?.currentUser;
-            item.newDeliveryUpdatedAt = new Date().toISOString();
-            item.newDeliveryUpdatedById = currentUser?.id || null;
-            this.repository.save(item, Shopware.Context.api).then(() => {
-                const historyEntry = this.dateHistoryRepository.create(Shopware.Context.api);
-                historyEntry.packageId = item.id;
-                historyEntry.type = 'new_delivery';
-                historyEntry.rangeStart = item.newDeliveryStart;
-                historyEntry.rangeEnd = item.newDeliveryEnd;
-                historyEntry.comment = item.newDeliveryComment || null;
-                historyEntry.createdById = currentUser?.id || null;
-                this.dateHistoryRepository.save(historyEntry, Shopware.Context.api);
+            const positionsToSave = this.getOrderPositions(item).filter((position) => {
+                return !position.supplierDeliveryUpdatedAt
+                    && position.supplierDeliveryStart
+                    && position.supplierDeliveryEnd;
+            });
 
-                const startWeek = this.getWeekNumber(item.newDeliveryStart);
-                const endWeek = this.getWeekNumber(item.newDeliveryEnd);
-                this.createNotificationSuccess({
-                    title: this.$t('global.default.success'),
-                    message: this.$t('lieferzeiten-management.general.saveNewDeliverySuccess', {
-                        startWeek,
-                        endWeek,
-                    }),
+            if (positionsToSave.length) {
+                for (const position of positionsToSave) {
+                    if (!this.validateRange(
+                        position.supplierDeliveryStart,
+                        position.supplierDeliveryEnd,
+                        1,
+                        14,
+                        'lieferzeiten-management.general.columnSupplierDelivery',
+                    )) {
+                        return;
+                    }
+                }
+            }
+
+            const currentUser = Shopware.State.get('session')?.currentUser;
+            const saveSupplierPromise = positionsToSave.length
+                ? Promise.all(positionsToSave.map((position) => this.saveSupplierDelivery(position, false)))
+                : Promise.resolve();
+
+            saveSupplierPromise.then(() => {
+                item.newDeliveryUpdatedAt = new Date().toISOString();
+                item.newDeliveryUpdatedById = currentUser?.id || null;
+                this.repository.save(item, Shopware.Context.api).then(() => {
+                    const historyEntry = this.dateHistoryRepository.create(Shopware.Context.api);
+                    historyEntry.packageId = item.id;
+                    historyEntry.type = 'new_delivery';
+                    historyEntry.rangeStart = item.newDeliveryStart;
+                    historyEntry.rangeEnd = item.newDeliveryEnd;
+                    historyEntry.comment = item.newDeliveryComment || null;
+                    historyEntry.createdById = currentUser?.id || null;
+                    this.dateHistoryRepository.save(historyEntry, Shopware.Context.api);
+
+                    const startWeek = this.getWeekNumber(item.newDeliveryStart);
+                    const endWeek = this.getWeekNumber(item.newDeliveryEnd);
+                    this.createNotificationSuccess({
+                        title: this.$t('global.default.success'),
+                        message: this.$t('lieferzeiten-management.general.saveNewDeliverySuccess', {
+                            startWeek,
+                            endWeek,
+                        }),
+                    });
                 });
             });
         },
 
-        onSupplierDeliveryChange(position) {
+        onSupplierDeliveryChange(position, item) {
+            if (!position?.supplierDeliveryUpdatedAt && !this.hasNewDelivery(item)) {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: this.$t('lieferzeiten-management.general.validationRangeRequired', {
+                        label: this.$t('lieferzeiten-management.general.columnNewDelivery'),
+                    }),
+                });
+                return;
+            }
+
             if (!this.validateRange(
                 position.supplierDeliveryStart,
                 position.supplierDeliveryEnd,
@@ -544,10 +699,14 @@ Shopware.Component.register('lieferzeiten-management-page', {
                 return;
             }
 
+            this.saveSupplierDelivery(position, true);
+        },
+
+        saveSupplierDelivery(position, showNotification) {
             const currentUser = Shopware.State.get('session')?.currentUser;
             position.supplierDeliveryUpdatedAt = new Date().toISOString();
             position.supplierDeliveryUpdatedById = currentUser?.id || null;
-            this.orderPositionRepository.save(position, Shopware.Context.api).then(() => {
+            return this.orderPositionRepository.save(position, Shopware.Context.api).then(() => {
                 const historyEntry = this.dateHistoryRepository.create(Shopware.Context.api);
                 historyEntry.orderPositionId = position.id;
                 historyEntry.type = 'supplier_delivery';
@@ -558,6 +717,10 @@ Shopware.Component.register('lieferzeiten-management-page', {
                 this.dateHistoryRepository.save(historyEntry, Shopware.Context.api);
 
                 this.closeAdditionalDeliveryTasks(position.id);
+
+                if (!showNotification) {
+                    return;
+                }
 
                 const startWeek = this.getWeekNumber(position.supplierDeliveryStart);
                 const endWeek = this.getWeekNumber(position.supplierDeliveryEnd);
@@ -599,6 +762,32 @@ Shopware.Component.register('lieferzeiten-management-page', {
             }
 
             return `${user.firstName || ''} ${user.lastName || ''}`.trim();
+        },
+
+        hasExternalTracking(item) {
+            if (!item) {
+                return false;
+            }
+
+            return Boolean(item.trackingNumber || (item.trackingNumbers && item.trackingNumbers.length));
+        },
+
+        shouldShowInternalShipping(item) {
+            if (this.hasExternalTracking(item)) {
+                return false;
+            }
+
+            return Boolean(item?.shippedAt);
+        },
+
+        hasAnyDeliveryUpdates(item) {
+            if (item?.newDeliveryUpdatedBy || item?.newDeliveryUpdatedAt) {
+                return true;
+            }
+
+            return this.getOrderPositions(item).some((position) => {
+                return position?.supplierDeliveryUpdatedBy || position?.supplierDeliveryUpdatedAt;
+            });
         },
 
         openTrackingModal(item) {
