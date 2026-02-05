@@ -58,6 +58,16 @@
                             :label="$t('lieferzeiten-management.general.filterOrderStatus')"
                             @change="onRefresh"
                         />
+                        <sw-text-field
+                            v-model="businessStatusFilter"
+                            :label="$t('lieferzeiten-management.general.filterBusinessStatus')"
+                            @change="onRefresh"
+                        />
+                        <sw-text-field
+                            v-model="updatedByFilter"
+                            :label="$t('lieferzeiten-management.general.filterUpdatedBy')"
+                            @change="onRefresh"
+                        />
                         <sw-datepicker
                             v-model="shippedFrom"
                             date-type="date"
@@ -80,6 +90,54 @@
                             v-model="deliveredTo"
                             date-type="date"
                             :label="$t('lieferzeiten-management.general.filterDeliveredTo')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="latestShippingFrom"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterLatestShippingFrom')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="latestShippingTo"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterLatestShippingTo')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="latestDeliveryFrom"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterLatestDeliveryFrom')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="latestDeliveryTo"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterLatestDeliveryTo')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="supplierDeliveryStartFilter"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterSupplierDeliveryStart')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="supplierDeliveryEndFilter"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterSupplierDeliveryEnd')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="newDeliveryStartFilter"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterNewDeliveryStart')"
+                            @change="onRefresh"
+                        />
+                        <sw-datepicker
+                            v-model="newDeliveryEndFilter"
+                            date-type="date"
+                            :label="$t('lieferzeiten-management.general.filterNewDeliveryEnd')"
                             @change="onRefresh"
                         />
                     </div>
@@ -133,11 +191,18 @@
                     <template #column-order.orderCustomer.firstName="{ item }">
                         {{ item.order?.orderCustomer?.firstName }} {{ item.order?.orderCustomer?.lastName }}
                     </template>
+                    <template #column-additionalCustomerNames="{ item }">
+                        <span v-if="item.additionalCustomerNames">{{ item.additionalCustomerNames }}</span>
+                        <span v-else>-</span>
+                    </template>
                     <template #column-paymentInfo="{ item }">
                         {{ formatPaymentInfo(item.order) }}
                     </template>
                     <template #column-orderStatus="{ item }">
                         {{ item.order?.stateMachineState?.name || '-' }}
+                    </template>
+                    <template #column-businessStatusLabel="{ item }">
+                        {{ formatBusinessStatus(item) }}
                     </template>
                     <template #column-san6OrderNumber="{ item }">
                         <div v-for="position in getOrderPositions(item)" :key="position.id">
@@ -163,6 +228,9 @@
                         >
                             {{ item.trackingNumber }}
                         </sw-button>
+                        <span v-else-if="shouldShowInternalShipping(item)">
+                            {{ $t('lieferzeiten-management.general.trackingInternalShipping') }}
+                        </span>
                         <span v-else>-</span>
                     </template>
                     <template #column-supplierDelivery="{ item }">
@@ -176,14 +244,14 @@
                                 date-type="date"
                                 size="small"
                                 :placeholder="$t('lieferzeiten-management.general.supplierDeliveryStart')"
-                                @change="onSupplierDeliveryChange(position)"
+                                @change="onSupplierDeliveryChange(position, item)"
                             />
                             <sw-datepicker
                                 v-model="position.supplierDeliveryEnd"
                                 date-type="date"
                                 size="small"
                                 :placeholder="$t('lieferzeiten-management.general.supplierDeliveryEnd')"
-                                @change="onSupplierDeliveryChange(position)"
+                                @change="onSupplierDeliveryChange(position, item)"
                             />
                         </div>
                     </template>
@@ -197,7 +265,7 @@
                                 v-model="position.supplierDeliveryComment"
                                 size="small"
                                 :placeholder="$t('lieferzeiten-management.general.supplierDeliveryComment')"
-                                @change="onSupplierDeliveryChange(position)"
+                                @change="onSupplierDeliveryChange(position, item)"
                             />
                         </div>
                     </template>
@@ -208,6 +276,7 @@
                                 date-type="date"
                                 size="small"
                                 :placeholder="$t('lieferzeiten-management.general.newDeliveryStart')"
+                                :disabled="!hasSupplierDelivery(item)"
                                 @change="onNewDeliveryChange(item)"
                             />
                             <sw-datepicker
@@ -215,6 +284,7 @@
                                 date-type="date"
                                 size="small"
                                 :placeholder="$t('lieferzeiten-management.general.newDeliveryEnd')"
+                                :disabled="!hasSupplierDelivery(item)"
                                 @change="onNewDeliveryChange(item)"
                             />
                         </div>
@@ -228,12 +298,33 @@
                         />
                     </template>
                     <template #column-deliveryUpdatedBy="{ item }">
-                        <div>
-                            {{ getUserLabel(item.newDeliveryUpdatedBy) }}
+                        <div
+                            v-if="item.newDeliveryUpdatedBy || item.newDeliveryUpdatedAt"
+                            class="lieferzeiten-management-page__position-block"
+                        >
+                            <div><strong>{{ $t('lieferzeiten-management.general.updateLabelNewDelivery') }}</strong></div>
+                            <div>
+                                {{ getUserLabel(item.newDeliveryUpdatedBy) }}
+                            </div>
+                            <div v-if="item.newDeliveryUpdatedAt">
+                                <sw-time-ago :date="item.newDeliveryUpdatedAt" />
+                            </div>
                         </div>
-                        <div v-if="item.newDeliveryUpdatedAt">
-                            <sw-time-ago :date="item.newDeliveryUpdatedAt" />
+                        <div
+                            v-for="position in getOrderPositions(item)"
+                            v-if="position.supplierDeliveryUpdatedBy || position.supplierDeliveryUpdatedAt"
+                            :key="position.id"
+                            class="lieferzeiten-management-page__position-block"
+                        >
+                            <div><strong>{{ $t('lieferzeiten-management.general.updateLabelSupplierDelivery') }}</strong></div>
+                            <div>
+                                {{ getUserLabel(position.supplierDeliveryUpdatedBy) }}
+                            </div>
+                            <div v-if="position.supplierDeliveryUpdatedAt">
+                                <sw-time-ago :date="position.supplierDeliveryUpdatedAt" />
+                            </div>
                         </div>
+                        <div v-if="!hasAnyDeliveryUpdates(item)">-</div>
                     </template>
                     <template #column-actions="{ item }">
                         <div
