@@ -139,15 +139,27 @@
 
     &__filters-bar {
         display: flex;
-        flex-wrap: nowrap;
+        flex-direction: column;
         gap: 12px;
-        align-items: center;
-        justify-content: space-between;
+        align-items: stretch;
         padding: 12px;
         margin-bottom: 16px;
         background: #ffffff;
         border-radius: 8px;
         border: 1px solid #d7dde5;
+    }
+
+    &__filters-row {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    &__search-row {
+        display: flex;
+        align-items: center;
     }
 
     &__filters,
@@ -174,6 +186,7 @@
 
     &__search {
         flex: 1;
+        width: 100%;
         min-width: 320px;
     }
 
