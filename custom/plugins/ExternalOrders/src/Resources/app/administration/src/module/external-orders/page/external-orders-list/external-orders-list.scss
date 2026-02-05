@@ -306,6 +306,12 @@
     &__detail-modal {
         :global(.sw-modal__dialog) {
             width: min(95vw, 1400px);
+            max-width: 1400px;
+        }
+
+        :global(.sw-modal--large .sw-modal__dialog) {
+            width: min(95vw, 1400px);
+            max-width: 1400px;
         }
     }
 
