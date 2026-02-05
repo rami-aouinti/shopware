@@ -34,6 +34,12 @@ class LieferzeitenPackageEntity extends Entity
 
     protected ?string $trackingStatus = null;
 
+    protected ?int $businessStatusCode = null;
+
+    protected ?string $businessStatusLabel = null;
+
+    protected ?string $businessStatusSource = null;
+
     protected ?string $additionalCustomerNames = null;
 
     protected ?\DateTimeInterface $newDeliveryStart = null;
@@ -154,6 +160,36 @@ class LieferzeitenPackageEntity extends Entity
     public function setTrackingStatus(?string $trackingStatus): void
     {
         $this->trackingStatus = $trackingStatus;
+    }
+
+    public function getBusinessStatusCode(): ?int
+    {
+        return $this->businessStatusCode;
+    }
+
+    public function setBusinessStatusCode(?int $businessStatusCode): void
+    {
+        $this->businessStatusCode = $businessStatusCode;
+    }
+
+    public function getBusinessStatusLabel(): ?string
+    {
+        return $this->businessStatusLabel;
+    }
+
+    public function setBusinessStatusLabel(?string $businessStatusLabel): void
+    {
+        $this->businessStatusLabel = $businessStatusLabel;
+    }
+
+    public function getBusinessStatusSource(): ?string
+    {
+        return $this->businessStatusSource;
+    }
+
+    public function setBusinessStatusSource(?string $businessStatusSource): void
+    {
+        $this->businessStatusSource = $businessStatusSource;
     }
 
     public function getAdditionalCustomerNames(): ?string

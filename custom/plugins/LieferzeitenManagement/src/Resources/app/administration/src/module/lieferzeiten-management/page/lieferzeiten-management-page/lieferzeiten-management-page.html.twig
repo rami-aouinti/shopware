@@ -139,6 +139,9 @@
                     <template #column-orderStatus="{ item }">
                         {{ item.order?.stateMachineState?.name || '-' }}
                     </template>
+                    <template #column-businessStatusLabel="{ item }">
+                        {{ formatBusinessStatus(item) }}
+                    </template>
                     <template #column-san6OrderNumber="{ item }">
                         <div v-for="position in getOrderPositions(item)" :key="position.id">
                             {{ position.san6OrderNumber || '-' }}

@@ -84,6 +84,10 @@ Shopware.Component.register('lieferzeiten-management-page', {
                     label: this.$t('lieferzeiten-management.general.columnOrderStatus'),
                 },
                 {
+                    property: 'businessStatusLabel',
+                    label: this.$t('lieferzeiten-management.general.columnBusinessStatus'),
+                },
+                {
                     property: 'san6OrderNumber',
                     label: this.$t('lieferzeiten-management.general.columnSan6OrderNumber'),
                 },
@@ -495,6 +499,29 @@ Shopware.Component.register('lieferzeiten-management-page', {
             const method = transaction.paymentMethod?.name || '-';
             const paidAt = transaction.paidAt ? this.$d(new Date(transaction.paidAt)) : '-';
             return `${method} • ${paidAt}`;
+        },
+
+        formatBusinessStatus(item) {
+            if (!item) {
+                return '-';
+            }
+
+            const label = item.businessStatusLabel ?? '';
+            const code = item.businessStatusCode ?? '';
+
+            if (label && code !== '') {
+                return `${label} (${code})`;
+            }
+
+            if (label) {
+                return label;
+            }
+
+            if (code !== '') {
+                return String(code);
+            }
+
+            return '-';
         },
 
         onNewDeliveryChange(item) {
