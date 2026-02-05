@@ -45,7 +45,7 @@
                             size="small"
                             @click="exportSelectedOrdersPdf"
                         >
-                            <sw-icon name="external-orders-pdf" size="16" class="external-orders__download-icon" />
+                            <img :src="pdfIcon" alt="" class="external-orders__download-icon" />
                             PDF herunterladen ({{ selectedOrders.length > 0 ? selectedOrders.length : filteredOrders.length }})
                         </sw-button>
                         <sw-button
@@ -53,7 +53,7 @@
                             size="small"
                             @click="exportSelectedOrdersExcel"
                         >
-                            <sw-icon name="external-orders-excel" size="16" class="external-orders__download-icon" />
+                            <img :src="excelIcon" alt="" class="external-orders__download-icon" />
                             Excel herunterladen ({{ selectedOrders.length > 0 ? selectedOrders.length : filteredOrders.length }})
                         </sw-button>
                     </div>
