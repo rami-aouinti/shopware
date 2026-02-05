@@ -129,10 +129,13 @@
         <service id="LieferzeitenManagement\Subscriber\LieferzeitenOrderPlacedSubscriber" />
         <service id="LieferzeitenManagement\Subscriber\LieferzeitenDateHistoryWrittenSubscriber">
             <argument type="service" id="lieferzeiten_date_history.repository" />
+        </service>
+
         <service id="LieferzeitenManagement\Service\Stats\LieferzeitenStatsAggregationService" />
 
         <service id="LieferzeitenManagement\Api\LieferzeitenStatsController">
             <tag name="controller.service_arguments" />
+        </service>
         <service id="LieferzeitenManagement\Service\Task\TaskCompletionNotifier" />
 
         <service id="LieferzeitenManagement\Subscriber\TaskCompletionSubscriber">
