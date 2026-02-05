@@ -20,9 +20,7 @@ Shopware.Component.register('lieferzeiten-management-settings-page', {
             isLoading: false,
             notificationIsLoading: false,
             taskAssignmentRepository: null,
-            items: [],
             taskAssignments: [],
-            isLoading: false,
             isAssignmentLoading: false,
             areaOptions: [
                 { value: 'first-medical', label: this.$t('lieferzeiten-management.general.areaFirstMedical') },
@@ -42,6 +40,7 @@ Shopware.Component.register('lieferzeiten-management-settings-page', {
                     value: 'delivery_date_changed',
                     label: this.$t('lieferzeiten-management.settings.notificationDeliveryDateChanged'),
                 },
+            ],
             taskTypeOptions: [
                 { value: 'shipping_overdue', label: this.$t('lieferzeiten-management.settings.taskTypeShippingOverdue') },
                 { value: 'additional_delivery_request', label: this.$t('lieferzeiten-management.settings.taskTypeAdditionalDelivery') },
@@ -174,8 +173,6 @@ Shopware.Component.register('lieferzeiten-management-settings-page', {
             });
         },
         deleteNotificationSetting(item) {
-
-        deleteTaskAssignment(item) {
             if (!item?.id) {
                 return;
             }
@@ -190,6 +187,14 @@ Shopware.Component.register('lieferzeiten-management-settings-page', {
                 this.createNotificationError({
                     title: this.$t('global.default.error'),
                     message: this.$t('lieferzeiten-management.settings.notificationDeleteError'),
+                });
+            });
+        },
+        deleteTaskAssignment(item) {
+            if (!item?.id) {
+                return;
+            }
+
             this.taskAssignmentRepository.delete(item.id, Shopware.Context.api).then(() => {
                 this.createNotificationSuccess({
                     title: this.$t('global.default.success'),
