@@ -21,8 +21,6 @@ Component.register('external-orders-list', {
                 totalRevenue: 0,
                 totalItems: 0,
             },
-            pdfIcon,
-            excelIcon,
             channelSources: {},
             channels: [
                 {
