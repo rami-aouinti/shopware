@@ -8,8 +8,8 @@ const iconRegistry = Shopware.Service('iconRegistry')
     ?? Shopware.Application.getContainer('service')?.iconRegistry;
 
 if (iconRegistry?.register) {
-    iconRegistry.register('external-orders-pdf', pdfIcon);
-    iconRegistry.register('external-orders-excel', excelIcon);
+    iconRegistry.register('regular-external-orders-pdf', pdfIcon);
+    iconRegistry.register('regular-external-orders-excel', excelIcon);
 }
 
 Module.register('external-orders', {
