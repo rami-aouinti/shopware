@@ -1,0 +1,37 @@
+{% block lieferzeiten_management_stats_page %}
+    <sw-page class="lieferzeiten-management-stats-page">
+        <template #content>
+            <sw-card :title="$t('lieferzeiten-management.stats.title')">
+                <p>{{ $t('lieferzeiten-management.stats.description') }}</p>
+            </sw-card>
+
+            <sw-card :title="$t('lieferzeiten-management.stats.kpiTitle')">
+                <div class="sw-grid sw-grid--gap">
+                    <div class="sw-card-section">
+                        <p class="sw-card__title">{{ $t('lieferzeiten-management.stats.kpiAverageLeadTime') }}</p>
+                        <p class="sw-card__content">-</p>
+                    </div>
+                    <div class="sw-card-section">
+                        <p class="sw-card__title">{{ $t('lieferzeiten-management.stats.kpiOverdueRate') }}</p>
+                        <p class="sw-card__content">-</p>
+                    </div>
+                    <div class="sw-card-section">
+                        <p class="sw-card__title">{{ $t('lieferzeiten-management.stats.kpiVolume') }}</p>
+                        <p class="sw-card__content">-</p>
+                    </div>
+                </div>
+            </sw-card>
+
+            <sw-card :title="$t('lieferzeiten-management.stats.tableTitle')">
+                <sw-data-grid
+                    :dataSource="[]"
+                    :showSelection="false"
+                    :columns="[
+                        { property: 'metric', label: $t('lieferzeiten-management.stats.columnMetric') },
+                        { property: 'value', label: $t('lieferzeiten-management.stats.columnValue') },
+                    ]"
+                />
+            </sw-card>
+        </template>
+    </sw-page>
+{% endblock %}
