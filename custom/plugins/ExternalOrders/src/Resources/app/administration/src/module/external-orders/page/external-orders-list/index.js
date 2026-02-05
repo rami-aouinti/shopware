@@ -16,7 +16,6 @@ Component.register('external-orders-list', {
         return {
             isLoading: false,
             orders: [],
-            selectedOrders: [],
             summary: {
                 orderCount: 0,
                 totalRevenue: 0,
@@ -209,7 +208,6 @@ Component.register('external-orders-list', {
         async loadOrders() {
             this.isLoading = true;
             this.page = 1;
-            this.selectedOrders = [];
 
             try {
                 const selectedChannel = this.activeChannel || null;
@@ -271,19 +269,6 @@ Component.register('external-orders-list', {
         },
         onSearch() {
             this.page = 1;
-        },
-        onSelectionChange(selection) {
-            if (Array.isArray(selection)) {
-                this.selectedOrders = selection;
-                return;
-            }
-
-            const selectionBucket = selection?.selection ?? selection?.items ?? selection?.data ?? selection ?? {};
-            const items = Array.isArray(selectionBucket)
-                ? selectionBucket
-                : Object.values(selectionBucket);
-
-            this.selectedOrders = items.filter(Boolean);
         },
         normalizeSortValue(value, sortBy = this.sortBy) {
             if (value === null || value === undefined) {
@@ -392,7 +377,7 @@ Component.register('external-orders-list', {
             this.downloadBlob('external-orders.csv', 'text/csv;charset=utf-8;', csv);
         },
         getOrdersForExport() {
-            return this.selectedOrders.length > 0 ? this.selectedOrders : this.filteredOrders;
+            return this.filteredOrders;
         },
         buildExportRows(orders) {
             const header = [

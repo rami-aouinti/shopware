@@ -91,11 +91,9 @@
                     :loading="isLoading"
                     :sort-by="sortBy"
                     :sort-direction="sortDirection"
-                    :show-selection="true"
                     class="external-orders__table"
                     identifier="external-orders"
                     @column-sort="onSortColumn"
-                    @selection-change="onSelectionChange"
                 >
                     <template #column-statusLabel="{ item }">
                         <sw-label :variant="statusVariant(item.status)" size="small">
