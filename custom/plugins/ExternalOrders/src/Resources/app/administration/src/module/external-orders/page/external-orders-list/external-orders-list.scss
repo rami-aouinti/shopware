@@ -462,6 +462,72 @@
         }
     }
 
+    &__detail-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        z-index: 1000;
+        display: flex;
+        align-items: stretch;
+        justify-content: stretch;
+    }
+
+    &__detail-dialog {
+        background: #f3f6fb;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__detail-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 32px;
+        background: #ffffff;
+        border-bottom: 1px solid #d7dde5;
+        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+        z-index: 1;
+
+        h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2d3d;
+        }
+    }
+
+    &__detail-close {
+        border: none;
+        background: #edf2f7;
+        color: #1f2d3d;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        font-size: 22px;
+        line-height: 1;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s ease;
+
+        :global(.sw-card),
+        :global(.mt-card) {
+            width: 100%;
+        }
+    }
+
+    &__detail-body {
+        flex: 1;
+        overflow: auto;
+        padding: 24px 32px 32px;
+        width: 100%;
+        max-width: none;
+        margin: 0;
+    }
+
     &__detail-card {
         margin-bottom: 8px;
     }
