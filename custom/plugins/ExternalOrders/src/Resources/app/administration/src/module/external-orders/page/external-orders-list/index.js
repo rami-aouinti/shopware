@@ -85,6 +85,7 @@ Component.register('external-orders-list', {
             showTestMarkingModal: false,
             page: 1,
             limit: 10,
+            limitOptions: [10, 25, 50, 100],
             sortBy: 'date',
             sortDirection: 'DESC',
         };
@@ -343,6 +344,39 @@ Component.register('external-orders-list', {
 
             this.page = nextPage;
             this.limit = nextLimit;
+        },
+        goToPreviousPage() {
+            if (this.page <= 1) {
+                return;
+            }
+            this.page -= 1;
+        },
+        goToFirstPage() {
+            this.page = 1;
+        },
+        goToLastPage() {
+            this.page = this.totalPages;
+        },
+        goToPage(pageNumber) {
+            if (typeof pageNumber !== 'number') {
+                return;
+            }
+            const nextPage = Math.max(1, Math.min(this.totalPages, pageNumber));
+            this.page = nextPage;
+        },
+        goToNextPage() {
+            if (this.page >= this.totalPages) {
+                return;
+            }
+            this.page += 1;
+        },
+        onLimitChange(value) {
+            const nextLimit = Number(value);
+            if (Number.isNaN(nextLimit) || nextLimit <= 0) {
+                return;
+            }
+            this.limit = nextLimit;
+            this.page = 1;
         },
         onSearch() {
             this.page = 1;

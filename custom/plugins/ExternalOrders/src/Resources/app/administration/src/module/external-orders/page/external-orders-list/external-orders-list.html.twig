@@ -5,7 +5,7 @@
 
     <main id="main" class="sw-page__main-content" tabindex="-1">
         <div class="external-orders__page">
-            <sw-card class="external-orders__channels">
+            <sw-card class="external-orders__channels" style="max-width: none; width: 100%;">
                 <div class="external-orders__channel-tabs">
                     <button
                         v-for="channel in channels"
@@ -66,35 +66,32 @@
                 </div>
             </sw-card>
 
-            <sw-card>
+            <sw-card class="external-orders__filters-card" style="max-width: none; width: 100%;">
                 <div class="external-orders__filters-bar">
-                    <div class="external-orders__search-row">
-                        <sw-search-bar
+                    <div class="external-orders__filters">
+                        <sw-button variant="primary" size="small" @click="resetFilters">
+                            <sw-icon name="regular-filter" size="16" />
+                            Filter löschen
+                        </sw-button>
+                        <sw-datepicker placeholder="Start Datum" class="external-orders__date" size="small" date-type="date" />
+                        <sw-datepicker placeholder="End Datum" class="external-orders__date" size="small" date-type="date" />
+                        <sw-button variant="primary" size="small">Anwenden</sw-button>
+                    </div>
+                    <div class="external-orders__filters-actions">
+                        <sw-text-field
                             v-model="tableSearchTerm"
                             placeholder="Suche Bestellungen"
-                            :show-search-types="false"
                             class="external-orders__search"
-                            @search="onSearch"
+                            type="search"
                         />
-                    </div>
-                    <div class="external-orders__filters-row">
-                        <div class="external-orders__filters">
-                            <sw-button variant="primary" size="small" @click="resetFilters">
-                                <sw-icon name="regular-filter" size="16" />
-                                Filter löschen
-                            </sw-button>
-                            <sw-datepicker placeholder="Start Datum" class="external-orders__date" size="small" date-type="date" />
-                            <sw-datepicker placeholder="End Datum" class="external-orders__date" size="small" date-type="date" />
-                            <sw-button variant="primary" size="small">Anwenden</sw-button>
-                            <sw-button
-                                variant="primary"
-                                size="small"
-                                :disabled="!hasSelectedOrders"
-                                @click="openTestMarkingModal"
-                            >
-                                Testmarkierung Anwenden
-                            </sw-button>
-                        </div>
+                        <sw-button
+                            variant="primary"
+                            size="small"
+                            :disabled="!hasSelectedOrders"
+                            @click="openTestMarkingModal"
+                        >
+                            Testmarkierung Anwenden
+                        </sw-button>
                     </div>
                 </div>
 
@@ -570,13 +567,59 @@
                     v-if="paginatedOrders.length > 0"
                     class="external-orders__pagination"
                 >
-                    <sw-pagination
-                        :page="page"
-                        :limit="limit"
-                        :total="paginationTotal"
-                        :total-visible="7"
-                        @page-change="onPageChange"
-                    />
+                    <div class="external-orders__pagination-controls">
+                        <button
+                            type="button"
+                            class="external-orders__pagination-nav"
+                            :disabled="page <= 1"
+                            @click="goToFirstPage"
+                        >
+                            «
+                        </button>
+                        <button
+                            type="button"
+                            class="external-orders__pagination-nav"
+                            :disabled="page <= 1"
+                            @click="goToPreviousPage"
+                        >
+                            ‹
+                        </button>
+                        <div class="external-orders__pagination-pages">
+                            <button
+                                v-for="pageNumber in visiblePages"
+                                :key="pageNumber"
+                                type="button"
+                                class="external-orders__pagination-page"
+                                :class="{ 'is--active': pageNumber === page }"
+                                @click="goToPage(pageNumber)"
+                            >
+                                {{ pageNumber }}
+                            </button>
+                        </div>
+                        <button
+                            type="button"
+                            class="external-orders__pagination-nav"
+                            :disabled="page >= totalPages"
+                            @click="goToNextPage"
+                        >
+                            ›
+                        </button>
+                        <button
+                            type="button"
+                            class="external-orders__pagination-nav"
+                            :disabled="page >= totalPages"
+                            @click="goToLastPage"
+                        >
+                            »
+                        </button>
+                        <sw-single-select
+                            v-model="limit"
+                            :options="limitSelectOptions"
+                            size="small"
+                            class="external-orders__pagination-limit"
+                            @change="onLimitChange"
+                        />
+                    </div>
                 </div>
                 <sw-empty-state
                     v-else
