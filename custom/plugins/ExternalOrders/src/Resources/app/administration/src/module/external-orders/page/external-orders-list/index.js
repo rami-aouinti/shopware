@@ -576,7 +576,11 @@ Component.register('external-orders-list', {
         async openDetail(order) {
             this.isLoading = true;
             try {
-                this.selectedOrder = await this.externalOrderService.detail(order.id);
+                if (this.isFakeOrder(order)) {
+                    this.selectedOrder = this.buildFakeOrderDetail(order);
+                } else {
+                    this.selectedOrder = await this.externalOrderService.detail(order.id);
+                }
                 this.showDetailModal = true;
             } catch (error) {
                 this.createNotificationError({
@@ -637,6 +641,86 @@ Component.register('external-orders-list', {
                 return 'danger';
             }
             return 'neutral';
+        },
+        isFakeOrder(order) {
+            const id = order?.id ?? '';
+            return typeof id === 'string' && id.startsWith('order-');
+        },
+        buildFakeOrderDetail(order) {
+            const nameParts = String(order?.customerName ?? 'Max Mustermann').split(' ');
+            const firstName = nameParts[0] || 'Max';
+            const lastName = nameParts.slice(1).join(' ') || 'Mustermann';
+            const orderNumber = order?.orderNumber ?? '0000000';
+            const totalItems = order?.totalItems ?? 1;
+            const grossPricePerItem = 79.5;
+            const netPricePerItem = Number((grossPricePerItem / 1.19).toFixed(2));
+            const taxRate = 19;
+            const items = Array.from({ length: Math.min(totalItems, 6) }, (_, index) => ({
+                name: `Medizinisches Produkt ${index + 1}`,
+                quantity: 1,
+                netPrice: netPricePerItem,
+                taxRate,
+                grossPrice: grossPricePerItem,
+                totalPrice: grossPricePerItem,
+            }));
+            const itemsTotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
+
+            return {
+                ...order,
+                customer: {
+                    number: `KND-${orderNumber}`,
+                    firstName,
+                    lastName,
+                    email: order?.email ?? 'kunde@example.com',
+                    group: 'Standard',
+                },
+                payment: {
+                    method: 'Kreditkarte',
+                    code: `PAY-${orderNumber}`,
+                    dueDate: order?.date ?? '2025-12-31',
+                    outstanding: this.formatCurrency(0),
+                    settled: this.formatCurrency(itemsTotal),
+                    extra: 'Transaktion bestätigt',
+                },
+                billingAddress: {
+                    street: 'Hauptstraße 12',
+                    zip: '20354',
+                    city: 'Hamburg',
+                    country: 'Deutschland',
+                },
+                shippingAddress: {
+                    name: order?.customerName ?? 'Max Mustermann',
+                    street: 'Hauptstraße 12',
+                    zipCity: '20354 Hamburg',
+                    country: 'Deutschland',
+                },
+                additional: {
+                    orderDate: order?.date ?? '2025-12-30 09:31',
+                    status: order?.statusLabel ?? 'Bezahlt / in Bearbeitung',
+                    orderType: 'Standard',
+                    notes: 'Testbestellung aus externer Übersicht',
+                    consultant: 'Lisa Berger',
+                    tenant: 'FM Shop',
+                    san6OrderNumber: `SAN6-${orderNumber}`,
+                    orgaEntries: ['ORG-394', 'ORG-402'],
+                    documents: ['Archiv 2025-12', 'Scan 444'],
+                    pdmsId: 'PDMS-7742',
+                    pdmsVariant: 'V2',
+                    topmArticleNumber: 'TOPM-331',
+                    topmExecution: 'Standard',
+                    statusHistorySource: 'System',
+                },
+                shipping: {
+                    carrier: 'DHL',
+                    trackingNumbers: [`00340434${orderNumber}`],
+                },
+                items,
+                statusHistory: [
+                    { status: 'Bestellung angelegt', date: order?.date ?? '2025-12-30 09:31', comment: 'Automatisch' },
+                    { status: order?.statusLabel ?? 'Bezahlt / in Bearbeitung', date: order?.date ?? '2025-12-30 10:15', comment: 'Zahlung bestätigt' },
+                    { status: 'Versand vorbereitet', date: '2025-12-31 08:10', comment: 'Kommissionierung gestartet' },
+                ],
+            };
         },
         exportSelectedOrdersPdf() {
             const orders = this.getOrdersForExport();
