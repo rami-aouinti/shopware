@@ -46,22 +46,22 @@
                         </div>
                     </div>
                     <div class="external-orders__summary-actions">
-                        <sw-button
-                            variant="primary"
-                            size="small"
+                        <button
+                            class="external-orders__button external-orders__button--primary"
+                            type="button"
                             @click="exportSelectedOrdersPdf"
                         >
                             <sw-icon name="regular-file-text" size="16" class="external-orders__download-icon" />
                             PDF herunterladen ({{ selectedOrders.length > 0 ? selectedOrders.length : filteredOrders.length }})
-                        </sw-button>
-                        <sw-button
-                            variant="secondary"
-                            size="small"
+                        </button>
+                        <button
+                            class="external-orders__button external-orders__button--secondary"
+                            type="button"
                             @click="exportSelectedOrdersExcel"
                         >
                             <sw-icon name="regular-file" size="16" class="external-orders__download-icon" />
                             Excel herunterladen ({{ selectedOrders.length > 0 ? selectedOrders.length : filteredOrders.length }})
-                        </sw-button>
+                        </button>
                     </div>
                 </div>
             </sw-card>
@@ -69,13 +69,17 @@
             <sw-card class="external-orders__filters-card" style="max-width: none; width: 100%;">
                 <div class="external-orders__filters-bar">
                     <div class="external-orders__filters">
-                        <sw-button variant="primary" size="small" @click="resetFilters">
+                        <button
+                            class="external-orders__button external-orders__button--primary"
+                            type="button"
+                            @click="resetFilters"
+                        >
                             <sw-icon name="regular-filter" size="16" />
                             Filter löschen
-                        </sw-button>
+                        </button>
                         <sw-datepicker placeholder="Start Datum" class="external-orders__date" size="small" date-type="date" />
                         <sw-datepicker placeholder="End Datum" class="external-orders__date" size="small" date-type="date" />
-                        <sw-button variant="primary" size="small">Anwenden</sw-button>
+                        <button class="external-orders__button external-orders__button--primary" type="button">Anwenden</button>
                     </div>
                     <div class="external-orders__filters-actions">
                         <sw-text-field
@@ -85,14 +89,14 @@
                             size="small"
                             type="search"
                         />
-                        <sw-button
-                            variant="primary"
-                            size="small"
+                        <button
+                            class="external-orders__button external-orders__button--primary"
+                            type="button"
                             :disabled="!hasSelectedOrders"
                             @click="openTestMarkingModal"
                         >
                             Testmarkierung Anwenden
-                        </sw-button>
+                        </button>
                     </div>
                 </div>
 
@@ -153,29 +157,22 @@
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                             />
-                                            <sw-button
-                                                variant="primary"
-                                                size="small"
-                                                class="external-orders__column-filter-add"
+                                            <button class="external-orders__column-filter-add external-orders__button external-orders__button--primary external-orders__button--small"
                                                 disabled
-                                            >
+                                             type="button">
                                                 + Add Rule
-                                            </sw-button>
+                                            </button>
                                             <div class="external-orders__column-filter-actions">
-                                                <sw-button
-                                                    variant="secondary"
-                                                    size="small"
+                                                <button class="external-orders__button external-orders__button--secondary external-orders__button--small"
                                                     @click="clearColumnFilter('orderNumber')"
-                                                >
+                                                 type="button">
                                                     Clear
-                                                </sw-button>
-                                                <sw-button
-                                                    variant="primary"
-                                                    size="small"
+                                                </button>
+                                                <button class="external-orders__button external-orders__button--primary external-orders__button--small"
                                                     @click="applyColumnFilter"
-                                                >
+                                                 type="button">
                                                     Apply
-                                                </sw-button>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -222,29 +219,22 @@
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                             />
-                                            <sw-button
-                                                variant="primary"
-                                                size="small"
-                                                class="external-orders__column-filter-add"
+                                            <button class="external-orders__column-filter-add external-orders__button external-orders__button--primary external-orders__button--small"
                                                 disabled
-                                            >
+                                             type="button">
                                                 + Add Rule
-                                            </sw-button>
+                                            </button>
                                             <div class="external-orders__column-filter-actions">
-                                                <sw-button
-                                                    variant="secondary"
-                                                    size="small"
+                                                <button class="external-orders__button external-orders__button--secondary external-orders__button--small"
                                                     @click="clearColumnFilter('customerName')"
-                                                >
+                                                 type="button">
                                                     Clear
-                                                </sw-button>
-                                                <sw-button
-                                                    variant="primary"
-                                                    size="small"
+                                                </button>
+                                                <button class="external-orders__button external-orders__button--primary external-orders__button--small"
                                                     @click="applyColumnFilter"
-                                                >
+                                                 type="button">
                                                     Apply
-                                                </sw-button>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -291,29 +281,22 @@
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                             />
-                                            <sw-button
-                                                variant="primary"
-                                                size="small"
-                                                class="external-orders__column-filter-add"
+                                            <button class="external-orders__column-filter-add external-orders__button external-orders__button--primary external-orders__button--small"
                                                 disabled
-                                            >
+                                             type="button">
                                                 + Add Rule
-                                            </sw-button>
+                                            </button>
                                             <div class="external-orders__column-filter-actions">
-                                                <sw-button
-                                                    variant="secondary"
-                                                    size="small"
+                                                <button class="external-orders__button external-orders__button--secondary external-orders__button--small"
                                                     @click="clearColumnFilter('orderReference')"
-                                                >
+                                                 type="button">
                                                     Clear
-                                                </sw-button>
-                                                <sw-button
-                                                    variant="primary"
-                                                    size="small"
+                                                </button>
+                                                <button class="external-orders__button external-orders__button--primary external-orders__button--small"
                                                     @click="applyColumnFilter"
-                                                >
+                                                 type="button">
                                                     Apply
-                                                </sw-button>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -360,29 +343,22 @@
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                             />
-                                            <sw-button
-                                                variant="primary"
-                                                size="small"
-                                                class="external-orders__column-filter-add"
+                                            <button class="external-orders__column-filter-add external-orders__button external-orders__button--primary external-orders__button--small"
                                                 disabled
-                                            >
+                                             type="button">
                                                 + Add Rule
-                                            </sw-button>
+                                            </button>
                                             <div class="external-orders__column-filter-actions">
-                                                <sw-button
-                                                    variant="secondary"
-                                                    size="small"
+                                                <button class="external-orders__button external-orders__button--secondary external-orders__button--small"
                                                     @click="clearColumnFilter('email')"
-                                                >
+                                                 type="button">
                                                     Clear
-                                                </sw-button>
-                                                <sw-button
-                                                    variant="primary"
-                                                    size="small"
+                                                </button>
+                                                <button class="external-orders__button external-orders__button--primary external-orders__button--small"
                                                     @click="applyColumnFilter"
-                                                >
+                                                 type="button">
                                                     Apply
-                                                </sw-button>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -429,29 +405,22 @@
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                             />
-                                            <sw-button
-                                                variant="primary"
-                                                size="small"
-                                                class="external-orders__column-filter-add"
+                                            <button class="external-orders__column-filter-add external-orders__button external-orders__button--primary external-orders__button--small"
                                                 disabled
-                                            >
+                                             type="button">
                                                 + Add Rule
-                                            </sw-button>
+                                            </button>
                                             <div class="external-orders__column-filter-actions">
-                                                <sw-button
-                                                    variant="secondary"
-                                                    size="small"
+                                                <button class="external-orders__button external-orders__button--secondary external-orders__button--small"
                                                     @click="clearColumnFilter('date')"
-                                                >
+                                                 type="button">
                                                     Clear
-                                                </sw-button>
-                                                <sw-button
-                                                    variant="primary"
-                                                    size="small"
+                                                </button>
+                                                <button class="external-orders__button external-orders__button--primary external-orders__button--small"
                                                     @click="applyColumnFilter"
-                                                >
+                                                 type="button">
                                                     Apply
-                                                </sw-button>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -498,29 +467,22 @@
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                             />
-                                            <sw-button
-                                                variant="primary"
-                                                size="small"
-                                                class="external-orders__column-filter-add"
+                                            <button class="external-orders__column-filter-add external-orders__button external-orders__button--primary external-orders__button--small"
                                                 disabled
-                                            >
+                                             type="button">
                                                 + Add Rule
-                                            </sw-button>
+                                            </button>
                                             <div class="external-orders__column-filter-actions">
-                                                <sw-button
-                                                    variant="secondary"
-                                                    size="small"
+                                                <button class="external-orders__button external-orders__button--secondary external-orders__button--small"
                                                     @click="clearColumnFilter('statusLabel')"
-                                                >
+                                                 type="button">
                                                     Clear
-                                                </sw-button>
-                                                <sw-button
-                                                    variant="primary"
-                                                    size="small"
+                                                </button>
+                                                <button class="external-orders__button external-orders__button--primary external-orders__button--small"
                                                     @click="applyColumnFilter"
-                                                >
+                                                 type="button">
                                                     Apply
-                                                </sw-button>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -551,14 +513,11 @@
                                     </sw-label>
                                 </td>
                                 <td class="external-orders__cell external-orders__cell--actions">
-                                    <sw-button
-                                        variant="ghost"
-                                        size="small"
-                                        class="external-orders__action"
+                                    <button class="external-orders__action external-orders__button external-orders__button--ghost external-orders__button--small"
                                         @click="openDetail(order)"
-                                    >
+                                     type="button">
                                         <sw-icon name="regular-eye" size="16" />
-                                    </sw-button>
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -944,7 +903,15 @@
                         </sw-button>
                     </footer>
                 </div>
-            </div>
+                <template #modal-footer>
+                    <button class="external-orders__button external-orders__button--secondary" @click="closeTestMarkingModal" type="button">
+                        Abbrechen
+                    </button>
+                    <button class="external-orders__button external-orders__button--primary" @click="applyTestMarking" type="button">
+                        Bestätige
+                    </button>
+                </template>
+            </sw-modal>
         </div>
     </main>
 </div>

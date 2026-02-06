@@ -30,34 +30,55 @@
         max-width: none;
     }
 
-    :global(.external-orders .sw-button) {
+    &__button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
         min-height: 36px;
-        font-size: 14px;
-    }
-
-    :global(.external-orders .sw-button__content) {
         padding: 6px 16px;
+        border-radius: 6px;
+        border: 1px solid transparent;
+        background: #ffffff;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.2;
+        cursor: pointer;
+        transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+
+        &:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
     }
 
-    :global(.external-orders .sw-button--primary) {
+    &__button--small {
+        min-height: 32px;
+        padding: 4px 12px;
+        font-size: 13px;
+    }
+
+    &__button--primary {
         background: #0d9c8e;
         border-color: #0d9c8e;
+        color: #ffffff;
+
+        &:hover:not(:disabled) {
+            background: #0b8a7e;
+            border-color: #0b8a7e;
+        }
     }
 
-    :global(.external-orders .sw-button--primary:hover) {
-        background: #0b8a7e;
-        border-color: #0b8a7e;
-    }
-
-    :global(.external-orders .sw-button--secondary) {
+    &__button--secondary {
         color: #0d9c8e;
         border-color: #0d9c8e;
-    }
+        background: #ffffff;
 
-    :global(.external-orders .sw-button--secondary:hover) {
-        color: #0b8a7e;
-        border-color: #0b8a7e;
-        background: rgba(13, 156, 142, 0.08);
+        &:hover:not(:disabled) {
+            color: #0b8a7e;
+            border-color: #0b8a7e;
+            background: rgba(13, 156, 142, 0.08);
+        }
     }
 
     &__channels,
