@@ -512,6 +512,8 @@
                             <div class="external-orders__detail-section">
                                 <h4>Kundendetails</h4>
                                 <dl>
+                                    <dt>Kundenname</dt>
+                                    <dd>{{ selectedOrder.customer.firstName }} {{ selectedOrder.customer.lastName }}</dd>
                                     <dt>Kundennummer</dt>
                                     <dd>{{ selectedOrder.customer.number }}</dd>
                                     <dt>Vorname</dt>
@@ -595,13 +597,13 @@
                                     <dd>{{ selectedOrder.shipping.trackingNumbers.join(', ') }}</dd>
                                     <dt>Einträge in Orgas San6</dt>
                                     <dd>{{ selectedOrder.additional.orgaEntries.join(', ') }}</dd>
-                                    <dt>Dokumente Bildarchiv San6</dt>
+                                    <dt>Dokumente aus Bildarchiv San6</dt>
                                     <dd>{{ selectedOrder.additional.documents.join(', ') }}</dd>
                                     <dt>PDMS ID + Variante</dt>
                                     <dd>{{ selectedOrder.additional.pdmsId }} / {{ selectedOrder.additional.pdmsVariant }}</dd>
                                     <dt>TopM Artikelnummer + Ausführung</dt>
                                     <dd>{{ selectedOrder.additional.topmArticleNumber }} / {{ selectedOrder.additional.topmExecution }}</dd>
-                                    <dt>Bestellstatushistorie</dt>
+                                    <dt>Bestellstatushistorie Gambio/Shopware</dt>
                                     <dd>{{ selectedOrder.additional.statusHistorySource }}</dd>
                                 </dl>
                             </div>
