@@ -94,7 +94,7 @@ Component.register('external-orders-list', {
         columns() {
             return [
                 {
-                    property: 'orderNumber',
+                    property: 'order-number',
                     dataIndex: 'orderNumber',
                     sortBy: 'orderNumber',
                     label: 'BestellNr',
@@ -103,7 +103,7 @@ Component.register('external-orders-list', {
                     allowResize: true,
                 },
                 {
-                    property: 'customerName',
+                    property: 'customer-name',
                     dataIndex: 'customerName',
                     sortBy: 'customerName',
                     label: 'Kundenname',
@@ -111,7 +111,7 @@ Component.register('external-orders-list', {
                     allowResize: true,
                 },
                 {
-                    property: 'orderReference',
+                    property: 'order-reference',
                     dataIndex: 'orderReference',
                     sortBy: 'orderReference',
                     label: 'AuftragsNr',
@@ -135,7 +135,7 @@ Component.register('external-orders-list', {
                     allowResize: true,
                 },
                 {
-                    property: 'statusLabel',
+                    property: 'status-label',
                     dataIndex: 'statusLabel',
                     sortBy: 'statusLabel',
                     label: 'Bestellstatus',
@@ -214,6 +214,12 @@ Component.register('external-orders-list', {
         },
         paginationTotal() {
             return this.sortedOrders.length;
+        },
+        isAllSelected() {
+            if (this.paginatedOrders.length === 0) {
+                return false;
+            }
+            return this.paginatedOrders.every((order) => this.isOrderSelected(order));
         },
         hasSelectedOrders() {
             return this.selectedOrders.length > 0;
@@ -459,6 +465,46 @@ Component.register('external-orders-list', {
             }
 
             this.selectedOrders = [];
+        },
+        toggleSelectAll(event) {
+            const isChecked = event?.target?.checked;
+            if (!isChecked) {
+                const currentKeys = new Set(this.paginatedOrders.map((order) => this.getOrderKey(order)));
+                this.selectedOrders = this.selectedOrders.filter((order) => !currentKeys.has(this.getOrderKey(order)));
+                return;
+            }
+
+            const merged = new Map(this.selectedOrders.map((order) => [this.getOrderKey(order), order]));
+            this.paginatedOrders.forEach((order) => {
+                merged.set(this.getOrderKey(order), order);
+            });
+            this.selectedOrders = Array.from(merged.values());
+        },
+        toggleOrderSelection(order, event) {
+            const isChecked = event?.target?.checked;
+            const key = this.getOrderKey(order);
+            if (!key) {
+                return;
+            }
+
+            if (isChecked) {
+                const merged = new Map(this.selectedOrders.map((item) => [this.getOrderKey(item), item]));
+                merged.set(key, order);
+                this.selectedOrders = Array.from(merged.values());
+                return;
+            }
+
+            this.selectedOrders = this.selectedOrders.filter((item) => this.getOrderKey(item) !== key);
+        },
+        isOrderSelected(order) {
+            const key = this.getOrderKey(order);
+            return this.selectedOrders.some((item) => this.getOrderKey(item) === key);
+        },
+        getSortIndicator(sortBy) {
+            if (this.sortBy !== sortBy) {
+                return '↕';
+            }
+            return this.sortDirection === 'ASC' ? '↑' : '↓';
         },
 
         async openDetail(order) {
