@@ -40,7 +40,7 @@
     }
 
     :global(.mt-card.external-orders__channels) {
-        max-width: none;
+        max-width: none !important;
     }
 
     &__channel-tabs {
