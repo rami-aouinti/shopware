@@ -5,7 +5,7 @@
 
     <main id="main" class="sw-page__main-content" tabindex="-1">
         <div class="external-orders__page">
-            <sw-card class="external-orders__channels">
+            <sw-card class="external-orders__channels" style="max-width: none; width: 100%;">
                 <div class="external-orders__channel-tabs">
                     <button
                         v-for="channel in channels"
@@ -66,7 +66,7 @@
                 </div>
             </sw-card>
 
-            <sw-card>
+            <sw-card class="external-orders__filters-card" style="max-width: none; width: 100%;">
                 <div class="external-orders__filters-bar">
                     <div class="external-orders__search-row">
                         <sw-search-bar
@@ -96,6 +96,20 @@
                             </sw-button>
                         </div>
                     </div>
+                </div>
+
+                <div
+                    v-if="paginationTotal > 0"
+                    class="external-orders__pagination external-orders__pagination--top"
+                >
+                    <sw-pagination
+                        :page="page"
+                        :limit="limit"
+                        :total="paginationTotal"
+                        :total-visible="7"
+                        :hide-on-single-page="false"
+                        @page-change="onPageChange"
+                    />
                 </div>
 
                 <sw-data-grid
