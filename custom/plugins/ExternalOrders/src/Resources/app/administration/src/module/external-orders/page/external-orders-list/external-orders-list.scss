@@ -455,6 +455,18 @@
         display: flex;
         flex-direction: column;
         gap: 16px;
+
+        :global(.sw-card),
+        :global(.mt-card) {
+            width: 100%;
+            max-width: none;
+        }
+
+        :global(.sw-card__content),
+        :global(.mt-card__content) {
+            width: 100%;
+            max-width: none;
+        }
     }
 
     &__detail-overlay {
@@ -517,6 +529,9 @@
         flex: 1;
         overflow: auto;
         padding: 24px 32px 32px;
+        width: 100%;
+        max-width: none;
+        margin: 0;
     }
 
     &__detail-card {
