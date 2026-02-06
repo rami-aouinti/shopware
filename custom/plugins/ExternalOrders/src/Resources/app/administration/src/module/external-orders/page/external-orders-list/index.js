@@ -82,6 +82,7 @@ Component.register('external-orders-list', {
             selectedOrder: null,
             selectedOrders: [],
             showDetailModal: false,
+            showTestMarkingModal: false,
             page: 1,
             limit: 10,
             sortBy: 'date',
@@ -213,6 +214,16 @@ Component.register('external-orders-list', {
         },
         paginationTotal() {
             return this.sortedOrders.length;
+        },
+        hasSelectedOrders() {
+            return this.selectedOrders.length > 0;
+        },
+        testMarkingOrders() {
+            return this.selectedOrders;
+        },
+        unmarkedTestOrders() {
+            const selectedKeys = new Set(this.selectedOrders.map((order) => this.getOrderKey(order)));
+            return this.filteredOrders.filter((order) => !selectedKeys.has(this.getOrderKey(order)));
         },
     },
 
@@ -436,6 +447,19 @@ Component.register('external-orders-list', {
 
             this.page = 1;
         },
+        onSelectionChange(selection) {
+            if (Array.isArray(selection)) {
+                this.selectedOrders = selection;
+                return;
+            }
+
+            if (selection && typeof selection === 'object') {
+                this.selectedOrders = Object.values(selection);
+                return;
+            }
+
+            this.selectedOrders = [];
+        },
 
         async openDetail(order) {
             this.isLoading = true;
@@ -455,6 +479,32 @@ Component.register('external-orders-list', {
         closeDetail() {
             this.showDetailModal = false;
             this.selectedOrder = null;
+        },
+        openTestMarkingModal() {
+            if (!this.hasSelectedOrders) {
+                return;
+            }
+            this.showTestMarkingModal = true;
+        },
+        closeTestMarkingModal() {
+            this.showTestMarkingModal = false;
+        },
+        applyTestMarking() {
+            this.showTestMarkingModal = false;
+        },
+        getOrderKey(order) {
+            return order?.id ?? order?.orderNumber ?? '';
+        },
+        getOrderDisplayLabel(order) {
+            const number = order?.orderNumber ? `#${order.orderNumber}` : '';
+            const customer = order?.customerName ?? '';
+            if (number && customer) {
+                return `Order ${number} - ${customer}`;
+            }
+            if (number) {
+                return `Order ${number}`;
+            }
+            return customer || 'Order';
         },
 
         formatCurrency(value) {

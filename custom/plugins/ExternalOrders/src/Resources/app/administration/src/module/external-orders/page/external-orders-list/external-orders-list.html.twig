@@ -86,6 +86,14 @@
                             <sw-datepicker placeholder="Start Datum" class="external-orders__date" size="small" date-type="date" />
                             <sw-datepicker placeholder="End Datum" class="external-orders__date" size="small" date-type="date" />
                             <sw-button variant="primary" size="small">Anwenden</sw-button>
+                            <sw-button
+                                variant="primary"
+                                size="small"
+                                :disabled="!hasSelectedOrders"
+                                @click="openTestMarkingModal"
+                            >
+                                Testmarkierung Anwenden
+                            </sw-button>
                         </div>
                     </div>
                 </div>
@@ -100,9 +108,11 @@
                     class="external-orders__table"
                     identifier="external-orders"
                     @column-sort="onSortColumn"
+                    @selection-change="onSelectionChange"
                 >
                     <template #column-orderNumber-label>
                         <div class="external-orders__column-header">
+                            <span class="external-orders__column-label">BestellNr</span>
                             <button
                                 class="external-orders__column-filter-button"
                                 :class="{ 'is--active': isColumnFilterActive('orderNumber') }"
@@ -111,7 +121,6 @@
                             >
                                 <sw-icon name="regular-filter" size="16" />
                             </button>
-                            <span>BestellNr</span>
                             <div
                                 v-if="activeColumnFilter === 'orderNumber'"
                                 class="external-orders__column-filter-panel"
@@ -163,6 +172,7 @@
                     </template>
                     <template #column-customerName-label>
                         <div class="external-orders__column-header">
+                            <span class="external-orders__column-label">Kundenname</span>
                             <button
                                 class="external-orders__column-filter-button"
                                 :class="{ 'is--active': isColumnFilterActive('customerName') }"
@@ -171,7 +181,6 @@
                             >
                                 <sw-icon name="regular-filter" size="16" />
                             </button>
-                            <span>Kundenname</span>
                             <div
                                 v-if="activeColumnFilter === 'customerName'"
                                 class="external-orders__column-filter-panel"
@@ -223,6 +232,7 @@
                     </template>
                     <template #column-orderReference-label>
                         <div class="external-orders__column-header">
+                            <span class="external-orders__column-label">AuftragsNr</span>
                             <button
                                 class="external-orders__column-filter-button"
                                 :class="{ 'is--active': isColumnFilterActive('orderReference') }"
@@ -231,7 +241,6 @@
                             >
                                 <sw-icon name="regular-filter" size="16" />
                             </button>
-                            <span>AuftragsNr</span>
                             <div
                                 v-if="activeColumnFilter === 'orderReference'"
                                 class="external-orders__column-filter-panel"
@@ -283,6 +292,7 @@
                     </template>
                     <template #column-email-label>
                         <div class="external-orders__column-header">
+                            <span class="external-orders__column-label">Email</span>
                             <button
                                 class="external-orders__column-filter-button"
                                 :class="{ 'is--active': isColumnFilterActive('email') }"
@@ -291,7 +301,6 @@
                             >
                                 <sw-icon name="regular-filter" size="16" />
                             </button>
-                            <span>Email</span>
                             <div
                                 v-if="activeColumnFilter === 'email'"
                                 class="external-orders__column-filter-panel"
@@ -343,6 +352,7 @@
                     </template>
                     <template #column-date-label>
                         <div class="external-orders__column-header">
+                            <span class="external-orders__column-label">Datum</span>
                             <button
                                 class="external-orders__column-filter-button"
                                 :class="{ 'is--active': isColumnFilterActive('date') }"
@@ -351,7 +361,6 @@
                             >
                                 <sw-icon name="regular-filter" size="16" />
                             </button>
-                            <span>Datum</span>
                             <div
                                 v-if="activeColumnFilter === 'date'"
                                 class="external-orders__column-filter-panel"
@@ -403,6 +412,7 @@
                     </template>
                     <template #column-statusLabel-label>
                         <div class="external-orders__column-header">
+                            <span class="external-orders__column-label">Bestellstatus</span>
                             <button
                                 class="external-orders__column-filter-button"
                                 :class="{ 'is--active': isColumnFilterActive('statusLabel') }"
@@ -411,7 +421,6 @@
                             >
                                 <sw-icon name="regular-filter" size="16" />
                             </button>
-                            <span>Bestellstatus</span>
                             <div
                                 v-if="activeColumnFilter === 'statusLabel'"
                                 class="external-orders__column-filter-panel"
@@ -675,6 +684,61 @@
                         </div>
                     </sw-card>
                 </div>
+            </sw-modal>
+
+            <sw-modal
+                v-if="showTestMarkingModal"
+                title="Bestätigen von Änderungen der Testmarkierung"
+                variant="medium"
+                class="external-orders__testmarking-modal"
+                @modal-close="closeTestMarkingModal"
+            >
+                <p class="external-orders__testmarking-intro">
+                    Sie sind dabei, die folgenden Bestellungen als Testbestellungen zu markieren bzw. die Markierung
+                    aufzuheben. Bitte überprüfen Sie die Änderungen, bevor Sie sie bestätigen.
+                </p>
+                <div class="external-orders__testmarking-grid">
+                    <div class="external-orders__testmarking-card">
+                        <h4 class="external-orders__testmarking-title is--positive">
+                            Als Test zu markierende Bestellungen
+                        </h4>
+                        <ul class="external-orders__testmarking-list">
+                            <li
+                                v-for="order in testMarkingOrders"
+                                :key="getOrderKey(order)"
+                            >
+                                {{ getOrderDisplayLabel(order) }}
+                            </li>
+                            <li v-if="testMarkingOrders.length === 0">
+                                Keine Bestellungen ausgewählt.
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="external-orders__testmarking-card">
+                        <h4 class="external-orders__testmarking-title is--negative">
+                            Bestellungen, die nicht als Test markieren
+                        </h4>
+                        <ul class="external-orders__testmarking-list">
+                            <li
+                                v-for="order in unmarkedTestOrders"
+                                :key="getOrderKey(order)"
+                            >
+                                {{ getOrderDisplayLabel(order) }}
+                            </li>
+                            <li v-if="unmarkedTestOrders.length === 0">
+                                Keine Bestellungen ausgewählt.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <template #modal-footer>
+                    <sw-button variant="secondary" @click="closeTestMarkingModal">
+                        Abbrechen
+                    </sw-button>
+                    <sw-button variant="primary" @click="applyTestMarking">
+                        Bestätige
+                    </sw-button>
+                </template>
             </sw-modal>
         </div>
     </main>
