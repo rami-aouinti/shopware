@@ -455,6 +455,18 @@
         display: flex;
         flex-direction: column;
         gap: 16px;
+
+        :global(.sw-card),
+        :global(.mt-card) {
+            width: 100%;
+            max-width: none;
+        }
+
+        :global(.mt-card__wrapper),
+        :global(.mt-card__content) {
+            width: 100%;
+            max-width: none;
+        }
     }
 
     &__detail-overlay {
@@ -469,8 +481,9 @@
 
     &__detail-dialog {
         background: #f3f6fb;
-        width: 100%;
-        height: 100%;
+        width: 100vw;
+        height: 100vh;
+        max-width: 100%;
         display: flex;
         flex-direction: column;
     }
@@ -517,6 +530,9 @@
         flex: 1;
         overflow: auto;
         padding: 24px 32px 32px;
+        width: 100%;
+        max-width: none;
+        margin: 0;
     }
 
     &__detail-card {
