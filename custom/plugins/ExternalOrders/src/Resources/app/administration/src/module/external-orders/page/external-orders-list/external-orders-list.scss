@@ -364,4 +364,52 @@
         justify-content: space-between;
         font-weight: 500;
     }
+
+    &__testmarking-modal {
+        :global(.sw-modal__content) {
+            padding-bottom: 24px;
+        }
+    }
+
+    &__testmarking-intro {
+        margin: 0 0 20px;
+        color: #52667a;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    &__testmarking-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    &__testmarking-card {
+        border: 1px solid #d7dde5;
+        border-radius: 8px;
+        padding: 16px;
+        background: #ffffff;
+    }
+
+    &__testmarking-title {
+        margin: 0 0 12px;
+        font-size: 14px;
+        font-weight: 600;
+
+        &.is--positive {
+            color: #2e7d32;
+        }
+
+        &.is--negative {
+            color: #c62828;
+        }
+    }
+
+    &__testmarking-list {
+        margin: 0;
+        padding-left: 18px;
+        color: #2c3e50;
+        font-size: 13px;
+        line-height: 1.5;
+    }
 }
