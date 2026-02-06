@@ -507,25 +507,50 @@
                     class="external-orders__pagination"
                 >
                     <div class="external-orders__pagination-controls">
-                        <sw-button
-                            size="small"
-                            variant="secondary"
+                        <button
+                            type="button"
+                            class="external-orders__pagination-nav"
+                            :disabled="page <= 1"
+                            @click="goToFirstPage"
+                        >
+                            «
+                        </button>
+                        <button
+                            type="button"
+                            class="external-orders__pagination-nav"
                             :disabled="page <= 1"
                             @click="goToPreviousPage"
                         >
-                            Zurück
-                        </sw-button>
-                        <span class="external-orders__pagination-info">
-                            Seite {{ page }} von {{ totalPages }}
-                        </span>
-                        <sw-button
-                            size="small"
-                            variant="secondary"
+                            ‹
+                        </button>
+                        <div class="external-orders__pagination-pages">
+                            <button
+                                v-for="pageNumber in visiblePages"
+                                :key="pageNumber"
+                                type="button"
+                                class="external-orders__pagination-page"
+                                :class="{ 'is--active': pageNumber === page }"
+                                @click="goToPage(pageNumber)"
+                            >
+                                {{ pageNumber }}
+                            </button>
+                        </div>
+                        <button
+                            type="button"
+                            class="external-orders__pagination-nav"
                             :disabled="page >= totalPages"
                             @click="goToNextPage"
                         >
-                            Weiter
-                        </sw-button>
+                            ›
+                        </button>
+                        <button
+                            type="button"
+                            class="external-orders__pagination-nav"
+                            :disabled="page >= totalPages"
+                            @click="goToLastPage"
+                        >
+                            »
+                        </button>
                         <sw-single-select
                             v-model="limit"
                             :options="limitSelectOptions"
