@@ -39,6 +39,10 @@
         margin-bottom: 24px;
     }
 
+    :global(.mt-card.external-orders__channels) {
+        max-width: none;
+    }
+
     &__channel-tabs {
         display: flex;
         flex-wrap: wrap;
