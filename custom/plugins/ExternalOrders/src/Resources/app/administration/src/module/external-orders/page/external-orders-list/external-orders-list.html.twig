@@ -112,6 +112,7 @@
                 >
                     <template #column-orderNumber-label>
                         <div class="external-orders__column-header">
+                            <span class="external-orders__column-label">BestellNr</span>
                             <button
                                 class="external-orders__column-filter-button"
                                 :class="{ 'is--active': isColumnFilterActive('orderNumber') }"
@@ -120,7 +121,6 @@
                             >
                                 <sw-icon name="regular-filter" size="16" />
                             </button>
-                            <span>BestellNr</span>
                             <div
                                 v-if="activeColumnFilter === 'orderNumber'"
                                 class="external-orders__column-filter-panel"
@@ -172,6 +172,7 @@
                     </template>
                     <template #column-customerName-label>
                         <div class="external-orders__column-header">
+                            <span class="external-orders__column-label">Kundenname</span>
                             <button
                                 class="external-orders__column-filter-button"
                                 :class="{ 'is--active': isColumnFilterActive('customerName') }"
@@ -180,7 +181,6 @@
                             >
                                 <sw-icon name="regular-filter" size="16" />
                             </button>
-                            <span>Kundenname</span>
                             <div
                                 v-if="activeColumnFilter === 'customerName'"
                                 class="external-orders__column-filter-panel"
@@ -232,6 +232,7 @@
                     </template>
                     <template #column-orderReference-label>
                         <div class="external-orders__column-header">
+                            <span class="external-orders__column-label">AuftragsNr</span>
                             <button
                                 class="external-orders__column-filter-button"
                                 :class="{ 'is--active': isColumnFilterActive('orderReference') }"
@@ -240,7 +241,6 @@
                             >
                                 <sw-icon name="regular-filter" size="16" />
                             </button>
-                            <span>AuftragsNr</span>
                             <div
                                 v-if="activeColumnFilter === 'orderReference'"
                                 class="external-orders__column-filter-panel"
@@ -292,6 +292,7 @@
                     </template>
                     <template #column-email-label>
                         <div class="external-orders__column-header">
+                            <span class="external-orders__column-label">Email</span>
                             <button
                                 class="external-orders__column-filter-button"
                                 :class="{ 'is--active': isColumnFilterActive('email') }"
@@ -300,7 +301,6 @@
                             >
                                 <sw-icon name="regular-filter" size="16" />
                             </button>
-                            <span>Email</span>
                             <div
                                 v-if="activeColumnFilter === 'email'"
                                 class="external-orders__column-filter-panel"
@@ -352,6 +352,7 @@
                     </template>
                     <template #column-date-label>
                         <div class="external-orders__column-header">
+                            <span class="external-orders__column-label">Datum</span>
                             <button
                                 class="external-orders__column-filter-button"
                                 :class="{ 'is--active': isColumnFilterActive('date') }"
@@ -360,7 +361,6 @@
                             >
                                 <sw-icon name="regular-filter" size="16" />
                             </button>
-                            <span>Datum</span>
                             <div
                                 v-if="activeColumnFilter === 'date'"
                                 class="external-orders__column-filter-panel"
@@ -412,6 +412,7 @@
                     </template>
                     <template #column-statusLabel-label>
                         <div class="external-orders__column-header">
+                            <span class="external-orders__column-label">Bestellstatus</span>
                             <button
                                 class="external-orders__column-filter-button"
                                 :class="{ 'is--active': isColumnFilterActive('statusLabel') }"
@@ -420,7 +421,6 @@
                             >
                                 <sw-icon name="regular-filter" size="16" />
                             </button>
-                            <span>Bestellstatus</span>
                             <div
                                 v-if="activeColumnFilter === 'statusLabel'"
                                 class="external-orders__column-filter-panel"

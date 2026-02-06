@@ -246,6 +246,10 @@
         gap: 8px;
     }
 
+    &__column-label {
+        white-space: nowrap;
+    }
+
     &__column-filter-button {
         width: 28px;
         height: 28px;
