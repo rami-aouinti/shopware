@@ -98,6 +98,20 @@
                     </div>
                 </div>
 
+                <div
+                    v-if="paginationTotal > 0"
+                    class="external-orders__pagination external-orders__pagination--top"
+                >
+                    <sw-pagination
+                        :page="page"
+                        :limit="limit"
+                        :total="paginationTotal"
+                        :total-visible="7"
+                        :hide-on-single-page="false"
+                        @page-change="onPageChange"
+                    />
+                </div>
+
                 <sw-data-grid
                     v-if="paginatedOrders.length > 0"
                     :data-source="paginatedOrders"
@@ -497,6 +511,7 @@
                         :limit="limit"
                         :total="paginationTotal"
                         :total-visible="7"
+                        :hide-on-single-page="false"
                         @page-change="onPageChange"
                     />
                 </div>

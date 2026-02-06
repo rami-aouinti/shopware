@@ -316,6 +316,11 @@
         margin-top: 8px;
     }
 
+    &__pagination--top {
+        margin-top: 0;
+        padding: 4px 16px 12px;
+    }
+
     &__detail {
         display: flex;
         flex-direction: column;
