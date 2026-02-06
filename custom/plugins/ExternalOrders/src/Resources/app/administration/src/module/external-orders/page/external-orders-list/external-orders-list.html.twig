@@ -96,409 +96,473 @@
                 </div>
 
                 <div
-                    v-if="paginationTotal > 0"
-                    class="external-orders__pagination external-orders__pagination--top"
-                >
-                    <sw-pagination
-                        :page="page"
-                        :limit="limit"
-                        :total="paginationTotal"
-                        :total-visible="7"
-                        :hide-on-single-page="false"
-                        @page-change="onPageChange"
-                    />
-                </div>
-
-                <sw-data-grid
                     v-if="paginatedOrders.length > 0"
-                    :data-source="paginatedOrders"
-                    :columns="columns"
-                    :loading="isLoading"
-                    :sort-by="sortBy"
-                    :sort-direction="sortDirection"
-                    class="external-orders__table"
-                    identifier="external-orders"
-                    @column-sort="onSortColumn"
-                    @selection-change="onSelectionChange"
+                    class="external-orders__table-wrapper"
                 >
-                    <template slot="column-order-number-label">
-                        <div class="external-orders__column-header">
-                            <span class="external-orders__column-label">BestellNr</span>
-                            <button
-                                class="external-orders__column-filter-button"
-                                :class="{ 'is--active': isColumnFilterActive('orderNumber') }"
-                                type="button"
-                                @click.stop="toggleColumnFilter('orderNumber')"
-                            >
-                                <sw-icon name="regular-filter" size="16" />
-                            </button>
-                            <div
-                                v-if="activeColumnFilter === 'orderNumber'"
-                                class="external-orders__column-filter-panel"
-                                @click.stop
-                            >
-                                <sw-single-select
-                                    v-model="columnFilterMatchMode"
-                                    :options="columnFilterMatchOptions"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-single-select
-                                    v-model="columnFilters.orderNumber.operator"
-                                    :options="columnFilterOperatorOptions"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-text-field
-                                    v-model="columnFilters.orderNumber.value"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-button
-                                    variant="primary"
-                                    size="small"
-                                    class="external-orders__column-filter-add"
-                                    disabled
-                                >
-                                    + Add Rule
-                                </sw-button>
-                                <div class="external-orders__column-filter-actions">
+                    <table class="external-orders__table">
+                        <thead>
+                            <tr>
+                                <th class="external-orders__cell external-orders__cell--checkbox">
+                                    <input
+                                        type="checkbox"
+                                        class="external-orders__checkbox"
+                                        :checked="isAllSelected"
+                                        @change="toggleSelectAll($event)"
+                                    />
+                                </th>
+                                <th class="external-orders__cell">
+                                    <div class="external-orders__column-header">
+                                        <button
+                                            class="external-orders__column-sort"
+                                            type="button"
+                                            @click="onSortColumn('orderNumber')"
+                                        >
+                                            BestellNr
+                                            <span class="external-orders__sort-indicator">
+                                                {{ getSortIndicator('orderNumber') }}
+                                            </span>
+                                        </button>
+                                        <button
+                                            class="external-orders__column-filter-button"
+                                            :class="{ 'is--active': isColumnFilterActive('orderNumber') }"
+                                            type="button"
+                                            @click.stop="toggleColumnFilter('orderNumber')"
+                                        >
+                                            <sw-icon name="regular-filter" size="16" />
+                                        </button>
+                                        <div
+                                            v-if="activeColumnFilter === 'orderNumber'"
+                                            class="external-orders__column-filter-panel"
+                                            @click.stop
+                                        >
+                                            <sw-single-select
+                                                v-model="columnFilterMatchMode"
+                                                :options="columnFilterMatchOptions"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-single-select
+                                                v-model="columnFilters.orderNumber.operator"
+                                                :options="columnFilterOperatorOptions"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-text-field
+                                                v-model="columnFilters.orderNumber.value"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-button
+                                                variant="primary"
+                                                size="small"
+                                                class="external-orders__column-filter-add"
+                                                disabled
+                                            >
+                                                + Add Rule
+                                            </sw-button>
+                                            <div class="external-orders__column-filter-actions">
+                                                <sw-button
+                                                    variant="secondary"
+                                                    size="small"
+                                                    @click="clearColumnFilter('orderNumber')"
+                                                >
+                                                    Clear
+                                                </sw-button>
+                                                <sw-button
+                                                    variant="primary"
+                                                    size="small"
+                                                    @click="applyColumnFilter"
+                                                >
+                                                    Apply
+                                                </sw-button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="external-orders__cell">
+                                    <div class="external-orders__column-header">
+                                        <button
+                                            class="external-orders__column-sort"
+                                            type="button"
+                                            @click="onSortColumn('customerName')"
+                                        >
+                                            Kundenname
+                                            <span class="external-orders__sort-indicator">
+                                                {{ getSortIndicator('customerName') }}
+                                            </span>
+                                        </button>
+                                        <button
+                                            class="external-orders__column-filter-button"
+                                            :class="{ 'is--active': isColumnFilterActive('customerName') }"
+                                            type="button"
+                                            @click.stop="toggleColumnFilter('customerName')"
+                                        >
+                                            <sw-icon name="regular-filter" size="16" />
+                                        </button>
+                                        <div
+                                            v-if="activeColumnFilter === 'customerName'"
+                                            class="external-orders__column-filter-panel"
+                                            @click.stop
+                                        >
+                                            <sw-single-select
+                                                v-model="columnFilterMatchMode"
+                                                :options="columnFilterMatchOptions"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-single-select
+                                                v-model="columnFilters.customerName.operator"
+                                                :options="columnFilterOperatorOptions"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-text-field
+                                                v-model="columnFilters.customerName.value"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-button
+                                                variant="primary"
+                                                size="small"
+                                                class="external-orders__column-filter-add"
+                                                disabled
+                                            >
+                                                + Add Rule
+                                            </sw-button>
+                                            <div class="external-orders__column-filter-actions">
+                                                <sw-button
+                                                    variant="secondary"
+                                                    size="small"
+                                                    @click="clearColumnFilter('customerName')"
+                                                >
+                                                    Clear
+                                                </sw-button>
+                                                <sw-button
+                                                    variant="primary"
+                                                    size="small"
+                                                    @click="applyColumnFilter"
+                                                >
+                                                    Apply
+                                                </sw-button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="external-orders__cell">
+                                    <div class="external-orders__column-header">
+                                        <button
+                                            class="external-orders__column-sort"
+                                            type="button"
+                                            @click="onSortColumn('orderReference')"
+                                        >
+                                            AuftragsNr
+                                            <span class="external-orders__sort-indicator">
+                                                {{ getSortIndicator('orderReference') }}
+                                            </span>
+                                        </button>
+                                        <button
+                                            class="external-orders__column-filter-button"
+                                            :class="{ 'is--active': isColumnFilterActive('orderReference') }"
+                                            type="button"
+                                            @click.stop="toggleColumnFilter('orderReference')"
+                                        >
+                                            <sw-icon name="regular-filter" size="16" />
+                                        </button>
+                                        <div
+                                            v-if="activeColumnFilter === 'orderReference'"
+                                            class="external-orders__column-filter-panel"
+                                            @click.stop
+                                        >
+                                            <sw-single-select
+                                                v-model="columnFilterMatchMode"
+                                                :options="columnFilterMatchOptions"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-single-select
+                                                v-model="columnFilters.orderReference.operator"
+                                                :options="columnFilterOperatorOptions"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-text-field
+                                                v-model="columnFilters.orderReference.value"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-button
+                                                variant="primary"
+                                                size="small"
+                                                class="external-orders__column-filter-add"
+                                                disabled
+                                            >
+                                                + Add Rule
+                                            </sw-button>
+                                            <div class="external-orders__column-filter-actions">
+                                                <sw-button
+                                                    variant="secondary"
+                                                    size="small"
+                                                    @click="clearColumnFilter('orderReference')"
+                                                >
+                                                    Clear
+                                                </sw-button>
+                                                <sw-button
+                                                    variant="primary"
+                                                    size="small"
+                                                    @click="applyColumnFilter"
+                                                >
+                                                    Apply
+                                                </sw-button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="external-orders__cell">
+                                    <div class="external-orders__column-header">
+                                        <button
+                                            class="external-orders__column-sort"
+                                            type="button"
+                                            @click="onSortColumn('email')"
+                                        >
+                                            Email
+                                            <span class="external-orders__sort-indicator">
+                                                {{ getSortIndicator('email') }}
+                                            </span>
+                                        </button>
+                                        <button
+                                            class="external-orders__column-filter-button"
+                                            :class="{ 'is--active': isColumnFilterActive('email') }"
+                                            type="button"
+                                            @click.stop="toggleColumnFilter('email')"
+                                        >
+                                            <sw-icon name="regular-filter" size="16" />
+                                        </button>
+                                        <div
+                                            v-if="activeColumnFilter === 'email'"
+                                            class="external-orders__column-filter-panel"
+                                            @click.stop
+                                        >
+                                            <sw-single-select
+                                                v-model="columnFilterMatchMode"
+                                                :options="columnFilterMatchOptions"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-single-select
+                                                v-model="columnFilters.email.operator"
+                                                :options="columnFilterOperatorOptions"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-text-field
+                                                v-model="columnFilters.email.value"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-button
+                                                variant="primary"
+                                                size="small"
+                                                class="external-orders__column-filter-add"
+                                                disabled
+                                            >
+                                                + Add Rule
+                                            </sw-button>
+                                            <div class="external-orders__column-filter-actions">
+                                                <sw-button
+                                                    variant="secondary"
+                                                    size="small"
+                                                    @click="clearColumnFilter('email')"
+                                                >
+                                                    Clear
+                                                </sw-button>
+                                                <sw-button
+                                                    variant="primary"
+                                                    size="small"
+                                                    @click="applyColumnFilter"
+                                                >
+                                                    Apply
+                                                </sw-button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="external-orders__cell">
+                                    <div class="external-orders__column-header">
+                                        <button
+                                            class="external-orders__column-sort"
+                                            type="button"
+                                            @click="onSortColumn('date')"
+                                        >
+                                            Datum
+                                            <span class="external-orders__sort-indicator">
+                                                {{ getSortIndicator('date') }}
+                                            </span>
+                                        </button>
+                                        <button
+                                            class="external-orders__column-filter-button"
+                                            :class="{ 'is--active': isColumnFilterActive('date') }"
+                                            type="button"
+                                            @click.stop="toggleColumnFilter('date')"
+                                        >
+                                            <sw-icon name="regular-filter" size="16" />
+                                        </button>
+                                        <div
+                                            v-if="activeColumnFilter === 'date'"
+                                            class="external-orders__column-filter-panel"
+                                            @click.stop
+                                        >
+                                            <sw-single-select
+                                                v-model="columnFilterMatchMode"
+                                                :options="columnFilterMatchOptions"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-single-select
+                                                v-model="columnFilters.date.operator"
+                                                :options="columnFilterOperatorOptions"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-text-field
+                                                v-model="columnFilters.date.value"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-button
+                                                variant="primary"
+                                                size="small"
+                                                class="external-orders__column-filter-add"
+                                                disabled
+                                            >
+                                                + Add Rule
+                                            </sw-button>
+                                            <div class="external-orders__column-filter-actions">
+                                                <sw-button
+                                                    variant="secondary"
+                                                    size="small"
+                                                    @click="clearColumnFilter('date')"
+                                                >
+                                                    Clear
+                                                </sw-button>
+                                                <sw-button
+                                                    variant="primary"
+                                                    size="small"
+                                                    @click="applyColumnFilter"
+                                                >
+                                                    Apply
+                                                </sw-button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="external-orders__cell">
+                                    <div class="external-orders__column-header">
+                                        <button
+                                            class="external-orders__column-sort"
+                                            type="button"
+                                            @click="onSortColumn('statusLabel')"
+                                        >
+                                            Bestellstatus
+                                            <span class="external-orders__sort-indicator">
+                                                {{ getSortIndicator('statusLabel') }}
+                                            </span>
+                                        </button>
+                                        <button
+                                            class="external-orders__column-filter-button"
+                                            :class="{ 'is--active': isColumnFilterActive('statusLabel') }"
+                                            type="button"
+                                            @click.stop="toggleColumnFilter('statusLabel')"
+                                        >
+                                            <sw-icon name="regular-filter" size="16" />
+                                        </button>
+                                        <div
+                                            v-if="activeColumnFilter === 'statusLabel'"
+                                            class="external-orders__column-filter-panel"
+                                            @click.stop
+                                        >
+                                            <sw-single-select
+                                                v-model="columnFilterMatchMode"
+                                                :options="columnFilterMatchOptions"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-single-select
+                                                v-model="columnFilters.statusLabel.operator"
+                                                :options="columnFilterOperatorOptions"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-text-field
+                                                v-model="columnFilters.statusLabel.value"
+                                                size="small"
+                                                class="external-orders__column-filter-field"
+                                            />
+                                            <sw-button
+                                                variant="primary"
+                                                size="small"
+                                                class="external-orders__column-filter-add"
+                                                disabled
+                                            >
+                                                + Add Rule
+                                            </sw-button>
+                                            <div class="external-orders__column-filter-actions">
+                                                <sw-button
+                                                    variant="secondary"
+                                                    size="small"
+                                                    @click="clearColumnFilter('statusLabel')"
+                                                >
+                                                    Clear
+                                                </sw-button>
+                                                <sw-button
+                                                    variant="primary"
+                                                    size="small"
+                                                    @click="applyColumnFilter"
+                                                >
+                                                    Apply
+                                                </sw-button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="external-orders__cell external-orders__cell--actions">
+                                    Ansicht
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="order in paginatedOrders" :key="getOrderKey(order)">
+                                <td class="external-orders__cell external-orders__cell--checkbox">
+                                    <input
+                                        type="checkbox"
+                                        class="external-orders__checkbox"
+                                        :checked="isOrderSelected(order)"
+                                        @change="toggleOrderSelection(order, $event)"
+                                    />
+                                </td>
+                                <td class="external-orders__cell">{{ order.orderNumber }}</td>
+                                <td class="external-orders__cell">{{ order.customerName }}</td>
+                                <td class="external-orders__cell">{{ order.orderReference }}</td>
+                                <td class="external-orders__cell">{{ order.email }}</td>
+                                <td class="external-orders__cell">{{ order.date }}</td>
+                                <td class="external-orders__cell">
+                                    <sw-label :variant="statusVariant(order.status)" size="small">
+                                        {{ order.statusLabel }}
+                                    </sw-label>
+                                </td>
+                                <td class="external-orders__cell external-orders__cell--actions">
                                     <sw-button
-                                        variant="secondary"
+                                        variant="ghost"
                                         size="small"
-                                        @click="clearColumnFilter('orderNumber')"
+                                        class="external-orders__action"
+                                        @click="openDetail(order)"
                                     >
-                                        Clear
+                                        <sw-icon name="regular-eye" size="16" />
                                     </sw-button>
-                                    <sw-button
-                                        variant="primary"
-                                        size="small"
-                                        @click="applyColumnFilter"
-                                    >
-                                        Apply
-                                    </sw-button>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                    <template slot="column-customer-name-label">
-                        <div class="external-orders__column-header">
-                            <span class="external-orders__column-label">Kundenname</span>
-                            <button
-                                class="external-orders__column-filter-button"
-                                :class="{ 'is--active': isColumnFilterActive('customerName') }"
-                                type="button"
-                                @click.stop="toggleColumnFilter('customerName')"
-                            >
-                                <sw-icon name="regular-filter" size="16" />
-                            </button>
-                            <div
-                                v-if="activeColumnFilter === 'customerName'"
-                                class="external-orders__column-filter-panel"
-                                @click.stop
-                            >
-                                <sw-single-select
-                                    v-model="columnFilterMatchMode"
-                                    :options="columnFilterMatchOptions"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-single-select
-                                    v-model="columnFilters.customerName.operator"
-                                    :options="columnFilterOperatorOptions"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-text-field
-                                    v-model="columnFilters.customerName.value"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-button
-                                    variant="primary"
-                                    size="small"
-                                    class="external-orders__column-filter-add"
-                                    disabled
-                                >
-                                    + Add Rule
-                                </sw-button>
-                                <div class="external-orders__column-filter-actions">
-                                    <sw-button
-                                        variant="secondary"
-                                        size="small"
-                                        @click="clearColumnFilter('customerName')"
-                                    >
-                                        Clear
-                                    </sw-button>
-                                    <sw-button
-                                        variant="primary"
-                                        size="small"
-                                        @click="applyColumnFilter"
-                                    >
-                                        Apply
-                                    </sw-button>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                    <template slot="column-order-reference-label">
-                        <div class="external-orders__column-header">
-                            <span class="external-orders__column-label">AuftragsNr</span>
-                            <button
-                                class="external-orders__column-filter-button"
-                                :class="{ 'is--active': isColumnFilterActive('orderReference') }"
-                                type="button"
-                                @click.stop="toggleColumnFilter('orderReference')"
-                            >
-                                <sw-icon name="regular-filter" size="16" />
-                            </button>
-                            <div
-                                v-if="activeColumnFilter === 'orderReference'"
-                                class="external-orders__column-filter-panel"
-                                @click.stop
-                            >
-                                <sw-single-select
-                                    v-model="columnFilterMatchMode"
-                                    :options="columnFilterMatchOptions"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-single-select
-                                    v-model="columnFilters.orderReference.operator"
-                                    :options="columnFilterOperatorOptions"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-text-field
-                                    v-model="columnFilters.orderReference.value"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-button
-                                    variant="primary"
-                                    size="small"
-                                    class="external-orders__column-filter-add"
-                                    disabled
-                                >
-                                    + Add Rule
-                                </sw-button>
-                                <div class="external-orders__column-filter-actions">
-                                    <sw-button
-                                        variant="secondary"
-                                        size="small"
-                                        @click="clearColumnFilter('orderReference')"
-                                    >
-                                        Clear
-                                    </sw-button>
-                                    <sw-button
-                                        variant="primary"
-                                        size="small"
-                                        @click="applyColumnFilter"
-                                    >
-                                        Apply
-                                    </sw-button>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                    <template slot="column-email-label">
-                        <div class="external-orders__column-header">
-                            <span class="external-orders__column-label">Email</span>
-                            <button
-                                class="external-orders__column-filter-button"
-                                :class="{ 'is--active': isColumnFilterActive('email') }"
-                                type="button"
-                                @click.stop="toggleColumnFilter('email')"
-                            >
-                                <sw-icon name="regular-filter" size="16" />
-                            </button>
-                            <div
-                                v-if="activeColumnFilter === 'email'"
-                                class="external-orders__column-filter-panel"
-                                @click.stop
-                            >
-                                <sw-single-select
-                                    v-model="columnFilterMatchMode"
-                                    :options="columnFilterMatchOptions"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-single-select
-                                    v-model="columnFilters.email.operator"
-                                    :options="columnFilterOperatorOptions"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-text-field
-                                    v-model="columnFilters.email.value"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-button
-                                    variant="primary"
-                                    size="small"
-                                    class="external-orders__column-filter-add"
-                                    disabled
-                                >
-                                    + Add Rule
-                                </sw-button>
-                                <div class="external-orders__column-filter-actions">
-                                    <sw-button
-                                        variant="secondary"
-                                        size="small"
-                                        @click="clearColumnFilter('email')"
-                                    >
-                                        Clear
-                                    </sw-button>
-                                    <sw-button
-                                        variant="primary"
-                                        size="small"
-                                        @click="applyColumnFilter"
-                                    >
-                                        Apply
-                                    </sw-button>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                    <template slot="column-date-label">
-                        <div class="external-orders__column-header">
-                            <span class="external-orders__column-label">Datum</span>
-                            <button
-                                class="external-orders__column-filter-button"
-                                :class="{ 'is--active': isColumnFilterActive('date') }"
-                                type="button"
-                                @click.stop="toggleColumnFilter('date')"
-                            >
-                                <sw-icon name="regular-filter" size="16" />
-                            </button>
-                            <div
-                                v-if="activeColumnFilter === 'date'"
-                                class="external-orders__column-filter-panel"
-                                @click.stop
-                            >
-                                <sw-single-select
-                                    v-model="columnFilterMatchMode"
-                                    :options="columnFilterMatchOptions"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-single-select
-                                    v-model="columnFilters.date.operator"
-                                    :options="columnFilterOperatorOptions"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-text-field
-                                    v-model="columnFilters.date.value"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-button
-                                    variant="primary"
-                                    size="small"
-                                    class="external-orders__column-filter-add"
-                                    disabled
-                                >
-                                    + Add Rule
-                                </sw-button>
-                                <div class="external-orders__column-filter-actions">
-                                    <sw-button
-                                        variant="secondary"
-                                        size="small"
-                                        @click="clearColumnFilter('date')"
-                                    >
-                                        Clear
-                                    </sw-button>
-                                    <sw-button
-                                        variant="primary"
-                                        size="small"
-                                        @click="applyColumnFilter"
-                                    >
-                                        Apply
-                                    </sw-button>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                    <template slot="column-status-label-label">
-                        <div class="external-orders__column-header">
-                            <span class="external-orders__column-label">Bestellstatus</span>
-                            <button
-                                class="external-orders__column-filter-button"
-                                :class="{ 'is--active': isColumnFilterActive('statusLabel') }"
-                                type="button"
-                                @click.stop="toggleColumnFilter('statusLabel')"
-                            >
-                                <sw-icon name="regular-filter" size="16" />
-                            </button>
-                            <div
-                                v-if="activeColumnFilter === 'statusLabel'"
-                                class="external-orders__column-filter-panel"
-                                @click.stop
-                            >
-                                <sw-single-select
-                                    v-model="columnFilterMatchMode"
-                                    :options="columnFilterMatchOptions"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-single-select
-                                    v-model="columnFilters.statusLabel.operator"
-                                    :options="columnFilterOperatorOptions"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-text-field
-                                    v-model="columnFilters.statusLabel.value"
-                                    size="small"
-                                    class="external-orders__column-filter-field"
-                                />
-                                <sw-button
-                                    variant="primary"
-                                    size="small"
-                                    class="external-orders__column-filter-add"
-                                    disabled
-                                >
-                                    + Add Rule
-                                </sw-button>
-                                <div class="external-orders__column-filter-actions">
-                                    <sw-button
-                                        variant="secondary"
-                                        size="small"
-                                        @click="clearColumnFilter('statusLabel')"
-                                    >
-                                        Clear
-                                    </sw-button>
-                                    <sw-button
-                                        variant="primary"
-                                        size="small"
-                                        @click="applyColumnFilter"
-                                    >
-                                        Apply
-                                    </sw-button>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                    <template slot="column-status-label" slot-scope="{ item }">
-                        <sw-label :variant="statusVariant(item.status)" size="small">
-                            {{ item.statusLabel }}
-                        </sw-label>
-                    </template>
-
-                    <template slot="column-actions" slot-scope="{ item }">
-                        <sw-button
-                            variant="ghost"
-                            size="small"
-                            class="external-orders__action"
-                            @click="openDetail(item)"
-                        >
-                            <sw-icon name="regular-eye" size="16" />
-                        </sw-button>
-                    </template>
-
-                </sw-data-grid>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div
                     v-if="paginatedOrders.length > 0"
                     class="external-orders__pagination"

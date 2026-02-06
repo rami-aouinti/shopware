@@ -216,33 +216,11 @@ Component.register('external-orders-list', {
         paginationTotal() {
             return this.sortedOrders.length;
         },
-        totalPages() {
-            return Math.max(1, Math.ceil(this.paginationTotal / this.limit));
-        },
-        limitSelectOptions() {
-            return this.limitOptions.map((value) => ({
-                value,
-                label: `${value} pro Seite`,
-            }));
-        },
-        visiblePages() {
-            const total = this.totalPages;
-            const current = this.page;
-            const maxVisible = 5;
-
-            if (total <= maxVisible) {
-                return Array.from({ length: total }, (_, index) => index + 1);
+        isAllSelected() {
+            if (this.paginatedOrders.length === 0) {
+                return false;
             }
-
-            const half = Math.floor(maxVisible / 2);
-            let start = Math.max(1, current - half);
-            let end = Math.min(total, start + maxVisible - 1);
-
-            if (end - start + 1 < maxVisible) {
-                start = Math.max(1, end - maxVisible + 1);
-            }
-
-            return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+            return this.paginatedOrders.every((order) => this.isOrderSelected(order));
         },
         hasSelectedOrders() {
             return this.selectedOrders.length > 0;
@@ -521,6 +499,46 @@ Component.register('external-orders-list', {
             }
 
             this.selectedOrders = [];
+        },
+        toggleSelectAll(event) {
+            const isChecked = event?.target?.checked;
+            if (!isChecked) {
+                const currentKeys = new Set(this.paginatedOrders.map((order) => this.getOrderKey(order)));
+                this.selectedOrders = this.selectedOrders.filter((order) => !currentKeys.has(this.getOrderKey(order)));
+                return;
+            }
+
+            const merged = new Map(this.selectedOrders.map((order) => [this.getOrderKey(order), order]));
+            this.paginatedOrders.forEach((order) => {
+                merged.set(this.getOrderKey(order), order);
+            });
+            this.selectedOrders = Array.from(merged.values());
+        },
+        toggleOrderSelection(order, event) {
+            const isChecked = event?.target?.checked;
+            const key = this.getOrderKey(order);
+            if (!key) {
+                return;
+            }
+
+            if (isChecked) {
+                const merged = new Map(this.selectedOrders.map((item) => [this.getOrderKey(item), item]));
+                merged.set(key, order);
+                this.selectedOrders = Array.from(merged.values());
+                return;
+            }
+
+            this.selectedOrders = this.selectedOrders.filter((item) => this.getOrderKey(item) !== key);
+        },
+        isOrderSelected(order) {
+            const key = this.getOrderKey(order);
+            return this.selectedOrders.some((item) => this.getOrderKey(item) === key);
+        },
+        getSortIndicator(sortBy) {
+            if (this.sortBy !== sortBy) {
+                return '↕';
+            }
+            return this.sortDirection === 'ASC' ? '↑' : '↓';
         },
 
         async openDetail(order) {
