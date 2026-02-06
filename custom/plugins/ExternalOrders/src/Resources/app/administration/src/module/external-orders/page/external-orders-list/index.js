@@ -95,7 +95,7 @@ Component.register('external-orders-list', {
         columns() {
             return [
                 {
-                    property: 'orderNumber',
+                    property: 'order-number',
                     dataIndex: 'orderNumber',
                     sortBy: 'orderNumber',
                     label: 'BestellNr',
@@ -104,7 +104,7 @@ Component.register('external-orders-list', {
                     allowResize: true,
                 },
                 {
-                    property: 'customerName',
+                    property: 'customer-name',
                     dataIndex: 'customerName',
                     sortBy: 'customerName',
                     label: 'Kundenname',
@@ -112,7 +112,7 @@ Component.register('external-orders-list', {
                     allowResize: true,
                 },
                 {
-                    property: 'orderReference',
+                    property: 'order-reference',
                     dataIndex: 'orderReference',
                     sortBy: 'orderReference',
                     label: 'AuftragsNr',
@@ -136,7 +136,7 @@ Component.register('external-orders-list', {
                     allowResize: true,
                 },
                 {
-                    property: 'statusLabel',
+                    property: 'status-label',
                     dataIndex: 'statusLabel',
                     sortBy: 'statusLabel',
                     label: 'Bestellstatus',
