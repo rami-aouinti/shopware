@@ -323,7 +323,7 @@
 
     &__pagination-controls {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         align-items: center;
         gap: 12px;
         justify-content: center;
@@ -378,8 +378,19 @@
     }
 
     &__pagination-limit {
-        min-width: 140px;
-        margin-left: 8px;
+        min-width: 96px;
+        margin-left: 16px;
+
+        :global(.sw-single-select__selection) {
+            min-height: 32px;
+            padding: 0 10px;
+            font-size: 13px;
+            border-radius: 10px;
+        }
+
+        :global(.sw-single-select__selection-input) {
+            font-size: 13px;
+        }
     }
 
     &__detail {
