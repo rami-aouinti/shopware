@@ -216,6 +216,38 @@ Component.register('external-orders-list', {
         paginationTotal() {
             return this.sortedOrders.length;
         },
+        totalPages() {
+            if (this.limit <= 0) {
+                return 1;
+            }
+            return Math.max(1, Math.ceil(this.paginationTotal / this.limit));
+        },
+        visiblePages() {
+            const maxVisible = 5;
+            const total = this.totalPages;
+            const current = this.page;
+
+            if (total <= maxVisible) {
+                return Array.from({ length: total }, (_, index) => index + 1);
+            }
+
+            const half = Math.floor(maxVisible / 2);
+            let start = Math.max(1, current - half);
+            let end = start + maxVisible - 1;
+
+            if (end > total) {
+                end = total;
+                start = end - maxVisible + 1;
+            }
+
+            return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+        },
+        limitSelectOptions() {
+            return this.limitOptions.map((value) => ({
+                value,
+                label: String(value),
+            }));
+        },
         isAllSelected() {
             if (this.paginatedOrders.length === 0) {
                 return false;
