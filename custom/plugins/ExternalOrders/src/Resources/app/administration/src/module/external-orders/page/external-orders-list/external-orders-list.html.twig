@@ -506,14 +506,34 @@
                     v-if="paginatedOrders.length > 0"
                     class="external-orders__pagination"
                 >
-                    <sw-pagination
-                        :page="page"
-                        :limit="limit"
-                        :total="paginationTotal"
-                        :total-visible="7"
-                        :hide-on-single-page="false"
-                        @page-change="onPageChange"
-                    />
+                    <div class="external-orders__pagination-controls">
+                        <sw-button
+                            size="small"
+                            variant="secondary"
+                            :disabled="page <= 1"
+                            @click="goToPreviousPage"
+                        >
+                            Zurück
+                        </sw-button>
+                        <span class="external-orders__pagination-info">
+                            Seite {{ page }} von {{ totalPages }}
+                        </span>
+                        <sw-button
+                            size="small"
+                            variant="secondary"
+                            :disabled="page >= totalPages"
+                            @click="goToNextPage"
+                        >
+                            Weiter
+                        </sw-button>
+                        <sw-single-select
+                            v-model="limit"
+                            :options="limitSelectOptions"
+                            size="small"
+                            class="external-orders__pagination-limit"
+                            @change="onLimitChange"
+                        />
+                    </div>
                 </div>
                 <sw-empty-state
                     v-else
