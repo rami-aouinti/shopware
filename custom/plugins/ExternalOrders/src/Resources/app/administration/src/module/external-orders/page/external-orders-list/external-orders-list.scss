@@ -513,8 +513,9 @@
         justify-content: center;
         transition: background 0.2s ease;
 
-        &:hover {
-            background: #e1e6ee;
+        :global(.sw-card),
+        :global(.mt-card) {
+            width: 100%;
         }
     }
 
@@ -563,6 +564,38 @@
         margin: 0;
         overflow-wrap: anywhere;
         word-break: break-word;
+    }
+
+    &__detail-modal {
+        &.sw-modal,
+        &.sw-modal--large {
+            .sw-modal__dialog {
+                width: 100vw;
+                max-width: 100vw;
+                height: 100vh;
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .sw-modal__content {
+                width: 100%;
+                max-width: none;
+                height: 100%;
+                border-radius: 0;
+            }
+
+            .sw-modal__content-inner {
+                height: 100%;
+            }
+
+            .sw-modal__body {
+                padding: 24px 32px 32px;
+            }
+
+            .sw-modal__footer {
+                border-radius: 0;
+            }
+        }
     }
 
     &__totals {
