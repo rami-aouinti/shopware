@@ -482,13 +482,13 @@
                             </div>
                         </div>
                     </template>
-                    <template #column-statusLabel="{ item }">
+                    <template slot="column-status-label" slot-scope="{ item }">
                         <sw-label :variant="statusVariant(item.status)" size="small">
                             {{ item.statusLabel }}
                         </sw-label>
                     </template>
 
-                    <template #column-actions="{ item }">
+                    <template slot="column-actions" slot-scope="{ item }">
                         <sw-button
                             variant="ghost"
                             size="small"
