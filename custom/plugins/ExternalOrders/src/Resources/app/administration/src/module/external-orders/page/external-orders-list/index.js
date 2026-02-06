@@ -85,6 +85,7 @@ Component.register('external-orders-list', {
             showTestMarkingModal: false,
             page: 1,
             limit: 10,
+            limitOptions: [10, 25, 50, 100],
             sortBy: 'date',
             sortDirection: 'DESC',
         };
@@ -215,6 +216,34 @@ Component.register('external-orders-list', {
         paginationTotal() {
             return this.sortedOrders.length;
         },
+        totalPages() {
+            return Math.max(1, Math.ceil(this.paginationTotal / this.limit));
+        },
+        limitSelectOptions() {
+            return this.limitOptions.map((value) => ({
+                value,
+                label: `${value} pro Seite`,
+            }));
+        },
+        visiblePages() {
+            const total = this.totalPages;
+            const current = this.page;
+            const maxVisible = 5;
+
+            if (total <= maxVisible) {
+                return Array.from({ length: total }, (_, index) => index + 1);
+            }
+
+            const half = Math.floor(maxVisible / 2);
+            let start = Math.max(1, current - half);
+            let end = Math.min(total, start + maxVisible - 1);
+
+            if (end - start + 1 < maxVisible) {
+                start = Math.max(1, end - maxVisible + 1);
+            }
+
+            return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+        },
         hasSelectedOrders() {
             return this.selectedOrders.length > 0;
         },
@@ -337,6 +366,39 @@ Component.register('external-orders-list', {
 
             this.page = nextPage;
             this.limit = nextLimit;
+        },
+        goToPreviousPage() {
+            if (this.page <= 1) {
+                return;
+            }
+            this.page -= 1;
+        },
+        goToFirstPage() {
+            this.page = 1;
+        },
+        goToLastPage() {
+            this.page = this.totalPages;
+        },
+        goToPage(pageNumber) {
+            if (typeof pageNumber !== 'number') {
+                return;
+            }
+            const nextPage = Math.max(1, Math.min(this.totalPages, pageNumber));
+            this.page = nextPage;
+        },
+        goToNextPage() {
+            if (this.page >= this.totalPages) {
+                return;
+            }
+            this.page += 1;
+        },
+        onLimitChange(value) {
+            const nextLimit = Number(value);
+            if (Number.isNaN(nextLimit) || nextLimit <= 0) {
+                return;
+            }
+            this.limit = nextLimit;
+            this.page = 1;
         },
         onSearch() {
             this.page = 1;
