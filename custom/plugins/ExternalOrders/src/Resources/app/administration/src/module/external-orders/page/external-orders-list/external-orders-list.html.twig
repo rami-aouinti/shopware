@@ -124,7 +124,7 @@
                     @column-sort="onSortColumn"
                     @selection-change="onSelectionChange"
                 >
-                    <template slot="column-orderNumber-label">
+                    <template slot="column-order-number-label">
                         <div class="external-orders__column-header">
                             <span class="external-orders__column-label">BestellNr</span>
                             <button
@@ -184,7 +184,7 @@
                             </div>
                         </div>
                     </template>
-                    <template slot="column-customerName-label">
+                    <template slot="column-customer-name-label">
                         <div class="external-orders__column-header">
                             <span class="external-orders__column-label">Kundenname</span>
                             <button
@@ -244,7 +244,7 @@
                             </div>
                         </div>
                     </template>
-                    <template slot="column-orderReference-label">
+                    <template slot="column-order-reference-label">
                         <div class="external-orders__column-header">
                             <span class="external-orders__column-label">AuftragsNr</span>
                             <button
@@ -424,7 +424,7 @@
                             </div>
                         </div>
                     </template>
-                    <template slot="column-statusLabel-label">
+                    <template slot="column-status-label-label">
                         <div class="external-orders__column-header">
                             <span class="external-orders__column-label">Bestellstatus</span>
                             <button
@@ -484,7 +484,7 @@
                             </div>
                         </div>
                     </template>
-                    <template slot="column-statusLabel" slot-scope="{ item }">
+                    <template slot="column-status-label" slot-scope="{ item }">
                         <sw-label :variant="statusVariant(item.status)" size="small">
                             {{ item.statusLabel }}
                         </sw-label>
