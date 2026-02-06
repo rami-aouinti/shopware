@@ -68,7 +68,16 @@
 
             <sw-card class="external-orders__filters-card" style="max-width: none; width: 100%;">
                 <div class="external-orders__filters-bar">
-                    <div class="external-orders__search-row">
+                    <div class="external-orders__filters">
+                        <sw-button variant="primary" size="small" @click="resetFilters">
+                            <sw-icon name="regular-filter" size="16" />
+                            Filter löschen
+                        </sw-button>
+                        <sw-datepicker placeholder="Start Datum" class="external-orders__date" size="small" date-type="date" />
+                        <sw-datepicker placeholder="End Datum" class="external-orders__date" size="small" date-type="date" />
+                        <sw-button variant="primary" size="small">Anwenden</sw-button>
+                    </div>
+                    <div class="external-orders__filters-actions">
                         <sw-search-bar
                             v-model="tableSearchTerm"
                             placeholder="Suche Bestellungen"
@@ -76,25 +85,14 @@
                             class="external-orders__search"
                             @search="onSearch"
                         />
-                    </div>
-                    <div class="external-orders__filters-row">
-                        <div class="external-orders__filters">
-                            <sw-button variant="primary" size="small" @click="resetFilters">
-                                <sw-icon name="regular-filter" size="16" />
-                                Filter löschen
-                            </sw-button>
-                            <sw-datepicker placeholder="Start Datum" class="external-orders__date" size="small" date-type="date" />
-                            <sw-datepicker placeholder="End Datum" class="external-orders__date" size="small" date-type="date" />
-                            <sw-button variant="primary" size="small">Anwenden</sw-button>
-                            <sw-button
-                                variant="primary"
-                                size="small"
-                                :disabled="!hasSelectedOrders"
-                                @click="openTestMarkingModal"
-                            >
-                                Testmarkierung Anwenden
-                            </sw-button>
-                        </div>
+                        <sw-button
+                            variant="primary"
+                            size="small"
+                            :disabled="!hasSelectedOrders"
+                            @click="openTestMarkingModal"
+                        >
+                            Testmarkierung Anwenden
+                        </sw-button>
                     </div>
                 </div>
 
