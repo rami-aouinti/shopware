@@ -389,12 +389,18 @@
     }
 
     &__detail-modal {
+        :global(.sw-modal) {
+            padding: 0;
+        }
+
         :global(.sw-modal__dialog) {
             width: 100vw;
             max-width: none;
             height: 100vh;
             margin: 0;
             border-radius: 0;
+            position: fixed;
+            inset: 0;
         }
 
         :global(.sw-modal--large .sw-modal__dialog) {
@@ -403,16 +409,20 @@
             height: 100vh;
             margin: 0;
             border-radius: 0;
+            position: fixed;
+            inset: 0;
         }
 
         :global(.sw-modal__content) {
             height: 100%;
             max-height: none;
             border-radius: 0;
+            display: flex;
+            flex-direction: column;
         }
 
         :global(.sw-modal__body) {
-            height: 100%;
+            flex: 1;
             overflow: auto;
         }
     }
