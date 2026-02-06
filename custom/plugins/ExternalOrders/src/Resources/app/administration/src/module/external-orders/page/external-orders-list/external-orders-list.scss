@@ -30,6 +30,36 @@
         max-width: none;
     }
 
+    :global(.external-orders .sw-button) {
+        min-height: 36px;
+        font-size: 14px;
+    }
+
+    :global(.external-orders .sw-button__content) {
+        padding: 6px 16px;
+    }
+
+    :global(.external-orders .sw-button--primary) {
+        background: #0d9c8e;
+        border-color: #0d9c8e;
+    }
+
+    :global(.external-orders .sw-button--primary:hover) {
+        background: #0b8a7e;
+        border-color: #0b8a7e;
+    }
+
+    :global(.external-orders .sw-button--secondary) {
+        color: #0d9c8e;
+        border-color: #0d9c8e;
+    }
+
+    :global(.external-orders .sw-button--secondary:hover) {
+        color: #0b8a7e;
+        border-color: #0b8a7e;
+        background: rgba(13, 156, 142, 0.08);
+    }
+
     &__channels,
     :global(.sw-card) {
         width: 100%;
