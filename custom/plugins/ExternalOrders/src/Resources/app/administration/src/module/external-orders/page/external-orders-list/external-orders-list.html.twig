@@ -78,12 +78,11 @@
                         <sw-button variant="primary" size="small">Anwenden</sw-button>
                     </div>
                     <div class="external-orders__filters-actions">
-                        <sw-search-bar
+                        <sw-text-field
                             v-model="tableSearchTerm"
                             placeholder="Suche Bestellungen"
-                            :show-search-types="false"
                             class="external-orders__search"
-                            @search="onSearch"
+                            type="search"
                         />
                         <sw-button
                             variant="primary"
