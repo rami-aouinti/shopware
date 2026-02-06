@@ -920,183 +920,89 @@ Component.register('external-orders-list', {
         },
 
         buildFakeOrders() {
-            const orders = [
-                {
-                    id: 'order-1008722',
-                    channel: 'ebay_de',
-                    orderNumber: '1008722',
-                    customerName: 'Andreas Nanke',
-                    orderReference: '446487',
-                    email: '43ad1d549beae3625950@members.ebay.com',
-                    date: '2025-12-30 09:31',
-                    status: 'processing',
-                    statusLabel: 'Bezahlt / in Bearbeitung',
-                    totalItems: 1,
-                },
-                {
-                    id: 'order-1008720',
-                    channel: 'ebay_at',
-                    orderNumber: '1008720',
-                    customerName: 'Lea Wagner',
-                    orderReference: '446475',
-                    email: 'lea.wagner@example.at',
-                    date: '2025-12-30 08:12',
-                    status: 'processing',
-                    statusLabel: 'Bezahlt / in Bearbeitung',
-                    totalItems: 3,
-                },
-                {
-                    id: 'order-1008721',
-                    channel: 'ebay_de',
-                    orderNumber: '1008721',
-                    customerName: 'Frank Sagert',
-                    orderReference: '446480',
-                    email: '010eb3cea0c0a1c80a10@members.ebay.com',
-                    date: '2025-12-30 08:46',
-                    status: 'processing',
-                    statusLabel: 'Bezahlt / in Bearbeitung',
-                    totalItems: 2,
-                },
-                {
-                    id: 'order-1008719',
-                    channel: 'b2b',
-                    orderNumber: '1008719',
-                    customerName: 'MedTec GmbH',
-                    orderReference: '446470',
-                    email: 'bestellung@medtec.example',
-                    date: '2025-12-30 07:45',
-                    status: 'processing',
-                    statusLabel: 'Bezahlt / in Bearbeitung',
-                    totalItems: 4,
-                },
-                {
-                    id: 'order-1008716',
-                    channel: 'kaufland',
-                    orderNumber: '1008716',
-                    customerName: 'Karsten Stieler',
-                    orderReference: '446447',
-                    email: '43aab48bab92e321f662@members.kaufland.de',
-                    date: '2025-12-29 22:33',
-                    status: 'processing',
-                    statusLabel: 'Bezahlt / in Bearbeitung',
-                    totalItems: 1,
-                },
-                {
-                    id: 'order-1008713',
-                    channel: 'zonami',
-                    orderNumber: '1008713',
-                    customerName: 'Lina Hoffmann',
-                    orderReference: '446431',
-                    email: 'lina.hoffmann@zonami.example',
-                    date: '2025-12-29 19:18',
-                    status: 'processing',
-                    statusLabel: 'Bezahlt / in Bearbeitung',
-                    totalItems: 2,
-                },
-                {
-                    id: 'order-1008711',
-                    channel: 'peg',
-                    orderNumber: '1008711',
-                    customerName: 'Jonas Richter',
-                    orderReference: '446420',
-                    email: 'jonas.richter@peg.example',
-                    date: '2025-12-29 18:44',
-                    status: 'shipped',
-                    statusLabel: 'Versendet',
-                    totalItems: 1,
-                },
-                {
-                    id: 'order-1008710',
-                    channel: 'ebay_de',
-                    orderNumber: '1008710',
-                    customerName: 'Sophie Bauer',
-                    orderReference: '446410',
-                    email: 'sophie.bauer@example.com',
-                    date: '2025-12-29 16:05',
-                    status: 'processing',
-                    statusLabel: 'Bezahlt / in Bearbeitung',
-                    totalItems: 2,
-                },
-                {
-                    id: 'order-1008708',
-                    channel: 'b2b',
-                    orderNumber: '1008708',
-                    customerName: 'HealthLine AG',
-                    orderReference: '446398',
-                    email: 'sales@healthline.example',
-                    date: '2025-12-29 14:22',
-                    status: 'processing',
-                    statusLabel: 'Bezahlt / in Bearbeitung',
-                    totalItems: 6,
-                },
-                {
-                    id: 'order-1008705',
-                    channel: 'kaufland',
-                    orderNumber: '1008705',
-                    customerName: 'Peter Scholl',
-                    orderReference: '446376',
-                    email: 'peter.scholl@kaufland.example',
-                    date: '2025-12-29 12:05',
-                    status: 'closed',
-                    statusLabel: 'Abgeschlossen',
-                    totalItems: 1,
-                },
-                {
-                    id: 'order-1008703',
-                    channel: 'ebay_at',
-                    orderNumber: '1008703',
-                    customerName: 'Julia Krüger',
-                    orderReference: '446360',
-                    email: 'julia.krueger@example.at',
-                    date: '2025-12-29 10:49',
-                    status: 'processing',
-                    statusLabel: 'Bezahlt / in Bearbeitung',
-                    totalItems: 2,
-                },
-                {
-                    id: 'order-1008701',
-                    channel: 'zonami',
-                    orderNumber: '1008701',
-                    customerName: 'Tim König',
-                    orderReference: '446350',
-                    email: 'tim.koenig@zonami.example',
-                    date: '2025-12-28 17:03',
-                    status: 'shipped',
-                    statusLabel: 'Versendet',
-                    totalItems: 3,
-                },
-                {
-                    id: 'order-1008699',
-                    channel: 'peg',
-                    orderNumber: '1008699',
-                    customerName: 'Maja Keller',
-                    orderReference: '446342',
-                    email: 'maja.keller@peg.example',
-                    date: '2025-12-28 12:11',
-                    status: 'closed',
-                    statusLabel: 'Abgeschlossen',
-                    totalItems: 1,
-                },
-                {
-                    id: 'order-1008697',
-                    channel: 'ebay_de',
-                    orderNumber: '1008697',
-                    customerName: 'Noah Berg',
-                    orderReference: '446330',
-                    email: 'noah.berg@example.com',
-                    date: '2025-12-28 08:27',
-                    status: 'processing',
-                    statusLabel: 'Bezahlt / in Bearbeitung',
-                    totalItems: 2,
-                },
+            const perChannelCount = 100;
+            const baseOrderNumber = 1009000;
+            const baseReference = 446500;
+            const baseDate = new Date('2025-12-30T09:31:00');
+            const names = [
+                'Andreas Nanke',
+                'Lea Wagner',
+                'Frank Sagert',
+                'Sophie Bauer',
+                'Noah Berg',
+                'Julia Krüger',
+                'Tim König',
+                'Maja Keller',
+                'Lina Hoffmann',
+                'Jonas Richter',
+                'Karsten Stieler',
+                'Peter Scholl',
+                'Jasmin Roth',
+                'Oliver Hahn',
+                'Mara Schulz',
+                'Tobias Link',
+                'Lukas Meier',
+                'Svenja Graf',
+                'Nina Krämer',
+                'David Winter',
             ];
+            const statuses = [
+                { status: 'processing', label: 'Bezahlt / in Bearbeitung' },
+                { status: 'shipped', label: 'Versendet' },
+                { status: 'closed', label: 'Abgeschlossen' },
+            ];
+            const channelConfig = {
+                b2b: { emailDomain: 'first-medical-shop.de', label: 'First-medical-shop.de' },
+                ebay_de: { emailDomain: 'members.ebay.com', label: 'Ebay.DE' },
+                ebay_at: { emailDomain: 'members.ebay.com', label: 'Ebay.AT' },
+                kaufland: { emailDomain: 'members.kaufland.de', label: 'KaufLand' },
+                zonami: { emailDomain: 'zonami.example', label: 'Zonami' },
+                peg: { emailDomain: 'peg.example', label: 'PEG' },
+                bezb: { emailDomain: 'bezb.example', label: 'BEZB' },
+            };
+
+            const formatDate = (date) => {
+                const pad = (value) => String(value).padStart(2, '0');
+                return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+            };
+
+            const orders = [];
+            const channels = this.channels.map((channel) => channel.id);
+
+            channels.forEach((channelId, channelIndex) => {
+                const config = channelConfig[channelId] ?? { emailDomain: 'example.com', label: channelId };
+                for (let i = 0; i < perChannelCount; i += 1) {
+                    const globalIndex = channelIndex * perChannelCount + i;
+                    const orderNumber = String(baseOrderNumber + globalIndex);
+                    const orderReference = String(baseReference + globalIndex);
+                    const status = statuses[globalIndex % statuses.length];
+                    const name = names[globalIndex % names.length];
+                    const emailPrefix = name.toLowerCase().replace(/[^a-z0-9]+/g, '.');
+                    const date = new Date(baseDate.getTime() - (globalIndex * 36 * 60 * 1000));
+
+                    orders.push({
+                        id: `order-${channelId}-${orderNumber}`,
+                        channel: channelId,
+                        orderNumber,
+                        customerName: name,
+                        orderReference,
+                        email: `${emailPrefix}@${config.emailDomain}`,
+                        date: formatDate(date),
+                        status: status.status,
+                        statusLabel: status.label,
+                        totalItems: (globalIndex % 6) + 1,
+                    });
+                }
+            });
+
             const totalItems = orders.reduce((sum, order) => sum + order.totalItems, 0);
+            const totalRevenue = orders.reduce((sum, order) => sum + (order.totalItems * 79.5), 0);
 
             return {
                 orders,
                 summary: {
                     orderCount: orders.length,
-                    totalRevenue: 1584.19,
+                    totalRevenue: Number(totalRevenue.toFixed(2)),
                     totalItems,
                 },
             };
