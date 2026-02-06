@@ -232,6 +232,13 @@
         :global(.sw-data-grid__cell--header) {
             overflow: visible;
         }
+
+        :global(.sw-data-grid__cell--header .sw-data-grid__cell-content) {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            overflow: visible;
+        }
     }
 
     &__column-header {
@@ -239,6 +246,10 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
+    }
+
+    &__column-label {
+        white-space: nowrap;
     }
 
     &__column-filter-button {
