@@ -459,6 +459,13 @@
         :global(.sw-card),
         :global(.mt-card) {
             width: 100%;
+            max-width: none;
+        }
+
+        :global(.mt-card__wrapper),
+        :global(.mt-card__content) {
+            width: 100%;
+            max-width: none;
         }
     }
 
@@ -476,6 +483,7 @@
         background: #f3f6fb;
         width: 100vw;
         height: 100vh;
+        max-width: 100%;
         display: flex;
         flex-direction: column;
     }
