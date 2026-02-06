@@ -876,6 +876,75 @@
                     </footer>
                 </div>
             </div>
+
+            <div
+                v-if="showTestMarkingModal"
+                class="external-orders__testmarking-overlay"
+                role="dialog"
+                aria-modal="true"
+            >
+                <div class="external-orders__testmarking-dialog">
+                    <header class="external-orders__testmarking-header">
+                        <h3>Bestätigen von Änderungen der Testmarkierung</h3>
+                        <button
+                            type="button"
+                            class="external-orders__testmarking-close"
+                            aria-label="Modal schließen"
+                            @click="closeTestMarkingModal"
+                        >
+                            ×
+                        </button>
+                    </header>
+                    <div class="external-orders__testmarking-body">
+                        <p class="external-orders__testmarking-intro">
+                            Sie sind dabei, die folgenden Bestellungen als Testbestellungen zu markieren bzw. die Markierung
+                            aufzuheben. Bitte überprüfen Sie die Änderungen, bevor Sie sie bestätigen.
+                        </p>
+                        <div class="external-orders__testmarking-grid">
+                            <div class="external-orders__testmarking-card">
+                                <h4 class="external-orders__testmarking-title is--positive">
+                                    Als Test zu markierende Bestellungen
+                                </h4>
+                                <ul class="external-orders__testmarking-list">
+                                    <li
+                                        v-for="order in testMarkingOrders"
+                                        :key="getOrderKey(order)"
+                                    >
+                                        {{ getOrderDisplayLabel(order) }}
+                                    </li>
+                                    <li v-if="testMarkingOrders.length === 0">
+                                        Keine Bestellungen ausgewählt.
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="external-orders__testmarking-card">
+                                <h4 class="external-orders__testmarking-title is--negative">
+                                    Bestellungen, die nicht als Test markieren
+                                </h4>
+                                <ul class="external-orders__testmarking-list">
+                                    <li
+                                        v-for="order in unmarkedTestOrders"
+                                        :key="getOrderKey(order)"
+                                    >
+                                        {{ getOrderDisplayLabel(order) }}
+                                    </li>
+                                    <li v-if="unmarkedTestOrders.length === 0">
+                                        Keine Bestellungen ausgewählt.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="external-orders__testmarking-footer">
+                        <sw-button variant="secondary" @click="closeTestMarkingModal">
+                            Abbrechen
+                        </sw-button>
+                        <sw-button variant="primary" @click="applyTestMarking">
+                            Bestätige
+                        </sw-button>
+                    </footer>
+                </div>
+            </div>
         </div>
     </main>
 </div>
