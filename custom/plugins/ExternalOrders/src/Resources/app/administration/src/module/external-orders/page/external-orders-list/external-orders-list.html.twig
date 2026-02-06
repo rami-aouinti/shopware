@@ -124,7 +124,7 @@
                     @column-sort="onSortColumn"
                     @selection-change="onSelectionChange"
                 >
-                    <template #column-orderNumber-label>
+                    <template slot="column-orderNumber-label">
                         <div class="external-orders__column-header">
                             <span class="external-orders__column-label">BestellNr</span>
                             <button
@@ -184,7 +184,7 @@
                             </div>
                         </div>
                     </template>
-                    <template #column-customerName-label>
+                    <template slot="column-customerName-label">
                         <div class="external-orders__column-header">
                             <span class="external-orders__column-label">Kundenname</span>
                             <button
@@ -244,7 +244,7 @@
                             </div>
                         </div>
                     </template>
-                    <template #column-orderReference-label>
+                    <template slot="column-orderReference-label">
                         <div class="external-orders__column-header">
                             <span class="external-orders__column-label">AuftragsNr</span>
                             <button
@@ -304,7 +304,7 @@
                             </div>
                         </div>
                     </template>
-                    <template #column-email-label>
+                    <template slot="column-email-label">
                         <div class="external-orders__column-header">
                             <span class="external-orders__column-label">Email</span>
                             <button
@@ -364,7 +364,7 @@
                             </div>
                         </div>
                     </template>
-                    <template #column-date-label>
+                    <template slot="column-date-label">
                         <div class="external-orders__column-header">
                             <span class="external-orders__column-label">Datum</span>
                             <button
@@ -424,7 +424,7 @@
                             </div>
                         </div>
                     </template>
-                    <template #column-statusLabel-label>
+                    <template slot="column-statusLabel-label">
                         <div class="external-orders__column-header">
                             <span class="external-orders__column-label">Bestellstatus</span>
                             <button
@@ -484,13 +484,13 @@
                             </div>
                         </div>
                     </template>
-                    <template #column-statusLabel="{ item }">
+                    <template slot="column-statusLabel" slot-scope="{ item }">
                         <sw-label :variant="statusVariant(item.status)" size="small">
                             {{ item.statusLabel }}
                         </sw-label>
                     </template>
 
-                    <template #column-actions="{ item }">
+                    <template slot="column-actions" slot-scope="{ item }">
                         <sw-button
                             variant="ghost"
                             size="small"
