@@ -86,6 +86,14 @@
                             <sw-datepicker placeholder="Start Datum" class="external-orders__date" size="small" date-type="date" />
                             <sw-datepicker placeholder="End Datum" class="external-orders__date" size="small" date-type="date" />
                             <sw-button variant="primary" size="small">Anwenden</sw-button>
+                            <sw-button
+                                variant="primary"
+                                size="small"
+                                :disabled="!hasSelectedOrders"
+                                @click="openTestMarkingModal"
+                            >
+                                Testmarkierung Anwenden
+                            </sw-button>
                         </div>
                     </div>
                 </div>
@@ -100,6 +108,7 @@
                     class="external-orders__table"
                     identifier="external-orders"
                     @column-sort="onSortColumn"
+                    @selection-change="onSelectionChange"
                 >
                     <template #column-orderNumber-label>
                         <div class="external-orders__column-header">
@@ -675,6 +684,61 @@
                         </div>
                     </sw-card>
                 </div>
+            </sw-modal>
+
+            <sw-modal
+                v-if="showTestMarkingModal"
+                title="Bestätigen von Änderungen der Testmarkierung"
+                variant="medium"
+                class="external-orders__testmarking-modal"
+                @modal-close="closeTestMarkingModal"
+            >
+                <p class="external-orders__testmarking-intro">
+                    Sie sind dabei, die folgenden Bestellungen als Testbestellungen zu markieren bzw. die Markierung
+                    aufzuheben. Bitte überprüfen Sie die Änderungen, bevor Sie sie bestätigen.
+                </p>
+                <div class="external-orders__testmarking-grid">
+                    <div class="external-orders__testmarking-card">
+                        <h4 class="external-orders__testmarking-title is--positive">
+                            Als Test zu markierende Bestellungen
+                        </h4>
+                        <ul class="external-orders__testmarking-list">
+                            <li
+                                v-for="order in testMarkingOrders"
+                                :key="getOrderKey(order)"
+                            >
+                                {{ getOrderDisplayLabel(order) }}
+                            </li>
+                            <li v-if="testMarkingOrders.length === 0">
+                                Keine Bestellungen ausgewählt.
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="external-orders__testmarking-card">
+                        <h4 class="external-orders__testmarking-title is--negative">
+                            Bestellungen, die nicht als Test markieren
+                        </h4>
+                        <ul class="external-orders__testmarking-list">
+                            <li
+                                v-for="order in unmarkedTestOrders"
+                                :key="getOrderKey(order)"
+                            >
+                                {{ getOrderDisplayLabel(order) }}
+                            </li>
+                            <li v-if="unmarkedTestOrders.length === 0">
+                                Keine Bestellungen ausgewählt.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <template #modal-footer>
+                    <sw-button variant="secondary" @click="closeTestMarkingModal">
+                        Abbrechen
+                    </sw-button>
+                    <sw-button variant="primary" @click="applyTestMarking">
+                        Bestätige
+                    </sw-button>
+                </template>
             </sw-modal>
         </div>
     </main>
