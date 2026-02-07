@@ -27,6 +27,22 @@
         </input-field>
 
         <input-field type="text">
+            <name>externalOrdersApiUrl</name>
+            <label lang="en-GB">External Orders API URL</label>
+            <label lang="de-DE">External Orders API-URL</label>
+            <helpText lang="en-GB">Endpoint called by the 5-minute sync task to fetch new external orders.</helpText>
+            <helpText lang="de-DE">Endpunkt, der durch den 5-Minuten-Sync-Task aufgerufen wird, um neue externe Bestellungen abzurufen.</helpText>
+        </input-field>
+
+        <input-field type="text">
+            <name>externalOrdersApiToken</name>
+            <label lang="en-GB">External Orders API Token</label>
+            <label lang="de-DE">External Orders API-Token</label>
+            <helpText lang="en-GB">Optional bearer token for the External Orders API.</helpText>
+            <helpText lang="de-DE">Optionales Bearer-Token für die External Orders API.</helpText>
+        </input-field>
+
+        <input-field type="text">
             <name>sourceB2b</name>
             <label lang="en-GB">Overview source: First-medical-shop.de (B2B)</label>
             <label lang="de-DE">Übersicht-Quelle: First-medical-shop.de (B2B)</label>
