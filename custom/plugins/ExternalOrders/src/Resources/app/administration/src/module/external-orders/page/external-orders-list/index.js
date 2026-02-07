@@ -653,9 +653,10 @@ Component.register('external-orders-list', {
             this.isLoading = true;
             try {
                 if (this.isFakeOrder(order)) {
-                    this.selectedOrder = this.buildFakeOrderDetail(order);
+                    this.selectedOrder = this.normalizeOrderDetail(this.buildFakeOrderDetail(order));
                 } else {
-                    this.selectedOrder = await this.externalOrderService.detail(order.id);
+                    const detail = await this.externalOrderService.detail(order.id);
+                    this.selectedOrder = this.normalizeOrderDetail(detail);
                 }
                 this.showDetailModal = true;
             } catch (error) {
@@ -671,6 +672,76 @@ Component.register('external-orders-list', {
         closeDetail() {
             this.showDetailModal = false;
             this.selectedOrder = null;
+        },
+        normalizeOrderDetail(order) {
+            const base = order ?? {};
+            const totals = base.totals ?? {};
+
+            return {
+                ...base,
+                customer: {
+                    number: '',
+                    firstName: '',
+                    lastName: '',
+                    email: '',
+                    group: '',
+                    ...(base.customer ?? {}),
+                },
+                payment: {
+                    method: '',
+                    code: '',
+                    dueDate: '',
+                    outstanding: '',
+                    settled: '',
+                    extra: '',
+                    ...(base.payment ?? {}),
+                },
+                billingAddress: {
+                    street: '',
+                    zip: '',
+                    city: '',
+                    country: '',
+                    ...(base.billingAddress ?? {}),
+                },
+                shippingAddress: {
+                    name: '',
+                    street: '',
+                    zipCity: '',
+                    country: '',
+                    ...(base.shippingAddress ?? {}),
+                },
+                additional: {
+                    orderDate: '',
+                    status: '',
+                    orderType: '',
+                    notes: '',
+                    consultant: '',
+                    tenant: '',
+                    san6OrderNumber: '',
+                    orgaEntries: [],
+                    documents: [],
+                    pdmsId: '',
+                    pdmsVariant: '',
+                    topmArticleNumber: '',
+                    topmExecution: '',
+                    statusHistorySource: '',
+                    ...(base.additional ?? {}),
+                },
+                shipping: {
+                    carrier: '',
+                    trackingNumbers: [],
+                    ...(base.shipping ?? {}),
+                },
+                items: Array.isArray(base.items) ? base.items : [],
+                statusHistory: Array.isArray(base.statusHistory) ? base.statusHistory : [],
+                totals: {
+                    items: totals.items ?? 0,
+                    shipping: totals.shipping ?? 0,
+                    sum: totals.sum ?? 0,
+                    tax: totals.tax ?? 0,
+                    net: totals.net ?? 0,
+                },
+            };
         },
         openTestMarkingModal() {
             if (!this.hasSelectedOrders) {
