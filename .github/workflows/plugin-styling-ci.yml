@@ -1,0 +1,31 @@
+name: Plugin Styling CI
+
+on:
+  push:
+    paths:
+      - 'custom/plugins/**/Resources/app/storefront/src/scss/**'
+      - 'custom/plugins/**/Resources/app/administration/src/scss/**'
+  pull_request:
+    paths:
+      - 'custom/plugins/**/Resources/app/storefront/src/scss/**'
+      - 'custom/plugins/**/Resources/app/administration/src/scss/**'
+  workflow_dispatch:
+
+jobs:
+  stylelint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install stylelint
+        run: npm install --no-audit --no-fund --silent stylelint postcss-scss
+
+      - name: Lint plugin styles
+        run: npx stylelint "custom/plugins/**/Resources/app/**/src/scss/**/*.scss" --config .stylelintrc.json --custom-syntax postcss-scss --allow-empty-input
