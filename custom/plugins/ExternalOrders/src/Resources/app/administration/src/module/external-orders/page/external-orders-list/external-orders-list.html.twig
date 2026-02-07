@@ -160,15 +160,19 @@
                                             @click.stop
                                         >
                                             <sw-single-select
-                                                v-model="columnFilterMatchMode"
+                                                v-model:value="columnFilterMatchMode"
                                                 :options="columnFilterMatchOptions"
+                                                value-property="value"
+                                                label-property="label"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                                 @change="setColumnFilterMatchMode"
                                             />
                                             <sw-single-select
-                                                v-model="columnFilters.orderNumber.operator"
+                                                v-model:value="columnFilters.orderNumber.operator"
                                                 :options="columnFilterOperatorOptions"
+                                                value-property="value"
+                                                label-property="label"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                                 @change="setColumnFilterOperator('orderNumber', $event)"
@@ -223,15 +227,19 @@
                                             @click.stop
                                         >
                                             <sw-single-select
-                                                v-model="columnFilterMatchMode"
+                                                v-model:value="columnFilterMatchMode"
                                                 :options="columnFilterMatchOptions"
+                                                value-property="value"
+                                                label-property="label"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                                 @change="setColumnFilterMatchMode"
                                             />
                                             <sw-single-select
-                                                v-model="columnFilters.customerName.operator"
+                                                v-model:value="columnFilters.customerName.operator"
                                                 :options="columnFilterOperatorOptions"
+                                                value-property="value"
+                                                label-property="label"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                                 @change="setColumnFilterOperator('customerName', $event)"
@@ -286,15 +294,19 @@
                                             @click.stop
                                         >
                                             <sw-single-select
-                                                v-model="columnFilterMatchMode"
+                                                v-model:value="columnFilterMatchMode"
                                                 :options="columnFilterMatchOptions"
+                                                value-property="value"
+                                                label-property="label"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                                 @change="setColumnFilterMatchMode"
                                             />
                                             <sw-single-select
-                                                v-model="columnFilters.orderReference.operator"
+                                                v-model:value="columnFilters.orderReference.operator"
                                                 :options="columnFilterOperatorOptions"
+                                                value-property="value"
+                                                label-property="label"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                                 @change="setColumnFilterOperator('orderReference', $event)"
@@ -349,15 +361,19 @@
                                             @click.stop
                                         >
                                             <sw-single-select
-                                                v-model="columnFilterMatchMode"
+                                                v-model:value="columnFilterMatchMode"
                                                 :options="columnFilterMatchOptions"
+                                                value-property="value"
+                                                label-property="label"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                                 @change="setColumnFilterMatchMode"
                                             />
                                             <sw-single-select
-                                                v-model="columnFilters.email.operator"
+                                                v-model:value="columnFilters.email.operator"
                                                 :options="columnFilterOperatorOptions"
+                                                value-property="value"
+                                                label-property="label"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                                 @change="setColumnFilterOperator('email', $event)"
@@ -412,15 +428,19 @@
                                             @click.stop
                                         >
                                             <sw-single-select
-                                                v-model="columnFilterMatchMode"
+                                                v-model:value="columnFilterMatchMode"
                                                 :options="columnFilterMatchOptions"
+                                                value-property="value"
+                                                label-property="label"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                                 @change="setColumnFilterMatchMode"
                                             />
                                             <sw-single-select
-                                                v-model="columnFilters.date.operator"
+                                                v-model:value="columnFilters.date.operator"
                                                 :options="columnFilterOperatorOptions"
+                                                value-property="value"
+                                                label-property="label"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                                 @change="setColumnFilterOperator('date', $event)"
@@ -475,15 +495,19 @@
                                             @click.stop
                                         >
                                             <sw-single-select
-                                                v-model="columnFilterMatchMode"
+                                                v-model:value="columnFilterMatchMode"
                                                 :options="columnFilterMatchOptions"
+                                                value-property="value"
+                                                label-property="label"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                                 @change="setColumnFilterMatchMode"
                                             />
                                             <sw-single-select
-                                                v-model="columnFilters.statusLabel.operator"
+                                                v-model:value="columnFilters.statusLabel.operator"
                                                 :options="columnFilterOperatorOptions"
+                                                value-property="value"
+                                                label-property="label"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
                                                 @change="setColumnFilterOperator('statusLabel', $event)"
@@ -598,11 +622,10 @@
                             »
                         </button>
                         <sw-single-select
-                            v-model="limit"
+                            :value="limitSelection"
                             :options="limitSelectOptions"
                             size="small"
-                            class="external-orders__pagination-limit"
-                            @change="onLimitChange"></sw-single-select>
+                            class="external-orders__pagination-limit"></sw-single-select>
                     </div>
                 </div>
                 <sw-empty-state

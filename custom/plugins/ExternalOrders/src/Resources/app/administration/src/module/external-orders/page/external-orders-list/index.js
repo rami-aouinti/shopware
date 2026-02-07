@@ -249,9 +249,12 @@ Component.register('external-orders-list', {
         },
         limitSelectOptions() {
             return this.limitOptions.map((value) => ({
-                value,
+                value: String(value),
                 label: String(value),
             }));
+        },
+        limitSelection() {
+            return this.limitSelectOptions.find((option) => option.value === this.limit) || null;
         },
         isAllSelected() {
             if (this.paginatedOrders.length === 0) {
