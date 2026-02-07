@@ -10,9 +10,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 
-class ExternalOrderService
+readonly class ExternalOrderService
 {
-    public function __construct(private readonly EntityRepository $orderRepository)
+    public function __construct(private EntityRepository $orderRepository)
     {
     }
 

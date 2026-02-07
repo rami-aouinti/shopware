@@ -2,6 +2,7 @@
     "license": "proprietary",
     "type": "project",
     "require": {
+        "ext-mbstring": "*",
         "composer-runtime-api": "^2.0",
         "shopware/administration": "*",
         "shopware/core": "v6.7.6.2",

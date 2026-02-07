@@ -22,8 +22,8 @@ class ExternalOrderController extends AbstractController
     #[Route(
         path: '/api/_action/external-orders/list',
         name: 'api.admin.external-orders.list',
-        methods: [Request::METHOD_GET],
-        defaults: ['_acl' => ['admin']]
+        defaults: ['_acl' => ['admin']],
+        methods: [Request::METHOD_GET]
     )]
     public function list(Request $request, Context $context): Response
     {
@@ -38,8 +38,8 @@ class ExternalOrderController extends AbstractController
     #[Route(
         path: '/api/_action/external-orders/detail/{orderId}',
         name: 'api.admin.external-orders.detail',
-        methods: [Request::METHOD_GET],
-        defaults: ['_acl' => ['admin']]
+        defaults: ['_acl' => ['admin']],
+        methods: [Request::METHOD_GET]
     )]
     public function detail(string $orderId, Context $context): Response
     {
