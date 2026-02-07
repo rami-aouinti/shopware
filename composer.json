@@ -1,14 +1,16 @@
 {
+    "name": "shopware/project",
+    "description": "Shopware project.",
     "license": "proprietary",
     "type": "project",
     "require": {
         "ext-mbstring": "*",
         "composer-runtime-api": "^2.0",
-        "shopware/administration": "*",
-        "shopware/core": "v6.7.6.2",
-        "shopware/elasticsearch": "*",
-        "shopware/storefront": "*",
-        "swag/paypal": "10.4.2",
+        "shopware/administration": "^6.7.6.2",
+        "shopware/core": "^6.7.6.2",
+        "shopware/elasticsearch": "^6.7.6.2",
+        "shopware/storefront": "^6.7.6.2",
+        "swag/paypal": "^10.4.2",
         "symfony/flex": "~2"
     },
     "repositories": [

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3a8d48879665a41dd590ff041c1bd0bd",
+    "content-hash": "14022370b9a030e0b0fb55e68bcdf089",
     "packages": [
         {
             "name": "async-aws/core",
@@ -1980,7 +1980,7 @@
                     "homepage": "https://github.com/Nyholm"
                 },
                 {
-                    "name": "Márk Sági-Kazár",
+                    "name": "M\u00e1rk S\u00e1gi-Kaz\u00e1r",
                     "email": "mark.sagikazar@gmail.com",
                     "homepage": "https://github.com/sagikazarmark"
                 },
@@ -2175,7 +2175,7 @@
                     "homepage": "https://github.com/Nyholm"
                 },
                 {
-                    "name": "Márk Sági-Kazár",
+                    "name": "M\u00e1rk S\u00e1gi-Kaz\u00e1r",
                     "email": "mark.sagikazar@gmail.com",
                     "homepage": "https://github.com/sagikazarmark"
                 },
@@ -2185,7 +2185,7 @@
                     "homepage": "https://github.com/Tobion"
                 },
                 {
-                    "name": "Márk Sági-Kazár",
+                    "name": "M\u00e1rk S\u00e1gi-Kaz\u00e1r",
                     "email": "mark.sagikazar@gmail.com",
                     "homepage": "https://sagikazarmark.hu"
                 }
@@ -2631,7 +2631,7 @@
                     "email": "igor@wiedler.ch"
                 },
                 {
-                    "name": "Robert Schönthal",
+                    "name": "Robert Sch\u00f6nthal",
                     "email": "seroscho@googlemail.com"
                 }
             ],
@@ -2753,7 +2753,7 @@
             ],
             "authors": [
                 {
-                    "name": "Luís Cobucci",
+                    "name": "Lu\u00eds Cobucci",
                     "email": "lcobucci@gmail.com"
                 }
             ],
@@ -2821,7 +2821,7 @@
             ],
             "authors": [
                 {
-                    "name": "Luís Cobucci",
+                    "name": "Lu\u00eds Cobucci",
                     "email": "lcobucci@gmail.com",
                     "role": "Developer"
                 }
@@ -4050,7 +4050,7 @@
             ],
             "authors": [
                 {
-                    "name": "Márk Sági-Kazár",
+                    "name": "M\u00e1rk S\u00e1gi-Kaz\u00e1r",
                     "email": "mark.sagikazar@gmail.com"
                 }
             ],
@@ -4131,7 +4131,7 @@
                     "role": "Developer"
                 },
                 {
-                    "name": "Hans-Jürgen Petrich",
+                    "name": "Hans-J\u00fcrgen Petrich",
                     "email": "petrich@tronic-media.com",
                     "role": "Developer"
                 },
@@ -5042,7 +5042,7 @@
                     "homepage": "https://sorgalla.com/"
                 },
                 {
-                    "name": "Christian Lück",
+                    "name": "Christian L\u00fcck",
                     "email": "christian@clue.engineering",
                     "homepage": "https://clue.engineering/"
                 },
@@ -5208,7 +5208,7 @@
                     "homepage": "https://github.com/robocoder"
                 },
                 {
-                    "name": "Cédric Morin",
+                    "name": "C\u00e9dric Morin",
                     "email": "cedric@yterium.com",
                     "homepage": "https://github.com/Cerdic"
                 }
@@ -6264,11 +6264,11 @@
                 "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
                 "copyright": "(c) by shopware AG",
                 "label": {
-                    "de-DE": "PayPal-Produkte für Shopware 6",
+                    "de-DE": "PayPal-Produkte f\u00fcr Shopware 6",
                     "en-GB": "PayPal Products for Shopware 6"
                 },
                 "description": {
-                    "de-DE": "Bieten Sie Ihren Kunden Deutschlands beliebteste Bezahlmöglichkeiten mit nur einer Integration: Das PayPal-Plugin bietet PayPal Checkout, den Expressbutton, Zettle und vieles mehr",
+                    "de-DE": "Bieten Sie Ihren Kunden Deutschlands beliebteste Bezahlm\u00f6glichkeiten mit nur einer Integration: Das PayPal-Plugin bietet PayPal Checkout, den Expressbutton, Zettle und vieles mehr",
                     "en-GB": "Get access to over 100 currencies and 200 markets worldwide with the payment module PayPal for your Shopware shop. Experience an easy and comfortable way of payment."
                 },
                 "manufacturerLink": {
@@ -8372,7 +8372,7 @@
             ],
             "authors": [
                 {
-                    "name": "Jérémy Derussé",
+                    "name": "J\u00e9r\u00e9my Deruss\u00e9",
                     "email": "jeremy@derusse.com"
                 },
                 {
@@ -9422,7 +9422,7 @@
             ],
             "authors": [
                 {
-                    "name": "Kévin Dunglas",
+                    "name": "K\u00e9vin Dunglas",
                     "email": "dunglas@gmail.com"
                 },
                 {
@@ -11629,12 +11629,12 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "composer-runtime-api": "^2.0"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.9.0"
 }
