@@ -51,7 +51,7 @@
                             type="button"
                             @click="exportSelectedOrdersPdf"
                         >
-                            <sw-icon name="regular-file-text" size="16" class="external-orders__download-icon" />
+                            <sw-icon name="regular-file-text" size="16" class="external-orders__download-icon"></sw-icon>
                             PDF herunterladen ({{ selectedOrders.length > 0 ? selectedOrders.length : filteredOrders.length }})
                         </button>
                         <button
@@ -59,7 +59,7 @@
                             type="button"
                             @click="exportSelectedOrdersExcel"
                         >
-                            <sw-icon name="regular-file" size="16" class="external-orders__download-icon" />
+                            <sw-icon name="regular-file" size="16" class="external-orders__download-icon"></sw-icon>
                             Excel herunterladen ({{ selectedOrders.length > 0 ? selectedOrders.length : filteredOrders.length }})
                         </button>
                     </div>
@@ -74,7 +74,7 @@
                             type="button"
                             @click="resetFilters"
                         >
-                            <sw-icon name="regular-filter" size="16" />
+                            <sw-icon name="regular-filter" size="16"></sw-icon>
                             Filter löschen
                         </button>
                         <sw-datepicker
@@ -107,8 +107,7 @@
                             placeholder="Suche Bestellungen"
                             class="external-orders__search"
                             size="small"
-                            type="search"
-                        />
+                            type="search"></sw-text-field>
                         <button
                             class="external-orders__button external-orders__button--primary"
                             type="button"
@@ -177,8 +176,7 @@
                                             <sw-text-field
                                                 v-model="columnFilters.orderNumber.value"
                                                 size="small"
-                                                class="external-orders__column-filter-field"
-                                            />
+                                                class="external-orders__column-filter-field"></sw-text-field>
                                             <button class="external-orders__column-filter-add external-orders__button external-orders__button--primary external-orders__button--small"
                                                 disabled
                                              type="button">
@@ -217,7 +215,7 @@
                                             type="button"
                                             @click.stop="toggleColumnFilter('customerName')"
                                         >
-                                            <sw-icon name="regular-filter" size="16" />
+                                            <sw-icon name="regular-filter" size="16"></sw-icon>
                                         </button>
                                         <div
                                             v-if="activeColumnFilter === 'customerName'"
@@ -241,8 +239,7 @@
                                             <sw-text-field
                                                 v-model="columnFilters.customerName.value"
                                                 size="small"
-                                                class="external-orders__column-filter-field"
-                                            />
+                                                class="external-orders__column-filter-field"></sw-text-field>
                                             <button class="external-orders__column-filter-add external-orders__button external-orders__button--primary external-orders__button--small"
                                                 disabled
                                              type="button">
@@ -281,7 +278,7 @@
                                             type="button"
                                             @click.stop="toggleColumnFilter('orderReference')"
                                         >
-                                            <sw-icon name="regular-filter" size="16" />
+                                            <sw-icon name="regular-filter" size="16"></sw-icon>
                                         </button>
                                         <div
                                             v-if="activeColumnFilter === 'orderReference'"
@@ -305,8 +302,7 @@
                                             <sw-text-field
                                                 v-model="columnFilters.orderReference.value"
                                                 size="small"
-                                                class="external-orders__column-filter-field"
-                                            />
+                                                class="external-orders__column-filter-field"></sw-text-field>
                                             <button class="external-orders__column-filter-add external-orders__button external-orders__button--primary external-orders__button--small"
                                                 disabled
                                              type="button">
@@ -369,8 +365,7 @@
                                             <sw-text-field
                                                 v-model="columnFilters.email.value"
                                                 size="small"
-                                                class="external-orders__column-filter-field"
-                                            />
+                                                class="external-orders__column-filter-field"></sw-text-field>
                                             <button class="external-orders__column-filter-add external-orders__button external-orders__button--primary external-orders__button--small"
                                                 disabled
                                              type="button">
@@ -409,7 +404,7 @@
                                             type="button"
                                             @click.stop="toggleColumnFilter('date')"
                                         >
-                                            <sw-icon name="regular-filter" size="16" />
+                                            <sw-icon name="regular-filter" size="16"></sw-icon>
                                         </button>
                                         <div
                                             v-if="activeColumnFilter === 'date'"
@@ -433,8 +428,7 @@
                                             <sw-text-field
                                                 v-model="columnFilters.date.value"
                                                 size="small"
-                                                class="external-orders__column-filter-field"
-                                            />
+                                                class="external-orders__column-filter-field"></sw-text-field>
                                             <button class="external-orders__column-filter-add external-orders__button external-orders__button--primary external-orders__button--small"
                                                 disabled
                                              type="button">
@@ -473,7 +467,7 @@
                                             type="button"
                                             @click.stop="toggleColumnFilter('statusLabel')"
                                         >
-                                            <sw-icon name="regular-filter" size="16" />
+                                            <sw-icon name="regular-filter" size="16"></sw-icon>
                                         </button>
                                         <div
                                             v-if="activeColumnFilter === 'statusLabel'"
@@ -497,8 +491,7 @@
                                             <sw-text-field
                                                 v-model="columnFilters.statusLabel.value"
                                                 size="small"
-                                                class="external-orders__column-filter-field"
-                                            />
+                                                class="external-orders__column-filter-field"></sw-text-field>
                                             <button class="external-orders__column-filter-add external-orders__button external-orders__button--primary external-orders__button--small"
                                                 disabled
                                              type="button">
@@ -548,7 +541,7 @@
                                     <button class="external-orders__action external-orders__button external-orders__button--ghost external-orders__button--small"
                                         @click="openDetail(order)"
                                      type="button">
-                                        <sw-icon name="regular-eye" size="16" />
+                                        <sw-icon name="regular-eye" size="16"></sw-icon>
                                     </button>
                                 </td>
                             </tr>
@@ -609,16 +602,14 @@
                             :options="limitSelectOptions"
                             size="small"
                             class="external-orders__pagination-limit"
-                            @change="onLimitChange"
-                        />
+                            @change="onLimitChange"></sw-single-select>
                     </div>
                 </div>
                 <sw-empty-state
                     v-else
                     icon="regular-shopping-cart"
                     title="Keine Bestellungen gefunden"
-                    subline="Es wurden keine Bestellungen für die aktuelle Auswahl geladen."
-                />
+                    subline="Es wurden keine Bestellungen für die aktuelle Auswahl geladen."></sw-empty-state>
             </sw-card>
 
             <sw-modal
@@ -768,8 +759,7 @@
                                 { property: 'date', label: 'Datum' },
                                 { property: 'comment', label: 'Kommentare' },
                             ]"
-                            identifier="external-orders-history"
-                        />
+                            identifier="external-orders-history"></sw-data-grid>
                     </sw-card>
 
                     <sw-card title="Bestellgesamtsummen" class="external-orders__detail-card">

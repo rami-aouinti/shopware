@@ -224,10 +224,11 @@
         align-items: center;
         justify-content: space-between;
         padding: 12px;
-        margin-bottom: 16px;
+        margin-bottom: 0;
         background: #ffffff;
-        border-radius: 8px;
+        border-radius: 8px 8px 0 0;
         border: 1px solid #d7dde5;
+        border-bottom: 0;
     }
 
     &__filters {
@@ -276,7 +277,7 @@
     &__table-wrapper {
         background: #ffffff;
         border: 1px solid #e3e9f2;
-        border-radius: 10px;
+        border-radius: 0 0 10px 10px;
         overflow: auto;
         max-height: 30vh;
     }
