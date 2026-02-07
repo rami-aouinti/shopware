@@ -249,7 +249,7 @@ Component.register('external-orders-list', {
         },
         limitSelectOptions() {
             return this.limitOptions.map((value) => ({
-                value,
+                value: String(value),
                 label: String(value),
             }));
         },
