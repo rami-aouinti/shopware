@@ -5,9 +5,23 @@
     <services>
         <defaults autowire="true" autoconfigure="true" />
 
+        <service id="ExternalOrders\Entity\ExternalOrderDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+
         <service id="ExternalOrders\Service\ExternalOrderService">
             <argument type="service" id="order.repository" />
         </service>
+        <service id="ExternalOrders\Service\ExternalOrderSyncService">
+            <argument type="service" id="external_order.repository" />
+        </service>
         <service id="ExternalOrders\Controller\ExternalOrderController" public="true" />
+
+        <service id="ExternalOrders\ScheduledTask\ExternalOrdersSyncTask">
+            <tag name="shopware.scheduled.task" />
+        </service>
+        <service id="ExternalOrders\ScheduledTask\ExternalOrdersSyncTaskHandler">
+            <tag name="messenger.message_handler" />
+        </service>
     </services>
 </container>
