@@ -598,11 +598,10 @@
                             »
                         </button>
                         <sw-single-select
-                            v-model="limit"
+                            v-model="limitSelection"
                             :options="limitSelectOptions"
                             size="small"
-                            class="external-orders__pagination-limit"
-                            @change="onLimitChange"></sw-single-select>
+                            class="external-orders__pagination-limit"></sw-single-select>
                     </div>
                 </div>
                 <sw-empty-state
