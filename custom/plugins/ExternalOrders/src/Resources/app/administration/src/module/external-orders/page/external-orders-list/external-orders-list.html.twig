@@ -77,9 +77,29 @@
                             <sw-icon name="regular-filter" size="16" />
                             Filter löschen
                         </button>
-                        <sw-datepicker placeholder="Start Datum" class="external-orders__date" size="small" date-type="date" />
-                        <sw-datepicker placeholder="End Datum" class="external-orders__date" size="small" date-type="date" />
-                        <button class="external-orders__button external-orders__button--primary" type="button">Anwenden</button>
+                        <sw-datepicker
+                            v-model="dateFilters.start"
+                            placeholder="Start Datum"
+                            class="external-orders__date"
+                            size="small"
+                            date-type="date"
+                            @change="setDateFilter('start', $event)"
+                        />
+                        <sw-datepicker
+                            v-model="dateFilters.end"
+                            placeholder="End Datum"
+                            class="external-orders__date"
+                            size="small"
+                            date-type="date"
+                            @change="setDateFilter('end', $event)"
+                        />
+                        <button
+                            class="external-orders__button external-orders__button--primary"
+                            type="button"
+                            @click="applyDateFilter"
+                        >
+                            Anwenden
+                        </button>
                     </div>
                     <div class="external-orders__filters-actions">
                         <sw-text-field
@@ -145,12 +165,14 @@
                                                 :options="columnFilterMatchOptions"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
+                                                @change="setColumnFilterMatchMode"
                                             />
                                             <sw-single-select
                                                 v-model="columnFilters.orderNumber.operator"
                                                 :options="columnFilterOperatorOptions"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
+                                                @change="setColumnFilterOperator('orderNumber', $event)"
                                             />
                                             <sw-text-field
                                                 v-model="columnFilters.orderNumber.value"
@@ -207,12 +229,14 @@
                                                 :options="columnFilterMatchOptions"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
+                                                @change="setColumnFilterMatchMode"
                                             />
                                             <sw-single-select
                                                 v-model="columnFilters.customerName.operator"
                                                 :options="columnFilterOperatorOptions"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
+                                                @change="setColumnFilterOperator('customerName', $event)"
                                             />
                                             <sw-text-field
                                                 v-model="columnFilters.customerName.value"
@@ -269,12 +293,14 @@
                                                 :options="columnFilterMatchOptions"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
+                                                @change="setColumnFilterMatchMode"
                                             />
                                             <sw-single-select
                                                 v-model="columnFilters.orderReference.operator"
                                                 :options="columnFilterOperatorOptions"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
+                                                @change="setColumnFilterOperator('orderReference', $event)"
                                             />
                                             <sw-text-field
                                                 v-model="columnFilters.orderReference.value"
@@ -331,12 +357,14 @@
                                                 :options="columnFilterMatchOptions"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
+                                                @change="setColumnFilterMatchMode"
                                             />
                                             <sw-single-select
                                                 v-model="columnFilters.email.operator"
                                                 :options="columnFilterOperatorOptions"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
+                                                @change="setColumnFilterOperator('email', $event)"
                                             />
                                             <sw-text-field
                                                 v-model="columnFilters.email.value"
@@ -393,12 +421,14 @@
                                                 :options="columnFilterMatchOptions"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
+                                                @change="setColumnFilterMatchMode"
                                             />
                                             <sw-single-select
                                                 v-model="columnFilters.date.operator"
                                                 :options="columnFilterOperatorOptions"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
+                                                @change="setColumnFilterOperator('date', $event)"
                                             />
                                             <sw-text-field
                                                 v-model="columnFilters.date.value"
@@ -455,12 +485,14 @@
                                                 :options="columnFilterMatchOptions"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
+                                                @change="setColumnFilterMatchMode"
                                             />
                                             <sw-single-select
                                                 v-model="columnFilters.statusLabel.operator"
                                                 :options="columnFilterOperatorOptions"
                                                 size="small"
                                                 class="external-orders__column-filter-field"
+                                                @change="setColumnFilterOperator('statusLabel', $event)"
                                             />
                                             <sw-text-field
                                                 v-model="columnFilters.statusLabel.value"
