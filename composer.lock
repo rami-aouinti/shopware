@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7bfb33a1f605100c334bb1dde42e2631",
+    "content-hash": "3a8d48879665a41dd590ff041c1bd0bd",
     "packages": [
         {
             "name": "async-aws/core",
@@ -6245,15 +6245,15 @@
         },
         {
             "name": "swag/paypal",
-            "version": "10.4.1",
+            "version": "10.4.2",
             "dist": {
                 "type": "path",
                 "url": "custom/plugins/SwagPayPal",
-                "reference": "72ce28d4b7c71c31ad734a65437fbf13e984254f"
+                "reference": "3e703ec322ab1596692ffbec97f6d7676708bf76"
             },
             "require": {
                 "shopware/core": "~6.7.0@dev",
-                "shopware/paypal-sdk": "^1.5.1"
+                "shopware/paypal-sdk": "^1.6.2"
             },
             "suggest": {
                 "shopware/administration": "Require '*'. Allows you to to set up the plugin easily",
