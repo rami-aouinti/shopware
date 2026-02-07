@@ -1,6 +1,10 @@
 
 services:
 ###> shopware/core ###
+  nginx:
+    ports:
+      - "8080:80"
+
   database:
     ports:
       - "3306:3306"
