@@ -421,6 +421,21 @@ Component.register('external-orders-list', {
         applyDateFilter() {
             this.page = 1;
         },
+        setDateFilter(key, value) {
+            if (!Object.prototype.hasOwnProperty.call(this.dateFilters, key)) {
+                return;
+            }
+            this.dateFilters[key] = value;
+        },
+        setColumnFilterMatchMode(value) {
+            this.columnFilterMatchMode = this.normalizeSelectValue(value) ?? 'all';
+        },
+        setColumnFilterOperator(columnKey, value) {
+            if (!this.columnFilters[columnKey]) {
+                return;
+            }
+            this.columnFilters[columnKey].operator = this.normalizeSelectValue(value) ?? 'startsWith';
+        },
         resetFilters() {
             this.tableSearchTerm = '';
             this.columnFilterMatchMode = 'all';
