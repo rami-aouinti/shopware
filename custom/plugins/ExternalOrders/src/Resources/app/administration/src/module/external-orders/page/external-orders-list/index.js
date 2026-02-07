@@ -15,6 +15,7 @@ Component.register('external-orders-list', {
     data() {
         return {
             isLoading: false,
+            pageTitle: 'Bestellübersichten',
             orders: [],
             summary: {
                 orderCount: 0,
@@ -305,6 +306,11 @@ Component.register('external-orders-list', {
             try {
                 const config = await this.systemConfigApiService.getValues('ExternalOrders');
                 const getConfigValue = (key) => config?.[`ExternalOrders.config.${key}`] ?? '';
+                const locale = Shopware.Store.get('session')?.currentLocale ?? '';
+                const isGermanLocale = locale.toLowerCase().startsWith('de');
+                const pageNameDe = getConfigValue('pageNameDe');
+                const pageNameEn = getConfigValue('pageNameEn');
+                const defaultColumnsPerPage = Number.parseInt(getConfigValue('defaultColumnsPerPage'), 10);
 
                 this.channelSources = {
                     b2b: getConfigValue('sourceB2b'),
@@ -315,6 +321,16 @@ Component.register('external-orders-list', {
                     peg: getConfigValue('sourcePeg'),
                     bezb: getConfigValue('sourceBezb'),
                 };
+
+                this.pageTitle = (isGermanLocale ? pageNameDe : pageNameEn) || this.pageTitle;
+
+                if (Number.isFinite(defaultColumnsPerPage) && defaultColumnsPerPage > 0) {
+                    this.limit = defaultColumnsPerPage;
+                    if (!this.limitOptions.includes(defaultColumnsPerPage)) {
+                        this.limitOptions = [...this.limitOptions, defaultColumnsPerPage]
+                            .sort((left, right) => left - right);
+                    }
+                }
             } catch (error) {
                 this.channelSources = {};
                 this.createNotificationWarning({
