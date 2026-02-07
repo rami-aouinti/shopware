@@ -83,6 +83,10 @@ Component.register('external-orders-list', {
             selectedOrders: [],
             showDetailModal: false,
             showTestMarkingModal: false,
+            dateFilters: {
+                start: null,
+                end: null,
+            },
             page: 1,
             limit: 10,
             limitOptions: [10, 25, 50, 100],
@@ -176,12 +180,13 @@ Component.register('external-orders-list', {
             });
 
             const columnFiltered = this.applyColumnFilters(filtered);
+            const dateFiltered = this.applyDateFilters(columnFiltered);
 
             if (!searchTerm) {
-                return columnFiltered;
+                return dateFiltered;
             }
 
-            return columnFiltered.filter((order) => {
+            return dateFiltered.filter((order) => {
                 const values = [
                     order.orderNumber,
                     order.customerName,
@@ -403,7 +408,7 @@ Component.register('external-orders-list', {
             this.page += 1;
         },
         onLimitChange(value) {
-            const nextLimit = Number(value);
+            const nextLimit = Number(this.normalizeSelectValue(value));
             if (Number.isNaN(nextLimit) || nextLimit <= 0) {
                 return;
             }
@@ -413,9 +418,16 @@ Component.register('external-orders-list', {
         onSearch() {
             this.page = 1;
         },
+        applyDateFilter() {
+            this.page = 1;
+        },
         resetFilters() {
             this.tableSearchTerm = '';
             this.columnFilterMatchMode = 'all';
+            this.dateFilters = {
+                start: null,
+                end: null,
+            };
             Object.keys(this.columnFilters).forEach((key) => {
                 this.columnFilters[key].value = '';
                 this.columnFilters[key].operator = 'startsWith';
@@ -464,7 +476,7 @@ Component.register('external-orders-list', {
         matchesColumnFilter(value, filter) {
             const candidate = String(value ?? '').toLowerCase();
             const needle = String(filter.value ?? '').toLowerCase();
-            const operator = filter.operator ?? 'startsWith';
+            const operator = this.normalizeSelectValue(filter.operator) ?? 'startsWith';
 
             if (!needle) {
                 return true;
@@ -479,6 +491,52 @@ Component.register('external-orders-list', {
             }
 
             return candidate.startsWith(needle);
+        },
+        normalizeSelectValue(value) {
+            if (value && typeof value === 'object') {
+                return value.value ?? value.id ?? value.name ?? '';
+            }
+            return value;
+        },
+        applyDateFilters(orders) {
+            const startTimestamp = this.getDateFilterTimestamp(this.dateFilters.start, 'start');
+            const endTimestamp = this.getDateFilterTimestamp(this.dateFilters.end, 'end');
+
+            if (!startTimestamp && !endTimestamp) {
+                return orders;
+            }
+
+            return orders.filter((order) => {
+                const orderTimestamp = this.parseOrderDate(order?.date);
+                if (!Number.isFinite(orderTimestamp)) {
+                    return false;
+                }
+                if (startTimestamp && orderTimestamp < startTimestamp) {
+                    return false;
+                }
+                if (endTimestamp && orderTimestamp > endTimestamp) {
+                    return false;
+                }
+                return true;
+            });
+        },
+        getDateFilterTimestamp(value, boundary) {
+            if (!value) {
+                return null;
+            }
+
+            const date = value instanceof Date ? new Date(value.getTime()) : new Date(value);
+            if (Number.isNaN(date.getTime())) {
+                return null;
+            }
+
+            if (boundary === 'start') {
+                date.setHours(0, 0, 0, 0);
+            } else {
+                date.setHours(23, 59, 59, 999);
+            }
+
+            return date.getTime();
         },
         normalizeSortValue(value, sortBy = this.sortBy) {
             if (value === null || value === undefined) {
