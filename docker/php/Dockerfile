@@ -27,3 +27,5 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/html
+
+COPY docker/php/php.ini /usr/local/etc/php/conf.d/zz-shopware.ini
