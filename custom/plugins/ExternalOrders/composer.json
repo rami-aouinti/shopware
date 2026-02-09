@@ -19,6 +19,11 @@
             "ExternalOrders\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "ExternalOrders\\Tests\\": "tests/"
+        }
+    },
     "extra": {
         "shopware-plugin-class": "ExternalOrders\\ExternalOrders",
         "label": {
