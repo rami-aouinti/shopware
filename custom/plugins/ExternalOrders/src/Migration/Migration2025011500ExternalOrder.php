@@ -5,11 +5,11 @@ namespace ExternalOrders\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration20250115000000ExternalOrder extends MigrationStep
+class Migration2025011500ExternalOrder extends MigrationStep
 {
     public function getCreationTimestamp(): int
     {
-        return 20250115000000;
+        return 2025011500;
     }
 
     public function update(Connection $connection): void

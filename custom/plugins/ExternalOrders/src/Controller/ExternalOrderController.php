@@ -3,6 +3,7 @@
 namespace ExternalOrders\Controller;
 
 use ExternalOrders\Service\ExternalOrderService;
+use ExternalOrders\Service\ExternalOrderTestDataService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,8 +16,10 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Package('after-sales')]
 class ExternalOrderController extends AbstractController
 {
-    public function __construct(private readonly ExternalOrderService $externalOrderService)
-    {
+    public function __construct(
+        private readonly ExternalOrderService $externalOrderService,
+        private readonly ExternalOrderTestDataService $testDataService,
+    ) {
     }
 
     #[Route(
@@ -62,5 +65,20 @@ class ExternalOrderController extends AbstractController
         }
 
         return new JsonResponse($detail);
+    }
+
+    #[Route(
+        path: '/api/_action/external-orders/test-data',
+        name: 'api.admin.external-orders.test-data',
+        defaults: ['_acl' => ['admin']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function seedTestData(Context $context): Response
+    {
+        $inserted = $this->testDataService->seedFakeOrdersOnce($context);
+
+        return new JsonResponse([
+            'inserted' => $inserted,
+        ]);
     }
 }

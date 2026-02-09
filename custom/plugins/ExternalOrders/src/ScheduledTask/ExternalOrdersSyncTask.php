@@ -13,6 +13,6 @@ class ExternalOrdersSyncTask extends ScheduledTask
 
     public static function getDefaultInterval(): int
     {
-        return 300;
+        return 7200;
     }
 }

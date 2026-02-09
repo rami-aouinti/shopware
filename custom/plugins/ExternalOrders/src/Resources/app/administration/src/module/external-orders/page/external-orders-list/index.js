@@ -15,6 +15,7 @@ Component.register('external-orders-list', {
     data() {
         return {
             isLoading: false,
+            isSeedingTestData: false,
             pageTitle: 'Bestellübersichten',
             orders: [],
             summary: {
@@ -313,13 +314,13 @@ Component.register('external-orders-list', {
                 const defaultColumnsPerPage = Number.parseInt(getConfigValue('defaultColumnsPerPage'), 10);
 
                 this.channelSources = {
-                    b2b: getConfigValue('sourceB2b'),
-                    ebay_de: getConfigValue('sourceEbayDe'),
-                    kaufland: getConfigValue('sourceKaufland'),
-                    ebay_at: getConfigValue('sourceEbayAt'),
-                    zonami: getConfigValue('sourceZonami'),
-                    peg: getConfigValue('sourcePeg'),
-                    bezb: getConfigValue('sourceBezb'),
+                    b2b: getConfigValue('externalOrdersApiUrlB2b'),
+                    ebay_de: getConfigValue('externalOrdersApiUrlEbayDe'),
+                    kaufland: getConfigValue('externalOrdersApiUrlKaufland'),
+                    ebay_at: getConfigValue('externalOrdersApiUrlEbayAt'),
+                    zonami: getConfigValue('externalOrdersApiUrlZonami'),
+                    peg: getConfigValue('externalOrdersApiUrlPeg'),
+                    bezb: getConfigValue('externalOrdersApiUrlBezb'),
                 };
 
                 this.pageTitle = (isGermanLocale ? pageNameDe : pageNameEn) || this.pageTitle;
@@ -352,25 +353,17 @@ Component.register('external-orders-list', {
                 const payload = response?.data?.data ?? response?.data ?? response;
 
                 const apiOrders = Array.isArray(payload?.orders) ? payload.orders : [];
-                const fakePayload = this.buildFakeOrders();
-                const mergedOrders = apiOrders.length > 0
-                    ? [...apiOrders, ...fakePayload.orders]
-                    : fakePayload.orders;
 
-                this.orders = mergedOrders;
+                this.orders = apiOrders;
                 this.page = 1;
 
                 if (payload?.summary) {
-                    this.summary = {
-                        orderCount: mergedOrders.length,
-                        totalRevenue: (payload.summary.totalRevenue || 0) + fakePayload.summary.totalRevenue,
-                        totalItems: (payload.summary.totalItems || 0) + fakePayload.summary.totalItems,
-                    };
+                    this.summary = payload.summary;
                 } else {
                     this.summary = {
-                        orderCount: mergedOrders.length,
-                        totalRevenue: fakePayload.summary.totalRevenue,
-                        totalItems: mergedOrders.reduce((sum, order) => sum + (order.totalItems || 0), 0),
+                        orderCount: apiOrders.length,
+                        totalRevenue: apiOrders.reduce((sum, order) => sum + (order.totalRevenue || 0), 0),
+                        totalItems: apiOrders.reduce((sum, order) => sum + (order.totalItems || 0), 0),
                     };
                 }
             } catch (error) {
@@ -912,6 +905,32 @@ Component.register('external-orders-list', {
             const csv = this.buildCsv(rows);
             this.downloadBlob('external-orders.csv', 'text/csv;charset=utf-8;', csv);
         },
+        async seedTestData() {
+            if (this.isSeedingTestData) {
+                return;
+            }
+
+            this.isSeedingTestData = true;
+
+            try {
+                const response = await this.externalOrderService.seedTestData();
+                const inserted = response?.inserted ?? 0;
+                this.createNotificationSuccess({
+                    title: 'Testdaten gespeichert',
+                    message: inserted > 0
+                        ? `Es wurden ${inserted} Testbestellungen gespeichert.`
+                        : 'Keine neuen Testbestellungen wurden gespeichert.',
+                });
+                await this.loadOrders();
+            } catch (error) {
+                this.createNotificationError({
+                    title: 'Testdaten konnten nicht gespeichert werden',
+                    message: error?.message || 'Bitte prüfen Sie die Konfiguration der externen APIs.',
+                });
+            } finally {
+                this.isSeedingTestData = false;
+            }
+        },
         getOrdersForExport() {
             return this.filteredOrders;
         },
@@ -1196,95 +1215,6 @@ Component.register('external-orders-list', {
 
             const value = order?.[sortBy];
             return this.normalizeSortValue(value, sortBy);
-        },
-
-        buildFakeOrders() {
-            const perChannelCount = 100;
-            const baseOrderNumber = 1009000;
-            const baseReference = 446500;
-            const baseDate = new Date('2025-12-30T09:31:00');
-            const names = [
-                'Andreas Nanke',
-                'Lea Wagner',
-                'Frank Sagert',
-                'Sophie Bauer',
-                'Noah Berg',
-                'Julia Krüger',
-                'Tim König',
-                'Maja Keller',
-                'Lina Hoffmann',
-                'Jonas Richter',
-                'Karsten Stieler',
-                'Peter Scholl',
-                'Jasmin Roth',
-                'Oliver Hahn',
-                'Mara Schulz',
-                'Tobias Link',
-                'Lukas Meier',
-                'Svenja Graf',
-                'Nina Krämer',
-                'David Winter',
-            ];
-            const statuses = [
-                { status: 'processing', label: 'Bezahlt / in Bearbeitung' },
-                { status: 'shipped', label: 'Versendet' },
-                { status: 'closed', label: 'Abgeschlossen' },
-            ];
-            const channelConfig = {
-                b2b: { emailDomain: 'first-medical-shop.de', label: 'First-medical-shop.de' },
-                ebay_de: { emailDomain: 'members.ebay.com', label: 'Ebay.DE' },
-                ebay_at: { emailDomain: 'members.ebay.com', label: 'Ebay.AT' },
-                kaufland: { emailDomain: 'members.kaufland.de', label: 'KaufLand' },
-                zonami: { emailDomain: 'zonami.example', label: 'Zonami' },
-                peg: { emailDomain: 'peg.example', label: 'PEG' },
-                bezb: { emailDomain: 'bezb.example', label: 'BEZB' },
-            };
-
-            const formatDate = (date) => {
-                const pad = (value) => String(value).padStart(2, '0');
-                return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
-            };
-
-            const orders = [];
-            const channels = this.channels.map((channel) => channel.id);
-
-            channels.forEach((channelId, channelIndex) => {
-                const config = channelConfig[channelId] ?? { emailDomain: 'example.com', label: channelId };
-                for (let i = 0; i < perChannelCount; i += 1) {
-                    const globalIndex = channelIndex * perChannelCount + i;
-                    const orderNumber = String(baseOrderNumber + globalIndex);
-                    const orderReference = String(baseReference + globalIndex);
-                    const status = statuses[globalIndex % statuses.length];
-                    const name = names[globalIndex % names.length];
-                    const emailPrefix = name.toLowerCase().replace(/[^a-z0-9]+/g, '.');
-                    const date = new Date(baseDate.getTime() - (globalIndex * 36 * 60 * 1000));
-
-                    orders.push({
-                        id: `order-${channelId}-${orderNumber}`,
-                        channel: channelId,
-                        orderNumber,
-                        customerName: name,
-                        orderReference,
-                        email: `${emailPrefix}@${config.emailDomain}`,
-                        date: formatDate(date),
-                        status: status.status,
-                        statusLabel: status.label,
-                        totalItems: (globalIndex % 6) + 1,
-                    });
-                }
-            });
-
-            const totalItems = orders.reduce((sum, order) => sum + order.totalItems, 0);
-            const totalRevenue = orders.reduce((sum, order) => sum + (order.totalItems * 79.5), 0);
-
-            return {
-                orders,
-                summary: {
-                    orderCount: orders.length,
-                    totalRevenue: Number(totalRevenue.toFixed(2)),
-                    totalItems,
-                },
-            };
         },
 
     },
