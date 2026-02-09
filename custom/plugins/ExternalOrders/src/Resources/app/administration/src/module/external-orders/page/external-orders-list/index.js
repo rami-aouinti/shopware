@@ -255,7 +255,7 @@ Component.register('external-orders-list', {
             }));
         },
         limitSelection() {
-            return this.limitSelectOptions.find((option) => option.value === this.limit) || null;
+            return this.limitSelectOptions.find((option) => option.value === String(this.limit)) || null;
         },
         isAllSelected() {
             if (this.paginatedOrders.length === 0) {
