@@ -15,6 +15,7 @@ Component.register('external-orders-list', {
     data() {
         return {
             isLoading: false,
+            isSeedingTestData: false,
             pageTitle: 'Bestellübersichten',
             orders: [],
             summary: {
@@ -903,6 +904,32 @@ Component.register('external-orders-list', {
             const rows = this.buildExportRows(orders);
             const csv = this.buildCsv(rows);
             this.downloadBlob('external-orders.csv', 'text/csv;charset=utf-8;', csv);
+        },
+        async seedTestData() {
+            if (this.isSeedingTestData) {
+                return;
+            }
+
+            this.isSeedingTestData = true;
+
+            try {
+                const response = await this.externalOrderService.seedTestData();
+                const inserted = response?.inserted ?? 0;
+                this.createNotificationSuccess({
+                    title: 'Testdaten gespeichert',
+                    message: inserted > 0
+                        ? `Es wurden ${inserted} Testbestellungen gespeichert.`
+                        : 'Keine neuen Testbestellungen wurden gespeichert.',
+                });
+                await this.loadOrders();
+            } catch (error) {
+                this.createNotificationError({
+                    title: 'Testdaten konnten nicht gespeichert werden',
+                    message: error?.message || 'Bitte prüfen Sie die Konfiguration der externen APIs.',
+                });
+            } finally {
+                this.isSeedingTestData = false;
+            }
         },
         getOrdersForExport() {
             return this.filteredOrders;
