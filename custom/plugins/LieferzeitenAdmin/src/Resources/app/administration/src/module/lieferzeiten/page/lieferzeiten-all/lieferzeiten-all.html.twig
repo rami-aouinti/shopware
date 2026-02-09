@@ -1,0 +1,39 @@
+{% block lieferzeiten_all %}
+    <div class="lieferzeiten-all">
+        <sw-container columns="repeat(auto-fit, minmax(180px, 1fr))" gap="16px">
+            <sw-card class="lieferzeiten-kpi">
+                <p class="lieferzeiten-kpi__label">{{ $t('lieferzeiten.kpi.totalOrders') }}</p>
+                <p class="lieferzeiten-kpi__value">{{ orders.length }}</p>
+            </sw-card>
+            <sw-card class="lieferzeiten-kpi">
+                <p class="lieferzeiten-kpi__label">{{ $t('lieferzeiten.kpi.openOrders') }}</p>
+                <p class="lieferzeiten-kpi__value">{{ openOrders.length }}</p>
+            </sw-card>
+            <sw-card class="lieferzeiten-kpi">
+                <p class="lieferzeiten-kpi__label">{{ $t('lieferzeiten.kpi.closedOrders') }}</p>
+                <p class="lieferzeiten-kpi__value">{{ closedOrders.length }}</p>
+            </sw-card>
+            <sw-card class="lieferzeiten-kpi">
+                <p class="lieferzeiten-kpi__label">{{ $t('lieferzeiten.kpi.openParcels') }}</p>
+                <p class="lieferzeiten-kpi__value">{{ openParcelsCount }}</p>
+            </sw-card>
+        </sw-container>
+
+        <sw-data-grid
+            class="lieferzeiten-orders-grid"
+            :dataSource="orders"
+            :columns="columns"
+            :showSelection="false"
+            :showActions="false"
+        >
+            <template #column-parcels="{ item }">
+                {{ parcelSummary(item) }}
+            </template>
+            <template #column-status="{ item }">
+                <sw-label :variant="isOrderOpen(item) ? 'warning' : 'success'">
+                    {{ orderStatusLabel(item) }}
+                </sw-label>
+            </template>
+        </sw-data-grid>
+    </div>
+{% endblock %}
