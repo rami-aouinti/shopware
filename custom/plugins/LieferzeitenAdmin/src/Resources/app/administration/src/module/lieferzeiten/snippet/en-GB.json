@@ -1,0 +1,45 @@
+{
+    "lieferzeiten": {
+        "general": {
+            "mainMenuItemGeneral": "Delivery times",
+            "description": "Monitor delivery times in the admin",
+            "infoTitle": "Note",
+            "timezoneInfo": "Time calculations use the Europe/Berlin timezone.",
+            "openDefinition": "“Open” means not finished: all parcels are still not closed."
+        },
+        "tabs": {
+            "all": "All orders",
+            "open": "Open orders"
+        },
+        "domainSelection": {
+            "placeholder": "Select domain",
+            "reset": "Reset selection",
+            "modalTitle": "Select domain",
+            "modalDescription": "Choose a domain to load the delivery time views.",
+            "persistLabel": "Remember selection on this device",
+            "confirm": "Apply selection"
+        },
+        "kpi": {
+            "totalOrders": "Total orders",
+            "openOrders": "Open orders",
+            "closedOrders": "Closed orders",
+            "openParcels": "Open parcels",
+            "filteredDomain": "Domain"
+        },
+        "table": {
+            "orderNumber": "Order number",
+            "domain": "Domain",
+            "parcels": "Open/total parcels",
+            "openParcels": "Open parcels",
+            "status": "Status"
+        },
+        "status": {
+            "open": "Open",
+            "closed": "Closed"
+        },
+        "emptyState": {
+            "title": "No open orders",
+            "description": "There are currently no open orders for the selected domain."
+        }
+    }
+}

@@ -1,0 +1,45 @@
+{
+    "lieferzeiten": {
+        "general": {
+            "mainMenuItemGeneral": "Lieferzeiten",
+            "description": "Monitoring der Lieferzeiten im Admin",
+            "infoTitle": "Hinweis",
+            "timezoneInfo": "Zeitberechnungen basieren auf der Zeitzone Europe/Berlin.",
+            "openDefinition": "„Offen“ bedeutet nicht abgeschlossen: Alle Pakete sind noch nicht geschlossen."
+        },
+        "tabs": {
+            "all": "Alle Bestellungen",
+            "open": "Offene Bestellungen"
+        },
+        "domainSelection": {
+            "placeholder": "Bitte Bereich wählen",
+            "reset": "Auswahl zurücksetzen",
+            "modalTitle": "Bereich auswählen",
+            "modalDescription": "Wähle einen Bereich aus, um die Lieferzeiten-Ansichten zu laden.",
+            "persistLabel": "Auswahl auf diesem Gerät speichern",
+            "confirm": "Auswahl übernehmen"
+        },
+        "kpi": {
+            "totalOrders": "Bestellungen gesamt",
+            "openOrders": "Offene Bestellungen",
+            "closedOrders": "Abgeschlossene Bestellungen",
+            "openParcels": "Offene Pakete",
+            "filteredDomain": "Bereich"
+        },
+        "table": {
+            "orderNumber": "Bestellnummer",
+            "domain": "Bereich",
+            "parcels": "Pakete offen/gesamt",
+            "openParcels": "Offene Pakete",
+            "status": "Status"
+        },
+        "status": {
+            "open": "Offen",
+            "closed": "Abgeschlossen"
+        },
+        "emptyState": {
+            "title": "Keine offenen Bestellungen",
+            "description": "Für den ausgewählten Bereich liegen aktuell keine offenen Bestellungen vor."
+        }
+    }
+}

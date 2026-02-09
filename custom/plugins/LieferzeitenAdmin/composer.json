@@ -1,0 +1,26 @@
+{
+  "name": "custom/lieferzeiten-admin",
+  "description": "Lieferzeiten admin module.",
+  "type": "shopware-platform-plugin",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Custom"
+    }
+  ],
+  "require": {
+    "shopware/core": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "LieferzeitenAdmin\\": "src/"
+    }
+  },
+  "extra": {
+    "shopware-plugin-class": "LieferzeitenAdmin\\LieferzeitenAdmin",
+    "label": {
+      "en-GB": "Lieferzeiten Admin",
+      "de-DE": "Lieferzeiten Admin"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{% block lieferzeiten_index %}
+    <sw-page class="lieferzeiten-index">
+        <template #smart-bar-header>
+            <h2>
+                {{ $t('lieferzeiten.general.mainMenuItemGeneral') }}
+            </h2>
+        </template>
+
+        <template #smart-bar-actions>
+            <lieferzeiten-domain-selection v-model="selectedDomain" />
+        </template>
+
+        <template #content>
+            <sw-card-view>
+                <sw-card class="lieferzeiten-index__info" :title="$t('lieferzeiten.general.infoTitle')">
+                    <p>{{ $t('lieferzeiten.general.timezoneInfo') }}</p>
+                    <p>{{ $t('lieferzeiten.general.openDefinition') }}</p>
+                </sw-card>
+
+                <sw-card class="lieferzeiten-index__tabs">
+                    <sw-tabs>
+                        <sw-tabs-item
+                            :to="{ name: 'lieferzeiten.all' }"
+                            :title="$t('lieferzeiten.tabs.all')"
+                        >
+                            {{ $t('lieferzeiten.tabs.all') }}
+                        </sw-tabs-item>
+                        <sw-tabs-item
+                            :to="{ name: 'lieferzeiten.open' }"
+                            :title="$t('lieferzeiten.tabs.open')"
+                        >
+                            {{ $t('lieferzeiten.tabs.open') }}
+                        </sw-tabs-item>
+                    </sw-tabs>
+
+                    <router-view
+                        :orders="filteredOrders"
+                        :selected-domain="selectedDomain"
+                    />
+                </sw-card>
+            </sw-card-view>
+        </template>
+    </sw-page>
+{% endblock %}
