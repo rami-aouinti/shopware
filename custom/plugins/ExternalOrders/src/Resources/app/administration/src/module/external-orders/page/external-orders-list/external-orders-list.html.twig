@@ -1,6 +1,42 @@
 <div class="external-orders">
     <header class="external-orders__header">
-        <h2>{{ pageTitle }}</h2>
+        <div class="external-orders__header-content">
+            <h2>{{ pageTitle }}</h2>
+            <div class="external-orders__summary external-orders__summary--header">
+                <div class="external-orders__summary-metrics">
+                    <div class="external-orders__summary-item">
+                        <span class="external-orders__summary-label">Bestellungen</span>
+                        <span class="external-orders__summary-value">{{ summary.orderCount }}</span>
+                    </div>
+                    <div class="external-orders__summary-item">
+                        <span class="external-orders__summary-label">Gesamtumsatz</span>
+                        <span class="external-orders__summary-value">{{ formatCurrency(summary.totalRevenue) }}</span>
+                    </div>
+                    <div class="external-orders__summary-item">
+                        <span class="external-orders__summary-label">Stück</span>
+                        <span class="external-orders__summary-value">{{ summary.totalItems }}</span>
+                    </div>
+                </div>
+                <div class="external-orders__summary-actions">
+                    <button
+                        class="external-orders__button external-orders__button--primary"
+                        type="button"
+                        @click="exportSelectedOrdersPdf"
+                    >
+                        <sw-icon name="regular-file-text" size="16" class="external-orders__download-icon"></sw-icon>
+                        PDF herunterladen ({{ selectedOrders.length > 0 ? selectedOrders.length : filteredOrders.length }})
+                    </button>
+                    <button
+                        class="external-orders__button external-orders__button--secondary"
+                        type="button"
+                        @click="exportSelectedOrdersExcel"
+                    >
+                        <sw-icon name="regular-file" size="16" class="external-orders__download-icon"></sw-icon>
+                        Excel herunterladen ({{ selectedOrders.length > 0 ? selectedOrders.length : filteredOrders.length }})
+                    </button>
+                </div>
+            </div>
+        </div>
     </header>
 
     <main id="main" class="sw-page__main-content" tabindex="-1">
@@ -20,57 +56,6 @@
                         </span>
                         <span class="external-orders__channel-label">{{ channel.label }}</span>
                     </button>
-                </div>
-                <div class="external-orders__summary">
-                    <div class="external-orders__summary-title">
-                        <span>Bestellungen aus {{ activeChannelLabel }}</span>
-                    </div>
-                    <div
-                        v-if="activeChannelSource"
-                        class="external-orders__summary-source"
-                    >
-                        Quelle: {{ activeChannelSource }}
-                    </div>
-                    <div class="external-orders__summary-metrics">
-                        <div class="external-orders__summary-item">
-                            <span class="external-orders__summary-label">Bestellungen</span>
-                            <span class="external-orders__summary-value">{{ summary.orderCount }}</span>
-                        </div>
-                        <div class="external-orders__summary-item">
-                            <span class="external-orders__summary-label">Gesamtumsatz</span>
-                            <span class="external-orders__summary-value">{{ formatCurrency(summary.totalRevenue) }}</span>
-                        </div>
-                        <div class="external-orders__summary-item">
-                            <span class="external-orders__summary-label">Stück</span>
-                            <span class="external-orders__summary-value">{{ summary.totalItems }}</span>
-                        </div>
-                    </div>
-                    <div class="external-orders__summary-actions">
-                        <button
-                            class="external-orders__button external-orders__button--primary"
-                            type="button"
-                            @click="exportSelectedOrdersPdf"
-                        >
-                            <sw-icon name="regular-file-text" size="16" class="external-orders__download-icon"></sw-icon>
-                            PDF herunterladen ({{ selectedOrders.length > 0 ? selectedOrders.length : filteredOrders.length }})
-                        </button>
-                        <button
-                            class="external-orders__button external-orders__button--secondary"
-                            type="button"
-                            :disabled="isSeedingTestData"
-                            @click="seedTestData"
-                        >
-                            Testdaten
-                        </button>
-                        <button
-                            class="external-orders__button external-orders__button--secondary"
-                            type="button"
-                            @click="exportSelectedOrdersExcel"
-                        >
-                            <sw-icon name="regular-file" size="16" class="external-orders__download-icon"></sw-icon>
-                            Excel herunterladen ({{ selectedOrders.length > 0 ? selectedOrders.length : filteredOrders.length }})
-                        </button>
-                    </div>
                 </div>
             </sw-card>
 
