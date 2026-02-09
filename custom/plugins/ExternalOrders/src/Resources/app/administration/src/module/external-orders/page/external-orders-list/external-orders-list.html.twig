@@ -635,182 +635,188 @@
                     subline="Es wurden keine Bestellungen für die aktuelle Auswahl geladen."></sw-empty-state>
             </sw-card>
 
-            <sw-modal
+            <div
                 v-if="showDetailModal && selectedOrder"
-                :title="`Bestellübersicht für ${selectedOrder.orderNumber}`"
-                variant="large"
-                class="external-orders__detail-modal"
-                @modal-close="closeDetail"
+                class="external-orders__detail-overlay"
+                @click.self="closeDetail"
             >
-                <div class="external-orders__detail">
-                    <sw-card title="Zusätzliche Bestellinformationen" class="external-orders__detail-card">
-                        <div class="external-orders__detail-grid">
-                            <div class="external-orders__detail-section">
-                                <h4>Kundendetails</h4>
-                                <dl>
-                                    <dt>Kundenname</dt>
-                                    <dd>{{ selectedOrder.customer.firstName }} {{ selectedOrder.customer.lastName }}</dd>
-                                    <dt>Kundennummer</dt>
-                                    <dd>{{ selectedOrder.customer.number }}</dd>
-                                    <dt>Vorname</dt>
-                                    <dd>{{ selectedOrder.customer.firstName }}</dd>
-                                    <dt>Nachname</dt>
-                                    <dd>{{ selectedOrder.customer.lastName }}</dd>
-                                    <dt>Kunden-Mail-Adresse</dt>
-                                    <dd>{{ selectedOrder.customer.email }}</dd>
-                                    <dt>Kundengruppe</dt>
-                                    <dd>{{ selectedOrder.customer.group }}</dd>
-                                </dl>
-                            </div>
-                            <div class="external-orders__detail-section">
-                                <h4>Zahlungsdetails</h4>
-                                <dl>
-                                    <dt>Zahlungsmethode</dt>
-                                    <dd>{{ selectedOrder.payment.method }}</dd>
-                                    <dt>Zahlungscode</dt>
-                                    <dd>{{ selectedOrder.payment.code }}</dd>
-                                    <dt>Fälligkeitsdatum</dt>
-                                    <dd>{{ selectedOrder.payment.dueDate }}</dd>
-                                    <dt>Ausstehender Betrag</dt>
-                                    <dd>{{ selectedOrder.payment.outstanding }}</dd>
-                                    <dt>Abgerechnet</dt>
-                                    <dd>{{ selectedOrder.payment.settled }}</dd>
-                                    <dt>Zusatzinfo</dt>
-                                    <dd>{{ selectedOrder.payment.extra }}</dd>
-                                </dl>
-                            </div>
-                            <div class="external-orders__detail-section">
-                                <h4>Rechnungsanschrift</h4>
-                                <dl>
-                                    <dt>Straße</dt>
-                                    <dd>{{ selectedOrder.billingAddress.street }}</dd>
-                                    <dt>PLZ</dt>
-                                    <dd>{{ selectedOrder.billingAddress.zip }}</dd>
-                                    <dt>Stadt</dt>
-                                    <dd>{{ selectedOrder.billingAddress.city }}</dd>
-                                    <dt>Land</dt>
-                                    <dd>{{ selectedOrder.billingAddress.country }}</dd>
-                                </dl>
-                            </div>
-                            <div class="external-orders__detail-section">
-                                <h4>Lieferanschrift</h4>
-                                <dl>
-                                    <dt>Lieferadresse</dt>
-                                    <dd>{{ selectedOrder.shippingAddress.name }}</dd>
-                                    <dt>Lieferstraße</dt>
-                                    <dd>{{ selectedOrder.shippingAddress.street }}</dd>
-                                    <dt>Postleitzahl/Stadt</dt>
-                                    <dd>{{ selectedOrder.shippingAddress.zipCity }}</dd>
-                                    <dt>Land</dt>
-                                    <dd>{{ selectedOrder.shippingAddress.country }}</dd>
-                                </dl>
-                            </div>
-                            <div class="external-orders__detail-section">
-                                <h4>Weitere Details</h4>
-                                <dl>
-                                    <dt>Bestelldatum</dt>
-                                    <dd>{{ selectedOrder.additional.orderDate }}</dd>
-                                    <dt>Status</dt>
-                                    <dd>{{ selectedOrder.additional.status }}</dd>
-                                    <dt>Bestelltyp</dt>
-                                    <dd>{{ selectedOrder.additional.orderType }}</dd>
-                                    <dt>Notizen</dt>
-                                    <dd>{{ selectedOrder.additional.notes }}</dd>
-                                    <dt>Fachberater</dt>
-                                    <dd>{{ selectedOrder.additional.consultant }}</dd>
-                                    <dt>Mandant</dt>
-                                    <dd>{{ selectedOrder.additional.tenant }}</dd>
-                                    <dt>San6 Auftragsnummer</dt>
-                                    <dd>{{ selectedOrder.additional.san6OrderNumber }}</dd>
-                                </dl>
-                            </div>
-                            <div class="external-orders__detail-section">
-                                <h4>Erweiterte Bestelldaten</h4>
-                                <dl>
-                                    <dt>Versanddienstleister</dt>
-                                    <dd>{{ selectedOrder.shipping.carrier }}</dd>
-                                    <dt>Trackingnummer(n)</dt>
-                                    <dd>{{ selectedOrder.shipping.trackingNumbers.join(', ') }}</dd>
-                                    <dt>Einträge in Orgas San6</dt>
-                                    <dd>{{ selectedOrder.additional.orgaEntries.join(', ') }}</dd>
-                                    <dt>Dokumente aus Bildarchiv San6</dt>
-                                    <dd>{{ selectedOrder.additional.documents.join(', ') }}</dd>
-                                    <dt>PDMS ID + Variante</dt>
-                                    <dd>{{ selectedOrder.additional.pdmsId }} / {{ selectedOrder.additional.pdmsVariant }}</dd>
-                                    <dt>TopM Artikelnummer + Ausführung</dt>
-                                    <dd>{{ selectedOrder.additional.topmArticleNumber }} / {{ selectedOrder.additional.topmExecution }}</dd>
-                                    <dt>Bestellstatushistorie Gambio/Shopware</dt>
-                                    <dd>{{ selectedOrder.additional.statusHistorySource }}</dd>
-                                </dl>
-                            </div>
+                <div class="external-orders__detail-dialog" role="dialog" aria-modal="true">
+                    <header class="external-orders__detail-header">
+                        <h3>Bestellübersicht für {{ selectedOrder.orderNumber }}</h3>
+                        <button class="external-orders__detail-close" type="button" @click="closeDetail">×</button>
+                    </header>
+                    <div class="external-orders__detail-body">
+                        <div class="external-orders__detail">
+                            <sw-card title="Zusätzliche Bestellinformationen" class="external-orders__detail-card">
+                                <div class="external-orders__detail-grid">
+                                    <div class="external-orders__detail-section">
+                                        <h4>Kundendetails</h4>
+                                        <dl>
+                                            <dt>Kundenname</dt>
+                                            <dd>{{ selectedOrder.customer.firstName }} {{ selectedOrder.customer.lastName }}</dd>
+                                            <dt>Kundennummer</dt>
+                                            <dd>{{ selectedOrder.customer.number }}</dd>
+                                            <dt>Vorname</dt>
+                                            <dd>{{ selectedOrder.customer.firstName }}</dd>
+                                            <dt>Nachname</dt>
+                                            <dd>{{ selectedOrder.customer.lastName }}</dd>
+                                            <dt>Kunden-Mail-Adresse</dt>
+                                            <dd>{{ selectedOrder.customer.email }}</dd>
+                                            <dt>Kundengruppe</dt>
+                                            <dd>{{ selectedOrder.customer.group }}</dd>
+                                        </dl>
+                                    </div>
+                                    <div class="external-orders__detail-section">
+                                        <h4>Zahlungsdetails</h4>
+                                        <dl>
+                                            <dt>Zahlungsmethode</dt>
+                                            <dd>{{ selectedOrder.payment.method }}</dd>
+                                            <dt>Zahlungscode</dt>
+                                            <dd>{{ selectedOrder.payment.code }}</dd>
+                                            <dt>Fälligkeitsdatum</dt>
+                                            <dd>{{ selectedOrder.payment.dueDate }}</dd>
+                                            <dt>Ausstehender Betrag</dt>
+                                            <dd>{{ selectedOrder.payment.outstanding }}</dd>
+                                            <dt>Abgerechnet</dt>
+                                            <dd>{{ selectedOrder.payment.settled }}</dd>
+                                            <dt>Zusatzinfo</dt>
+                                            <dd>{{ selectedOrder.payment.extra }}</dd>
+                                        </dl>
+                                    </div>
+                                    <div class="external-orders__detail-section">
+                                        <h4>Rechnungsanschrift</h4>
+                                        <dl>
+                                            <dt>Straße</dt>
+                                            <dd>{{ selectedOrder.billingAddress.street }}</dd>
+                                            <dt>PLZ</dt>
+                                            <dd>{{ selectedOrder.billingAddress.zip }}</dd>
+                                            <dt>Stadt</dt>
+                                            <dd>{{ selectedOrder.billingAddress.city }}</dd>
+                                            <dt>Land</dt>
+                                            <dd>{{ selectedOrder.billingAddress.country }}</dd>
+                                        </dl>
+                                    </div>
+                                    <div class="external-orders__detail-section">
+                                        <h4>Lieferanschrift</h4>
+                                        <dl>
+                                            <dt>Lieferadresse</dt>
+                                            <dd>{{ selectedOrder.shippingAddress.name }}</dd>
+                                            <dt>Lieferstraße</dt>
+                                            <dd>{{ selectedOrder.shippingAddress.street }}</dd>
+                                            <dt>Postleitzahl/Stadt</dt>
+                                            <dd>{{ selectedOrder.shippingAddress.zipCity }}</dd>
+                                            <dt>Land</dt>
+                                            <dd>{{ selectedOrder.shippingAddress.country }}</dd>
+                                        </dl>
+                                    </div>
+                                    <div class="external-orders__detail-section">
+                                        <h4>Weitere Details</h4>
+                                        <dl>
+                                            <dt>Bestelldatum</dt>
+                                            <dd>{{ selectedOrder.additional.orderDate }}</dd>
+                                            <dt>Status</dt>
+                                            <dd>{{ selectedOrder.additional.status }}</dd>
+                                            <dt>Bestelltyp</dt>
+                                            <dd>{{ selectedOrder.additional.orderType }}</dd>
+                                            <dt>Notizen</dt>
+                                            <dd>{{ selectedOrder.additional.notes }}</dd>
+                                            <dt>Fachberater</dt>
+                                            <dd>{{ selectedOrder.additional.consultant }}</dd>
+                                            <dt>Mandant</dt>
+                                            <dd>{{ selectedOrder.additional.tenant }}</dd>
+                                            <dt>San6 Auftragsnummer</dt>
+                                            <dd>{{ selectedOrder.additional.san6OrderNumber }}</dd>
+                                        </dl>
+                                    </div>
+                                    <div class="external-orders__detail-section">
+                                        <h4>Erweiterte Bestelldaten</h4>
+                                        <dl>
+                                            <dt>Versanddienstleister</dt>
+                                            <dd>{{ selectedOrder.shipping.carrier }}</dd>
+                                            <dt>Trackingnummer(n)</dt>
+                                            <dd>{{ selectedOrder.shipping.trackingNumbers.join(', ') }}</dd>
+                                            <dt>Einträge in Orgas San6</dt>
+                                            <dd>{{ selectedOrder.additional.orgaEntries.join(', ') }}</dd>
+                                            <dt>Dokumente aus Bildarchiv San6</dt>
+                                            <dd>{{ selectedOrder.additional.documents.join(', ') }}</dd>
+                                            <dt>PDMS ID + Variante</dt>
+                                            <dd>{{ selectedOrder.additional.pdmsId }} / {{ selectedOrder.additional.pdmsVariant }}</dd>
+                                            <dt>TopM Artikelnummer + Ausführung</dt>
+                                            <dd>{{ selectedOrder.additional.topmArticleNumber }} / {{ selectedOrder.additional.topmExecution }}</dd>
+                                            <dt>Bestellstatushistorie Gambio/Shopware</dt>
+                                            <dd>{{ selectedOrder.additional.statusHistorySource }}</dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </sw-card>
+
+                            <sw-card title="Bestellprodukte" class="external-orders__detail-card">
+                                <sw-data-grid
+                                    :data-source="selectedOrder.items"
+                                    :columns="[
+                                        { property: 'name', label: 'Produktname' },
+                                        { property: 'quantity', label: 'Menge' },
+                                        { property: 'netPrice', label: 'Nettowert' },
+                                        { property: 'taxRate', label: 'Steuersatz' },
+                                        { property: 'grossPrice', label: 'Bruttowert' },
+                                        { property: 'totalPrice', label: 'Gesamtwert' },
+                                    ]"
+                                    identifier="external-orders-items"
+                                >
+                                    <template #column-netPrice="{ item }">
+                                        {{ formatCurrency(item.netPrice) }}
+                                    </template>
+                                    <template #column-taxRate="{ item }">
+                                        {{ item.taxRate }}%
+                                    </template>
+                                    <template #column-grossPrice="{ item }">
+                                        {{ formatCurrency(item.grossPrice) }}
+                                    </template>
+                                    <template #column-totalPrice="{ item }">
+                                        {{ formatCurrency(item.totalPrice) }}
+                                    </template>
+                                </sw-data-grid>
+                            </sw-card>
+
+                            <sw-card title="Statusverlauf" class="external-orders__detail-card">
+                                <sw-data-grid
+                                    :data-source="selectedOrder.statusHistory"
+                                    :columns="[
+                                        { property: 'status', label: 'Status' },
+                                        { property: 'date', label: 'Datum' },
+                                        { property: 'comment', label: 'Kommentare' },
+                                    ]"
+                                    identifier="external-orders-history"></sw-data-grid>
+                            </sw-card>
+
+                            <sw-card title="Bestellgesamtsummen" class="external-orders__detail-card">
+                                <div class="external-orders__totals">
+                                    <div class="external-orders__totals-row">
+                                        <span>Warenwert</span>
+                                        <span>{{ formatCurrency(selectedOrder.totals.items) }}</span>
+                                    </div>
+                                    <div class="external-orders__totals-row">
+                                        <span>Versandkosten</span>
+                                        <span>{{ formatCurrency(selectedOrder.totals.shipping) }}</span>
+                                    </div>
+                                    <div class="external-orders__totals-row">
+                                        <span>Summe</span>
+                                        <span>{{ formatCurrency(selectedOrder.totals.sum) }}</span>
+                                    </div>
+                                    <div class="external-orders__totals-row">
+                                        <span>inkl. MwSt.</span>
+                                        <span>{{ formatCurrency(selectedOrder.totals.tax) }}</span>
+                                    </div>
+                                    <div class="external-orders__totals-row">
+                                        <span>Summe netto</span>
+                                        <span>{{ formatCurrency(selectedOrder.totals.net) }}</span>
+                                    </div>
+                                </div>
+                            </sw-card>
                         </div>
-                    </sw-card>
-
-                    <sw-card title="Bestellprodukte" class="external-orders__detail-card">
-                        <sw-data-grid
-                            :data-source="selectedOrder.items"
-                            :columns="[
-                                { property: 'name', label: 'Produktname' },
-                                { property: 'quantity', label: 'Menge' },
-                                { property: 'netPrice', label: 'Nettowert' },
-                                { property: 'taxRate', label: 'Steuersatz' },
-                                { property: 'grossPrice', label: 'Bruttowert' },
-                                { property: 'totalPrice', label: 'Gesamtwert' },
-                            ]"
-                            identifier="external-orders-items"
-                        >
-                            <template #column-netPrice="{ item }">
-                                {{ formatCurrency(item.netPrice) }}
-                            </template>
-                            <template #column-taxRate="{ item }">
-                                {{ item.taxRate }}%
-                            </template>
-                            <template #column-grossPrice="{ item }">
-                                {{ formatCurrency(item.grossPrice) }}
-                            </template>
-                            <template #column-totalPrice="{ item }">
-                                {{ formatCurrency(item.totalPrice) }}
-                            </template>
-                        </sw-data-grid>
-                    </sw-card>
-
-                    <sw-card title="Statusverlauf" class="external-orders__detail-card">
-                        <sw-data-grid
-                            :data-source="selectedOrder.statusHistory"
-                            :columns="[
-                                { property: 'status', label: 'Status' },
-                                { property: 'date', label: 'Datum' },
-                                { property: 'comment', label: 'Kommentare' },
-                            ]"
-                            identifier="external-orders-history"></sw-data-grid>
-                    </sw-card>
-
-                    <sw-card title="Bestellgesamtsummen" class="external-orders__detail-card">
-                        <div class="external-orders__totals">
-                            <div class="external-orders__totals-row">
-                                <span>Warenwert</span>
-                                <span>{{ formatCurrency(selectedOrder.totals.items) }}</span>
-                            </div>
-                            <div class="external-orders__totals-row">
-                                <span>Versandkosten</span>
-                                <span>{{ formatCurrency(selectedOrder.totals.shipping) }}</span>
-                            </div>
-                            <div class="external-orders__totals-row">
-                                <span>Summe</span>
-                                <span>{{ formatCurrency(selectedOrder.totals.sum) }}</span>
-                            </div>
-                            <div class="external-orders__totals-row">
-                                <span>inkl. MwSt.</span>
-                                <span>{{ formatCurrency(selectedOrder.totals.tax) }}</span>
-                            </div>
-                            <div class="external-orders__totals-row">
-                                <span>Summe netto</span>
-                                <span>{{ formatCurrency(selectedOrder.totals.net) }}</span>
-                            </div>
-                        </div>
-                    </sw-card>
+                    </div>
                 </div>
-            </sw-modal>
+            </div>
 
             <div
                 v-if="showTestMarkingModal"
