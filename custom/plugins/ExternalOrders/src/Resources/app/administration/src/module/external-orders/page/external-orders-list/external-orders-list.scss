@@ -17,6 +17,14 @@
         }
     }
 
+    &__header-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        align-items: center;
+        justify-content: space-between;
+    }
+
     :global(.sw-page__main-content) {
         width: 100%;
         max-width: none;
@@ -164,10 +172,12 @@
     }
 
     &__summary {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto auto;
+        display: flex;
+        flex: 1 1 auto;
+        flex-wrap: wrap;
         gap: 24px;
         align-items: center;
+        justify-content: flex-end;
     }
 
     &__summary-title {
@@ -210,7 +220,6 @@
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
-        justify-self: end;
     }
 
     &__download-icon {
