@@ -19,6 +19,31 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class ExternalOrderSyncServiceTest extends TestCase
 {
+    public function testSyncNewOrdersLogsWarningWhenApiUrlMissing(): void
+    {
+        $context = Context::createDefaultContext();
+
+        $repository = $this->createMock(EntityRepository::class);
+        $repository->expects($this->never())->method('upsert');
+
+        $httpClient = $this->createMock(HttpClientInterface::class);
+        $httpClient->expects($this->never())->method('request');
+
+        $configService = $this->createConfigService('');
+        $logger = new InMemoryLogger();
+
+        $service = new ExternalOrderSyncService($repository, $httpClient, $configService, $logger);
+
+        $service->syncNewOrders($context);
+
+        static::assertTrue($logger->hasRecord('warning', 'External Orders sync skipped: missing API URL.', [
+            'channel' => 'b2b',
+        ]));
+        static::assertTrue($logger->hasRecord('warning', 'External Orders sync skipped: missing API URL.', [
+            'channel' => 'ebay_de',
+        ]));
+    }
+
     public function testSyncNewOrdersLogsWarningWhenOrdersPayloadIsInvalid(): void
     {
         $context = Context::createDefaultContext();
