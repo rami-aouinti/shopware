@@ -29,9 +29,21 @@ class ExternalOrderController extends AbstractController
     {
         $channel = $request->query->get('channel');
         $search = $request->query->get('search');
+        $page = (int) $request->query->get('page', 1);
+        $limit = (int) $request->query->get('limit', 50);
+        $sort = $request->query->get('sort');
+        $order = $request->query->get('order');
 
         return new JsonResponse(
-            $this->externalOrderService->fetchOrders($context, $channel ? (string) $channel : null, $search ? (string) $search : null)
+            $this->externalOrderService->fetchOrders(
+                $context,
+                $channel ? (string) $channel : null,
+                $search ? (string) $search : null,
+                $page,
+                $limit,
+                $sort ? (string) $sort : null,
+                $order ? (string) $order : null
+            )
         );
     }
 

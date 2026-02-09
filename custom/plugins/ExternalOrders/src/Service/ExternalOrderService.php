@@ -16,16 +16,30 @@ readonly class ExternalOrderService
     {
     }
 
-    public function fetchOrders(Context $context, ?string $channel = null, ?string $search = null): array
+    public function fetchOrders(
+        Context $context,
+        ?string $channel = null,
+        ?string $search = null,
+        int $page = 1,
+        int $limit = 50,
+        ?string $sort = null,
+        ?string $order = null
+    ): array
     {
-        $fakePayload = $this->buildFakeOrderPayload($channel, $search);
+        $page = max(1, $page);
+        $limit = $limit > 0 ? $limit : 50;
+        $sortField = $this->resolveSortField($sort);
+        $sortDirection = $this->resolveSortDirection($order);
+
+        $fakePayload = $this->buildFakeOrderPayload($channel, $search, $page, $limit, $sortField, $sortDirection);
         if ($fakePayload !== null) {
             return $fakePayload;
         }
 
         $criteria = new Criteria();
-        $criteria->setLimit(50);
-        $criteria->addSorting(new FieldSorting('orderDateTime', FieldSorting::DESCENDING));
+        $criteria->setLimit($limit);
+        $criteria->setOffset(($page - 1) * $limit);
+        $criteria->addSorting(new FieldSorting($sortField, $sortDirection));
         $criteria->addAssociations([
             'orderCustomer',
             'billingAddress',
@@ -49,13 +63,18 @@ readonly class ExternalOrderService
         $totalRevenue = 0.0;
         $totalItems = 0;
 
-        foreach ($this->orderRepository->search($criteria, $context)->getEntities() as $order) {
+        $result = $this->orderRepository->search($criteria, $context);
+
+        foreach ($result->getEntities() as $order) {
             $orders[] = $this->mapOrderListItem($order);
             $totalRevenue += (float) $order->getAmountTotal();
             $totalItems += $this->countItems($order);
         }
 
         return [
+            'total' => $result->getTotal(),
+            'page' => $page,
+            'limit' => $limit,
             'summary' => [
                 'orderCount' => count($orders),
                 'totalRevenue' => $totalRevenue,
@@ -243,7 +262,14 @@ readonly class ExternalOrderService
         return $totalItems;
     }
 
-    private function buildFakeOrderPayload(?string $channel, ?string $search): ?array
+    private function buildFakeOrderPayload(
+        ?string $channel,
+        ?string $search,
+        int $page,
+        int $limit,
+        string $sortField,
+        string $sortDirection
+    ): ?array
     {
         $orders = [
             [
@@ -342,6 +368,11 @@ readonly class ExternalOrderService
             ));
         }
 
+        $orders = $this->sortFakeOrders($orders, $sortField, $sortDirection);
+        $total = count($orders);
+
+        $orders = array_slice($orders, ($page - 1) * $limit, $limit);
+
         $totalRevenue = 0.0;
         $totalItems = 0;
 
@@ -360,6 +391,9 @@ readonly class ExternalOrderService
         );
 
         return [
+            'total' => $total,
+            'page' => $page,
+            'limit' => $limit,
             'summary' => [
                 'orderCount' => count($orders),
                 'totalRevenue' => $totalRevenue,
@@ -367,6 +401,65 @@ readonly class ExternalOrderService
             ],
             'orders' => $orders,
         ];
+    }
+
+    private function resolveSortField(?string $sort): string
+    {
+        $allowed = [
+            'orderNumber' => 'orderNumber',
+            'orderReference' => 'orderNumber',
+            'customerName' => 'orderCustomer.lastName',
+            'email' => 'orderCustomer.email',
+            'date' => 'orderDateTime',
+            'statusLabel' => 'stateMachineState.name',
+        ];
+
+        if ($sort !== null && $sort !== '') {
+            return $allowed[$sort] ?? $allowed['date'];
+        }
+
+        return $allowed['date'];
+    }
+
+    private function resolveSortDirection(?string $order): string
+    {
+        return strtoupper((string) $order) === FieldSorting::ASCENDING
+            ? FieldSorting::ASCENDING
+            : FieldSorting::DESCENDING;
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $orders
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private function sortFakeOrders(array $orders, string $sortField, string $sortDirection): array
+    {
+        $map = [
+            'orderNumber' => 'orderNumber',
+            'orderDateTime' => 'date',
+            'orderCustomer.lastName' => 'customerName',
+            'orderCustomer.email' => 'email',
+            'stateMachineState.name' => 'statusLabel',
+        ];
+
+        $key = $map[$sortField] ?? 'date';
+
+        usort($orders, static function (array $left, array $right) use ($key, $sortDirection): int {
+            $leftValue = $left[$key] ?? '';
+            $rightValue = $right[$key] ?? '';
+
+            if ($key === 'date') {
+                $leftValue = strtotime((string) $leftValue) ?: 0;
+                $rightValue = strtotime((string) $rightValue) ?: 0;
+            }
+
+            $comparison = $leftValue <=> $rightValue;
+
+            return $sortDirection === FieldSorting::ASCENDING ? $comparison : -$comparison;
+        });
+
+        return $orders;
     }
 
     private function buildFakeOrderDetail(string $orderId): ?array
