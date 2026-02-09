@@ -26,16 +26,99 @@ class ExternalOrderSyncService
 
     public function syncNewOrders(Context $context): void
     {
-        $apiUrl = (string) $this->systemConfigService->get('ExternalOrders.config.externalOrdersApiUrl');
-        if ($apiUrl === '') {
-            $this->logger->warning('External Orders sync skipped: missing API URL.');
-
-            return;
-        }
-
-        $apiToken = (string) $this->systemConfigService->get('ExternalOrders.config.externalOrdersApiToken');
+        $configs = $this->getChannelConfigs();
         $timeout = (float) $this->systemConfigService->get('ExternalOrders.config.externalOrdersTimeout');
 
+        foreach ($configs as $config) {
+            $apiUrl = (string) $this->systemConfigService->get($config['urlKey']);
+            $apiToken = (string) $this->systemConfigService->get($config['tokenKey']);
+
+            if ($apiUrl === '') {
+                $this->logger->warning('External Orders sync skipped: missing API URL.', [
+                    'channel' => $config['channel'],
+                ]);
+                continue;
+            }
+
+            $this->syncChannelOrders($config['channel'], $apiUrl, $apiToken, $timeout, $context);
+        }
+    }
+
+    /**
+     * @param array<int, string> $externalIds
+     * @return array<string, string>
+     */
+    private function fetchExistingIds(array $externalIds, Context $context): array
+    {
+        $mapping = [];
+        $chunkSize = 500;
+
+        foreach (array_chunk($externalIds, $chunkSize) as $chunk) {
+            $criteria = new Criteria();
+            $criteria->addFilter(new EqualsAnyFilter('externalId', $chunk));
+            $criteria->setLimit(count($chunk));
+
+            $result = $this->externalOrderRepository->search($criteria, $context);
+
+            foreach ($result->getEntities() as $entity) {
+                $mapping[$entity->getExternalId()] = $entity->getId();
+            }
+        }
+
+        return $mapping;
+    }
+
+    /**
+     * @return array<int, array{channel: string, urlKey: string, tokenKey: string}>
+     */
+    private function getChannelConfigs(): array
+    {
+        return [
+            [
+                'channel' => 'b2b',
+                'urlKey' => 'ExternalOrders.config.externalOrdersApiUrlB2b',
+                'tokenKey' => 'ExternalOrders.config.externalOrdersApiTokenB2b',
+            ],
+            [
+                'channel' => 'ebay_de',
+                'urlKey' => 'ExternalOrders.config.externalOrdersApiUrlEbayDe',
+                'tokenKey' => 'ExternalOrders.config.externalOrdersApiTokenEbayDe',
+            ],
+            [
+                'channel' => 'kaufland',
+                'urlKey' => 'ExternalOrders.config.externalOrdersApiUrlKaufland',
+                'tokenKey' => 'ExternalOrders.config.externalOrdersApiTokenKaufland',
+            ],
+            [
+                'channel' => 'ebay_at',
+                'urlKey' => 'ExternalOrders.config.externalOrdersApiUrlEbayAt',
+                'tokenKey' => 'ExternalOrders.config.externalOrdersApiTokenEbayAt',
+            ],
+            [
+                'channel' => 'zonami',
+                'urlKey' => 'ExternalOrders.config.externalOrdersApiUrlZonami',
+                'tokenKey' => 'ExternalOrders.config.externalOrdersApiTokenZonami',
+            ],
+            [
+                'channel' => 'peg',
+                'urlKey' => 'ExternalOrders.config.externalOrdersApiUrlPeg',
+                'tokenKey' => 'ExternalOrders.config.externalOrdersApiTokenPeg',
+            ],
+            [
+                'channel' => 'bezb',
+                'urlKey' => 'ExternalOrders.config.externalOrdersApiUrlBezb',
+                'tokenKey' => 'ExternalOrders.config.externalOrdersApiTokenBezb',
+            ],
+        ];
+    }
+
+    private function syncChannelOrders(
+        string $channel,
+        string $apiUrl,
+        string $apiToken,
+        float $timeout,
+        Context $context
+    ): void {
         $options = [];
         if ($apiToken !== '') {
             $options['headers'] = [
@@ -67,6 +150,7 @@ class ExternalOrderSyncService
             }
 
             $this->logger->error('External Orders sync failed while calling API.', array_filter([
+                'channel' => $channel,
                 'url' => $this->sanitizeUrl($apiUrl),
                 'status' => $statusCode,
                 'durationMs' => (int) round($durationMs),
@@ -77,14 +161,18 @@ class ExternalOrderSyncService
         }
 
         if (!is_array($payload)) {
-            $this->logger->warning('External Orders sync skipped: API response is not an array.');
+            $this->logger->warning('External Orders sync skipped: API response is not an array.', [
+                'channel' => $channel,
+            ]);
 
             return;
         }
 
         $orders = $payload['orders'] ?? $payload;
         if (!is_array($orders)) {
-            $this->logger->warning('External Orders sync skipped: API response does not contain orders.');
+            $this->logger->warning('External Orders sync skipped: API response does not contain orders.', [
+                'channel' => $channel,
+            ]);
 
             return;
         }
@@ -104,20 +192,15 @@ class ExternalOrderSyncService
         $externalIds = array_values(array_unique($externalIds));
 
         if ($externalIds === []) {
-            $this->logger->info('External Orders sync finished: no external IDs found.');
+            $this->logger->info('External Orders sync finished: no external IDs found.', [
+                'channel' => $channel,
+            ]);
 
             return;
         }
 
-        $batchSize = 250;
-        $this->logger->info('External Orders sync batching orders.', [
-            'total' => count($orders),
-            'batchSize' => $batchSize,
-        ]);
-
         $existingIds = $this->fetchExistingIds($externalIds, $context);
-        $upsertPayload = [];
-        $totalUpserted = 0;
+        $insertPayload = [];
 
         foreach ($orders as $order) {
             if (!is_array($order)) {
@@ -125,68 +208,32 @@ class ExternalOrderSyncService
             }
 
             $externalId = $this->resolveExternalId($order);
-            if ($externalId === null) {
+            if ($externalId === null || isset($existingIds[$externalId])) {
                 continue;
             }
 
-            $upsertPayload[] = [
-                'id' => $existingIds[$externalId] ?? Uuid::randomHex(),
+            $order['channel'] = $order['channel'] ?? $channel;
+
+            $insertPayload[] = [
+                'id' => Uuid::randomHex(),
                 'externalId' => $externalId,
                 'payload' => $order,
             ];
-
-            if (count($upsertPayload) >= $batchSize) {
-                $this->externalOrderRepository->upsert($upsertPayload, $context);
-                $totalUpserted += count($upsertPayload);
-                $upsertPayload = [];
-            }
         }
 
-        if ($upsertPayload === []) {
-            if ($totalUpserted === 0) {
-                $this->logger->info('External Orders sync finished: nothing to upsert.');
-
-                return;
-            }
-
-            $this->logger->info('External Orders sync finished.', [
-                'total' => $totalUpserted,
-                'batchSize' => $batchSize,
+        if ($insertPayload === []) {
+            $this->logger->info('External Orders sync finished: no new orders found.', [
+                'channel' => $channel,
             ]);
 
             return;
         }
 
-        $this->externalOrderRepository->upsert($upsertPayload, $context);
-        $totalUpserted += count($upsertPayload);
+        $this->externalOrderRepository->upsert($insertPayload, $context);
         $this->logger->info('External Orders sync finished.', [
-            'total' => $totalUpserted,
-            'batchSize' => $batchSize,
+            'channel' => $channel,
+            'total' => count($insertPayload),
         ]);
-    }
-
-    /**
-     * @param array<int, string> $externalIds
-     * @return array<string, string>
-     */
-    private function fetchExistingIds(array $externalIds, Context $context): array
-    {
-        $mapping = [];
-        $chunkSize = 500;
-
-        foreach (array_chunk($externalIds, $chunkSize) as $chunk) {
-            $criteria = new Criteria();
-            $criteria->addFilter(new EqualsAnyFilter('externalId', $chunk));
-            $criteria->setLimit(count($chunk));
-
-            $result = $this->externalOrderRepository->search($criteria, $context);
-
-            foreach ($result->getEntities() as $entity) {
-                $mapping[$entity->getExternalId()] = $entity->getId();
-            }
-        }
-
-        return $mapping;
     }
 
     /**

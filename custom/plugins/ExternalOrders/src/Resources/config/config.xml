@@ -26,83 +26,99 @@
             <defaultValue>External Orders</defaultValue>
         </input-field>
 
-        <input-field type="text">
-            <name>externalOrdersApiUrl</name>
-            <label lang="en-GB">External Orders API URL</label>
-            <label lang="de-DE">External Orders API-URL</label>
-            <helpText lang="en-GB">Endpoint called by the 5-minute sync task to fetch new external orders.</helpText>
-            <helpText lang="de-DE">Endpunkt, der durch den 5-Minuten-Sync-Task aufgerufen wird, um neue externe Bestellungen abzurufen.</helpText>
+        <input-field type="float">
+            <name>externalOrdersTimeout</name>
+            <label lang="en-GB">External Orders API timeout (seconds)</label>
+            <label lang="de-DE">External Orders API-Timeout (Sekunden)</label>
+            <helpText lang="en-GB">Timeout for each external orders API request.</helpText>
+            <helpText lang="de-DE">Timeout für jede External Orders API-Anfrage.</helpText>
+            <defaultValue>2.5</defaultValue>
         </input-field>
 
         <input-field type="text">
-            <name>externalOrdersApiToken</name>
-            <label lang="en-GB">External Orders API Token</label>
-            <label lang="de-DE">External Orders API-Token</label>
-            <helpText lang="en-GB">Optional bearer token for the External Orders API.</helpText>
-            <helpText lang="de-DE">Optionales Bearer-Token für die External Orders API.</helpText>
+            <name>externalOrdersApiUrlB2b</name>
+            <label lang="en-GB">API URL: B2B</label>
+            <label lang="de-DE">API-URL: B2B</label>
+        </input-field>
+        <input-field type="text">
+            <name>externalOrdersApiTokenB2b</name>
+            <label lang="en-GB">API Token: B2B</label>
+            <label lang="de-DE">API-Token: B2B</label>
         </input-field>
 
         <input-field type="text">
-            <name>sourceB2b</name>
-            <label lang="en-GB">Overview source: First-medical-shop.de (B2B)</label>
-            <label lang="de-DE">Übersicht-Quelle: First-medical-shop.de (B2B)</label>
-            <helpText lang="en-GB">Define where the orders for this overview come from (API, Excel import, etc.).</helpText>
-            <helpText lang="de-DE">Definiert, woher die Bestellungen für diese Übersicht kommen (API, Excel-Import, etc.).</helpText>
-            <defaultValue>API</defaultValue>
+            <name>externalOrdersApiUrlEbayDe</name>
+            <label lang="en-GB">API URL: Ebay.DE</label>
+            <label lang="de-DE">API-URL: Ebay.DE</label>
+        </input-field>
+        <input-field type="text">
+            <name>externalOrdersApiTokenEbayDe</name>
+            <label lang="en-GB">API Token: Ebay.DE</label>
+            <label lang="de-DE">API-Token: Ebay.DE</label>
         </input-field>
 
         <input-field type="text">
-            <name>sourceEbayDe</name>
-            <label lang="en-GB">Overview source: Ebay.DE</label>
-            <label lang="de-DE">Übersicht-Quelle: Ebay.DE</label>
-            <helpText lang="en-GB">Define where the orders for this overview come from (API, Excel import, etc.).</helpText>
-            <helpText lang="de-DE">Definiert, woher die Bestellungen für diese Übersicht kommen (API, Excel-Import, etc.).</helpText>
-            <defaultValue>API</defaultValue>
+            <name>externalOrdersApiUrlKaufland</name>
+            <label lang="en-GB">API URL: Kaufland</label>
+            <label lang="de-DE">API-URL: Kaufland</label>
+        </input-field>
+        <input-field type="text">
+            <name>externalOrdersApiTokenKaufland</name>
+            <label lang="en-GB">API Token: Kaufland</label>
+            <label lang="de-DE">API-Token: Kaufland</label>
         </input-field>
 
         <input-field type="text">
-            <name>sourceKaufland</name>
-            <label lang="en-GB">Overview source: KaufLand</label>
-            <label lang="de-DE">Übersicht-Quelle: KaufLand</label>
-            <helpText lang="en-GB">Define where the orders for this overview come from (API, Excel import, etc.).</helpText>
-            <helpText lang="de-DE">Definiert, woher die Bestellungen für diese Übersicht kommen (API, Excel-Import, etc.).</helpText>
-            <defaultValue>API</defaultValue>
+            <name>externalOrdersApiUrlEbayAt</name>
+            <label lang="en-GB">API URL: Ebay.AT</label>
+            <label lang="de-DE">API-URL: Ebay.AT</label>
+        </input-field>
+        <input-field type="text">
+            <name>externalOrdersApiTokenEbayAt</name>
+            <label lang="en-GB">API Token: Ebay.AT</label>
+            <label lang="de-DE">API-Token: Ebay.AT</label>
         </input-field>
 
         <input-field type="text">
-            <name>sourceEbayAt</name>
-            <label lang="en-GB">Overview source: Ebay.AT</label>
-            <label lang="de-DE">Übersicht-Quelle: Ebay.AT</label>
-            <helpText lang="en-GB">Define where the orders for this overview come from (API, Excel import, etc.).</helpText>
-            <helpText lang="de-DE">Definiert, woher die Bestellungen für diese Übersicht kommen (API, Excel-Import, etc.).</helpText>
-            <defaultValue>API</defaultValue>
+            <name>externalOrdersApiUrlZonami</name>
+            <label lang="en-GB">API URL: Zonami</label>
+            <label lang="de-DE">API-URL: Zonami</label>
+        </input-field>
+        <input-field type="text">
+            <name>externalOrdersApiTokenZonami</name>
+            <label lang="en-GB">API Token: Zonami</label>
+            <label lang="de-DE">API-Token: Zonami</label>
         </input-field>
 
         <input-field type="text">
-            <name>sourceZonami</name>
-            <label lang="en-GB">Overview source: Zonami</label>
-            <label lang="de-DE">Übersicht-Quelle: Zonami</label>
-            <helpText lang="en-GB">Define where the orders for this overview come from (API, Excel import, etc.).</helpText>
-            <helpText lang="de-DE">Definiert, woher die Bestellungen für diese Übersicht kommen (API, Excel-Import, etc.).</helpText>
-            <defaultValue>API</defaultValue>
+            <name>externalOrdersApiUrlPeg</name>
+            <label lang="en-GB">API URL: PEG</label>
+            <label lang="de-DE">API-URL: PEG</label>
+        </input-field>
+        <input-field type="text">
+            <name>externalOrdersApiTokenPeg</name>
+            <label lang="en-GB">API Token: PEG</label>
+            <label lang="de-DE">API-Token: PEG</label>
         </input-field>
 
         <input-field type="text">
-            <name>sourcePeg</name>
-            <label lang="en-GB">Overview source: PEG</label>
-            <label lang="de-DE">Übersicht-Quelle: PEG</label>
-            <helpText lang="en-GB">Define where the orders for this overview come from (API, Excel import, etc.).</helpText>
-            <helpText lang="de-DE">Definiert, woher die Bestellungen für diese Übersicht kommen (API, Excel-Import, etc.).</helpText>
-            <defaultValue>API</defaultValue>
+            <name>externalOrdersApiUrlBezb</name>
+            <label lang="en-GB">API URL: BEZB</label>
+            <label lang="de-DE">API-URL: BEZB</label>
+        </input-field>
+        <input-field type="text">
+            <name>externalOrdersApiTokenBezb</name>
+            <label lang="en-GB">API Token: BEZB</label>
+            <label lang="de-DE">API-Token: BEZB</label>
         </input-field>
 
-        <input-field type="text">
-            <name>sourceBezb</name>
-            <label lang="en-GB">Overview source: BEZB</label>
-            <label lang="de-DE">Übersicht-Quelle: BEZB</label>
-            <helpText lang="en-GB">Define where the orders for this overview come from (API, Excel import, etc.).</helpText>
-            <helpText lang="de-DE">Definiert, woher die Bestellungen für diese Übersicht kommen (API, Excel-Import, etc.).</helpText>
-            <defaultValue>API</defaultValue>
-        </input-field>
+        <component name="external-orders-testdata-button">
+            <name>seedTestData</name>
+            <label lang="en-GB">Test data</label>
+            <label lang="de-DE">Testdaten</label>
+            <helpText lang="en-GB">Store the demo orders from FakeExternalOrderProvider once in the database.</helpText>
+            <helpText lang="de-DE">Speichert die Demo-Bestellungen aus dem FakeExternalOrderProvider einmalig in der Datenbank.</helpText>
+        </component>
+
     </card>
 </config>
