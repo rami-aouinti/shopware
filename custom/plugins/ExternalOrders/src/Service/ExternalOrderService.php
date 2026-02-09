@@ -12,7 +12,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 
 readonly class ExternalOrderService
 {
-    public function __construct(private EntityRepository $orderRepository)
+    public function __construct(
+        private EntityRepository $orderRepository,
+        private bool $useDemoData = true
+    )
     {
     }
 
@@ -31,9 +34,11 @@ readonly class ExternalOrderService
         $sortField = $this->resolveSortField($sort);
         $sortDirection = $this->resolveSortDirection($order);
 
-        $fakePayload = $this->buildFakeOrderPayload($channel, $search, $page, $limit, $sortField, $sortDirection);
-        if ($fakePayload !== null) {
-            return $fakePayload;
+        if ($this->useDemoData) {
+            $fakePayload = $this->buildFakeOrderPayload($channel, $search, $page, $limit, $sortField, $sortDirection);
+            if ($fakePayload !== null) {
+                return $fakePayload;
+            }
         }
 
         $criteria = new Criteria();
@@ -86,9 +91,11 @@ readonly class ExternalOrderService
 
     public function fetchOrderDetail(Context $context, string $orderId): ?array
     {
-        $fakeDetail = $this->buildFakeOrderDetail($orderId);
-        if ($fakeDetail !== null) {
-            return $fakeDetail;
+        if ($this->useDemoData) {
+            $fakeDetail = $this->buildFakeOrderDetail($orderId);
+            if ($fakeDetail !== null) {
+                return $fakeDetail;
+            }
         }
 
         $criteria = new Criteria([$orderId]);
