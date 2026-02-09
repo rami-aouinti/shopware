@@ -101,14 +101,23 @@ class ExternalOrderSyncService
             }
         }
 
+        $externalIds = array_values(array_unique($externalIds));
+
         if ($externalIds === []) {
             $this->logger->info('External Orders sync finished: no external IDs found.');
 
             return;
         }
 
+        $batchSize = 250;
+        $this->logger->info('External Orders sync batching orders.', [
+            'total' => count($orders),
+            'batchSize' => $batchSize,
+        ]);
+
         $existingIds = $this->fetchExistingIds($externalIds, $context);
         $upsertPayload = [];
+        $totalUpserted = 0;
 
         foreach ($orders as $order) {
             if (!is_array($order)) {
@@ -125,17 +134,34 @@ class ExternalOrderSyncService
                 'externalId' => $externalId,
                 'payload' => $order,
             ];
+
+            if (count($upsertPayload) >= $batchSize) {
+                $this->externalOrderRepository->upsert($upsertPayload, $context);
+                $totalUpserted += count($upsertPayload);
+                $upsertPayload = [];
+            }
         }
 
         if ($upsertPayload === []) {
-            $this->logger->info('External Orders sync finished: nothing to upsert.');
+            if ($totalUpserted === 0) {
+                $this->logger->info('External Orders sync finished: nothing to upsert.');
+
+                return;
+            }
+
+            $this->logger->info('External Orders sync finished.', [
+                'total' => $totalUpserted,
+                'batchSize' => $batchSize,
+            ]);
 
             return;
         }
 
         $this->externalOrderRepository->upsert($upsertPayload, $context);
+        $totalUpserted += count($upsertPayload);
         $this->logger->info('External Orders sync finished.', [
-            'total' => count($upsertPayload),
+            'total' => $totalUpserted,
+            'batchSize' => $batchSize,
         ]);
     }
 
@@ -145,15 +171,19 @@ class ExternalOrderSyncService
      */
     private function fetchExistingIds(array $externalIds, Context $context): array
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsAnyFilter('externalId', $externalIds));
-        $criteria->setLimit(count($externalIds));
-
-        $result = $this->externalOrderRepository->search($criteria, $context);
-
         $mapping = [];
-        foreach ($result->getEntities() as $entity) {
-            $mapping[$entity->getExternalId()] = $entity->getId();
+        $chunkSize = 500;
+
+        foreach (array_chunk($externalIds, $chunkSize) as $chunk) {
+            $criteria = new Criteria();
+            $criteria->addFilter(new EqualsAnyFilter('externalId', $chunk));
+            $criteria->setLimit(count($chunk));
+
+            $result = $this->externalOrderRepository->search($criteria, $context);
+
+            foreach ($result->getEntities() as $entity) {
+                $mapping[$entity->getExternalId()] = $entity->getId();
+            }
         }
 
         return $mapping;
