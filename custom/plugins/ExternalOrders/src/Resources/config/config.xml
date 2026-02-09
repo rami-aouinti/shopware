@@ -112,5 +112,13 @@
             <label lang="de-DE">API-Token: BEZB</label>
         </input-field>
 
+        <component name="external-orders-testdata-button">
+            <name>seedTestData</name>
+            <label lang="en-GB">Test data</label>
+            <label lang="de-DE">Testdaten</label>
+            <helpText lang="en-GB">Store the demo orders from FakeExternalOrderProvider once in the database.</helpText>
+            <helpText lang="de-DE">Speichert die Demo-Bestellungen aus dem FakeExternalOrderProvider einmalig in der Datenbank.</helpText>
+        </component>
+
     </card>
 </config>
