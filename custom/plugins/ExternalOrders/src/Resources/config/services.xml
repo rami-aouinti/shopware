@@ -9,8 +9,12 @@
             <tag name="shopware.entity.definition"/>
         </service>
 
+        <service id="ExternalOrders\Service\FakeExternalOrderProvider" />
+        <service id="ExternalOrders\Service\ExternalOrderTestDataService">
+            <argument type="service" id="external_order.repository" />
+        </service>
         <service id="ExternalOrders\Service\ExternalOrderService">
-            <argument type="service" id="order.repository" />
+            <argument type="service" id="external_order.repository" />
         </service>
         <service id="ExternalOrders\Service\ExternalOrderSyncService">
             <argument type="service" id="external_order.repository" />
@@ -22,6 +26,10 @@
         </service>
         <service id="ExternalOrders\ScheduledTask\ExternalOrdersSyncTaskHandler">
             <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="ExternalOrders\Subscriber\ExternalOrdersConfigSubscriber">
+            <tag name="kernel.event_subscriber" />
         </service>
     </services>
 </container>
