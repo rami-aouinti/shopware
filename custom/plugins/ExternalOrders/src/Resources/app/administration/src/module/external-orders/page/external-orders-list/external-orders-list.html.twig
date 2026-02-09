@@ -57,6 +57,14 @@
                         <button
                             class="external-orders__button external-orders__button--secondary"
                             type="button"
+                            :disabled="isSeedingTestData"
+                            @click="seedTestData"
+                        >
+                            Testdaten
+                        </button>
+                        <button
+                            class="external-orders__button external-orders__button--secondary"
+                            type="button"
                             @click="exportSelectedOrdersExcel"
                         >
                             <sw-icon name="regular-file" size="16" class="external-orders__download-icon"></sw-icon>

@@ -314,13 +314,13 @@ Component.register('external-orders-list', {
                 const defaultColumnsPerPage = Number.parseInt(getConfigValue('defaultColumnsPerPage'), 10);
 
                 this.channelSources = {
-                    b2b: getConfigValue('sourceB2b'),
-                    ebay_de: getConfigValue('sourceEbayDe'),
-                    kaufland: getConfigValue('sourceKaufland'),
-                    ebay_at: getConfigValue('sourceEbayAt'),
-                    zonami: getConfigValue('sourceZonami'),
-                    peg: getConfigValue('sourcePeg'),
-                    bezb: getConfigValue('sourceBezb'),
+                    b2b: getConfigValue('externalOrdersApiUrlB2b'),
+                    ebay_de: getConfigValue('externalOrdersApiUrlEbayDe'),
+                    kaufland: getConfigValue('externalOrdersApiUrlKaufland'),
+                    ebay_at: getConfigValue('externalOrdersApiUrlEbayAt'),
+                    zonami: getConfigValue('externalOrdersApiUrlZonami'),
+                    peg: getConfigValue('externalOrdersApiUrlPeg'),
+                    bezb: getConfigValue('externalOrdersApiUrlBezb'),
                 };
 
                 this.pageTitle = (isGermanLocale ? pageNameDe : pageNameEn) || this.pageTitle;
