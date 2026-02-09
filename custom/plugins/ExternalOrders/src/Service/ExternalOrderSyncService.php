@@ -9,7 +9,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class ExternalOrderSyncService
 {
@@ -31,6 +34,7 @@ class ExternalOrderSyncService
         }
 
         $apiToken = (string) $this->systemConfigService->get('ExternalOrders.config.externalOrdersApiToken');
+        $timeout = (float) $this->systemConfigService->get('ExternalOrders.config.externalOrdersTimeout');
 
         $options = [];
         if ($apiToken !== '') {
@@ -39,8 +43,38 @@ class ExternalOrderSyncService
             ];
         }
 
-        $response = $this->httpClient->request('GET', $apiUrl, $options);
-        $payload = $response->toArray(false);
+        if ($timeout > 0) {
+            $options['timeout'] = $timeout;
+        }
+
+        $response = null;
+        $startTime = microtime(true);
+        try {
+            $response = $this->httpClient->request('GET', $apiUrl, $options);
+            $payload = $response->toArray(false);
+        } catch (ExceptionInterface $exception) {
+            $durationMs = (microtime(true) - $startTime) * 1000;
+            $statusCode = null;
+            $correlationId = null;
+
+            if ($exception instanceof HttpExceptionInterface) {
+                $response = $exception->getResponse();
+            }
+
+            if ($response instanceof ResponseInterface) {
+                $statusCode = $response->getStatusCode();
+                $correlationId = $this->resolveCorrelationId($response);
+            }
+
+            $this->logger->error('External Orders sync failed while calling API.', array_filter([
+                'url' => $this->sanitizeUrl($apiUrl),
+                'status' => $statusCode,
+                'durationMs' => (int) round($durationMs),
+                'correlationId' => $correlationId,
+            ], static fn ($value) => $value !== null));
+
+            return;
+        }
 
         if (!is_array($payload)) {
             $this->logger->warning('External Orders sync skipped: API response is not an array.');
@@ -137,5 +171,74 @@ class ExternalOrderSyncService
         }
 
         return $externalId;
+    }
+
+    private function resolveCorrelationId(ResponseInterface $response): ?string
+    {
+        $headers = array_change_key_case($response->getHeaders(false), CASE_LOWER);
+
+        foreach (['x-correlation-id', 'correlation-id', 'x-request-id'] as $headerName) {
+            if (!isset($headers[$headerName][0])) {
+                continue;
+            }
+
+            $value = trim((string) $headers[$headerName][0]);
+            if ($value !== '') {
+                return $value;
+            }
+        }
+
+        return null;
+    }
+
+    private function sanitizeUrl(string $url): string
+    {
+        $parts = parse_url($url);
+        if ($parts === false) {
+            return $url;
+        }
+
+        $safeQuery = '';
+        if (isset($parts['query']) && $parts['query'] !== '') {
+            parse_str($parts['query'], $queryParams);
+            foreach ($queryParams as $key => $value) {
+                if (!is_string($key)) {
+                    continue;
+                }
+
+                if (preg_match('/(token|access|key|secret|signature|sig|password|auth)/i', $key) === 1) {
+                    $queryParams[$key] = '***';
+                }
+            }
+
+            $safeQuery = http_build_query($queryParams);
+        }
+
+        $safeUrl = '';
+        if (isset($parts['scheme'])) {
+            $safeUrl .= $parts['scheme'] . '://';
+        }
+        if (isset($parts['user'])) {
+            $safeUrl .= $parts['user'];
+            if (isset($parts['pass'])) {
+                $safeUrl .= ':***';
+            }
+            $safeUrl .= '@';
+        }
+        if (isset($parts['host'])) {
+            $safeUrl .= $parts['host'];
+        }
+        if (isset($parts['port'])) {
+            $safeUrl .= ':' . $parts['port'];
+        }
+        $safeUrl .= $parts['path'] ?? '';
+        if ($safeQuery !== '') {
+            $safeUrl .= '?' . $safeQuery;
+        }
+        if (isset($parts['fragment'])) {
+            $safeUrl .= '#' . $parts['fragment'];
+        }
+
+        return $safeUrl;
     }
 }
