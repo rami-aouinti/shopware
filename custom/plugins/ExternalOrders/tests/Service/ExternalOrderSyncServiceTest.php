@@ -19,6 +19,31 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class ExternalOrderSyncServiceTest extends TestCase
 {
+    public function testSyncNewOrdersLogsWarningWhenApiUrlMissing(): void
+    {
+        $context = Context::createDefaultContext();
+
+        $repository = $this->createMock(EntityRepository::class);
+        $repository->expects($this->never())->method('upsert');
+
+        $httpClient = $this->createMock(HttpClientInterface::class);
+        $httpClient->expects($this->never())->method('request');
+
+        $configService = $this->createConfigService('');
+        $logger = new InMemoryLogger();
+
+        $service = new ExternalOrderSyncService($repository, $httpClient, $configService, $logger);
+
+        $service->syncNewOrders($context);
+
+        static::assertTrue($logger->hasRecord('warning', 'External Orders sync skipped: missing API URL.', [
+            'channel' => 'b2b',
+        ]));
+        static::assertTrue($logger->hasRecord('warning', 'External Orders sync skipped: missing API URL.', [
+            'channel' => 'ebay_de',
+        ]));
+    }
+
     public function testSyncNewOrdersLogsWarningWhenOrdersPayloadIsInvalid(): void
     {
         $context = Context::createDefaultContext();
@@ -33,15 +58,15 @@ class ExternalOrderSyncServiceTest extends TestCase
         $httpClient->method('request')->willReturn($response);
 
         $configService = $this->createConfigService('https://example.test/api/orders');
-
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects($this->once())
-            ->method('warning')
-            ->with('External Orders sync skipped: API response does not contain orders.');
+        $logger = new InMemoryLogger();
 
         $service = new ExternalOrderSyncService($repository, $httpClient, $configService, $logger);
 
         $service->syncNewOrders($context);
+
+        static::assertTrue($logger->hasRecord('warning', 'External Orders sync skipped: API response does not contain orders.', [
+            'channel' => 'b2b',
+        ]));
     }
 
     public function testSyncNewOrdersLogsInfoWhenNoExternalIdsFound(): void
@@ -64,15 +89,15 @@ class ExternalOrderSyncServiceTest extends TestCase
         $httpClient->method('request')->willReturn($response);
 
         $configService = $this->createConfigService('https://example.test/api/orders');
-
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects($this->once())
-            ->method('info')
-            ->with('External Orders sync finished: no external IDs found.');
+        $logger = new InMemoryLogger();
 
         $service = new ExternalOrderSyncService($repository, $httpClient, $configService, $logger);
 
         $service->syncNewOrders($context);
+
+        static::assertTrue($logger->hasRecord('info', 'External Orders sync finished: no external IDs found.', [
+            'channel' => 'b2b',
+        ]));
     }
 
     public function testSyncNewOrdersUpsertsOrdersAndLogsTotals(): void
@@ -90,18 +115,14 @@ class ExternalOrderSyncServiceTest extends TestCase
             ->method('upsert')
             ->with(
                 $this->callback(function (array $payload): bool {
-                    if (count($payload) !== 2) {
+                    if (count($payload) !== 1) {
                         return false;
                     }
 
-                    $byExternalId = [];
-                    foreach ($payload as $row) {
-                        $byExternalId[$row['externalId']] = $row['id'];
-                    }
+                    $row = $payload[0] ?? [];
 
-                    return isset($byExternalId['ext-1'], $byExternalId['ext-2'])
-                        && $byExternalId['ext-1'] === 'existing-id-1'
-                        && $byExternalId['ext-2'] !== '';
+                    return ($row['externalId'] ?? null) === 'ext-2'
+                        && ($row['id'] ?? '') !== '';
                 }),
                 $context
             );
@@ -119,25 +140,16 @@ class ExternalOrderSyncServiceTest extends TestCase
 
         $configService = $this->createConfigService('https://example.test/api/orders');
 
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects($this->exactly(2))
-            ->method('info')
-            ->withConsecutive(
-                [
-                    'External Orders sync batching orders.',
-                    $this->callback(static fn (array $context): bool => ($context['total'] ?? null) === 2
-                        && ($context['batchSize'] ?? null) === 250),
-                ],
-                [
-                    'External Orders sync finished.',
-                    $this->callback(static fn (array $context): bool => ($context['total'] ?? null) === 2
-                        && ($context['batchSize'] ?? null) === 250),
-                ]
-            );
+        $logger = new InMemoryLogger();
 
         $service = new ExternalOrderSyncService($repository, $httpClient, $configService, $logger);
 
         $service->syncNewOrders($context);
+
+        static::assertTrue($logger->hasRecord('info', 'External Orders sync finished.', [
+            'channel' => 'b2b',
+            'total' => 1,
+        ]));
     }
 
     public function testSyncNewOrdersLogsErrorWhenHttpClientFails(): void
@@ -158,29 +170,38 @@ class ExternalOrderSyncServiceTest extends TestCase
 
         $configService = $this->createConfigService('https://example.test/api/orders?token=secret');
 
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects($this->once())
-            ->method('error')
-            ->with(
-                'External Orders sync failed while calling API.',
-                $this->callback(static function (array $context): bool {
-                    return ($context['status'] ?? null) === 500
-                        && ($context['correlationId'] ?? null) === 'corr-123'
-                        && ($context['url'] ?? null) === 'https://example.test/api/orders?token=%2A%2A%2A';
-                })
-            );
+        $logger = new InMemoryLogger();
 
         $service = new ExternalOrderSyncService($repository, $httpClient, $configService, $logger);
 
         $service->syncNewOrders($context);
+
+        static::assertTrue($logger->hasRecord('error', 'External Orders sync failed while calling API.', [
+            'channel' => 'b2b',
+            'status' => 500,
+            'correlationId' => 'corr-123',
+            'url' => 'https://example.test/api/orders?token=%2A%2A%2A',
+        ]));
     }
 
     private function createConfigService(string $apiUrl): SystemConfigService
     {
         $configService = $this->createMock(SystemConfigService::class);
         $configService->method('get')->willReturnMap([
-            ['ExternalOrders.config.externalOrdersApiUrl', null, $apiUrl],
-            ['ExternalOrders.config.externalOrdersApiToken', null, 'token-123'],
+            ['ExternalOrders.config.externalOrdersApiUrlB2b', null, $apiUrl],
+            ['ExternalOrders.config.externalOrdersApiTokenB2b', null, 'token-123'],
+            ['ExternalOrders.config.externalOrdersApiUrlEbayDe', null, ''],
+            ['ExternalOrders.config.externalOrdersApiTokenEbayDe', null, ''],
+            ['ExternalOrders.config.externalOrdersApiUrlKaufland', null, ''],
+            ['ExternalOrders.config.externalOrdersApiTokenKaufland', null, ''],
+            ['ExternalOrders.config.externalOrdersApiUrlEbayAt', null, ''],
+            ['ExternalOrders.config.externalOrdersApiTokenEbayAt', null, ''],
+            ['ExternalOrders.config.externalOrdersApiUrlZonami', null, ''],
+            ['ExternalOrders.config.externalOrdersApiTokenZonami', null, ''],
+            ['ExternalOrders.config.externalOrdersApiUrlPeg', null, ''],
+            ['ExternalOrders.config.externalOrdersApiTokenPeg', null, ''],
+            ['ExternalOrders.config.externalOrdersApiUrlBezb', null, ''],
+            ['ExternalOrders.config.externalOrdersApiTokenBezb', null, ''],
             ['ExternalOrders.config.externalOrdersTimeout', null, 2.5],
         ]);
 
@@ -223,5 +244,88 @@ class TestHttpException extends \RuntimeException implements HttpExceptionInterf
     public function getResponse(): ResponseInterface
     {
         return $this->response;
+    }
+}
+
+final class InMemoryLogger implements LoggerInterface
+{
+    /**
+     * @var array<int, array{level: string, message: string, context: array<mixed>}>
+     */
+    public array $records = [];
+
+    public function emergency($message, array $context = []): void
+    {
+        $this->log('emergency', (string) $message, $context);
+    }
+
+    public function alert($message, array $context = []): void
+    {
+        $this->log('alert', (string) $message, $context);
+    }
+
+    public function critical($message, array $context = []): void
+    {
+        $this->log('critical', (string) $message, $context);
+    }
+
+    public function error($message, array $context = []): void
+    {
+        $this->log('error', (string) $message, $context);
+    }
+
+    public function warning($message, array $context = []): void
+    {
+        $this->log('warning', (string) $message, $context);
+    }
+
+    public function notice($message, array $context = []): void
+    {
+        $this->log('notice', (string) $message, $context);
+    }
+
+    public function info($message, array $context = []): void
+    {
+        $this->log('info', (string) $message, $context);
+    }
+
+    public function debug($message, array $context = []): void
+    {
+        $this->log('debug', (string) $message, $context);
+    }
+
+    public function log($level, $message, array $context = []): void
+    {
+        $this->records[] = [
+            'level' => (string) $level,
+            'message' => (string) $message,
+            'context' => $context,
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $contextSubset
+     */
+    public function hasRecord(string $level, string $message, array $contextSubset = []): bool
+    {
+        foreach ($this->records as $record) {
+            if ($record['level'] !== $level || $record['message'] !== $message) {
+                continue;
+            }
+
+            $matches = true;
+            foreach ($contextSubset as $key => $value) {
+                if (!array_key_exists($key, $record['context']) || $record['context'][$key] !== $value) {
+                    $matches = false;
+                    break;
+                }
+            }
+
+            if ($matches) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
