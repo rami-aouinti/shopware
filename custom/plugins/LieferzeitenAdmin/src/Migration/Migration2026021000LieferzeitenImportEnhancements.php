@@ -50,7 +50,7 @@ class Migration2026021000LieferzeitenImportEnhancements extends MigrationStep
         return isset($columns[$column]);
     }
 
-    private function indexExists(Connection $connection, string $table, string $index): bool
+    protected function indexExists(Connection $connection, string $table, string $index): bool
     {
         $indexes = $connection->createSchemaManager()->listTableIndexes($table);
 
