@@ -128,6 +128,7 @@ class LieferzeitenPositionWriteService
         $this->taskService->createTask(
             [
                 'taskType' => 'additional-delivery-request',
+                'triggerKey' => 'additional-delivery-request',
                 'positionId' => $positionId,
                 'createdBy' => $actor,
                 'createdAt' => $changedAt->format(DATE_ATOM),
