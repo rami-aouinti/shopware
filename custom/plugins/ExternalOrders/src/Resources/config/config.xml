@@ -35,82 +35,13 @@
             <defaultValue>2.5</defaultValue>
         </input-field>
 
-        <input-field type="text">
-            <name>externalOrdersApiUrlB2b</name>
-            <label lang="en-GB">API URL: B2B</label>
-            <label lang="de-DE">API-URL: B2B</label>
-        </input-field>
-        <input-field type="text">
-            <name>externalOrdersApiTokenB2b</name>
-            <label lang="en-GB">API Token: B2B</label>
-            <label lang="de-DE">API-Token: B2B</label>
-        </input-field>
-
-        <input-field type="text">
-            <name>externalOrdersApiUrlEbayDe</name>
-            <label lang="en-GB">API URL: Ebay.DE</label>
-            <label lang="de-DE">API-URL: Ebay.DE</label>
-        </input-field>
-        <input-field type="text">
-            <name>externalOrdersApiTokenEbayDe</name>
-            <label lang="en-GB">API Token: Ebay.DE</label>
-            <label lang="de-DE">API-Token: Ebay.DE</label>
-        </input-field>
-
-        <input-field type="text">
-            <name>externalOrdersApiUrlKaufland</name>
-            <label lang="en-GB">API URL: Kaufland</label>
-            <label lang="de-DE">API-URL: Kaufland</label>
-        </input-field>
-        <input-field type="text">
-            <name>externalOrdersApiTokenKaufland</name>
-            <label lang="en-GB">API Token: Kaufland</label>
-            <label lang="de-DE">API-Token: Kaufland</label>
-        </input-field>
-
-        <input-field type="text">
-            <name>externalOrdersApiUrlEbayAt</name>
-            <label lang="en-GB">API URL: Ebay.AT</label>
-            <label lang="de-DE">API-URL: Ebay.AT</label>
-        </input-field>
-        <input-field type="text">
-            <name>externalOrdersApiTokenEbayAt</name>
-            <label lang="en-GB">API Token: Ebay.AT</label>
-            <label lang="de-DE">API-Token: Ebay.AT</label>
-        </input-field>
-
-        <input-field type="text">
-            <name>externalOrdersApiUrlZonami</name>
-            <label lang="en-GB">API URL: Zonami</label>
-            <label lang="de-DE">API-URL: Zonami</label>
-        </input-field>
-        <input-field type="text">
-            <name>externalOrdersApiTokenZonami</name>
-            <label lang="en-GB">API Token: Zonami</label>
-            <label lang="de-DE">API-Token: Zonami</label>
-        </input-field>
-
-        <input-field type="text">
-            <name>externalOrdersApiUrlPeg</name>
-            <label lang="en-GB">API URL: PEG</label>
-            <label lang="de-DE">API-URL: PEG</label>
-        </input-field>
-        <input-field type="text">
-            <name>externalOrdersApiTokenPeg</name>
-            <label lang="en-GB">API Token: PEG</label>
-            <label lang="de-DE">API-Token: PEG</label>
-        </input-field>
-
-        <input-field type="text">
-            <name>externalOrdersApiUrlBezb</name>
-            <label lang="en-GB">API URL: BEZB</label>
-            <label lang="de-DE">API-URL: BEZB</label>
-        </input-field>
-        <input-field type="text">
-            <name>externalOrdersApiTokenBezb</name>
-            <label lang="en-GB">API Token: BEZB</label>
-            <label lang="de-DE">API-Token: BEZB</label>
-        </input-field>
+        <component name="external-orders-channel-config">
+            <name>channelCredentials</name>
+            <label lang="en-GB">Channel credentials</label>
+            <label lang="de-DE">Channel Zugangsdaten</label>
+            <helpText lang="en-GB">Select a channel card to set API URL + token. You can also run the cron sync immediately and see the last execution status.</helpText>
+            <helpText lang="de-DE">Wähle eine Kanal-Karte, um API-URL + Token zu speichern. Außerdem kannst du den Cron-Sync sofort starten und den letzten Ausführungsstatus sehen.</helpText>
+        </component>
 
         <component name="external-orders-testdata-button">
             <name>seedTestData</name>

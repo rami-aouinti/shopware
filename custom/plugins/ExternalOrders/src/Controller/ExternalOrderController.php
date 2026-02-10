@@ -3,6 +3,7 @@
 namespace ExternalOrders\Controller;
 
 use ExternalOrders\Service\ExternalOrderService;
+use ExternalOrders\Service\ExternalOrderSyncService;
 use ExternalOrders\Service\ExternalOrderTestDataService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -11,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Doctrine\DBAL\Connection;
 
 #[Route(defaults: ['_routeScope' => ['api']])]
 #[Package('after-sales')]
@@ -19,6 +21,8 @@ class ExternalOrderController extends AbstractController
     public function __construct(
         private readonly ExternalOrderService $externalOrderService,
         private readonly ExternalOrderTestDataService $testDataService,
+        private readonly ExternalOrderSyncService $syncService,
+        private readonly Connection $connection,
     ) {
     }
 
@@ -79,6 +83,63 @@ class ExternalOrderController extends AbstractController
 
         return new JsonResponse([
             'inserted' => $inserted,
+        ]);
+    }
+
+    #[Route(
+        path: '/api/_action/external-orders/sync-now',
+        name: 'api.admin.external-orders.sync-now',
+        defaults: ['_acl' => ['admin']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function syncNow(Context $context): Response
+    {
+        try {
+            $this->syncService->syncNewOrders($context);
+
+            return new JsonResponse([
+                'success' => true,
+                'executedAt' => (new \DateTimeImmutable())->format(DATE_ATOM),
+            ]);
+        } catch (\Throwable $exception) {
+            return new JsonResponse([
+                'success' => false,
+                'executedAt' => (new \DateTimeImmutable())->format(DATE_ATOM),
+                'message' => $exception->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    #[Route(
+        path: '/api/_action/external-orders/sync-status',
+        name: 'api.admin.external-orders.sync-status',
+        defaults: ['_acl' => ['admin']],
+        methods: [Request::METHOD_GET]
+    )]
+    public function syncStatus(): Response
+    {
+        $row = $this->connection->fetchAssociative(
+            'SELECT status, last_execution_time FROM scheduled_task WHERE name = :name ORDER BY created_at DESC LIMIT 1',
+            ['name' => 'external_orders.sync']
+        );
+
+        if (!is_array($row)) {
+            return new JsonResponse([
+                'hasTask' => false,
+                'status' => null,
+                'lastExecutionTime' => null,
+                'isSuccess' => null,
+            ]);
+        }
+
+        $status = isset($row['status']) ? (string) $row['status'] : null;
+        $lastExecutionTime = isset($row['last_execution_time']) ? (string) $row['last_execution_time'] : null;
+
+        return new JsonResponse([
+            'hasTask' => true,
+            'status' => $status,
+            'lastExecutionTime' => $lastExecutionTime,
+            'isSuccess' => $status !== 'failed' && $lastExecutionTime !== null,
         ]);
     }
 }
