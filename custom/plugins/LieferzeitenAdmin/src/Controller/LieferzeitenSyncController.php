@@ -9,6 +9,7 @@ use LieferzeitenAdmin\Service\LieferzeitenPositionWriteService;
 use LieferzeitenAdmin\Service\LieferzeitenTaskService;
 use LieferzeitenAdmin\Service\WriteEndpointConflictException;
 use LieferzeitenAdmin\Service\LieferzeitenStatisticsService;
+use LieferzeitenAdmin\Service\DemoDataSeederService;
 use LieferzeitenAdmin\Service\Tracking\TrackingHistoryService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -30,6 +31,7 @@ class LieferzeitenSyncController extends AbstractController
         private readonly LieferzeitenPositionWriteService $positionWriteService,
         private readonly LieferzeitenTaskService $taskService,
         private readonly LieferzeitenStatisticsService $statisticsService,
+        private readonly DemoDataSeederService $demoDataSeederService,
         private readonly AuditLogService $auditLogService,
     ) {
     }
@@ -214,6 +216,29 @@ class LieferzeitenSyncController extends AbstractController
         $this->auditLogService->log('sync_started', 'lieferzeiten_sync', null, $context, [], 'shopware');
 
         return new JsonResponse(['status' => 'ok']);
+    }
+
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/demo-data',
+        name: 'api.admin.lieferzeiten.demo_data',
+        defaults: ['_acl' => ['lieferzeiten.editor']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function seedDemoData(Request $request, Context $context): JsonResponse
+    {
+        $payload = json_decode((string) $request->getContent(), true);
+        $reset = is_array($payload) ? (bool) ($payload['reset'] ?? false) : false;
+
+        $result = $this->demoDataSeederService->seed($context, $reset);
+
+        $this->auditLogService->log('demo_data_seeded', 'lieferzeiten_demo_data', null, $context, [
+            'reset' => $reset,
+            'created' => $result['created'] ?? [],
+            'deleted' => $result['deleted'] ?? [],
+        ], 'shopware');
+
+        return new JsonResponse($result);
     }
 
     #[Route(

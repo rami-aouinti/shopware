@@ -63,6 +63,7 @@ class LieferzeitenSyncControllerAclTest extends TestCase
         yield 'reopen task requires editor' => ['POST', '/api/_action/lieferzeiten/tasks/{taskId}/reopen', 'lieferzeiten.editor'];
         yield 'cancel task requires editor' => ['POST', '/api/_action/lieferzeiten/tasks/{taskId}/cancel', 'lieferzeiten.editor'];
         yield 'sync import requires editor' => ['POST', '/api/_action/lieferzeiten/sync', 'lieferzeiten.editor'];
+        yield 'seed demo data requires editor' => ['POST', '/api/_action/lieferzeiten/demo-data', 'lieferzeiten.editor'];
         yield 'update supplier date requires editor' => ['POST', '/api/_action/lieferzeiten/position/{positionId}/liefertermin-lieferant', 'lieferzeiten.editor'];
         yield 'update new date requires editor' => ['POST', '/api/_action/lieferzeiten/position/{positionId}/neuer-liefertermin', 'lieferzeiten.editor'];
         yield 'update comment requires editor' => ['POST', '/api/_action/lieferzeiten/position/{positionId}/comment', 'lieferzeiten.editor'];
