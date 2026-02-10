@@ -39,6 +39,7 @@
         min-height: calc(100vh - 220px);
         display: flex;
         flex-direction: column;
+        padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
     }
 
     &__button {
@@ -424,7 +425,7 @@
     &__pagination {
         display: flex;
         justify-content: center;
-        padding: 12px 16px 8px;
+        padding: 12px 16px 16px;
         margin-top: auto;
     }
 
