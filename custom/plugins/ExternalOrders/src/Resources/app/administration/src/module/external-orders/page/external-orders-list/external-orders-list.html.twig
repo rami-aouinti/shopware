@@ -753,31 +753,30 @@
                                     <h4>Bestellprodukte</h4>
                                 </div>
                                 <div class="external-orders__detail-card-body">
-                                    <sw-data-grid
-                                        :data-source="selectedOrder.items"
-                                        :columns="[
-                                            { property: 'name', label: 'Produktname' },
-                                            { property: 'quantity', label: 'Menge' },
-                                            { property: 'netPrice', label: 'Nettowert' },
-                                            { property: 'taxRate', label: 'Steuersatz' },
-                                            { property: 'grossPrice', label: 'Bruttowert' },
-                                            { property: 'totalPrice', label: 'Gesamtwert' },
-                                        ]"
-                                        identifier="external-orders-items"
-                                    >
-                                        <template #column-netPrice="{ item }">
-                                            {{ formatCurrency(item.netPrice) }}
-                                        </template>
-                                        <template #column-taxRate="{ item }">
-                                            {{ item.taxRate }}%
-                                        </template>
-                                        <template #column-grossPrice="{ item }">
-                                            {{ formatCurrency(item.grossPrice) }}
-                                        </template>
-                                        <template #column-totalPrice="{ item }">
-                                            {{ formatCurrency(item.totalPrice) }}
-                                        </template>
-                                    </sw-data-grid>
+                                    <div class="external-orders__detail-table-wrapper">
+                                        <table class="external-orders__detail-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Produktname</th>
+                                                    <th>Menge</th>
+                                                    <th>Nettowert</th>
+                                                    <th>Steuersatz</th>
+                                                    <th>Bruttowert</th>
+                                                    <th>Gesamtwert</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(item, index) in selectedOrder.items" :key="`detail-item-${index}`">
+                                                    <td>{{ item.name }}</td>
+                                                    <td>{{ item.quantity }}</td>
+                                                    <td>{{ formatCurrency(item.netPrice) }}</td>
+                                                    <td>{{ item.taxRate }}%</td>
+                                                    <td>{{ formatCurrency(item.grossPrice) }}</td>
+                                                    <td>{{ formatCurrency(item.totalPrice) }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </section>
 
@@ -786,14 +785,28 @@
                                     <h4>Statusverlauf</h4>
                                 </div>
                                 <div class="external-orders__detail-card-body">
-                                    <sw-data-grid
-                                        :data-source="selectedOrder.statusHistory"
-                                        :columns="[
-                                            { property: 'status', label: 'Status' },
-                                            { property: 'date', label: 'Datum' },
-                                            { property: 'comment', label: 'Kommentare' },
-                                        ]"
-                                        identifier="external-orders-history"></sw-data-grid>
+                                    <div class="external-orders__detail-table-wrapper">
+                                        <table class="external-orders__detail-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Status</th>
+                                                    <th>Datum</th>
+                                                    <th>Kommentare</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(entry, index) in selectedOrder.statusHistory" :key="`detail-status-${index}`">
+                                                    <td>
+                                                        <span class="external-orders__status-pill" :class="statusClassFromLabel(entry.status)">
+                                                            {{ entry.status }}
+                                                        </span>
+                                                    </td>
+                                                    <td>{{ entry.date }}</td>
+                                                    <td>{{ entry.comment }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </section>
 
