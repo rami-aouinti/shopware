@@ -1,0 +1,31 @@
+<sw-page class="lieferzeiten-notification-toggle-list">
+    <template #smart-bar-header>
+        <h2>Notification Toggles</h2>
+    </template>
+
+    <template #smart-bar-actions>
+        <sw-button variant="primary" @click="onCreate">Create</sw-button>
+    </template>
+
+    <template #content>
+        <sw-card>
+            <sw-entity-listing
+                v-if="items"
+                :items="items"
+                :repository="repository"
+                :columns="columns"
+                :isLoading="isLoading"
+                :showSelection="false"
+                :allowInlineEdit="true"
+                :allowDelete="true"
+                :total="total"
+                :page="page"
+                :limit="limit"
+                @page-change="onPageChange"
+                @inline-edit-save="onInlineEditSave"
+                @inline-edit-cancel="getList"
+                @delete="onDelete"
+            />
+        </sw-card>
+    </template>
+</sw-page>

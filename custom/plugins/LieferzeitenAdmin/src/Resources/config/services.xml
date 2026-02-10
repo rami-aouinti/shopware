@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <defaults autowire="true" autoconfigure="true" />
+
+        <service id="LieferzeitenAdmin\Entity\ChannelSettingsDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+        <service id="LieferzeitenAdmin\Entity\TaskAssignmentRuleDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+        <service id="LieferzeitenAdmin\Entity\NotificationToggleDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+        <service id="LieferzeitenAdmin\Entity\PaketDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+        <service id="LieferzeitenAdmin\Entity\PositionDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+        <service id="LieferzeitenAdmin\Entity\LieferterminLieferantHistoryDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+        <service id="LieferzeitenAdmin\Entity\NeuerLieferterminHistoryDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+        <service id="LieferzeitenAdmin\Entity\SendenummerHistoryDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+    </services>
+</container>
