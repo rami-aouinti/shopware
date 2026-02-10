@@ -53,7 +53,7 @@ class Migration2026021007DeliveryDateRangeHistory extends MigrationStep
         string $column,
         string $definition
     ): void {
-        if (!$this->columnExists($connection, $table, $column)) {
+        if (!$this->historyColumnExists($connection, $table, $column)) {
             $connection->executeStatement(sprintf(
                 'ALTER TABLE `%s` ADD COLUMN `%s` %s',
                 $table,
@@ -63,7 +63,7 @@ class Migration2026021007DeliveryDateRangeHistory extends MigrationStep
         }
     }
 
-    private function columnExists(Connection $connection, string $table, string $column): bool
+    private function historyColumnExists(Connection $connection, string $table, string $column): bool
     {
         $columnName = $connection->fetchOne(
             'SELECT COLUMN_NAME
