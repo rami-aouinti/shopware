@@ -16,8 +16,8 @@ const orders = [
         neuerLieferterminHistory: ['01.10.2024, 08:21: 2 Tage'],
         commentHistory: ['01.10.2024, 08:22: Warte auf Restmenge'],
         positions: [
-            { id: '1001-pos1', number: '1', label: 'Artikel A', quantity: 6, packages: ['1001-1'] },
-            { id: '1001-pos2', number: '2', label: 'Artikel B', quantity: 4, packages: ['1001-2'] },
+            { id: '1001-pos1', number: '1', label: 'Artikel A', quantity: 6, trackingCarrier: 'dhl', packages: [{ number: '0034043412345678', carrier: 'dhl' }] },
+            { id: '1001-pos2', number: '2', label: 'Artikel B', quantity: 4, trackingCarrier: 'gls', packages: [{ number: 'GLS12345678', carrier: 'gls' }] },
         ],
         parcels: [
             { id: '1001-1', closed: false },
@@ -41,7 +41,7 @@ const orders = [
         neuerLieferterminHistory: [],
         commentHistory: [],
         positions: [
-            { id: '1002-pos1', number: '1', label: 'Artikel C', quantity: 2, packages: ['1002-1'] },
+            { id: '1002-pos1', number: '1', label: 'Artikel C', quantity: 2, trackingCarrier: 'dhl', packages: [{ number: '0034043412349999', carrier: 'dhl' }] },
         ],
         parcels: [
             { id: '1002-1', closed: true },
@@ -64,8 +64,8 @@ const orders = [
         neuerLieferterminHistory: ['03.10.2024, 09:55: 4 Tage'],
         commentHistory: ['03.10.2024, 10:00: Kundensplitting aktiv'],
         positions: [
-            { id: '1003-pos1', number: '1', label: 'Artikel D', quantity: 1, packages: ['1003-1'] },
-            { id: '1003-pos2', number: '2', label: 'Artikel E', quantity: 3, packages: ['1003-2'] },
+            { id: '1003-pos1', number: '1', label: 'Artikel D', quantity: 1, trackingCarrier: 'gls', packages: [{ number: 'GLS99887766', carrier: 'gls' }] },
+            { id: '1003-pos2', number: '2', label: 'Artikel E', quantity: 3, trackingCarrier: 'dhl', packages: [{ number: '0034043412341111', carrier: 'dhl' }] },
         ],
         parcels: [
             { id: '1003-1', closed: true },
@@ -89,7 +89,7 @@ const orders = [
         neuerLieferterminHistory: [],
         commentHistory: [],
         positions: [
-            { id: '1004-pos1', number: '1', label: 'Artikel F', quantity: 8, packages: ['1004-1', '1004-2'] },
+            { id: '1004-pos1', number: '1', label: 'Artikel F', quantity: 8, trackingCarrier: 'dhl', packages: [{ number: '0034043412342222', carrier: 'dhl' }, { number: '0034043412343333', carrier: 'dhl' }] },
         ],
         parcels: [
             { id: '1004-1', closed: true },

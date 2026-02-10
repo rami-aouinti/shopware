@@ -71,6 +71,12 @@
         "emptyState": {
             "title": "No open orders",
             "description": "There are currently no open orders for the selected domain."
+        },
+        "tracking": {
+            "loading": "Loading tracking history …",
+            "empty": "No tracking events found.",
+            "loadError": "Unable to load tracking history.",
+            "missingCarrier": "Tracking unavailable: carrier is missing."
         }
     }
 }

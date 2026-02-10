@@ -1,7 +1,10 @@
 import template from './lieferzeiten-order-table.html.twig';
+import './lieferzeiten-order-table.scss';
 
 Shopware.Component.register('lieferzeiten-order-table', {
     template,
+
+    inject: ['lieferzeitenTrackingService'],
 
     props: {
         orders: {
@@ -20,6 +23,11 @@ Shopware.Component.register('lieferzeiten-order-table', {
         return {
             expandedOrderIds: [],
             editableOrders: {},
+            showTrackingModal: false,
+            isTrackingLoading: false,
+            trackingError: '',
+            trackingEvents: [],
+            activeTracking: null,
         };
     },
 
@@ -64,6 +72,55 @@ Shopware.Component.register('lieferzeiten-order-table', {
         parcelSummary(order) {
             const openParcels = order.parcels.filter((parcel) => !parcel.closed).length;
             return `${openParcels}/${order.parcels.length}`;
+        },
+
+        resolveTrackingEntries(order, position) {
+            const carrier = String(position.trackingCarrier || order.trackingCarrier || '').toLowerCase();
+            return (position.packages || []).map((pkg) => {
+                if (typeof pkg === 'string') {
+                    return { number: pkg, carrier };
+                }
+
+                return {
+                    number: String(pkg?.number || ''),
+                    carrier: String(pkg?.carrier || carrier).toLowerCase(),
+                };
+            }).filter((entry) => entry.number !== '');
+        },
+
+        async openTrackingHistory(entry) {
+            if (!entry?.number || !entry?.carrier) {
+                this.trackingError = this.$t('lieferzeiten.tracking.missingCarrier');
+                this.showTrackingModal = true;
+                return;
+            }
+
+            this.activeTracking = entry;
+            this.showTrackingModal = true;
+            this.isTrackingLoading = true;
+            this.trackingError = '';
+            this.trackingEvents = [];
+
+            try {
+                const response = await this.lieferzeitenTrackingService.history(entry.carrier, entry.number);
+                if (response?.ok === false) {
+                    this.trackingError = response?.message || this.$t('lieferzeiten.tracking.loadError');
+                    return;
+                }
+                this.trackingEvents = Array.isArray(response?.events) ? response.events : [];
+            } catch (error) {
+                this.trackingError = error?.response?.data?.message || error?.message || this.$t('lieferzeiten.tracking.loadError');
+            } finally {
+                this.isTrackingLoading = false;
+            }
+        },
+
+        closeTrackingModal() {
+            this.showTrackingModal = false;
+            this.isTrackingLoading = false;
+            this.trackingError = '';
+            this.trackingEvents = [];
+            this.activeTracking = null;
         },
 
         shippingLabel(order) {

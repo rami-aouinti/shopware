@@ -1,0 +1,70 @@
+.lieferzeiten-order-table {
+    &__tracking-link {
+        border: 0;
+        background: transparent;
+        color: #189eff;
+        text-decoration: underline;
+        padding: 0;
+        margin-right: 8px;
+        cursor: pointer;
+    }
+
+    &__tracking-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(17, 29, 46, 0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1200;
+    }
+
+    &__tracking-dialog {
+        width: min(760px, 92vw);
+        max-height: 82vh;
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+    }
+
+    &__tracking-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        border-bottom: 1px solid #d6dde6;
+    }
+
+    &__tracking-close {
+        border: 0;
+        background: transparent;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    &__tracking-body {
+        padding: 16px 20px;
+        overflow: auto;
+    }
+
+    &__tracking-error {
+        color: #de294c;
+        font-weight: 600;
+    }
+
+    &__tracking-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        li {
+            border: 1px solid #d6dde6;
+            border-radius: 6px;
+            padding: 10px;
+        }
+    }
+}
