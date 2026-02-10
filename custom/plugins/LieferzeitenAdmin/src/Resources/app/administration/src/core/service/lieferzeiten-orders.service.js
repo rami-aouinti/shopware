@@ -15,6 +15,16 @@ class LieferzeitenOrdersService extends ApiService {
         return data?.data ?? data ?? [];
     }
 
+
+    async getStatistics(params = {}) {
+        const response = await this.httpClient.get('/api/_action/lieferzeiten/statistics', {
+            params,
+            headers: this.getBasicHeaders(),
+        });
+
+        return ApiService.handleResponse(response) ?? response?.data ?? {};
+    }
+
     async updateLieferterminLieferant(positionId, payload) {
         return this.post(`position/${positionId}/liefertermin-lieferant`, payload);
     }

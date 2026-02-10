@@ -7,6 +7,7 @@ use LieferzeitenAdmin\Service\LieferzeitenImportService;
 use LieferzeitenAdmin\Service\LieferzeitenOrderOverviewService;
 use LieferzeitenAdmin\Service\LieferzeitenPositionWriteService;
 use LieferzeitenAdmin\Service\LieferzeitenTaskService;
+use LieferzeitenAdmin\Service\LieferzeitenStatisticsService;
 use LieferzeitenAdmin\Service\Tracking\TrackingHistoryService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -27,6 +28,7 @@ class LieferzeitenSyncController extends AbstractController
         private readonly LieferzeitenOrderOverviewService $orderOverviewService,
         private readonly LieferzeitenPositionWriteService $positionWriteService,
         private readonly LieferzeitenTaskService $taskService,
+        private readonly LieferzeitenStatisticsService $statisticsService,
         private readonly AuditLogService $auditLogService,
     ) {
     }
@@ -135,6 +137,30 @@ class LieferzeitenSyncController extends AbstractController
         $this->auditLogService->log('orders_viewed', 'lieferzeiten_orders', null, $context, [
             'page' => (int) $request->query->get('page', 1),
             'limit' => (int) $request->query->get('limit', 25),
+        ], 'shopware');
+
+        return new JsonResponse($payload);
+    }
+
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/statistics',
+        name: 'api.admin.lieferzeiten.statistics',
+        defaults: ['_acl' => ['lieferzeiten.viewer']],
+        methods: [Request::METHOD_GET]
+    )]
+    public function statistics(Request $request, Context $context): JsonResponse
+    {
+        $period = (int) $request->query->get('period', 30);
+        $domain = $request->query->get('domain') ? (string) $request->query->get('domain') : null;
+        $channel = $request->query->get('channel') ? (string) $request->query->get('channel') : null;
+
+        $payload = $this->statisticsService->getStatistics($period, $domain, $channel);
+
+        $this->auditLogService->log('statistics_viewed', 'lieferzeiten_statistics', null, $context, [
+            'period' => $period,
+            'domain' => $domain,
+            'channel' => $channel,
         ], 'shopware');
 
         return new JsonResponse($payload);

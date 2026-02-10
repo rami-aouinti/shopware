@@ -20,12 +20,24 @@
             </sw-button>
         </sw-container>
 
-        <sw-container columns="repeat(3, 1fr)" gap="16px" class="lieferzeiten-statistics__metrics">
+        <sw-loader v-if="isLoading" />
+
+        <sw-empty-state
+            v-else-if="loadError"
+            :title="$t('lieferzeiten.loading.errorTitle')"
+            :description="$t('lieferzeiten.loading.errorDescription')"
+        />
+
+        <template v-else>
+        <sw-container columns="repeat(4, 1fr)" gap="16px" class="lieferzeiten-statistics__metrics">
             <sw-card :title="$t('lieferzeiten.statistics.open')">
                 <div class="lieferzeiten-statistics__metric">{{ metrics.open }}</div>
             </sw-card>
-            <sw-card :title="$t('lieferzeiten.statistics.overdue')">
-                <div class="lieferzeiten-statistics__metric">{{ metrics.overdue }}</div>
+            <sw-card :title="$t('lieferzeiten.statistics.overdueShipping')">
+                <div class="lieferzeiten-statistics__metric">{{ metrics.overdueShipping }}</div>
+            </sw-card>
+            <sw-card :title="$t('lieferzeiten.statistics.overdueDelivery')">
+                <div class="lieferzeiten-statistics__metric">{{ metrics.overdueDelivery }}</div>
             </sw-card>
             <sw-card :title="$t('lieferzeiten.statistics.activities')">
                 <div class="lieferzeiten-statistics__metric">{{ metrics.activities }}</div>
@@ -61,6 +73,10 @@
                     </sw-label>
                 </template>
 
+                <template #column-eventAt="{ item }">
+                    {{ formatDate(item.eventAt) }}
+                </template>
+
                 <template #column-promisedAt="{ item }">
                     {{ formatDate(item.promisedAt) }}
                 </template>
@@ -81,7 +97,9 @@
             <p><strong>{{ $t('lieferzeiten.table.orderNumber') }}:</strong> {{ selectedActivity.orderNumber }}</p>
             <p><strong>{{ $t('lieferzeiten.table.domain') }}:</strong> {{ selectedActivity.domain }}</p>
             <p><strong>{{ $t('lieferzeiten.table.status') }}:</strong> {{ selectedActivity.status }}</p>
+            <p><strong>{{ $t('lieferzeiten.statistics.activityDate') }}:</strong> {{ formatDate(selectedActivity.eventAt) }}</p>
             <p><strong>{{ $t('lieferzeiten.statistics.promisedDate') }}:</strong> {{ formatDate(selectedActivity.promisedAt) }}</p>
         </sw-modal>
+        </template>
     </div>
 {% endblock %}

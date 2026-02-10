@@ -1,120 +1,122 @@
 {
-    "lieferzeiten": {
-        "general": {
-            "mainMenuItemGeneral": "Lieferzeiten",
-            "description": "Monitoring der Lieferzeiten im Admin",
-            "infoTitle": "Hinweis",
-            "timezoneInfo": "Zeitberechnungen basieren auf der Zeitzone Europe/Berlin.",
-            "openDefinition": "„Offen“ bedeutet mindestens ein noch nicht geschlossenes Paket."
-        },
-        "tabs": {
-            "all": "Alle Bestellungen",
-            "open": "Offene Bestellungen",
-            "statistics": "Statistiken"
-        },
-        "zones": {
-            "order": "Bestellung",
-            "delivery": "Lieferung",
-            "status": "Status"
-        },
-        "domainSelection": {
-            "placeholder": "Bitte Bereich wählen",
-            "reset": "Auswahl zurücksetzen",
-            "modalTitle": "Bereich auswählen",
-            "modalDescription": "Wähle einen Bereich aus, um die Lieferzeiten-Ansichten zu laden.",
-            "persistLabel": "Auswahl auf diesem Gerät speichern",
-            "confirm": "Auswahl übernehmen"
-        },
-        "kpi": {
-            "totalOrders": "Bestellungen gesamt",
-            "openOrders": "Offene Bestellungen",
-            "closedOrders": "Abgeschlossene Bestellungen",
-            "openParcels": "Offene Pakete",
-            "filteredDomain": "Bereich"
-        },
-        "table": {
-            "orderNumber": "Bestellnummer",
-            "domain": "Bereich",
-            "parcels": "Pakete offen/gesamt",
-            "openParcels": "Offene Pakete",
-            "positions": "Positionen",
-            "position": "Position",
-            "article": "Artikel",
-            "quantity": "Menge",
-            "packageNumbers": "Pakete",
-            "status": "Status"
-        },
-        "fields": {
-            "supplierDate": "Liefertermin Lieferant (1-14 Tage)",
-            "supplierWeek": "KW",
-            "newDate": "Neuer Liefertermin (1-4 Tage)",
-            "comment": "Kommentar",
-            "history": "Historie",
-            "shippingType": "Versandart",
-            "audit": "Audit",
-            "days": "Tage"
-        },
-        "shipping": {
-            "unclear": "Unklar",
-            "complete": "Gesamt",
-            "partial": "Teil",
-            "split": "Trennung"
-        },
-        "audit": {
-            "savedSupplierDate": "Liefertermin Lieferant gespeichert",
-            "savedNewDate": "Neuer Liefertermin gespeichert",
-            "savedComment": "Kommentar gespeichert"
-        },
-        "additionalRequest": {
-            "button": "Zusätzliche Liefertermin-Anfrage",
-            "historyEntry": "Zusätzliche Liefertermin-Anfrage ausgelöst",
-            "auditCreated": "Zusätzliche Liefertermin-Anfrage erstellt",
-            "auditClosed": "Initiator über Abschluss informiert",
-            "notificationTitle": "Liefertermin-Anfrage",
-            "notificationRequested": "Anfrage wurde erstellt (Initiator: {initiator}).",
-            "notificationClosed": "Bestellung geschlossen – Initiator {initiator} wurde benachrichtigt.",
-            "defaultInitiator": "Admin"
-        },
-        "status": {
-            "open": "Offen",
-            "closed": "Abgeschlossen"
-        },
-        "emptyState": {
-            "title": "Keine offenen Bestellungen",
-            "description": "Für den ausgewählten Bereich liegen aktuell keine offenen Bestellungen vor."
-        },
-        "tracking": {
-            "loading": "Tracking-Historie wird geladen …",
-            "empty": "Keine Tracking-Ereignisse gefunden.",
-            "loadError": "Tracking konnte nicht geladen werden.",
-            "missingCarrier": "Tracking nicht möglich: Kein Versanddienstleister hinterlegt."
-        },
-        "statistics": {
-            "periodLabel": "Periode",
-            "channelLabel": "Kanal",
-            "allChannels": "Alle Kanäle",
-            "open": "Offen",
-            "overdue": "Überfällig",
-            "activities": "Aktivitäten",
-            "chartTitle": "Aktivitäten nach Kanal",
-            "tableTitle": "Aktivitäten",
-            "drilldown": "Drilldown",
-            "drilldownTitle": "Aktivitätsdetails",
-            "exportCsv": "CSV exportieren",
-            "promisedDate": "Lieferdatum",
-            "period": {
-                "7": "Letzte 7 Tage",
-                "30": "Letzte 30 Tage",
-                "90": "Letzte 90 Tage"
-            },
-            "status": {
-                "overdue": "Überfällig"
-            }
-        },
-        "loading": {
-            "errorTitle": "Bestellungen konnten nicht geladen werden",
-            "errorDescription": "Beim Laden der Bestellungen ist ein Fehler aufgetreten.",
-            "retry": "Erneut versuchen"
-        }
+  "lieferzeiten": {
+    "general": {
+      "mainMenuItemGeneral": "Lieferzeiten",
+      "description": "Monitoring der Lieferzeiten im Admin",
+      "infoTitle": "Hinweis",
+      "timezoneInfo": "Zeitberechnungen basieren auf der Zeitzone Europe/Berlin.",
+      "openDefinition": "„Offen“ bedeutet mindestens ein noch nicht geschlossenes Paket."
+    },
+    "tabs": {
+      "all": "Alle Bestellungen",
+      "open": "Offene Bestellungen",
+      "statistics": "Statistiken"
+    },
+    "zones": {
+      "order": "Bestellung",
+      "delivery": "Lieferung",
+      "status": "Status"
+    },
+    "domainSelection": {
+      "placeholder": "Bitte Bereich wählen",
+      "reset": "Auswahl zurücksetzen",
+      "modalTitle": "Bereich auswählen",
+      "modalDescription": "Wähle einen Bereich aus, um die Lieferzeiten-Ansichten zu laden.",
+      "persistLabel": "Auswahl auf diesem Gerät speichern",
+      "confirm": "Auswahl übernehmen"
+    },
+    "kpi": {
+      "totalOrders": "Bestellungen gesamt",
+      "openOrders": "Offene Bestellungen",
+      "closedOrders": "Abgeschlossene Bestellungen",
+      "openParcels": "Offene Pakete",
+      "filteredDomain": "Bereich"
+    },
+    "table": {
+      "orderNumber": "Bestellnummer",
+      "domain": "Bereich",
+      "parcels": "Pakete offen/gesamt",
+      "openParcels": "Offene Pakete",
+      "positions": "Positionen",
+      "position": "Position",
+      "article": "Artikel",
+      "quantity": "Menge",
+      "packageNumbers": "Pakete",
+      "status": "Status"
+    },
+    "fields": {
+      "supplierDate": "Liefertermin Lieferant (1-14 Tage)",
+      "supplierWeek": "KW",
+      "newDate": "Neuer Liefertermin (1-4 Tage)",
+      "comment": "Kommentar",
+      "history": "Historie",
+      "shippingType": "Versandart",
+      "audit": "Audit",
+      "days": "Tage"
+    },
+    "shipping": {
+      "unclear": "Unklar",
+      "complete": "Gesamt",
+      "partial": "Teil",
+      "split": "Trennung"
+    },
+    "audit": {
+      "savedSupplierDate": "Liefertermin Lieferant gespeichert",
+      "savedNewDate": "Neuer Liefertermin gespeichert",
+      "savedComment": "Kommentar gespeichert"
+    },
+    "additionalRequest": {
+      "button": "Zusätzliche Liefertermin-Anfrage",
+      "historyEntry": "Zusätzliche Liefertermin-Anfrage ausgelöst",
+      "auditCreated": "Zusätzliche Liefertermin-Anfrage erstellt",
+      "auditClosed": "Initiator über Abschluss informiert",
+      "notificationTitle": "Liefertermin-Anfrage",
+      "notificationRequested": "Anfrage wurde erstellt (Initiator: {initiator}).",
+      "notificationClosed": "Bestellung geschlossen – Initiator {initiator} wurde benachrichtigt.",
+      "defaultInitiator": "Admin"
+    },
+    "status": {
+      "open": "Offen",
+      "closed": "Abgeschlossen"
+    },
+    "emptyState": {
+      "title": "Keine offenen Bestellungen",
+      "description": "Für den ausgewählten Bereich liegen aktuell keine offenen Bestellungen vor."
+    },
+    "tracking": {
+      "loading": "Tracking-Historie wird geladen …",
+      "empty": "Keine Tracking-Ereignisse gefunden.",
+      "loadError": "Tracking konnte nicht geladen werden.",
+      "missingCarrier": "Tracking nicht möglich: Kein Versanddienstleister hinterlegt."
+    },
+    "statistics": {
+      "periodLabel": "Periode",
+      "channelLabel": "Kanal",
+      "allChannels": "Alle Kanäle",
+      "open": "Offen",
+      "activities": "Aktivitäten",
+      "chartTitle": "Aktivitäten nach Kanal",
+      "tableTitle": "Aktivitäten",
+      "drilldown": "Drilldown",
+      "drilldownTitle": "Aktivitätsdetails",
+      "exportCsv": "CSV exportieren",
+      "promisedDate": "Lieferdatum",
+      "period": {
+        "7": "Letzte 7 Tage",
+        "30": "Letzte 30 Tage",
+        "90": "Letzte 90 Tage"
+      },
+      "status": {
+        "overdue": "Überfällig"
+      },
+      "overdueShipping": "Versand überfällig",
+      "overdueDelivery": "Lieferung überfällig",
+      "activityDate": "Aktiv am"
+    },
+    "loading": {
+      "errorTitle": "Bestellungen konnten nicht geladen werden",
+      "errorDescription": "Beim Laden der Bestellungen ist ein Fehler aufgetreten.",
+      "retry": "Erneut versuchen"
     }
+  }
 }

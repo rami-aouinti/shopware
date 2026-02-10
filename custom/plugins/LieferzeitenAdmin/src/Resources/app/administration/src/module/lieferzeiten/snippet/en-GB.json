@@ -1,120 +1,122 @@
 {
-    "lieferzeiten": {
-        "general": {
-            "mainMenuItemGeneral": "Delivery times",
-            "description": "Delivery time monitoring in admin",
-            "infoTitle": "Notice",
-            "timezoneInfo": "Time calculations are based on timezone Europe/Berlin.",
-            "openDefinition": "\"Open\" means at least one parcel is still not closed."
-        },
-        "tabs": {
-            "all": "All orders",
-            "open": "Open orders",
-            "statistics": "Statistics"
-        },
-        "zones": {
-            "order": "Order",
-            "delivery": "Delivery",
-            "status": "Status"
-        },
-        "domainSelection": {
-            "placeholder": "Choose domain",
-            "reset": "Reset selection",
-            "modalTitle": "Choose domain",
-            "modalDescription": "Choose a domain to load delivery-time views.",
-            "persistLabel": "Persist selection on this device",
-            "confirm": "Apply selection"
-        },
-        "kpi": {
-            "totalOrders": "Total orders",
-            "openOrders": "Open orders",
-            "closedOrders": "Closed orders",
-            "openParcels": "Open parcels",
-            "filteredDomain": "Domain"
-        },
-        "table": {
-            "orderNumber": "Order number",
-            "domain": "Domain",
-            "parcels": "Open/total parcels",
-            "openParcels": "Open parcels",
-            "positions": "Positions",
-            "position": "Position",
-            "article": "Article",
-            "quantity": "Quantity",
-            "packageNumbers": "Parcels",
-            "status": "Status"
-        },
-        "fields": {
-            "supplierDate": "Supplier delivery date (1-14 days)",
-            "supplierWeek": "Week",
-            "newDate": "New delivery date (1-4 days)",
-            "comment": "Comment",
-            "history": "History",
-            "shippingType": "Shipping type",
-            "audit": "Audit",
-            "days": "days"
-        },
-        "shipping": {
-            "unclear": "Unclear",
-            "complete": "Complete",
-            "partial": "Partial",
-            "split": "Split"
-        },
-        "audit": {
-            "savedSupplierDate": "Supplier date saved",
-            "savedNewDate": "New date saved",
-            "savedComment": "Comment saved"
-        },
-        "additionalRequest": {
-            "button": "Additional delivery date request",
-            "historyEntry": "Additional delivery date request triggered",
-            "auditCreated": "Additional delivery date request created",
-            "auditClosed": "Initiator notified on closure",
-            "notificationTitle": "Delivery date request",
-            "notificationRequested": "Request created (initiator: {initiator}).",
-            "notificationClosed": "Order closed – initiator {initiator} was notified.",
-            "defaultInitiator": "Admin"
-        },
-        "status": {
-            "open": "Open",
-            "closed": "Closed"
-        },
-        "emptyState": {
-            "title": "No open orders",
-            "description": "There are currently no open orders for the selected domain."
-        },
-        "tracking": {
-            "loading": "Loading tracking history …",
-            "empty": "No tracking events found.",
-            "loadError": "Unable to load tracking history.",
-            "missingCarrier": "Tracking unavailable: carrier is missing."
-        },
-        "statistics": {
-            "periodLabel": "Period",
-            "channelLabel": "Channel",
-            "allChannels": "All channels",
-            "open": "Open",
-            "overdue": "Overdue",
-            "activities": "Activities",
-            "chartTitle": "Activities by channel",
-            "tableTitle": "Activities",
-            "drilldown": "Drilldown",
-            "drilldownTitle": "Activity details",
-            "exportCsv": "Export CSV",
-            "promisedDate": "Delivery date",
-            "period": {
-                "7": "Last 7 days",
-                "30": "Last 30 days",
-                "90": "Last 90 days"
-            },
-            "status": {
-                "overdue": "Overdue"
-            }
-        },
-        "loading": {
-            "errorTitle": "Unable to load orders",
-            "errorDescription": "An error occurred while loading orders.",
-            "retry": "Retry"
-        }
+  "lieferzeiten": {
+    "general": {
+      "mainMenuItemGeneral": "Delivery times",
+      "description": "Delivery time monitoring in admin",
+      "infoTitle": "Notice",
+      "timezoneInfo": "Time calculations are based on timezone Europe/Berlin.",
+      "openDefinition": "\"Open\" means at least one parcel is still not closed."
+    },
+    "tabs": {
+      "all": "All orders",
+      "open": "Open orders",
+      "statistics": "Statistics"
+    },
+    "zones": {
+      "order": "Order",
+      "delivery": "Delivery",
+      "status": "Status"
+    },
+    "domainSelection": {
+      "placeholder": "Choose domain",
+      "reset": "Reset selection",
+      "modalTitle": "Choose domain",
+      "modalDescription": "Choose a domain to load delivery-time views.",
+      "persistLabel": "Persist selection on this device",
+      "confirm": "Apply selection"
+    },
+    "kpi": {
+      "totalOrders": "Total orders",
+      "openOrders": "Open orders",
+      "closedOrders": "Closed orders",
+      "openParcels": "Open parcels",
+      "filteredDomain": "Domain"
+    },
+    "table": {
+      "orderNumber": "Order number",
+      "domain": "Domain",
+      "parcels": "Open/total parcels",
+      "openParcels": "Open parcels",
+      "positions": "Positions",
+      "position": "Position",
+      "article": "Article",
+      "quantity": "Quantity",
+      "packageNumbers": "Parcels",
+      "status": "Status"
+    },
+    "fields": {
+      "supplierDate": "Supplier delivery date (1-14 days)",
+      "supplierWeek": "Week",
+      "newDate": "New delivery date (1-4 days)",
+      "comment": "Comment",
+      "history": "History",
+      "shippingType": "Shipping type",
+      "audit": "Audit",
+      "days": "days"
+    },
+    "shipping": {
+      "unclear": "Unclear",
+      "complete": "Complete",
+      "partial": "Partial",
+      "split": "Split"
+    },
+    "audit": {
+      "savedSupplierDate": "Supplier date saved",
+      "savedNewDate": "New date saved",
+      "savedComment": "Comment saved"
+    },
+    "additionalRequest": {
+      "button": "Additional delivery date request",
+      "historyEntry": "Additional delivery date request triggered",
+      "auditCreated": "Additional delivery date request created",
+      "auditClosed": "Initiator notified on closure",
+      "notificationTitle": "Delivery date request",
+      "notificationRequested": "Request created (initiator: {initiator}).",
+      "notificationClosed": "Order closed – initiator {initiator} was notified.",
+      "defaultInitiator": "Admin"
+    },
+    "status": {
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "emptyState": {
+      "title": "No open orders",
+      "description": "There are currently no open orders for the selected domain."
+    },
+    "tracking": {
+      "loading": "Loading tracking history …",
+      "empty": "No tracking events found.",
+      "loadError": "Unable to load tracking history.",
+      "missingCarrier": "Tracking unavailable: carrier is missing."
+    },
+    "statistics": {
+      "periodLabel": "Period",
+      "channelLabel": "Channel",
+      "allChannels": "All channels",
+      "open": "Open",
+      "activities": "Activities",
+      "chartTitle": "Activities by channel",
+      "tableTitle": "Activities",
+      "drilldown": "Drilldown",
+      "drilldownTitle": "Activity details",
+      "exportCsv": "Export CSV",
+      "promisedDate": "Delivery date",
+      "period": {
+        "7": "Last 7 days",
+        "30": "Last 30 days",
+        "90": "Last 90 days"
+      },
+      "status": {
+        "overdue": "Overdue"
+      },
+      "overdueShipping": "Overdue shipping",
+      "overdueDelivery": "Overdue delivery",
+      "activityDate": "Activity at"
+    },
+    "loading": {
+      "errorTitle": "Unable to load orders",
+      "errorDescription": "An error occurred while loading orders.",
+      "retry": "Retry"
     }
+  }
 }
