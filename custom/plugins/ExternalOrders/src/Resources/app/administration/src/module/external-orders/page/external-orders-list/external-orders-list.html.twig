@@ -550,9 +550,9 @@
                                 <td class="external-orders__cell">{{ order.email }}</td>
                                 <td class="external-orders__cell">{{ order.date }}</td>
                                 <td class="external-orders__cell">
-                                    <sw-label :variant="statusVariant(order.status)" size="small">
+                                    <span class="external-orders__status-pill" :class="statusClass(order)">
                                         {{ order.statusLabel }}
-                                    </sw-label>
+                                    </span>
                                 </td>
                                 <td class="external-orders__cell external-orders__cell--actions">
                                     <button class="external-orders__action external-orders__button external-orders__button--ghost external-orders__button--small"

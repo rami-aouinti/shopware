@@ -786,17 +786,33 @@ Component.register('external-orders-list', {
             }).format(value);
         },
 
-        statusVariant(status) {
-            if (status === 'processing') {
-                return 'info';
+        statusClass(order) {
+            const normalizedStatusLabel = String(order?.statusLabel ?? '').trim().toLowerCase();
+
+            if ([
+                'bezahlt / in bearbeitung',
+                'nicht bezahlt / in bearbeitung',
+            ].includes(normalizedStatusLabel)) {
+                return 'external-orders__status-pill--blue';
             }
-            if (status === 'shipped') {
-                return 'success';
+
+            if (normalizedStatusLabel === 'vorkasse: bezahlung offen') {
+                return 'external-orders__status-pill--yellow';
             }
-            if (status === 'closed') {
-                return 'danger';
+
+            if (normalizedStatusLabel === 'versendet') {
+                return 'external-orders__status-pill--green';
             }
-            return 'neutral';
+
+            if (normalizedStatusLabel === 'bestellung abgeschlossen') {
+                return 'external-orders__status-pill--black';
+            }
+
+            if (normalizedStatusLabel === 'stornierung abgeschlossen') {
+                return 'external-orders__status-pill--gray';
+            }
+
+            return '';
         },
         isFakeOrder(order) {
             const id = order?.id ?? '';

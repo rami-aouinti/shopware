@@ -790,4 +790,40 @@
         font-size: 13px;
         line-height: 1.5;
     }
+
+    &__status-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.2;
+        color: #1f2d3d;
+        background: transparent;
+
+        &--blue {
+            background: #e7f1ff;
+            color: #1f6feb;
+        }
+
+        &--yellow {
+            background: #fff4d6;
+            color: #a66a00;
+        }
+
+        &--green {
+            background: #ddf6e8;
+            color: #117a3c;
+        }
+
+        &--black {
+            color: #111111;
+        }
+
+        &--gray {
+            color: #6b7280;
+        }
+    }
+
 }
