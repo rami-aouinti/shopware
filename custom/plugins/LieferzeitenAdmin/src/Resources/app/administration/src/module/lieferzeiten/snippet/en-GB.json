@@ -64,6 +64,16 @@
             "savedNewDate": "New date saved",
             "savedComment": "Comment saved"
         },
+        "additionalRequest": {
+            "button": "Additional delivery date request",
+            "historyEntry": "Additional delivery date request triggered",
+            "auditCreated": "Additional delivery date request created",
+            "auditClosed": "Initiator notified on closure",
+            "notificationTitle": "Delivery date request",
+            "notificationRequested": "Request created (initiator: {initiator}).",
+            "notificationClosed": "Order closed – initiator {initiator} was notified.",
+            "defaultInitiator": "Admin"
+        },
         "status": {
             "open": "Open",
             "closed": "Closed"

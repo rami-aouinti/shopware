@@ -4,6 +4,8 @@ import './lieferzeiten-order-table.scss';
 Shopware.Component.register('lieferzeiten-order-table', {
     template,
 
+    mixins: ['notification'],
+
     inject: ['lieferzeitenTrackingService'],
 
     props: {
@@ -50,8 +52,11 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     ...order,
                     originalLieferterminLieferantDays: order.lieferterminLieferantDays,
                     originalNeuerLieferterminDays: order.neuerLieferterminDays,
+                    additionalDeliveryRequest: order.additionalDeliveryRequest || null,
                 });
             }
+
+            this.notifyInitiatorIfClosed(this.editableOrders[order.id]);
 
             return this.editableOrders[order.id];
         },
@@ -183,6 +188,41 @@ Shopware.Component.register('lieferzeiten-order-table', {
         saveComment(order) {
             this.pushHistory(order, 'commentHistory', order.comment || '-');
             this.updateAudit(order, this.$t('lieferzeiten.audit.savedComment'));
+        },
+
+        requestAdditionalDeliveryDate(order) {
+            const initiator = this.$t('lieferzeiten.additionalRequest.defaultInitiator');
+            order.additionalDeliveryRequest = {
+                requestedAt: new Date().toISOString(),
+                initiator,
+                notifiedAt: order.additionalDeliveryRequest?.notifiedAt || null,
+            };
+
+            this.pushHistory(order, 'commentHistory', this.$t('lieferzeiten.additionalRequest.historyEntry'));
+            this.updateAudit(order, this.$t('lieferzeiten.additionalRequest.auditCreated'));
+            this.createNotificationSuccess({
+                title: this.$t('lieferzeiten.additionalRequest.notificationTitle'),
+                message: this.$t('lieferzeiten.additionalRequest.notificationRequested', { initiator }),
+            });
+
+            this.notifyInitiatorIfClosed(order);
+        },
+
+        notifyInitiatorIfClosed(order) {
+            const request = order.additionalDeliveryRequest;
+            if (!request || request.notifiedAt || this.isOrderOpen(order)) {
+                return;
+            }
+
+            request.notifiedAt = new Date().toISOString();
+            this.updateAudit(order, this.$t('lieferzeiten.additionalRequest.auditClosed'));
+
+            this.createNotificationInfo({
+                title: this.$t('lieferzeiten.additionalRequest.notificationTitle'),
+                message: this.$t('lieferzeiten.additionalRequest.notificationClosed', {
+                    initiator: request.initiator || this.$t('lieferzeiten.additionalRequest.defaultInitiator'),
+                }),
+            });
         },
 
         pushHistory(order, key, value) {

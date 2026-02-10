@@ -63,6 +63,9 @@
                             <sw-button size="small" @click="saveComment(order)">
                                 {{ $t('global.default.save') }}
                             </sw-button>
+                            <sw-button size="small" variant="ghost" @click="requestAdditionalDeliveryDate(order)">
+                                {{ $t('lieferzeiten.additionalRequest.button') }}
+                            </sw-button>
                         </td>
                         <td>
                             <ul>
