@@ -4,3 +4,5 @@ import './init/translation.init';
 
 import './core/service/lieferzeiten-tracking.service';
 import './core/service/lieferzeiten-orders.service';
+
+import './init/store-api-fallback.init';
