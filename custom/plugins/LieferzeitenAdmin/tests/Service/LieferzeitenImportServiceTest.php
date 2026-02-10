@@ -47,6 +47,48 @@ class LieferzeitenImportServiceTest extends TestCase
         ]));
     }
 
+    public function testIsCompletedStatus8UsesSan6TrackingMapping(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'isCompletedStatus8');
+        $method->setAccessible(true);
+
+        static::assertTrue($method->invoke($service, [
+            'parcels' => [
+                ['trackingStatus' => 'paketshop_retire'],
+                ['trackingStatus' => 'ablageort'],
+                ['trackingStatus' => 'zugestellt'],
+            ],
+        ], []));
+
+        static::assertFalse($method->invoke($service, [
+            'parcels' => [
+                ['trackingStatus' => 'paketshop_non_retire'],
+                ['trackingStatus' => 'zugestellt'],
+            ],
+        ], []));
+
+        static::assertFalse($method->invoke($service, [
+            'parcels' => [
+                ['trackingStatus' => 'retoure'],
+            ],
+        ], []));
+    }
+
+    public function testIsCompletedStatus8RequiresAllParcelsToBeClosed(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'isCompletedStatus8');
+        $method->setAccessible(true);
+
+        static::assertFalse($method->invoke($service, [
+            'parcels' => [
+                ['trackingStatus' => 'zugestellt'],
+                ['trackingStatus' => 'nicht_zustellbar'],
+            ],
+        ], []));
+    }
+
     private function createService(): LieferzeitenImportService
     {
         return new LieferzeitenImportService(
