@@ -88,10 +88,14 @@ readonly class ExternalOrderService
             'total' => $total,
             'page' => $page,
             'limit' => $limit,
+            'totalPages' => (int) ceil($total / max(1, $limit)),
+            'totalElements' => $total,
             'summary' => [
                 'orderCount' => count($orders),
+                'totalOrders' => count($orders),
                 'totalRevenue' => $totalRevenue,
                 'totalItems' => $totalItems,
+                'totalQuantity' => $totalItems,
             ],
             'orders' => $orders,
         ];
@@ -126,33 +130,45 @@ readonly class ExternalOrderService
         $additional = is_array($additional) ? $additional : [];
         $totals = $detail['totals'] ?? null;
         $totals = is_array($totals) ? $totals : [];
-        $customerName = $payload['customerName']
+        $customerName = $payload['customersName']
+            ?? $payload['customerName']
             ?? trim(($customer['firstName'] ?? '') . ' ' . ($customer['lastName'] ?? ''));
         $customerName = $customerName !== '' ? $customerName : 'N/A';
 
-        $email = $payload['email'] ?? ($customer['email'] ?? 'N/A');
+        $email = $payload['customersEmailAddress'] ?? $payload['email'] ?? ($customer['email'] ?? 'N/A');
         $orderNumber = $payload['orderNumber'] ?? ($detail['orderNumber'] ?? $externalId);
-        $orderReference = $payload['orderReference'] ?? $orderNumber;
+        $orderReference = $payload['auftragNumber'] ?? $payload['orderReference'] ?? $orderNumber;
         $channel = $payload['channel'] ?? 'unknown';
 
-        $statusLabel = $payload['statusLabel'] ?? ($additional['status'] ?? 'Processing');
+        $statusLabel = $payload['ordersStatusName'] ?? $payload['statusLabel'] ?? ($additional['status'] ?? 'Processing');
         $status = $payload['status'] ?? strtolower((string) $statusLabel);
 
-        $date = $payload['date'] ?? ($additional['orderDate'] ?? '');
+        $date = $payload['datePurchased'] ?? $payload['date'] ?? ($additional['orderDate'] ?? '');
 
         $totalItems = $payload['totalItems'] ?? $this->countDetailItems($detail);
         $totalRevenue = $payload['totalRevenue'] ?? ($totals['sum'] ?? 0.0);
+        $orderId = $payload['orderId'] ?? $orderNumber;
+        $statusColor = $payload['orderStatusColor'] ?? ($additional['statusColor'] ?? null);
+        $isTestOrder = (bool) ($payload['isTestOrder'] ?? false);
 
         return [
             'id' => $externalId,
+            'orderId' => $orderId,
             'channel' => $channel,
             'orderNumber' => $orderNumber,
+            'auftragNumber' => $orderReference,
             'customerName' => $customerName,
+            'customersName' => $customerName,
             'orderReference' => $orderReference,
             'email' => $email,
+            'customersEmailAddress' => $email,
             'date' => $date,
+            'datePurchased' => $date,
             'status' => $status,
             'statusLabel' => $statusLabel,
+            'ordersStatusName' => $statusLabel,
+            'orderStatusColor' => $statusColor,
+            'isTestOrder' => $isTestOrder,
             'totalItems' => (int) $totalItems,
             'totalRevenue' => (float) $totalRevenue,
         ];
