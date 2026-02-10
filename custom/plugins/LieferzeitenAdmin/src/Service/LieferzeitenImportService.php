@@ -35,6 +35,7 @@ class LieferzeitenImportService
         private readonly BaseDateResolver $baseDateResolver,
         private readonly ChannelDateSettingsProvider $settingsProvider,
         private readonly BusinessDayDeliveryDateCalculator $deliveryDateCalculator,
+        private readonly Status8TrackingMappingProvider $status8TrackingMappingProvider,
         private readonly LockFactory $lockFactory,
         private readonly NotificationEventService $notificationEventService,
         private readonly IntegrationReliabilityService $reliabilityService,
@@ -526,7 +527,7 @@ class LieferzeitenImportService
                 continue;
             }
 
-            if ($this->isClosedParcelStatusForStatus8($parcel)) {
+            if ($this->isClosedParcelStatusForStatus8($parcel, $order)) {
                 ++$closedParcels;
             }
         }
@@ -534,27 +535,18 @@ class LieferzeitenImportService
         return $closedParcels > 0 && $closedParcels === count($parcels);
     }
 
-    /** @param array<string,mixed> $parcel */
-    private function isClosedParcelStatusForStatus8(array $parcel): bool
+    /**
+     * @param array<string,mixed> $parcel
+     * @param array<string,mixed> $order
+     */
+    private function isClosedParcelStatusForStatus8(array $parcel, array $order = []): bool
     {
-        $state = $this->normalizeParcelState($parcel);
-
-        $statusMapping = [
-            'paketshop_non_retire' => false,
-            'paketshop_not_collected' => false,
-            'paketshop_retire' => true,
-            'paketshop_collected' => true,
-            'ablageort' => true,
-            'retoure' => false,
-            'nicht_zustellbar' => false,
-            'verweigert' => false,
-            'zoll_abgelehnt' => false,
-            'zugestellt' => true,
-        ];
-
-        if (array_key_exists($state, $statusMapping)) {
-            return $statusMapping[$state];
+        $mapped = $this->status8TrackingMappingProvider->isClosed($parcel, $order);
+        if ($mapped !== null) {
+            return $mapped;
         }
+
+        $state = $this->normalizeParcelState($parcel);
 
         $closed = $parcel['closed'] ?? null;
         if ($closed !== null) {

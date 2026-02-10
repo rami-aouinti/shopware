@@ -5,6 +5,8 @@ namespace LieferzeitenAdmin\Tests\Service;
 use LieferzeitenAdmin\Service\Audit\AuditLogService;
 use LieferzeitenAdmin\Service\BaseDateResolver;
 use LieferzeitenAdmin\Service\BusinessDayDeliveryDateCalculator;
+use LieferzeitenAdmin\Service\Integration\IntegrationContractValidator;
+use LieferzeitenAdmin\Service\Status8TrackingMappingProvider;
 use LieferzeitenAdmin\Service\ChannelDateSettingsProvider;
 use LieferzeitenAdmin\Service\LieferzeitenImportService;
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
@@ -235,6 +237,50 @@ class LieferzeitenImportServiceTest extends TestCase
         ], []));
     }
 
+    public function testIsCompletedStatus8UsesCarrierSpecificMappingForDhlAndGls(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'isCompletedStatus8');
+        $method->setAccessible(true);
+
+        static::assertFalse($method->invoke($service, [
+            'carrier' => 'DHL',
+            'parcels' => [
+                ['trackingStatus' => 'paketshop_non_retire'],
+            ],
+        ], []));
+
+        static::assertFalse($method->invoke($service, [
+            'carrier' => 'GLS',
+            'parcels' => [
+                ['trackingStatus' => 'douane'],
+            ],
+        ], []));
+
+        static::assertTrue($method->invoke($service, [
+            'carrier' => 'GLS',
+            'parcels' => [
+                ['trackingStatus' => 'delivered'],
+            ],
+        ], []));
+    }
+
+    public function testIsClosedParcelStatusForStatus8UsesDbOverrideVersionedMapping(): void
+    {
+        $config = $this->createMock(SystemConfigService::class);
+        $config->method('get')->willReturnMap([
+            ['LieferzeitenAdmin.config.status8CarrierMapping', null, '{"version":2,"global":{"custom_state":true},"carriers":{"dhl":{"paketshop_non_retire":true}}}'],
+        ]);
+
+        $provider = new Status8TrackingMappingProvider($config);
+        $service = $this->createService(status8TrackingMappingProvider: $provider, config: $config);
+        $method = new \ReflectionMethod($service, 'isClosedParcelStatusForStatus8');
+        $method->setAccessible(true);
+
+        static::assertTrue($method->invoke($service, ['trackingStatus' => 'paketshop_non_retire'], ['carrier' => 'DHL']));
+        static::assertTrue($method->invoke($service, ['trackingStatus' => 'custom-state'], ['carrier' => 'GLS']));
+    }
+
     public function testIsSan6Status7SupportsStringAndBooleanMappings(): void
     {
         $service = $this->createService();
@@ -401,22 +447,27 @@ class LieferzeitenImportServiceTest extends TestCase
         ?LoggerInterface $logger = null,
         ?HttpClientInterface $httpClient = null,
         ?SystemConfigService $config = null,
+        ?Status8TrackingMappingProvider $status8TrackingMappingProvider = null,
     ): LieferzeitenImportService {
+        $config ??= $this->createMock(SystemConfigService::class);
+
         return new LieferzeitenImportService(
             $paketRepository ?? $this->createMock(EntityRepository::class),
             $this->createMock(EntityRepository::class),
             $this->createMock(EntityRepository::class),
             $httpClient ?? $this->createMock(HttpClientInterface::class),
-            $config ?? $this->createMock(SystemConfigService::class),
+            $config,
             $this->createMock(ChannelOrderAdapterRegistry::class),
             $this->createMock(San6Client::class),
             $this->createMock(San6MatchingService::class),
             $this->createMock(BaseDateResolver::class),
             $this->createMock(ChannelDateSettingsProvider::class),
             $this->createMock(BusinessDayDeliveryDateCalculator::class),
+            $status8TrackingMappingProvider ?? new Status8TrackingMappingProvider($config),
             $this->createMock(LockFactory::class),
             $this->createMock(NotificationEventService::class),
             $this->createMock(IntegrationReliabilityService::class),
+            $this->createMock(IntegrationContractValidator::class),
             $auditLogService ?? $this->createMock(AuditLogService::class),
             $logger ?? $this->createMock(LoggerInterface::class),
         );
