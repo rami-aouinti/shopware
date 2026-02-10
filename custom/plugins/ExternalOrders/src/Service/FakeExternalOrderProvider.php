@@ -312,12 +312,6 @@ class FakeExternalOrderProvider
         ];
     }
 
-    private function formatEuro(float $value): string
-    {
-        return number_format($value, 2, ',', '.') . ' EUR';
-    }
-
-
     /**
      * @return array<int, array{statusName: string, statusColor: string|null, dateAdded: string, comments: string}>
      */
