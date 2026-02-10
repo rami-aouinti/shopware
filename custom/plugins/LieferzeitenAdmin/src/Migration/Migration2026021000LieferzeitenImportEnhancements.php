@@ -43,14 +43,14 @@ class Migration2026021000LieferzeitenImportEnhancements extends MigrationStep
     {
     }
 
-    private function columnExists(Connection $connection, string $table, string $column): bool
+    protected function columnExists(Connection $connection, string $table, string $column): bool
     {
         $columns = $connection->createSchemaManager()->listTableColumns($table);
 
         return isset($columns[$column]);
     }
 
-    private function indexExists(Connection $connection, string $table, string $index): bool
+    protected function indexExists(Connection $connection, string $table, string $index): bool
     {
         $indexes = $connection->createSchemaManager()->listTableIndexes($table);
 
