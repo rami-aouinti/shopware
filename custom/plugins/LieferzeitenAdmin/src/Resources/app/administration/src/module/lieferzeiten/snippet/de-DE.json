@@ -9,7 +9,8 @@
         },
         "tabs": {
             "all": "Alle Bestellungen",
-            "open": "Offene Bestellungen"
+            "open": "Offene Bestellungen",
+            "statistics": "Statistiken"
         },
         "zones": {
             "order": "Bestellung",
@@ -87,6 +88,28 @@
             "empty": "Keine Tracking-Ereignisse gefunden.",
             "loadError": "Tracking konnte nicht geladen werden.",
             "missingCarrier": "Tracking nicht möglich: Kein Versanddienstleister hinterlegt."
+        },
+        "statistics": {
+            "periodLabel": "Periode",
+            "channelLabel": "Kanal",
+            "allChannels": "Alle Kanäle",
+            "open": "Offen",
+            "overdue": "Überfällig",
+            "activities": "Aktivitäten",
+            "chartTitle": "Aktivitäten nach Kanal",
+            "tableTitle": "Aktivitäten",
+            "drilldown": "Drilldown",
+            "drilldownTitle": "Aktivitätsdetails",
+            "exportCsv": "CSV exportieren",
+            "promisedDate": "Lieferdatum",
+            "period": {
+                "7": "Letzte 7 Tage",
+                "30": "Letzte 30 Tage",
+                "90": "Letzte 90 Tage"
+            },
+            "status": {
+                "overdue": "Überfällig"
+            }
         }
     }
 }

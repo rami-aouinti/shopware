@@ -1,6 +1,7 @@
 import './page/lieferzeiten-index';
 import './page/lieferzeiten-all';
 import './page/lieferzeiten-open';
+import './page/lieferzeiten-statistics';
 import './component/lieferzeiten-domain-selection';
 import './component/lieferzeiten-order-table';
 
@@ -30,6 +31,13 @@ Module.register('lieferzeiten', {
                 open: {
                     component: 'lieferzeiten-open',
                     path: 'open',
+                    meta: {
+                        parentPath: 'lieferzeiten.index',
+                    },
+                },
+                statistics: {
+                    component: 'lieferzeiten-statistics',
+                    path: 'statistics',
                     meta: {
                         parentPath: 'lieferzeiten.index',
                     },

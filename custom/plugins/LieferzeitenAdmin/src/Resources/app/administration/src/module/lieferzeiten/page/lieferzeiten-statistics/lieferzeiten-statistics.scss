@@ -1,0 +1,34 @@
+.lieferzeiten-statistics {
+    display: grid;
+    gap: 16px;
+
+    &__metric {
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    &__chart {
+        display: grid;
+        gap: 8px;
+    }
+
+    &__chart-row {
+        display: grid;
+        grid-template-columns: 180px 1fr 32px;
+        align-items: center;
+        gap: 12px;
+    }
+
+    &__bar-wrap {
+        background: #eef2f7;
+        border-radius: 6px;
+        overflow: hidden;
+        height: 12px;
+    }
+
+    &__bar {
+        height: 100%;
+        background: #189eff;
+        border-radius: 6px;
+    }
+}
