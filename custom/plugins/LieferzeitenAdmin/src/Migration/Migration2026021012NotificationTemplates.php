@@ -5,11 +5,11 @@ namespace LieferzeitenAdmin\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration2026021011NotificationTemplates extends MigrationStep
+class Migration2026021012NotificationTemplates extends MigrationStep
 {
     public function getCreationTimestamp(): int
     {
-        return 2026021011;
+        return 2026021012;
     }
 
     public function update(Connection $connection): void
