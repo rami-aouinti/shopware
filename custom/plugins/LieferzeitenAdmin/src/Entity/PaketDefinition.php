@@ -9,6 +9,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\JsonField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\UpdatedAtField;
@@ -49,6 +50,7 @@ class PaketDefinition extends EntityDefinition
             new StringField('base_date_type', 'baseDateType'),
             new DateTimeField('calculated_delivery_date', 'calculatedDeliveryDate'),
             new StringField('sync_badge', 'syncBadge'),
+            new JsonField('status_push_queue', 'statusPushQueue'),
             new StringField('last_changed_by', 'lastChangedBy'),
             new DateTimeField('last_changed_at', 'lastChangedAt'),
             new OneToManyAssociationField('positions', PositionDefinition::class, 'paket_id'),
