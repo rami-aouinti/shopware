@@ -4,7 +4,7 @@
     </template>
 
     <template #smart-bar-actions>
-        <sw-button variant="primary" @click="onCreate">Create</sw-button>
+        <sw-button v-if="hasEditAccess" variant="primary" @click="onCreate">Create</sw-button>
     </template>
 
     <template #content>
@@ -16,8 +16,8 @@
                 :columns="columns"
                 :isLoading="isLoading"
                 :showSelection="false"
-                :allowInlineEdit="true"
-                :allowDelete="true"
+                :allowInlineEdit="hasEditAccess"
+                :allowDelete="hasEditAccess"
                 :total="total"
                 :page="page"
                 :limit="limit"

@@ -38,7 +38,7 @@
                             <sw-datepicker v-model:value="order.lieferterminLieferantRange.from" :disabled="!hasEditAccess()" size="small" />
                             <sw-datepicker v-model:value="order.lieferterminLieferantRange.to" :disabled="!hasEditAccess()" size="small" />
                             <div>KW Preview: {{ weekLabelFromDate(order.lieferterminLieferantRange.to) }}</div>
-                            <sw-button size="small" variant="primary" :disabled="!hasEditAccess() || !canSaveLiefertermin(order)" @click="saveLiefertermin(order)">
+                            <sw-button v-if="hasEditAccess()" size="small" variant="primary" :disabled="!canSaveLiefertermin(order)" @click="saveLiefertermin(order)">
                                 {{ $t('global.default.save') }}
                             </sw-button>
                         </td>
@@ -47,16 +47,16 @@
                             <sw-datepicker v-model:value="order.neuerLieferterminRange.from" :disabled="!hasEditAccess() || !order.lieferterminLieferantRange.from" size="small" />
                             <sw-datepicker v-model:value="order.neuerLieferterminRange.to" :disabled="!hasEditAccess() || !order.lieferterminLieferantRange.to" size="small" />
                             <div>KW Preview: {{ weekLabelFromDate(order.neuerLieferterminRange.to) }}</div>
-                            <sw-button size="small" variant="primary" :disabled="!hasEditAccess() || !canSaveNeuerLiefertermin(order)" @click="saveNeuerLiefertermin(order)">
+                            <sw-button v-if="hasEditAccess()" size="small" variant="primary" :disabled="!canSaveNeuerLiefertermin(order)" @click="saveNeuerLiefertermin(order)">
                                 {{ $t('global.default.save') }}
                             </sw-button>
                         </td>
                         <td>
                             <sw-text-field v-model:value="order.comment" :disabled="!hasEditAccess()" size="small" />
-                            <sw-button size="small" :disabled="!hasEditAccess()" @click="saveComment(order)">
+                            <sw-button v-if="hasEditAccess()" size="small" @click="saveComment(order)">
                                 {{ $t('global.default.save') }}
                             </sw-button>
-                            <sw-button size="small" variant="ghost" :disabled="!hasEditAccess()" @click="requestAdditionalDeliveryDate(order)">
+                            <sw-button v-if="hasEditAccess()" size="small" variant="ghost" @click="requestAdditionalDeliveryDate(order)">
                                 {{ $t('lieferzeiten.additionalRequest.button') }}
                             </sw-button>
                         </td>

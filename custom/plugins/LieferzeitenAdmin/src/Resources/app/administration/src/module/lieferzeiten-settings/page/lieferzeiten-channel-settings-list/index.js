@@ -20,6 +20,10 @@ Component.register('lieferzeiten-channel-settings-list', {
     },
 
     computed: {
+        hasEditAccess() {
+            return this.acl.can('lieferzeiten.editor') || this.acl.can('admin');
+        },
+
         columns() {
             return [
                 { property: 'salesChannelId', label: 'Sales Channel', inlineEdit: 'string', primary: true },
@@ -55,18 +59,30 @@ Component.register('lieferzeiten-channel-settings-list', {
             this.getList();
         },
         onInlineEditSave(item) {
+            if (!this.hasEditAccess) {
+                return Promise.resolve();
+            }
+
             this.isLoading = true;
             return this.repository.save(item, Shopware.Context.api).then(() => {
                 this.getList();
             });
         },
         onDelete(item) {
+            if (!this.hasEditAccess) {
+                return Promise.resolve();
+            }
+
             this.isLoading = true;
             return this.repository.delete(item.id, Shopware.Context.api).then(() => {
                 this.getList();
             });
         },
         onCreate() {
+            if (!this.hasEditAccess) {
+                return Promise.resolve();
+            }
+
             const entity = this.repository.create(Shopware.Context.api);
             entity.salesChannelId = '';
             entity.enableNotifications = false;
