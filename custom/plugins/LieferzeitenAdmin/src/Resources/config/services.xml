@@ -91,6 +91,10 @@
             <argument type="service" id="lieferzeiten_task.repository" />
         </service>
 
+        <service id="LieferzeitenAdmin\Service\LieferzeitenOrderOverviewService">
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+        </service>
+
         <service id="LieferzeitenAdmin\Service\LieferzeitenStatisticsService">
             <argument type="service" id="Doctrine\DBAL\Connection" />
         </service>
