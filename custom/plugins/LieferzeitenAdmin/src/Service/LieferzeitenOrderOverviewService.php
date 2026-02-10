@@ -21,6 +21,31 @@ readonly class LieferzeitenOrderOverviewService
         'shippingAssignmentType',
         'businessDateFrom',
         'businessDateTo',
+        'businessDateEndFrom',
+        'businessDateEndTo',
+        'paymentDateFrom',
+        'paymentDateTo',
+        'calculatedDeliveryDateFrom',
+        'calculatedDeliveryDateTo',
+        'lieferterminLieferantFrom',
+        'lieferterminLieferantTo',
+        'neuerLieferterminFrom',
+        'neuerLieferterminTo',
+    ];
+
+    private const SORTABLE_FIELDS = [
+        'bestelldatum' => 'p.order_date',
+        'orderDate' => 'p.order_date',
+        'spaetesterVersand' => 'p.shipping_date',
+        'latestShippingDate' => 'p.shipping_date',
+        'spaetesteLieferung' => 'p.delivery_date',
+        'latestDeliveryDate' => 'p.delivery_date',
+        'businessDateFrom' => 'p.business_date_from',
+        'businessDateTo' => 'p.business_date_to',
+        'paymentDate' => 'p.payment_date',
+        'calculatedDeliveryDate' => 'p.calculated_delivery_date',
+        'status' => 'p.status',
+        'shippingAssignmentType' => 'p.shipping_assignment_type',
     ];
 
     public function __construct(private Connection $connection)
@@ -42,6 +67,7 @@ readonly class LieferzeitenOrderOverviewService
         $limit = max(1, min(200, (int) $limit));
         $sortField = $this->resolveSortField($sort);
         $sortDirection = $this->resolveSortDirection($order);
+        $orderBy = $this->buildOrderBySql($sortField, $sortDirection);
 
         $filters = $this->sanitizeFilters($filters);
 
@@ -78,12 +104,11 @@ readonly class LieferzeitenOrderOverviewService
              %s
              %s
              GROUP BY p.id, p.external_order_id, p.paket_number, p.order_date, p.shipping_date, p.delivery_date, p.last_changed_by, p.status, p.shipping_assignment_type
-             ORDER BY %s %s
+             ORDER BY %s
              LIMIT :limit OFFSET :offset',
             $joinSql,
             $where,
-            $sortField,
-            $sortDirection,
+            $orderBy,
         );
 
         $dataParams = $params;
@@ -98,11 +123,7 @@ readonly class LieferzeitenOrderOverviewService
             'limit' => $limit,
             'filterableFields' => self::FILTERABLE_FIELDS,
             'nonFilterableFields' => ['san6Pos', 'comment'],
-            'sortingFields' => [
-                'bestelldatum',
-                'spaetesterVersand',
-                'spaetesteLieferung',
-            ],
+            'sortingFields' => array_keys(self::SORTABLE_FIELDS),
             'data' => $rows,
         ];
     }
@@ -176,6 +197,28 @@ readonly class LieferzeitenOrderOverviewService
         $this->addDateRangeCondition($conditions, $params, 'p.shipping_date', 'shippingDateFrom', 'shippingDateTo', $filters);
         $this->addDateRangeCondition($conditions, $params, 'p.delivery_date', 'deliveryDateFrom', 'deliveryDateTo', $filters);
         $this->addDateRangeCondition($conditions, $params, 'p.business_date_from', 'businessDateFrom', 'businessDateTo', $filters);
+        $this->addDateRangeCondition($conditions, $params, 'p.business_date_to', 'businessDateEndFrom', 'businessDateEndTo', $filters);
+        $this->addDateRangeCondition($conditions, $params, 'p.payment_date', 'paymentDateFrom', 'paymentDateTo', $filters);
+        $this->addDateRangeCondition($conditions, $params, 'p.calculated_delivery_date', 'calculatedDeliveryDateFrom', 'calculatedDeliveryDateTo', $filters);
+
+        $this->addLatestHistoryRangeCondition(
+            $conditions,
+            $params,
+            'liefertermin_lieferant_history',
+            'lieferterminLieferantFrom',
+            'lieferterminLieferantTo',
+            $filters,
+            'llh',
+        );
+        $this->addLatestHistoryRangeCondition(
+            $conditions,
+            $params,
+            'neuer_liefertermin_history',
+            'neuerLieferterminFrom',
+            'neuerLieferterminTo',
+            $filters,
+            'nlh',
+        );
 
         if ($conditions === []) {
             return '';
@@ -210,22 +253,77 @@ readonly class LieferzeitenOrderOverviewService
         }
     }
 
+    /**
+     * @param array<int, string> $conditions
+     * @param array<string, mixed> $params
+     * @param array<string, scalar|null> $filters
+     */
+    private function addLatestHistoryRangeCondition(
+        array &$conditions,
+        array &$params,
+        string $historyTableSuffix,
+        string $fromKey,
+        string $toKey,
+        array $filters,
+        string $alias,
+    ): void {
+        $fromValue = trim((string) ($filters[$fromKey] ?? ''));
+        $toValue = trim((string) ($filters[$toKey] ?? ''));
+        if ($fromValue === '' && $toValue === '') {
+            return;
+        }
+
+        $historyConditions = [];
+        if ($fromValue !== '') {
+            $historyConditions[] = sprintf('%s.liefertermin_to >= :%s', $alias, $fromKey);
+            $params[$fromKey] = $fromValue . ' 00:00:00';
+        }
+
+        if ($toValue !== '') {
+            $historyConditions[] = sprintf('%s.liefertermin_from <= :%s', $alias, $toKey);
+            $params[$toKey] = $toValue . ' 23:59:59';
+        }
+
+        $conditions[] = sprintf(
+            'EXISTS (
+                SELECT 1
+                FROM `lieferzeiten_position` pos_filter
+                INNER JOIN `lieferzeiten_%1$s` %2$s ON %2$s.position_id = pos_filter.id
+                WHERE pos_filter.paket_id = p.id
+                  AND %2$s.id = (
+                      SELECT latest.id
+                      FROM `lieferzeiten_%1$s` latest
+                      WHERE latest.position_id = pos_filter.id
+                      ORDER BY latest.created_at DESC
+                      LIMIT 1
+                  )
+                  AND %3$s
+            )',
+            $historyTableSuffix,
+            $alias,
+            implode(' AND ', $historyConditions),
+        );
+    }
+
     private function resolveSortField(?string $sort): string
     {
-        $allowed = [
-            'bestelldatum' => 'p.order_date',
-            'orderDate' => 'p.order_date',
-            'spaetesterVersand' => 'p.shipping_date',
-            'latestShippingDate' => 'p.shipping_date',
-            'spaetesteLieferung' => 'p.delivery_date',
-            'latestDeliveryDate' => 'p.delivery_date',
-        ];
-
         if ($sort !== null && $sort !== '') {
-            return $allowed[$sort] ?? 'p.order_date';
+            return self::SORTABLE_FIELDS[$sort] ?? 'p.order_date';
         }
 
         return 'p.order_date';
+    }
+
+    private function buildOrderBySql(string $sortField, string $sortDirection): string
+    {
+        $parts = [sprintf('%s %s', $sortField, $sortDirection)];
+        if ($sortField !== 'p.order_date') {
+            $parts[] = 'p.order_date DESC';
+        }
+
+        $parts[] = 'p.id DESC';
+
+        return implode(', ', $parts);
     }
 
     private function resolveSortDirection(?string $order): string
