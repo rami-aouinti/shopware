@@ -5,8 +5,8 @@ Shopware.Module.register('test-admin-menu', {
     name: 'test-admin-menu',
     title: 'test-admin-menu.general.mainMenuItemGeneral',
     description: 'test-admin-menu.general.descriptionTextModule',
-    color: '#ff3d58',
-    icon: 'regular-star',
+    color: '#189eff',
+    icon: 'regular-chart-bar',
     routes: {
         index: {
             component: 'test-admin-menu-page',
@@ -18,8 +18,8 @@ Shopware.Module.register('test-admin-menu', {
             id: 'test-admin-menu',
             label: 'test-admin-menu.general.mainMenuItemGeneral',
             path: 'test.admin.menu.index',
-            parent: 'sw-order',
-            position: 100,
+            parent: 'sw-dashboard',
+            position: 50,
         },
     ],
 });
@@ -27,9 +27,9 @@ Shopware.Module.register('test-admin-menu', {
 Shopware.Locale.extend('en-GB', {
     'test-admin-menu': {
         general: {
-            mainMenuItemGeneral: 'Test',
-            descriptionTextModule: 'Test admin menu entry',
-            title: 'Test',
+            mainMenuItemGeneral: 'Activity statistics',
+            descriptionTextModule: 'Overview with KPIs and activity charts',
+            title: 'Activity statistics',
         },
     },
 });
@@ -37,9 +37,9 @@ Shopware.Locale.extend('en-GB', {
 Shopware.Locale.extend('de-DE', {
     'test-admin-menu': {
         general: {
-            mainMenuItemGeneral: 'Test',
-            descriptionTextModule: 'Test admin menu entry',
-            title: 'Test',
+            mainMenuItemGeneral: 'Aktivitätsstatistiken',
+            descriptionTextModule: 'Übersicht mit KPIs und Aktivitätsdiagrammen',
+            title: 'Aktivitätsstatistiken',
         },
     },
 });

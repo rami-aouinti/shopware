@@ -31,6 +31,13 @@
                         >
                             {{ $t('lieferzeiten.tabs.open') }}
                         </sw-tabs-item>
+
+                        <sw-tabs-item
+                            :to="{ name: 'lieferzeiten.statistics' }"
+                            :title="$t('lieferzeiten.tabs.statistics')"
+                        >
+                            {{ $t('lieferzeiten.tabs.statistics') }}
+                        </sw-tabs-item>
                     </sw-tabs>
 
                     <router-view

@@ -1,0 +1,87 @@
+{% block lieferzeiten_statistics %}
+    <div class="lieferzeiten-statistics">
+        <sw-container columns="1fr auto auto" gap="16px" class="lieferzeiten-statistics__filters">
+            <sw-single-select
+                v-model:value="selectedPeriod"
+                :label="$t('lieferzeiten.statistics.periodLabel')"
+                :options="periodOptions"
+                labelProperty="label"
+                valueProperty="value"
+            />
+            <sw-single-select
+                v-model:value="selectedChannel"
+                :label="$t('lieferzeiten.statistics.channelLabel')"
+                :options="channelOptions"
+                labelProperty="label"
+                valueProperty="value"
+            />
+            <sw-button variant="primary" @click="exportCsv">
+                {{ $t('lieferzeiten.statistics.exportCsv') }}
+            </sw-button>
+        </sw-container>
+
+        <sw-container columns="repeat(3, 1fr)" gap="16px" class="lieferzeiten-statistics__metrics">
+            <sw-card :title="$t('lieferzeiten.statistics.open')">
+                <div class="lieferzeiten-statistics__metric">{{ metrics.open }}</div>
+            </sw-card>
+            <sw-card :title="$t('lieferzeiten.statistics.overdue')">
+                <div class="lieferzeiten-statistics__metric">{{ metrics.overdue }}</div>
+            </sw-card>
+            <sw-card :title="$t('lieferzeiten.statistics.activities')">
+                <div class="lieferzeiten-statistics__metric">{{ metrics.activities }}</div>
+            </sw-card>
+        </sw-container>
+
+        <sw-card :title="$t('lieferzeiten.statistics.chartTitle')" class="lieferzeiten-statistics__chart-card">
+            <div v-if="channelChartData.length" class="lieferzeiten-statistics__chart">
+                <div v-for="item in channelChartData" :key="item.channel" class="lieferzeiten-statistics__chart-row">
+                    <span>{{ item.channel }}</span>
+                    <div class="lieferzeiten-statistics__bar-wrap">
+                        <div class="lieferzeiten-statistics__bar" :style="{ width: getChartBarWidth(item.value) }"></div>
+                    </div>
+                    <strong>{{ item.value }}</strong>
+                </div>
+            </div>
+            <sw-empty-state
+                v-else
+                :title="$t('lieferzeiten.emptyState.title')"
+                :description="$t('lieferzeiten.emptyState.description')"
+            />
+        </sw-card>
+
+        <sw-card :title="$t('lieferzeiten.statistics.tableTitle')">
+            <sw-data-grid
+                :data-source="filteredOrders"
+                :columns="tableColumns"
+                :show-selection="false"
+            >
+                <template #column-status="{ item }">
+                    <sw-label :appearance="item.status === $t('lieferzeiten.statistics.status.overdue') ? 'error' : 'info'">
+                        {{ item.status }}
+                    </sw-label>
+                </template>
+
+                <template #column-promisedAt="{ item }">
+                    {{ formatDate(item.promisedAt) }}
+                </template>
+
+                <template #actions="{ item }">
+                    <sw-context-menu-item @click="onDrilldown(item)">
+                        {{ $t('lieferzeiten.statistics.drilldown') }}
+                    </sw-context-menu-item>
+                </template>
+            </sw-data-grid>
+        </sw-card>
+
+        <sw-modal
+            v-if="selectedActivity"
+            :title="$t('lieferzeiten.statistics.drilldownTitle')"
+            @modal-close="closeDrilldown"
+        >
+            <p><strong>{{ $t('lieferzeiten.table.orderNumber') }}:</strong> {{ selectedActivity.orderNumber }}</p>
+            <p><strong>{{ $t('lieferzeiten.table.domain') }}:</strong> {{ selectedActivity.domain }}</p>
+            <p><strong>{{ $t('lieferzeiten.table.status') }}:</strong> {{ selectedActivity.status }}</p>
+            <p><strong>{{ $t('lieferzeiten.statistics.promisedDate') }}:</strong> {{ formatDate(selectedActivity.promisedAt) }}</p>
+        </sw-modal>
+    </div>
+{% endblock %}

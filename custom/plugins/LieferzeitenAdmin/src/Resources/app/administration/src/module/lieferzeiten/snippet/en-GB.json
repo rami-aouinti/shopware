@@ -9,7 +9,8 @@
         },
         "tabs": {
             "all": "All orders",
-            "open": "Open orders"
+            "open": "Open orders",
+            "statistics": "Statistics"
         },
         "zones": {
             "order": "Order",
@@ -87,6 +88,28 @@
             "empty": "No tracking events found.",
             "loadError": "Unable to load tracking history.",
             "missingCarrier": "Tracking unavailable: carrier is missing."
+        },
+        "statistics": {
+            "periodLabel": "Period",
+            "channelLabel": "Channel",
+            "allChannels": "All channels",
+            "open": "Open",
+            "overdue": "Overdue",
+            "activities": "Activities",
+            "chartTitle": "Activities by channel",
+            "tableTitle": "Activities",
+            "drilldown": "Drilldown",
+            "drilldownTitle": "Activity details",
+            "exportCsv": "Export CSV",
+            "promisedDate": "Delivery date",
+            "period": {
+                "7": "Last 7 days",
+                "30": "Last 30 days",
+                "90": "Last 90 days"
+            },
+            "status": {
+                "overdue": "Overdue"
+            }
         }
     }
 }

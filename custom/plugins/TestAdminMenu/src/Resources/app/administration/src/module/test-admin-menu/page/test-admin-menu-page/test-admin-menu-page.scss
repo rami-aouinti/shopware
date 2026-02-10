@@ -1,0 +1,51 @@
+.test-admin-menu-page {
+    &__grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    &__filters {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+        gap: 16px;
+    }
+
+    &__metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(180px, 1fr));
+        gap: 16px;
+    }
+
+    &__metric-value {
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1;
+        padding: 8px 0;
+    }
+
+    &__chart {
+        display: grid;
+        gap: 12px;
+    }
+
+    &__chart-row {
+        display: grid;
+        grid-template-columns: 140px 1fr 40px;
+        align-items: center;
+        gap: 12px;
+    }
+
+    &__chart-bar-wrap {
+        background: #f3f6fa;
+        border-radius: 6px;
+        height: 12px;
+        overflow: hidden;
+    }
+
+    &__chart-bar {
+        background: #189eff;
+        height: 100%;
+        border-radius: 6px;
+    }
+}

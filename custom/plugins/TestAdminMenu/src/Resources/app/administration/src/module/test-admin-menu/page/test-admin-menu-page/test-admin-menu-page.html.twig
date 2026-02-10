@@ -1,11 +1,91 @@
 {% block test_admin_menu_page %}
     <sw-page class="test-admin-menu-page">
+        <template #smart-bar-header>
+            <h2>Statistiken Aktivitäten</h2>
+        </template>
+
+        <template #smart-bar-actions>
+            <sw-button variant="primary" @click="exportCsv">
+                CSV exportieren
+            </sw-button>
+        </template>
+
         <template #content>
-            <div class="sw-card">
-                <div class="sw-card__content">
-                    Hallo
+            <div class="test-admin-menu-page__grid">
+                <sw-card title="Filter">
+                    <div class="test-admin-menu-page__filters">
+                        <sw-single-select
+                            v-model:value="selectedPeriod"
+                            label="Periode"
+                            :options="availablePeriods"
+                            labelProperty="label"
+                            valueProperty="value"
+                        />
+                        <sw-single-select
+                            v-model:value="selectedChannel"
+                            label="Kanal"
+                            :options="availableChannels"
+                            labelProperty="label"
+                            valueProperty="value"
+                        />
+                    </div>
+                </sw-card>
+
+                <div class="test-admin-menu-page__metrics">
+                    <sw-card title="Offen">
+                        <div class="test-admin-menu-page__metric-value">{{ metrics.offen }}</div>
+                    </sw-card>
+                    <sw-card title="Überfällig">
+                        <div class="test-admin-menu-page__metric-value">{{ metrics.overdue }}</div>
+                    </sw-card>
+                    <sw-card title="Aktivitäten">
+                        <div class="test-admin-menu-page__metric-value">{{ metrics.activities }}</div>
+                    </sw-card>
                 </div>
+
+                <sw-card title="Aktivitäten nach Kanal">
+                    <div v-if="chartData.length" class="test-admin-menu-page__chart">
+                        <div
+                            v-for="item in chartData"
+                            :key="item.channel"
+                            class="test-admin-menu-page__chart-row"
+                        >
+                            <div class="test-admin-menu-page__chart-label">{{ getChannelLabel(item.channel) }}</div>
+                            <div class="test-admin-menu-page__chart-bar-wrap">
+                                <div class="test-admin-menu-page__chart-bar" :style="{ width: getBarWidth(item.value) }"></div>
+                            </div>
+                            <div class="test-admin-menu-page__chart-value">{{ item.value }}</div>
+                        </div>
+                    </div>
+                    <sw-empty-state v-else title="Keine Daten in diesem Zeitraum" />
+                </sw-card>
+
+                <sw-card title="Aktivitätenliste">
+                    <sw-data-grid
+                        :data-source="filteredRows"
+                        :columns="tableColumns"
+                        :show-selection="false"
+                        :show-settings="true"
+                    >
+                        <template #actions="{ item }">
+                            <sw-context-menu-item @click="onDrilldown(item)">
+                                Drilldown
+                            </sw-context-menu-item>
+                        </template>
+                    </sw-data-grid>
+                </sw-card>
             </div>
+
+            <sw-modal
+                v-if="selectedActivity"
+                title="Drilldown Aktivität"
+                @modal-close="closeDrilldown"
+            >
+                <p><strong>Aktivität:</strong> {{ selectedActivity.activity }}</p>
+                <p><strong>Kanal:</strong> {{ getChannelLabel(selectedActivity.channel) }}</p>
+                <p><strong>Status:</strong> {{ selectedActivity.status }}</p>
+                <p><strong>Einträge:</strong> {{ selectedActivityRows.length }}</p>
+            </sw-modal>
         </template>
     </sw-page>
 {% endblock %}
