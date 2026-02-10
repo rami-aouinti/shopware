@@ -5,9 +5,11 @@ namespace LieferzeitenAdmin\Controller;
 use LieferzeitenAdmin\Service\Audit\AuditLogService;
 use LieferzeitenAdmin\Service\LieferzeitenImportService;
 use LieferzeitenAdmin\Service\LieferzeitenOrderOverviewService;
+use LieferzeitenAdmin\Service\LieferzeitenPositionWriteService;
 use LieferzeitenAdmin\Service\Tracking\TrackingHistoryService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +24,7 @@ class LieferzeitenSyncController extends AbstractController
         private readonly LieferzeitenImportService $importService,
         private readonly TrackingHistoryService $trackingHistoryService,
         private readonly LieferzeitenOrderOverviewService $orderOverviewService,
+        private readonly LieferzeitenPositionWriteService $positionWriteService,
         private readonly AuditLogService $auditLogService,
     ) {
     }
@@ -100,5 +103,108 @@ class LieferzeitenSyncController extends AbstractController
         };
 
         return new JsonResponse($response, $httpCode);
+    }
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/position/{positionId}/liefertermin-lieferant',
+        name: 'api.admin.lieferzeiten.position.liefertermin_lieferant',
+        defaults: ['_acl' => ['lieferzeiten.editor']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function updateLieferterminLieferant(string $positionId, Request $request, Context $context): JsonResponse
+    {
+        $validationError = $this->validatePositionId($positionId);
+        if ($validationError !== null) {
+            return $validationError;
+        }
+
+        $payload = $request->toArray();
+        $days = (int) ($payload['days'] ?? 0);
+        if ($days < 1 || $days > 14) {
+            return new JsonResponse(['status' => 'error', 'message' => 'days must be between 1 and 14'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->positionWriteService->updateLieferterminLieferant($positionId, $days, $context);
+        $this->auditLogService->log('liefertermin_lieferant_updated', 'lieferzeiten_position', $positionId, $context, ['days' => $days], 'shopware');
+
+        return new JsonResponse(['status' => 'ok']);
+    }
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/position/{positionId}/neuer-liefertermin',
+        name: 'api.admin.lieferzeiten.position.neuer_liefertermin',
+        defaults: ['_acl' => ['lieferzeiten.editor']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function updateNeuerLiefertermin(string $positionId, Request $request, Context $context): JsonResponse
+    {
+        $validationError = $this->validatePositionId($positionId);
+        if ($validationError !== null) {
+            return $validationError;
+        }
+
+        $payload = $request->toArray();
+        $days = (int) ($payload['days'] ?? 0);
+        if ($days < 1 || $days > 4) {
+            return new JsonResponse(['status' => 'error', 'message' => 'days must be between 1 and 4'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->positionWriteService->updateNeuerLiefertermin($positionId, $days, $context);
+        $this->auditLogService->log('neuer_liefertermin_updated', 'lieferzeiten_position', $positionId, $context, ['days' => $days], 'shopware');
+
+        return new JsonResponse(['status' => 'ok']);
+    }
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/position/{positionId}/comment',
+        name: 'api.admin.lieferzeiten.position.comment',
+        defaults: ['_acl' => ['lieferzeiten.editor']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function updateComment(string $positionId, Request $request, Context $context): JsonResponse
+    {
+        $validationError = $this->validatePositionId($positionId);
+        if ($validationError !== null) {
+            return $validationError;
+        }
+
+        $payload = $request->toArray();
+        $comment = trim((string) ($payload['comment'] ?? ''));
+
+        $this->positionWriteService->updateComment($positionId, $comment, $context);
+        $this->auditLogService->log('comment_updated', 'lieferzeiten_position', $positionId, $context, ['comment' => $comment], 'shopware');
+
+        return new JsonResponse(['status' => 'ok']);
+    }
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/position/{positionId}/additional-delivery-request',
+        name: 'api.admin.lieferzeiten.position.additional_delivery_request',
+        defaults: ['_acl' => ['lieferzeiten.editor']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function createAdditionalDeliveryRequest(string $positionId, Request $request, Context $context): JsonResponse
+    {
+        $validationError = $this->validatePositionId($positionId);
+        if ($validationError !== null) {
+            return $validationError;
+        }
+
+        $payload = $request->toArray();
+        $initiator = trim((string) ($payload['initiator'] ?? 'system')) ?: 'system';
+
+        $this->positionWriteService->createAdditionalDeliveryRequest($positionId, $initiator, $context);
+        $this->auditLogService->log('additional_delivery_request_created', 'lieferzeiten_position', $positionId, $context, ['initiator' => $initiator], 'shopware');
+
+        return new JsonResponse(['status' => 'ok']);
+    }
+
+    private function validatePositionId(string $positionId): ?JsonResponse
+    {
+        if (!Uuid::isValid($positionId)) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Invalid position id'], Response::HTTP_BAD_REQUEST);
+        }
+
+        return null;
     }
 }

@@ -15,6 +15,6 @@
             </sw-card>
         </sw-container>
 
-        <lieferzeiten-order-table :orders="orders" :only-open="true" />
+        <lieferzeiten-order-table :orders="orders" :only-open="true" :on-reload-order="onReloadOrder" />
     </div>
 {% endblock %}

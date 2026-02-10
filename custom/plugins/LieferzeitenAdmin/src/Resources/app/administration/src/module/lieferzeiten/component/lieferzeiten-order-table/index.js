@@ -6,7 +6,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
 
     mixins: ['notification'],
 
-    inject: ['lieferzeitenTrackingService'],
+    inject: ['lieferzeitenTrackingService', 'lieferzeitenOrdersService'],
 
     props: {
         orders: {
@@ -18,6 +18,11 @@ Shopware.Component.register('lieferzeiten-order-table', {
             type: Boolean,
             required: false,
             default: false,
+        },
+        onReloadOrder: {
+            type: Function,
+            required: false,
+            default: null,
         },
     },
 
@@ -168,64 +173,106 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 && value !== order.originalNeuerLieferterminDays;
         },
 
-        saveLiefertermin(order) {
-            if (!this.hasEditAccess()) {
+        async saveLiefertermin(order) {
+            if (!this.hasEditAccess() || !this.canSaveLiefertermin(order)) {
                 return;
             }
-            if (!this.canSaveLiefertermin(order)) {
+
+            const positionId = this.getTargetPositionId(order);
+            if (!positionId) {
+                this.createNotificationError({ title: this.$t('global.default.error'), message: 'Missing position id' });
                 return;
             }
 
             const value = Number(order.lieferterminLieferantDays);
-            order.lieferterminLieferantDays = value;
-            order.lieferterminLieferantKw = this.toWeekLabel(value);
-            order.originalLieferterminLieferantDays = value;
-            this.pushHistory(order, 'lieferterminLieferantHistory', `${value} ${this.$t('lieferzeiten.fields.days')}`);
-            this.updateAudit(order, this.$t('lieferzeiten.audit.savedSupplierDate'));
+
+            try {
+                await this.lieferzeitenOrdersService.updateLieferterminLieferant(positionId, value);
+                this.createNotificationSuccess({ title: this.$t('global.default.success'), message: this.$t('lieferzeiten.audit.savedSupplierDate') });
+                await this.reloadOrder(order);
+            } catch (error) {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: error?.response?.data?.message || error?.message || this.$t('global.default.error'),
+                });
+            }
         },
 
-        saveNeuerLiefertermin(order) {
-            if (!this.hasEditAccess()) {
+        async saveNeuerLiefertermin(order) {
+            if (!this.hasEditAccess() || !this.canSaveNeuerLiefertermin(order)) {
                 return;
             }
-            if (!this.canSaveNeuerLiefertermin(order)) {
+
+            const positionId = this.getTargetPositionId(order);
+            if (!positionId) {
+                this.createNotificationError({ title: this.$t('global.default.error'), message: 'Missing position id' });
                 return;
             }
 
             const value = Number(order.neuerLieferterminDays);
-            order.neuerLieferterminDays = value;
-            order.originalNeuerLieferterminDays = value;
-            this.pushHistory(order, 'neuerLieferterminHistory', `${value} ${this.$t('lieferzeiten.fields.days')}`);
-            this.updateAudit(order, this.$t('lieferzeiten.audit.savedNewDate'));
+
+            try {
+                await this.lieferzeitenOrdersService.updateNeuerLiefertermin(positionId, value);
+                this.createNotificationSuccess({ title: this.$t('global.default.success'), message: this.$t('lieferzeiten.audit.savedNewDate') });
+                await this.reloadOrder(order);
+            } catch (error) {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: error?.response?.data?.message || error?.message || this.$t('global.default.error'),
+                });
+            }
         },
 
-        saveComment(order) {
+        async saveComment(order) {
             if (!this.hasEditAccess()) {
                 return;
             }
-            this.pushHistory(order, 'commentHistory', order.comment || '-');
-            this.updateAudit(order, this.$t('lieferzeiten.audit.savedComment'));
+
+            const positionId = this.getTargetPositionId(order);
+            if (!positionId) {
+                this.createNotificationError({ title: this.$t('global.default.error'), message: 'Missing position id' });
+                return;
+            }
+
+            try {
+                await this.lieferzeitenOrdersService.updateComment(positionId, order.comment || '');
+                this.createNotificationSuccess({ title: this.$t('global.default.success'), message: this.$t('lieferzeiten.audit.savedComment') });
+                await this.reloadOrder(order);
+            } catch (error) {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: error?.response?.data?.message || error?.message || this.$t('global.default.error'),
+                });
+            }
         },
 
-        requestAdditionalDeliveryDate(order) {
+        async requestAdditionalDeliveryDate(order) {
             if (!this.hasEditAccess()) {
                 return;
             }
+
+            const positionId = this.getTargetPositionId(order);
+            if (!positionId) {
+                this.createNotificationError({ title: this.$t('global.default.error'), message: 'Missing position id' });
+                return;
+            }
+
             const initiator = this.$t('lieferzeiten.additionalRequest.defaultInitiator');
-            order.additionalDeliveryRequest = {
-                requestedAt: new Date().toISOString(),
-                initiator,
-                notifiedAt: order.additionalDeliveryRequest?.notifiedAt || null,
-            };
 
-            this.pushHistory(order, 'commentHistory', this.$t('lieferzeiten.additionalRequest.historyEntry'));
-            this.updateAudit(order, this.$t('lieferzeiten.additionalRequest.auditCreated'));
-            this.createNotificationSuccess({
-                title: this.$t('lieferzeiten.additionalRequest.notificationTitle'),
-                message: this.$t('lieferzeiten.additionalRequest.notificationRequested', { initiator }),
-            });
+            try {
+                await this.lieferzeitenOrdersService.createAdditionalDeliveryRequest(positionId, initiator);
+                this.createNotificationSuccess({
+                    title: this.$t('lieferzeiten.additionalRequest.notificationTitle'),
+                    message: this.$t('lieferzeiten.additionalRequest.notificationRequested', { initiator }),
+                });
 
-            this.notifyInitiatorIfClosed(order);
+                await this.reloadOrder(order);
+            } catch (error) {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: error?.response?.data?.message || error?.message || this.$t('global.default.error'),
+                });
+            }
         },
 
         notifyInitiatorIfClosed(order) {
@@ -245,13 +292,21 @@ Shopware.Component.register('lieferzeiten-order-table', {
             });
         },
 
-        pushHistory(order, key, value) {
-            const entry = `${new Date().toLocaleString('de-DE')}: ${value}`;
-            order[key] = [entry, ...(order[key] || [])].slice(0, 5);
-        },
-
         updateAudit(order, action) {
             order.audit = `${action} • ${new Date().toLocaleString('de-DE')}`;
+        },
+
+        getTargetPositionId(order) {
+            return order?.positions?.[0]?.id || null;
+        },
+
+        async reloadOrder(order) {
+            if (typeof this.onReloadOrder === 'function') {
+                await this.onReloadOrder(order);
+                return;
+            }
+
+            this.updateAudit(order, this.$t('lieferzeiten.audit.savedComment'));
         },
 
         toWeekLabel(days) {

@@ -14,6 +14,30 @@ class LieferzeitenOrdersService extends ApiService {
         const data = ApiService.handleResponse(response) ?? response?.data;
         return data?.data ?? data ?? [];
     }
+
+    async updateLieferterminLieferant(positionId, days) {
+        return this.post(`position/${positionId}/liefertermin-lieferant`, { days });
+    }
+
+    async updateNeuerLiefertermin(positionId, days) {
+        return this.post(`position/${positionId}/neuer-liefertermin`, { days });
+    }
+
+    async updateComment(positionId, comment) {
+        return this.post(`position/${positionId}/comment`, { comment });
+    }
+
+    async createAdditionalDeliveryRequest(positionId, initiator) {
+        return this.post(`position/${positionId}/additional-delivery-request`, { initiator });
+    }
+
+    async post(path, payload) {
+        const response = await this.httpClient.post(`/api/_action/lieferzeiten/${path}`, payload, {
+            headers: this.getBasicHeaders(),
+        });
+
+        return ApiService.handleResponse(response) ?? response?.data;
+    }
 }
 
 Shopware.Application.addServiceProvider('lieferzeitenOrdersService', (container) => {
