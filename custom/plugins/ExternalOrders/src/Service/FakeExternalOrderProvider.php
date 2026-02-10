@@ -321,10 +321,23 @@ class FakeExternalOrderProvider
 
     private function slugify(string $value): string
     {
-        $normalized = mb_strtolower($value);
-        $normalized = str_replace(['ä', 'ö', 'ü', 'ß'], ['ae', 'oe', 'ue', 'ss'], $normalized);
+        $normalized = $this->toLowercase($value);
+        $normalized = str_replace(
+            ['ä', 'ö', 'ü', 'ß'],
+            ['ae', 'oe', 'ue', 'ss'],
+            $normalized
+        );
         $normalized = preg_replace('/[^a-z0-9]+/u', '-', $normalized) ?? '';
 
         return trim($normalized, '-');
+    }
+
+    private function toLowercase(string $value): string
+    {
+        if (function_exists('mb_strtolower')) {
+            return mb_strtolower($value);
+        }
+
+        return strtolower($value);
     }
 }
