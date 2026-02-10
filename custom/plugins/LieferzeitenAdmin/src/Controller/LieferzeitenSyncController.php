@@ -93,6 +93,41 @@ class LieferzeitenSyncController extends AbstractController
         return new JsonResponse(['status' => 'ok']);
     }
 
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/tasks/{taskId}/reopen',
+        name: 'api.admin.lieferzeiten.tasks.reopen',
+        defaults: ['_acl' => ['lieferzeiten.editor']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function reopenTask(string $taskId, Context $context): JsonResponse
+    {
+        if (!Uuid::isValid($taskId)) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Invalid task id'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->taskService->reopenTask($taskId, $context);
+
+        return new JsonResponse(['status' => 'ok']);
+    }
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/tasks/{taskId}/cancel',
+        name: 'api.admin.lieferzeiten.tasks.cancel',
+        defaults: ['_acl' => ['lieferzeiten.editor']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function cancelTask(string $taskId, Context $context): JsonResponse
+    {
+        if (!Uuid::isValid($taskId)) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Invalid task id'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->taskService->cancelTask($taskId, $context);
+
+        return new JsonResponse(['status' => 'ok']);
+    }
+
     #[Route(
         path: '/api/_action/lieferzeiten/orders',
         name: 'api.admin.lieferzeiten.orders',

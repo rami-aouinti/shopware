@@ -17,6 +17,10 @@ class LieferzeitenTaskEntity extends Entity
 
     protected ?string $initiator = null;
 
+    protected ?string $positionId = null;
+
+    protected ?string $triggerKey = null;
+
     /** @var array<string, mixed> */
     protected array $payload = [];
 
@@ -60,6 +64,26 @@ class LieferzeitenTaskEntity extends Entity
     public function setInitiator(?string $initiator): void
     {
         $this->initiator = $initiator;
+    }
+
+    public function getPositionId(): ?string
+    {
+        return $this->positionId;
+    }
+
+    public function setPositionId(?string $positionId): void
+    {
+        $this->positionId = $positionId;
+    }
+
+    public function getTriggerKey(): ?string
+    {
+        return $this->triggerKey;
+    }
+
+    public function setTriggerKey(?string $triggerKey): void
+    {
+        $this->triggerKey = $triggerKey;
     }
 
     /** @return array<string, mixed> */

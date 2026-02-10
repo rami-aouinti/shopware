@@ -40,6 +40,8 @@ class LieferzeitenTaskDefinition extends EntityDefinition
             new StringField('assignee', 'assignee'),
             new DateTimeField('due_date', 'dueDate'),
             new StringField('initiator', 'initiator'),
+            new StringField('position_id', 'positionId'),
+            new StringField('trigger_key', 'triggerKey'),
             (new JsonField('payload', 'payload'))->addFlags(new Required()),
             new DateTimeField('closed_at', 'closedAt'),
             new CreatedAtField(),

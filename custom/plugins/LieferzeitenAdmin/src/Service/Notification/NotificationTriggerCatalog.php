@@ -17,6 +17,7 @@ class NotificationTriggerCatalog
     public const SHIPPING_DATE_OVERDUE = 'versand.datum.ueberfaellig';
     public const ADDITIONAL_DELIVERY_DATE_REQUESTED = 'liefertermin.anfrage.zusaetzlich';
     public const ADDITIONAL_DELIVERY_DATE_REQUEST_CLOSED = 'liefertermin.anfrage.geschlossen';
+    public const ADDITIONAL_DELIVERY_DATE_REQUEST_REOPENED = 'liefertermin.anfrage.wiedereroeffnet';
 
     /** @return array<int,string> */
     public static function all(): array
@@ -35,6 +36,7 @@ class NotificationTriggerCatalog
             self::SHIPPING_DATE_OVERDUE,
             self::ADDITIONAL_DELIVERY_DATE_REQUESTED,
             self::ADDITIONAL_DELIVERY_DATE_REQUEST_CLOSED,
+            self::ADDITIONAL_DELIVERY_DATE_REQUEST_REOPENED,
         ];
     }
 

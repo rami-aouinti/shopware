@@ -30,7 +30,11 @@ class LieferzeitenTaskServiceTest extends TestCase
     public function testAssignTaskMovesTaskToInProgress(): void
     {
         $context = Context::createDefaultContext();
+        $taskEntity = $this->buildTaskEntity('task-1', LieferzeitenTaskService::STATUS_OPEN);
+        $searchResult = new EntitySearchResult('lieferzeiten_task', 1, new EntityCollection([$taskEntity]), null, new Criteria(['task-1']), $context);
+
         $taskRepository = $this->createMock(EntityRepository::class);
+        $taskRepository->expects($this->once())->method('search')->willReturn($searchResult);
         $taskRepository->expects($this->once())
             ->method('update')
             ->with($this->callback(static function (array $payload): bool {
@@ -49,20 +53,11 @@ class LieferzeitenTaskServiceTest extends TestCase
         $context = Context::createDefaultContext();
         $taskId = 'task-123';
 
-        $taskEntity = new class extends Entity {
-            protected string $id = 'task-123';
-            public function __construct()
-            {
-                $this->assign([
-                    'payload' => [
-                        'taskType' => 'additional-delivery-request',
-                        'externalOrderId' => 'EXT-100',
-                        'sourceSystem' => 'shopware',
-                    ],
-                    'initiator' => 'buyer@example.test',
-                ]);
-            }
-        };
+        $taskEntity = $this->buildTaskEntity($taskId, LieferzeitenTaskService::STATUS_IN_PROGRESS, [
+            'taskType' => 'additional-delivery-request',
+            'externalOrderId' => 'EXT-100',
+            'sourceSystem' => 'shopware',
+        ], 'buyer@example.test');
 
         $searchResult = new EntitySearchResult('lieferzeiten_task', 1, new EntityCollection([$taskEntity]), null, new Criteria([$taskId]), $context);
 
@@ -88,5 +83,73 @@ class LieferzeitenTaskServiceTest extends TestCase
         $service = new LieferzeitenTaskService($taskRepository, $notificationService);
 
         $service->closeTask($taskId, $context);
+    }
+
+    public function testReopenTaskFromDoneDispatchesNotification(): void
+    {
+        $context = Context::createDefaultContext();
+        $taskId = 'task-456';
+
+        $taskEntity = $this->buildTaskEntity($taskId, LieferzeitenTaskService::STATUS_DONE, [
+            'taskType' => 'additional-delivery-request',
+        ], 'buyer@example.test');
+
+        $searchResult = new EntitySearchResult('lieferzeiten_task', 1, new EntityCollection([$taskEntity]), null, new Criteria([$taskId]), $context);
+
+        $taskRepository = $this->createMock(EntityRepository::class);
+        $taskRepository->expects($this->once())->method('search')->willReturn($searchResult);
+        $taskRepository->expects($this->once())
+            ->method('update')
+            ->with($this->callback(static fn (array $payload): bool => ($payload[0]['status'] ?? null) === LieferzeitenTaskService::STATUS_REOPENED), $context);
+
+        $notificationService = $this->createMock(NotificationEventService::class);
+        $notificationService->expects($this->once())
+            ->method('dispatch')
+            ->with(
+                $this->stringStartsWith('task-reopen:'),
+                NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUEST_REOPENED,
+                'email',
+                $this->callback(static fn (array $payload): bool => ($payload['taskId'] ?? null) === $taskId),
+                $context,
+                null,
+                null,
+            );
+
+        $service = new LieferzeitenTaskService($taskRepository, $notificationService);
+
+        $service->reopenTask($taskId, $context);
+    }
+
+    public function testInvalidTransitionDoesNotUpdateTask(): void
+    {
+        $context = Context::createDefaultContext();
+        $taskId = 'task-789';
+
+        $taskEntity = $this->buildTaskEntity($taskId, LieferzeitenTaskService::STATUS_OPEN);
+        $searchResult = new EntitySearchResult('lieferzeiten_task', 1, new EntityCollection([$taskEntity]), null, new Criteria([$taskId]), $context);
+
+        $taskRepository = $this->createMock(EntityRepository::class);
+        $taskRepository->expects($this->once())->method('search')->willReturn($searchResult);
+        $taskRepository->expects($this->never())->method('update');
+
+        $notificationService = $this->createMock(NotificationEventService::class);
+        $service = new LieferzeitenTaskService($taskRepository, $notificationService);
+
+        $service->reopenTask($taskId, $context);
+    }
+
+    private function buildTaskEntity(string $id, string $status, array $payload = [], ?string $initiator = null): Entity
+    {
+        return new class($id, $status, $payload, $initiator) extends Entity {
+            public function __construct(string $id, string $status, array $payload, ?string $initiator)
+            {
+                $this->assign([
+                    'id' => $id,
+                    'status' => $status,
+                    'payload' => $payload,
+                    'initiator' => $initiator,
+                ]);
+            }
+        };
     }
 }
