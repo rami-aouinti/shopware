@@ -39,6 +39,29 @@
             <label lang="de-DE">Gambio API-Token</label>
         </input-field>
 
+
+        <input-field type="text">
+            <name>shopwareStatusPushApiUrl</name>
+            <label lang="en-GB">Shopware status push API URL</label>
+            <label lang="de-DE">Shopware Status-Push API-URL</label>
+        </input-field>
+        <input-field type="text">
+            <name>shopwareStatusPushApiToken</name>
+            <label lang="en-GB">Shopware status push API token</label>
+            <label lang="de-DE">Shopware Status-Push API-Token</label>
+        </input-field>
+
+        <input-field type="text">
+            <name>gambioStatusPushApiUrl</name>
+            <label lang="en-GB">Gambio status push API URL</label>
+            <label lang="de-DE">Gambio Status-Push API-URL</label>
+        </input-field>
+        <input-field type="text">
+            <name>gambioStatusPushApiToken</name>
+            <label lang="en-GB">Gambio status push API token</label>
+            <label lang="de-DE">Gambio Status-Push API-Token</label>
+        </input-field>
+
         <input-field type="text">
             <name>shopwareDateSettings</name>
             <label lang="en-GB">Shopware date settings (JSON)</label>

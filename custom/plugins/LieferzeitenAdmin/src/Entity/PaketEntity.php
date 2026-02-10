@@ -35,6 +35,9 @@ class PaketEntity extends Entity
 
     protected ?string $syncBadge = null;
 
+    /** @var array<int, array<string, mixed>>|null */
+    protected ?array $statusPushQueue = null;
+
     protected ?string $lastChangedBy = null;
 
     protected ?\DateTimeInterface $lastChangedAt = null;
@@ -165,6 +168,19 @@ class PaketEntity extends Entity
     public function getSyncBadge(): ?string
     {
         return $this->syncBadge;
+    }
+
+
+    /** @return array<int, array<string, mixed>>|null */
+    public function getStatusPushQueue(): ?array
+    {
+        return $this->statusPushQueue;
+    }
+
+    /** @param array<int, array<string, mixed>>|null $statusPushQueue */
+    public function setStatusPushQueue(?array $statusPushQueue): void
+    {
+        $this->statusPushQueue = $statusPushQueue;
     }
 
     public function setSyncBadge(?string $syncBadge): void

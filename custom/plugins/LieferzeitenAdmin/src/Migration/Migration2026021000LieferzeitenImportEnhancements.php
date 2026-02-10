@@ -25,6 +25,7 @@ class Migration2026021000LieferzeitenImportEnhancements extends MigrationStep
             'calculated_delivery_date' => 'DATETIME(3) NULL',
             'delivery_date' => 'DATETIME(3) NULL',
             'sync_badge' => 'VARCHAR(64) NULL',
+            'status_push_queue' => 'JSON NULL',
         ];
 
         foreach ($columns as $column => $definition) {
