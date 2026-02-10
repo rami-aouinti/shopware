@@ -44,6 +44,7 @@ class PositionDefinition extends EntityDefinition
             new StringField('status', 'status'),
             new DateTimeField('ordered_at', 'orderedAt'),
             new LongTextField('comment', 'comment'),
+            new LongTextField('current_comment', 'currentComment'),
             new DateTimeField('additional_delivery_request_at', 'additionalDeliveryRequestAt'),
             new StringField('additional_delivery_request_initiator', 'additionalDeliveryRequestInitiator'),
             new FkField('paket_id', 'paketId', PaketDefinition::class),

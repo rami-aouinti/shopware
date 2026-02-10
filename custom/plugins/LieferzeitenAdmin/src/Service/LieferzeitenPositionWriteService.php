@@ -102,6 +102,7 @@ class LieferzeitenPositionWriteService
             [
                 'id' => $positionId,
                 'comment' => $comment,
+                'currentComment' => $comment,
                 'lastChangedBy' => $actor,
                 'lastChangedAt' => $changedAt,
             ],
