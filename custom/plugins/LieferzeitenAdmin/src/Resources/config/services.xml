@@ -83,6 +83,10 @@
         <service id="LieferzeitenAdmin\Service\Notification\VorkassePaymentReminderService">
             <argument type="service" id="lieferzeiten_paket.repository" />
         </service>
+        <service id="LieferzeitenAdmin\Service\Notification\ShippingDateOverdueTaskService">
+            <argument type="service" id="lieferzeiten_position.repository" />
+            <argument type="service" id="lieferzeiten_task_assignment_rule.repository" />
+        </service>
         <service id="LieferzeitenAdmin\Controller\LieferzeitenSyncController" public="true" />
 
         <service id="LieferzeitenAdmin\ScheduledTask\LieferzeitenImportTask">
@@ -95,6 +99,12 @@
             <tag name="shopware.scheduled.task" />
         </service>
         <service id="LieferzeitenAdmin\ScheduledTask\VorkassePaymentReminderTaskHandler">
+            <tag name="messenger.message_handler" />
+        </service>
+        <service id="LieferzeitenAdmin\ScheduledTask\ShippingDateOverdueTask">
+            <tag name="shopware.scheduled.task" />
+        </service>
+        <service id="LieferzeitenAdmin\ScheduledTask\ShippingDateOverdueTaskHandler">
             <tag name="messenger.message_handler" />
         </service>
 

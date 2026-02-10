@@ -16,6 +16,12 @@ Component.register('lieferzeiten-task-assignment-rule-list', {
             total: 0,
             page: 1,
             limit: 25,
+            triggerOptions: [
+                'versand.datum.ueberfaellig',
+                'liefertermin.anfrage.zusaetzlich',
+                'liefertermin.anfrage.geschlossen',
+            ],
+            assigneeTypeOptions: ['user', 'team'],
         };
     },
 
@@ -24,6 +30,10 @@ Component.register('lieferzeiten-task-assignment-rule-list', {
             return [
                 { property: 'name', label: 'Name', inlineEdit: 'string', primary: true },
                 { property: 'status', label: 'Status', inlineEdit: 'string' },
+                { property: 'triggerKey', label: 'Trigger', inlineEdit: 'string' },
+                { property: 'ruleId', label: 'Rule (Rules Engine)', inlineEdit: 'string' },
+                { property: 'assigneeType', label: 'Assignee type', inlineEdit: 'string' },
+                { property: 'assigneeIdentifier', label: 'Assignee', inlineEdit: 'string' },
                 { property: 'priority', label: 'Priority', inlineEdit: 'number' },
                 { property: 'active', label: 'Active', inlineEdit: 'boolean' },
                 { property: 'lastChangedBy', label: 'Last Changed By', inlineEdit: 'string' },
@@ -70,6 +80,8 @@ Component.register('lieferzeiten-task-assignment-rule-list', {
         onCreate() {
             const entity = this.repository.create(Shopware.Context.api);
             entity.name = 'New rule';
+            entity.triggerKey = this.triggerOptions[0];
+            entity.assigneeType = this.assigneeTypeOptions[0];
             entity.active = false;
             return this.repository.save(entity, Shopware.Context.api).then(() => {
                 this.getList();

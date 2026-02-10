@@ -64,6 +64,16 @@
             "savedNewDate": "Neuer Liefertermin gespeichert",
             "savedComment": "Kommentar gespeichert"
         },
+        "additionalRequest": {
+            "button": "Zusätzliche Liefertermin-Anfrage",
+            "historyEntry": "Zusätzliche Liefertermin-Anfrage ausgelöst",
+            "auditCreated": "Zusätzliche Liefertermin-Anfrage erstellt",
+            "auditClosed": "Initiator über Abschluss informiert",
+            "notificationTitle": "Liefertermin-Anfrage",
+            "notificationRequested": "Anfrage wurde erstellt (Initiator: {initiator}).",
+            "notificationClosed": "Bestellung geschlossen – Initiator {initiator} wurde benachrichtigt.",
+            "defaultInitiator": "Admin"
+        },
         "status": {
             "open": "Offen",
             "closed": "Abgeschlossen"

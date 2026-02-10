@@ -23,6 +23,9 @@ Component.register('lieferzeiten-notification-toggle-list', {
                 'changements.date_livraison',
                 'douane.requise',
                 'rappel.vorkasse',
+                'versand.datum.ueberfaellig',
+                'liefertermin.anfrage.zusaetzlich',
+                'liefertermin.anfrage.geschlossen',
             ],
             channelOptions: ['email', 'sms', 'webhook'],
         };

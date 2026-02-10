@@ -13,6 +13,14 @@ class TaskAssignmentRuleEntity extends Entity
 
     protected ?string $status = null;
 
+    protected ?string $triggerKey = null;
+
+    protected ?string $ruleId = null;
+
+    protected ?string $assigneeType = null;
+
+    protected ?string $assigneeIdentifier = null;
+
     protected ?int $priority = null;
 
     protected bool $active = false;
@@ -41,6 +49,46 @@ class TaskAssignmentRuleEntity extends Entity
     public function setStatus(?string $status): void
     {
         $this->status = $status;
+    }
+
+    public function getTriggerKey(): ?string
+    {
+        return $this->triggerKey;
+    }
+
+    public function setTriggerKey(?string $triggerKey): void
+    {
+        $this->triggerKey = $triggerKey;
+    }
+
+    public function getRuleId(): ?string
+    {
+        return $this->ruleId;
+    }
+
+    public function setRuleId(?string $ruleId): void
+    {
+        $this->ruleId = $ruleId;
+    }
+
+    public function getAssigneeType(): ?string
+    {
+        return $this->assigneeType;
+    }
+
+    public function setAssigneeType(?string $assigneeType): void
+    {
+        $this->assigneeType = $assigneeType;
+    }
+
+    public function getAssigneeIdentifier(): ?string
+    {
+        return $this->assigneeIdentifier;
+    }
+
+    public function setAssigneeIdentifier(?string $assigneeIdentifier): void
+    {
+        $this->assigneeIdentifier = $assigneeIdentifier;
     }
 
     public function getPriority(): ?int
