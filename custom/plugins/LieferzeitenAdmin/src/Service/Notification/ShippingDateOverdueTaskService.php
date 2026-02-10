@@ -7,6 +7,7 @@ use LieferzeitenAdmin\Entity\TaskAssignmentRuleEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
@@ -16,6 +17,7 @@ class ShippingDateOverdueTaskService
     public function __construct(
         private readonly EntityRepository $positionRepository,
         private readonly EntityRepository $taskAssignmentRuleRepository,
+        private readonly EntityRepository $notificationEventRepository,
         private readonly NotificationEventService $notificationEventService,
     ) {
     }
@@ -30,7 +32,7 @@ class ShippingDateOverdueTaskService
         $criteria = new Criteria();
         $criteria->addAssociation('paket');
         $criteria->addFilter(new EqualsFilter('paket.shippingDate', null));
-        $criteria->addFilter(new RangeFilter('paket.calculatedDeliveryDate', [RangeFilter::LT => $now->format(DATE_ATOM)]));
+        $criteria->addFilter(new RangeFilter('paket.businessDateTo', [RangeFilter::LT => $now->format(DATE_ATOM)]));
 
         /** @var iterable<PositionEntity> $positions */
         $positions = $this->positionRepository->search($criteria, $context)->getEntities();
@@ -42,6 +44,10 @@ class ShippingDateOverdueTaskService
             }
 
             $trigger = NotificationTriggerCatalog::SHIPPING_DATE_OVERDUE;
+            if ($this->hasActiveTaskForPosition($position->getUniqueIdentifier(), $trigger, $context)) {
+                continue;
+            }
+
             $eventKey = sprintf('task:%s:%s', $trigger, $position->getUniqueIdentifier());
 
             $rule = $this->resolveAssignmentRule($trigger, $context);
@@ -70,6 +76,17 @@ class ShippingDateOverdueTaskService
                 );
             }
         }
+    }
+
+    private function hasActiveTaskForPosition(string $positionId, string $trigger, Context $context): bool
+    {
+        $criteria = new Criteria();
+        $criteria->setLimit(1);
+        $criteria->addFilter(new EqualsFilter('triggerKey', $trigger));
+        $criteria->addFilter(new EqualsFilter('payload.positionId', $positionId));
+        $criteria->addFilter(new EqualsAnyFilter('status', ['queued', 'pending', 'processing', 'open', 'active']));
+
+        return $this->notificationEventRepository->search($criteria, $context)->first() !== null;
     }
 
     /**

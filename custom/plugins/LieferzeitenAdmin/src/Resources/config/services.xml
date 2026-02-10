@@ -100,6 +100,7 @@
         <service id="LieferzeitenAdmin\Service\Notification\ShippingDateOverdueTaskService">
             <argument type="service" id="lieferzeiten_position.repository" />
             <argument type="service" id="lieferzeiten_task_assignment_rule.repository" />
+            <argument type="service" id="lieferzeiten_notification_event.repository" />
         </service>
         <service id="LieferzeitenAdmin\Controller\LieferzeitenSyncController" public="true" />
 
