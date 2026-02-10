@@ -97,7 +97,7 @@ class FakeExternalOrderProvider
         ['code' => 'prepayment_open', 'label' => 'Vorkasse: Bezahlung offen', 'color' => 'f5e502'],
         ['code' => 'not_paid_processing', 'label' => 'Nicht bezahlt / In Bearbeitung', 'color' => '2196f3'],
         ['code' => 'shipped', 'label' => 'Versendet', 'color' => '45a845'],
-        ['code' => 'order_completed', 'label' => 'Bestellung abgeschlossen', 'color' => '111111'],
+        ['code' => 'order_completed', 'label' => 'Bestellung abgeschlossen', 'color' => '000000'],
         ['code' => 'internal_processing_open', 'label' => 'INTERN (Bearbeitung offen)', 'color' => null],
         ['code' => 'cancellation_completed', 'label' => 'Stornierung abgeschlossen', 'color' => '9e9e9e'],
         ['code' => 'internal_unconfirmed', 'label' => 'INTERN (Nicht bestätigt)', 'color' => null],
@@ -220,44 +220,17 @@ class FakeExternalOrderProvider
         $sumTotal = round($itemsTotal + $shippingTotal, 2);
         $orderDateIso = $order['datePurchased'] ?? $this->randomOrderDateIso8601($id);
         $statusLabel = $order['statusLabel'] ?? $order['ordersStatusName'] ?? 'Bezahlt / in Bearbeitung';
-        $statusColor = (string) ($order['orderStatusColor'] ?? 'ffffff');
+        $statusColor = $order['orderStatusColor'] ?? $this->resolveStatusColorByLabel($statusLabel);
         $customerName = trim(sprintf('%s %s', $firstName, $lastName));
         $countryIsoCode2 = $country === 'Österreich' ? 'AT' : ($country === 'Schweiz' ? 'CH' : 'DE');
-        $statusHistory = [
-            [
-                'statusName' => $statusLabel,
-                'statusColor' => $statusColor,
-                'dateAdded' => $orderDateIso,
-                'comments' => sprintf(
-                    "magnalister-Verarbeitung (%s)\neBayOrderID: %d-%d\nExtendedOrderID: %02d-%05d-%05d\neBay User: %s",
-                    strtoupper((string) ($order['channel'] ?? 'ebay')),
-                    $this->randomInt($id, 100000000000, 999999999999, 31),
-                    $this->randomInt($id, 10000000000000, 99999999999999, 32),
-                    $this->randomInt($id, 1, 99, 33),
-                    $this->randomInt($id, 10000, 99999, 34),
-                    $this->randomInt($id, 10000, 99999, 35),
-                    $this->slugify($lastName)
-                ),
-            ],
-            [
-                'statusName' => 'INTERN (Bearbeitung offen)',
-                'statusColor' => 'ffffff',
-                'dateAdded' => $this->randomOrderDateIso8601($id, 1),
-                'comments' => sprintf('Auftragsnr.:%s', (string) ($order['auftragNumber'] ?? 'N/A')),
-            ],
-            [
-                'statusName' => 'Versendet',
-                'statusColor' => '45a845',
-                'dateAdded' => $this->randomOrderDateIso8601($id, 2),
-                'comments' => '',
-            ],
-            [
-                'statusName' => 'Bestellung abgeschlossen',
-                'statusColor' => '000000',
-                'dateAdded' => $this->randomOrderDateIso8601($id, 3),
-                'comments' => '',
-            ],
-        ];
+        $statusHistory = $this->buildStatusHistory(
+            $id,
+            $statusLabel,
+            $orderDateIso,
+            $lastName,
+            (string) ($order['channel'] ?? 'ebay'),
+            (string) ($order['auftragNumber'] ?? 'N/A')
+        );
 
         return [
             'orderId' => (int) ($order['orderId'] ?? 0),
@@ -337,6 +310,91 @@ class FakeExternalOrderProvider
                 'addressFormatId' => 5,
             ],
         ];
+    }
+
+    private function formatEuro(float $value): string
+    {
+        return number_format($value, 2, ',', '.') . ' EUR';
+    }
+
+
+    /**
+     * @return array<int, array{statusName: string, statusColor: string|null, dateAdded: string, comments: string}>
+     */
+    private function buildStatusHistory(
+        string $id,
+        string $statusLabel,
+        string $orderDateIso,
+        string $lastName,
+        string $channel,
+        string $auftragNumber
+    ): array {
+        $entries = [
+            [
+                'statusName' => $statusLabel,
+                'statusColor' => $this->resolveStatusColorByLabel($statusLabel),
+                'dateAdded' => $orderDateIso,
+                'comments' => sprintf(
+                    "magnalister-Verarbeitung (%s)\neBayOrderID: %d-%d\nExtendedOrderID: %02d-%05d-%05d\neBay User: %s",
+                    strtoupper($channel),
+                    $this->randomInt($id, 100000000000, 999999999999, 31),
+                    $this->randomInt($id, 10000000000000, 99999999999999, 32),
+                    $this->randomInt($id, 1, 99, 33),
+                    $this->randomInt($id, 10000, 99999, 34),
+                    $this->randomInt($id, 10000, 99999, 35),
+                    $this->slugify($lastName)
+                ),
+            ],
+        ];
+
+        if ($statusLabel !== 'INTERN (Nicht bestätigt)' && $statusLabel !== 'Stornierung abgeschlossen') {
+            $entries[] = [
+                'statusName' => 'INTERN (Bearbeitung offen)',
+                'statusColor' => null,
+                'dateAdded' => $this->randomOrderDateIso8601($id, 1),
+                'comments' => sprintf('Auftragsnr.:%s', $auftragNumber),
+            ];
+        }
+
+        if (in_array($statusLabel, ['Versendet', 'Bestellung abgeschlossen'], true)) {
+            $entries[] = [
+                'statusName' => 'Versendet',
+                'statusColor' => '45a845',
+                'dateAdded' => $this->randomOrderDateIso8601($id, 2),
+                'comments' => '',
+            ];
+        }
+
+        if ($statusLabel === 'Bestellung abgeschlossen') {
+            $entries[] = [
+                'statusName' => 'Bestellung abgeschlossen',
+                'statusColor' => '000000',
+                'dateAdded' => $this->randomOrderDateIso8601($id, 3),
+                'comments' => '',
+            ];
+        }
+
+        if ($statusLabel === 'Stornierung abgeschlossen') {
+            $entries[] = [
+                'statusName' => 'Stornierung abgeschlossen',
+                'statusColor' => '9e9e9e',
+                'dateAdded' => $this->randomOrderDateIso8601($id, 1),
+                'comments' => 'Vorgang storniert',
+            ];
+        }
+
+        return $entries;
+    }
+
+    private function resolveStatusColorByLabel(string $statusLabel): ?string
+    {
+        foreach (self::STATUS_DEFINITIONS as $statusDefinition) {
+            if (($statusDefinition['label'] ?? '') === $statusLabel) {
+                return $statusDefinition['color'] ?? null;
+            }
+        }
+
+        return null;
     }
 
     private function formatEuro(float $value): string
