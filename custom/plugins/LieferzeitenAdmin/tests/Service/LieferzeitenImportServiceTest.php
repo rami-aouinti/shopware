@@ -22,6 +22,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Framework\Context;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 use LieferzeitenAdmin\Entity\PaketEntity;
 
 class LieferzeitenImportServiceTest extends TestCase
@@ -234,6 +235,154 @@ class LieferzeitenImportServiceTest extends TestCase
         ], []));
     }
 
+    public function testIsSan6Status7SupportsStringAndBooleanMappings(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'isSan6Status7');
+        $method->setAccessible(true);
+
+        static::assertTrue($method->invoke($service, ['san6Status' => 'approved'], []));
+        static::assertTrue($method->invoke($service, [], ['status' => 'bereit']));
+        static::assertTrue($method->invoke($service, ['san6Ready' => true], []));
+        static::assertFalse($method->invoke($service, ['san6Ready' => false], ['status' => 'in_progress']));
+    }
+
+    public function testEnqueueStatusPushIsIdempotentForSamePendingStatus(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'enqueueStatusPush');
+        $method->setAccessible(true);
+
+        $queue = [[
+            'targetStatus' => 7,
+            'reason' => 'already pending',
+            'attempts' => 0,
+            'state' => 'pending',
+            'nextAttemptAt' => date(DATE_ATOM),
+            'createdAt' => date(DATE_ATOM),
+        ]];
+
+        $result = $method->invoke($service, $queue, 7, 'duplicate request');
+
+        static::assertCount(1, $result);
+        static::assertSame('already pending', $result[0]['reason']);
+    }
+
+    public function testProcessPendingStatusPushQueueMarksItemSentOnSuccessfulPush(): void
+    {
+        $context = Context::createDefaultContext();
+
+        $entity = new PaketEntity();
+        $entity->setUniqueIdentifier(Uuid::randomHex());
+        $entity->setSourceSystem('shopware');
+        $entity->setExternalOrderId('EXT-700');
+        $entity->setPaketNumber('PK-700');
+        $entity->setStatusPushQueue([[
+            'targetStatus' => 7,
+            'reason' => 'status7 mapped',
+            'attempts' => 0,
+            'state' => 'pending',
+            'nextAttemptAt' => date(DATE_ATOM, time() - 60),
+            'createdAt' => date(DATE_ATOM, time() - 120),
+        ]]);
+
+        $paketRepository = $this->createMock(EntityRepository::class);
+        $paketRepository->expects($this->once())
+            ->method('search')
+            ->willReturn($this->createSearchResult($entity));
+
+        $paketRepository->expects($this->once())
+            ->method('upsert')
+            ->with($this->callback(static function (array $payload): bool {
+                $queue = $payload[0]['statusPushQueue'] ?? [];
+
+                return ($queue[0]['state'] ?? null) === 'sent'
+                    && isset($queue[0]['sentAt']);
+            }), $context);
+
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(200);
+
+        $httpClient = $this->createMock(HttpClientInterface::class);
+        $httpClient->expects($this->once())
+            ->method('request')
+            ->willReturn($response);
+
+        $config = $this->createMock(SystemConfigService::class);
+        $config->method('get')->willReturnMap([
+            ['LieferzeitenAdmin.config.shopwareStatusPushApiUrl', null, 'https://example.test/push'],
+            ['LieferzeitenAdmin.config.shopwareStatusPushApiToken', null, 'secret'],
+            ['LieferzeitenAdmin.config.gambioStatusPushApiUrl', null, ''],
+            ['LieferzeitenAdmin.config.gambioStatusPushApiToken', null, ''],
+        ]);
+
+        $service = $this->createService($paketRepository, null, null, $httpClient, $config);
+        $method = new \ReflectionMethod($service, 'processPendingStatusPushQueue');
+        $method->setAccessible(true);
+
+        $method->invoke($service, $context);
+    }
+
+    public function testProcessPendingStatusPushQueueAppliesRetryBackoffOnFailure(): void
+    {
+        $context = Context::createDefaultContext();
+        $startedAt = time();
+
+        $entity = new PaketEntity();
+        $entity->setUniqueIdentifier(Uuid::randomHex());
+        $entity->setSourceSystem('shopware');
+        $entity->setExternalOrderId('EXT-800');
+        $entity->setPaketNumber('PK-800');
+        $entity->setStatusPushQueue([[
+            'targetStatus' => 8,
+            'reason' => 'status8 mapped',
+            'attempts' => 0,
+            'state' => 'pending',
+            'nextAttemptAt' => date(DATE_ATOM, $startedAt - 60),
+            'createdAt' => date(DATE_ATOM, $startedAt - 120),
+        ]]);
+
+        $paketRepository = $this->createMock(EntityRepository::class);
+        $paketRepository->expects($this->once())
+            ->method('search')
+            ->willReturn($this->createSearchResult($entity));
+
+        $paketRepository->expects($this->once())
+            ->method('upsert')
+            ->with($this->callback(static function (array $payload) use ($startedAt): bool {
+                $queue = $payload[0]['statusPushQueue'] ?? [];
+                $nextAttempt = strtotime((string) ($queue[0]['nextAttemptAt'] ?? '')) ?: 0;
+
+                return ($queue[0]['state'] ?? null) === 'pending'
+                    && ($queue[0]['attempts'] ?? null) === 1
+                    && isset($queue[0]['lastErrorAt'])
+                    && $nextAttempt >= $startedAt + 115
+                    && $nextAttempt <= $startedAt + 125;
+            }), $context);
+
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(500);
+
+        $httpClient = $this->createMock(HttpClientInterface::class);
+        $httpClient->expects($this->once())
+            ->method('request')
+            ->willReturn($response);
+
+        $config = $this->createMock(SystemConfigService::class);
+        $config->method('get')->willReturnMap([
+            ['LieferzeitenAdmin.config.shopwareStatusPushApiUrl', null, 'https://example.test/push'],
+            ['LieferzeitenAdmin.config.shopwareStatusPushApiToken', null, 'secret'],
+            ['LieferzeitenAdmin.config.gambioStatusPushApiUrl', null, ''],
+            ['LieferzeitenAdmin.config.gambioStatusPushApiToken', null, ''],
+        ]);
+
+        $service = $this->createService($paketRepository, null, null, $httpClient, $config);
+        $method = new \ReflectionMethod($service, 'processPendingStatusPushQueue');
+        $method->setAccessible(true);
+
+        $method->invoke($service, $context);
+    }
+
     private function createSearchResult(PaketEntity $entity): EntitySearchResult
     {
         return new EntitySearchResult(
@@ -250,13 +399,15 @@ class LieferzeitenImportServiceTest extends TestCase
         ?EntityRepository $paketRepository = null,
         ?AuditLogService $auditLogService = null,
         ?LoggerInterface $logger = null,
+        ?HttpClientInterface $httpClient = null,
+        ?SystemConfigService $config = null,
     ): LieferzeitenImportService {
         return new LieferzeitenImportService(
             $paketRepository ?? $this->createMock(EntityRepository::class),
             $this->createMock(EntityRepository::class),
             $this->createMock(EntityRepository::class),
-            $this->createMock(HttpClientInterface::class),
-            $this->createMock(SystemConfigService::class),
+            $httpClient ?? $this->createMock(HttpClientInterface::class),
+            $config ?? $this->createMock(SystemConfigService::class),
             $this->createMock(ChannelOrderAdapterRegistry::class),
             $this->createMock(San6Client::class),
             $this->createMock(San6MatchingService::class),
