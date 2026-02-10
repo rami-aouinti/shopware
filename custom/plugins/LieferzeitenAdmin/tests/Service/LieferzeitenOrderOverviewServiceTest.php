@@ -34,6 +34,69 @@ class LieferzeitenOrderOverviewServiceTest extends TestCase
         static::assertSame(0, $result['total']);
     }
 
+    public function testListOrdersKeepsTestOrderExclusionWithoutFilters(): void
+    {
+        $capturedSql = [];
+        $connection = $this->createMock(Connection::class);
+        $connection->method('fetchOne')
+            ->willReturnCallback(static function (string $sql) use (&$capturedSql): string {
+                $capturedSql[] = $sql;
+
+                return '0';
+            });
+
+        $connection->method('fetchAllAssociative')
+            ->willReturnCallback(static function (string $sql) use (&$capturedSql): array {
+                $capturedSql[] = $sql;
+
+                return [];
+            });
+
+        $service = new LieferzeitenOrderOverviewService($connection);
+        $service->listOrders();
+
+        static::assertCount(2, $capturedSql);
+        foreach ($capturedSql as $sql) {
+            static::assertStringContainsString('COALESCE(p.is_test_order, 0) = 0', $sql);
+        }
+    }
+
+    public function testListOrdersKeepsTestOrderExclusionWithMultipleFilters(): void
+    {
+        $capturedSql = [];
+        $connection = $this->createMock(Connection::class);
+        $connection->method('fetchOne')
+            ->willReturnCallback(static function (string $sql) use (&$capturedSql): string {
+                $capturedSql[] = $sql;
+
+                return '0';
+            });
+
+        $connection->method('fetchAllAssociative')
+            ->willReturnCallback(static function (string $sql) use (&$capturedSql): array {
+                $capturedSql[] = $sql;
+
+                return [];
+            });
+
+        $service = new LieferzeitenOrderOverviewService($connection);
+        $service->listOrders(1, 25, 'orderDate', 'DESC', [
+            'bestellnummer' => 'SO-',
+            'status' => '2',
+            'sendenummer' => 'TRACK',
+            'shippingAssignmentType' => 'standard',
+            'orderDateFrom' => '2026-02-01',
+            'orderDateTo' => '2026-02-10',
+        ]);
+
+        static::assertCount(2, $capturedSql);
+        foreach ($capturedSql as $sql) {
+            static::assertStringContainsString('COALESCE(p.is_test_order, 0) = 0', $sql);
+            static::assertStringContainsString('p.external_order_id LIKE :bestellnummer', $sql);
+            static::assertStringContainsString('p.status LIKE :status', $sql);
+        }
+    }
+
     public function testListOrdersAddsNewRangeFiltersAndSecondarySorts(): void
     {
         $connection = $this->createMock(Connection::class);

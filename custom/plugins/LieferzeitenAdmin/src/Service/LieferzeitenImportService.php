@@ -253,11 +253,19 @@ class LieferzeitenImportService
 
     private function findPaketIdByExternalOrderId(string $externalOrderId, Context $context): ?string
     {
+        return $this->findPaketByExternalOrderId($externalOrderId, $context)?->getId();
+    }
+
+    private function findPaketByExternalOrderId(string $externalOrderId, Context $context): ?PaketEntity
+    {
         $criteria = new Criteria();
         $criteria->setLimit(1);
         $criteria->addFilter(new EqualsFilter('externalOrderId', $externalOrderId));
 
-        return $this->paketRepository->search($criteria, $context)->first()?->getId();
+        /** @var PaketEntity|null $entity */
+        $entity = $this->paketRepository->search($criteria, $context)->first();
+
+        return $entity;
     }
 
     private function findPaketByNumber(string $paketNumber, Context $context): ?PaketEntity
@@ -395,12 +403,16 @@ class LieferzeitenImportService
     private function markExistingOrderAsTest(string $externalId, array $payload, Context $context): void
     {
         $paketNumber = (string) ($payload['paketNumber'] ?? $payload['packageNumber'] ?? $payload['orderNumber'] ?? $externalId);
-        $paketId = $this->findPaketIdByExternalOrderId($externalId, $context)
-            ?? $this->findPaketIdByNumber($paketNumber, $context);
+        $paket = $this->findPaketByExternalOrderId($externalId, $context)
+            ?? $this->findPaketByNumber($paketNumber, $context);
+        $paketId = $paket?->getId();
 
         if ($paketId === null) {
             return;
         }
+
+        $wasAlreadyTestOrder = $paket?->getIsTestOrder() === true;
+        $auditAction = $wasAlreadyTestOrder ? 'order_re_marked_test' : 'order_marked_test';
 
         $this->paketRepository->upsert([
             [
@@ -410,6 +422,16 @@ class LieferzeitenImportService
                 'lastChangedAt' => date(DATE_ATOM),
             ],
         ], $context);
+
+        $logContext = [
+            'externalOrderId' => $externalId,
+            'paketNumber' => $paketNumber,
+            'paketId' => $paketId,
+            'alreadyMarkedAsTest' => $wasAlreadyTestOrder,
+        ];
+
+        $this->logger->info('Lieferzeiten order marked as test order during import.', $logContext);
+        $this->auditLogService->log($auditAction, 'paket', $paketId, $context, $logContext, 'shopware');
     }
 
     /** @param array<string,mixed> $order */
