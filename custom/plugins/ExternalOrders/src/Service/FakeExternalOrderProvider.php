@@ -208,105 +208,140 @@ class FakeExternalOrderProvider
             $taxTotal += round(($grossPrice - $netPrice) * $quantity, 2);
 
             $items[] = [
-                'name' => sprintf('Medizinisches Produkt %d', $index),
+                'productName' => sprintf('Medizinisches Produkt %d', $index),
                 'quantity' => $quantity,
-                'netPrice' => $netPrice,
-                'taxRate' => $taxRate,
-                'grossPrice' => $grossPrice,
-                'totalPrice' => $lineTotal,
+                'finalPrice' => $lineTotal,
+                'productPrice' => $netPrice,
+                'productTax' => round(($grossPrice - $netPrice) * $quantity, 2),
             ];
         }
 
         $shippingTotal = $this->randomInt($id, 490, 1290, 30) / 100;
         $sumTotal = round($itemsTotal + $shippingTotal, 2);
-        $orderNumber = $order['orderNumber'] ?? $id;
-        $orderDate = $order['date'] ?? $this->randomOrderDate($id);
+        $orderDateIso = $order['datePurchased'] ?? $this->randomOrderDateIso8601($id);
         $statusLabel = $order['statusLabel'] ?? $order['ordersStatusName'] ?? 'Bezahlt / in Bearbeitung';
-        $statusColor = $order['orderStatusColor'] ?? null;
-
-        return [
-            'orderNumber' => $orderNumber,
-            'customer' => [
-                'number' => sprintf('K-%s', strtoupper(substr($id, -6))),
-                'firstName' => $firstName,
-                'lastName' => $lastName,
-                'email' => $order['email']
-                    ?? sprintf('%s.%s@example.com', $this->slugify($firstName), $this->slugify($lastName)),
-                'group' => $this->pickValue(['B2B', 'Retail', 'Premium'], $id, 11),
-            ],
-            'billingAddress' => [
-                'company' => sprintf('%s Medizintechnik', $lastName),
-                'street' => sprintf('%s %d', $street, $streetNumber),
-                'zip' => $zip,
-                'city' => $city,
-                'country' => $country,
-            ],
-            'shippingAddress' => [
-                'name' => sprintf('%s %s', $firstName, $lastName),
-                'street' => sprintf('%s %d', $street, $streetNumber),
-                'zipCity' => sprintf('%s %s', $zip, $city),
-                'country' => $country,
-            ],
-            'payment' => [
-                'method' => $paymentMethod,
-                'code' => strtolower($this->slugify($paymentMethod)),
-                'dueDate' => $this->randomOrderDate($id, 14),
-                'outstanding' => '0,00 €',
-                'settled' => str_contains($this->toLowercase($statusLabel), 'nicht bezahlt')
-                    || str_contains($this->toLowercase($statusLabel), 'offen')
-                    ? 'Offen'
-                    : 'Bezahlt',
-                'extra' => 'Transaktion bestätigt',
-            ],
-            'shipping' => [
-                'method' => 'DHL',
-                'carrier' => 'DHL',
-                'trackingNumbers' => [
-                    sprintf('00340434%s', $this->randomInt($id, 100000, 999999, 12)),
-                ],
-            ],
-            'additional' => [
-                'orderDate' => $orderDate,
-                'status' => $statusLabel,
+        $statusColor = (string) ($order['orderStatusColor'] ?? 'ffffff');
+        $customerName = trim(sprintf('%s %s', $firstName, $lastName));
+        $countryIsoCode2 = $country === 'Österreich' ? 'AT' : ($country === 'Schweiz' ? 'CH' : 'DE');
+        $statusHistory = [
+            [
+                'statusName' => $statusLabel,
                 'statusColor' => $statusColor,
-                'orderType' => $this->pickValue(['Standard', 'Express', 'Premium'], $id, 13),
-                'notes' => $this->pickValue([
-                    'Bitte vor 12 Uhr liefern.',
-                    'Lieferung bei Nachbarn möglich.',
-                    'Bitte telefonisch avisieren.',
-                    'Keine besonderen Hinweise.',
-                ], $id, 14),
-                'consultant' => sprintf('%s %s', substr($firstName, 0, 1), $lastName),
-                'tenant' => strtoupper((string) ($order['channel'] ?? 'External')),
-                'san6OrderNumber' => sprintf('SAN6-%s', strtoupper(substr($id, -6))),
-                'orgaEntries' => [
-                    sprintf('ORG-%d', $this->randomInt($id, 100, 999, 15)),
-                ],
-                'documents' => [
-                    $this->pickValue(['Rechnung', 'Lieferschein', 'Auftrag', 'Storno'], $id, 16),
-                ],
-                'pdmsId' => sprintf('PDMS-%d', $this->randomInt($id, 1000, 9999, 17)),
-                'pdmsVariant' => $this->pickValue(['V1', 'V2'], $id, 18),
-                'topmArticleNumber' => sprintf('TM-%d', $this->randomInt($id, 1000, 9999, 19)),
-                'topmExecution' => $this->pickValue(['Standard', 'Premium'], $id, 20),
-                'statusHistorySource' => 'Faker',
+                'dateAdded' => $orderDateIso,
+                'comments' => sprintf(
+                    "magnalister-Verarbeitung (%s)\neBayOrderID: %d-%d\nExtendedOrderID: %02d-%05d-%05d\neBay User: %s",
+                    strtoupper((string) ($order['channel'] ?? 'ebay')),
+                    $this->randomInt($id, 100000000000, 999999999999, 31),
+                    $this->randomInt($id, 10000000000000, 99999999999999, 32),
+                    $this->randomInt($id, 1, 99, 33),
+                    $this->randomInt($id, 10000, 99999, 34),
+                    $this->randomInt($id, 10000, 99999, 35),
+                    $this->slugify($lastName)
+                ),
             ],
-            'items' => $items,
-            'statusHistory' => [
-                [
-                    'status' => $statusLabel,
-                    'date' => $orderDate,
-                    'comment' => 'Auftrag angelegt',
-                ],
+            [
+                'statusName' => 'INTERN (Bearbeitung offen)',
+                'statusColor' => 'ffffff',
+                'dateAdded' => $this->randomOrderDateIso8601($id, 1),
+                'comments' => sprintf('Auftragsnr.:%s', (string) ($order['auftragNumber'] ?? 'N/A')),
             ],
-            'totals' => [
-                'items' => round($itemsTotal, 2),
-                'shipping' => $shippingTotal,
-                'sum' => $sumTotal,
-                'tax' => round($taxTotal, 2),
-                'net' => round($sumTotal - $taxTotal, 2),
+            [
+                'statusName' => 'Versendet',
+                'statusColor' => '45a845',
+                'dateAdded' => $this->randomOrderDateIso8601($id, 2),
+                'comments' => '',
+            ],
+            [
+                'statusName' => 'Bestellung abgeschlossen',
+                'statusColor' => '000000',
+                'dateAdded' => $this->randomOrderDateIso8601($id, 3),
+                'comments' => '',
             ],
         ];
+
+        return [
+            'orderId' => (int) ($order['orderId'] ?? 0),
+            'datePurchased' => $orderDateIso,
+            'paymentMethod' => $this->slugify($paymentMethod),
+            'orderStatus' => $statusLabel,
+            'orderStatusColor' => $statusColor,
+            'shippingMethod' => $this->slugify($this->pickValue(['DHL', 'DPD', 'ebay'], $id, 36)),
+            'auftragNumber' => (int) ($order['auftragNumber'] ?? 0),
+            'items' => $items,
+            'totals' => [
+                ['title' => 'Warenwert:', 'value' => number_format($itemsTotal, 4, '.', ''), 'text' => $this->formatEuro($itemsTotal)],
+                ['title' => 'Versandkosten:', 'value' => number_format($shippingTotal, 4, '.', ''), 'text' => $this->formatEuro($shippingTotal)],
+                ['title' => '<b>Summe</b>:', 'value' => number_format($sumTotal, 4, '.', ''), 'text' => $this->formatEuro($sumTotal)],
+                ['title' => 'inkl. 19% MwSt.:', 'value' => number_format($taxTotal, 4, '.', ''), 'text' => $this->formatEuro($taxTotal)],
+                ['title' => 'Summe netto:', 'value' => number_format($sumTotal - $taxTotal, 4, '.', ''), 'text' => $this->formatEuro($sumTotal - $taxTotal)],
+            ],
+            'statusHistory' => $statusHistory,
+            'customer' => [
+                'id' => $this->randomInt($id, 1000, 99999, 37),
+                'cid' => 'N/A',
+                'vatId' => 'N/A',
+                'status' => 12,
+                'statusName' => 'Kundengruppe Ebay DE',
+                'statusImage' => '',
+                'statusDiscount' => 0.00,
+                'name' => $customerName,
+                'firstName' => $firstName,
+                'lastName' => $lastName,
+                'gender' => '',
+                'company' => '',
+                'streetAddress' => sprintf('%s %d', $street, $streetNumber),
+                'houseNumber' => '',
+                'additionalInfo' => '',
+                'suburb' => 'N/A',
+                'city' => $city,
+                'postcode' => $zip,
+                'state' => '',
+                'country' => $country,
+                'telephone' => '',
+                'emailAddress' => $order['email']
+                    ?? sprintf('%s.%s@example.com', $this->slugify($firstName), $this->slugify($lastName)),
+                'addressFormatId' => 5,
+            ],
+            'billing' => [
+                'name' => $customerName,
+                'firstName' => $firstName,
+                'lastName' => $lastName,
+                'gender' => '',
+                'company' => '',
+                'streetAddress' => sprintf('%s %d', $street, $streetNumber),
+                'houseNumber' => '',
+                'additionalInfo' => '',
+                'suburb' => 'N/A',
+                'city' => $city,
+                'postcode' => $zip,
+                'state' => '',
+                'country' => $country,
+                'countryIsoCode2' => $countryIsoCode2,
+                'addressFormatId' => 5,
+            ],
+            'delivery' => [
+                'name' => $customerName,
+                'firstName' => $firstName,
+                'lastName' => $lastName,
+                'gender' => '',
+                'company' => '',
+                'streetAddress' => sprintf('%s %d', $street, $streetNumber),
+                'houseNumber' => '',
+                'additionalInfo' => '',
+                'suburb' => 'N/A',
+                'city' => $city,
+                'postcode' => $zip,
+                'state' => '',
+                'country' => $country,
+                'countryIsoCode2' => $countryIsoCode2,
+                'addressFormatId' => 5,
+            ],
+        ];
+    }
+
+    private function formatEuro(float $value): string
+    {
+        return number_format($value, 2, ',', '.') . ' EUR';
     }
 
     /**
