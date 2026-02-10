@@ -58,6 +58,7 @@
                         <router-view
                             :orders="filteredOrders"
                             :selected-domain="selectedDomain"
+                            :on-reload-order="loadOrders"
                         />
                     </template>
                 </sw-card>

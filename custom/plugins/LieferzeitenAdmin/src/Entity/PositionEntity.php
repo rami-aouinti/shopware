@@ -17,6 +17,12 @@ class PositionEntity extends Entity
 
     protected ?\DateTimeInterface $orderedAt = null;
 
+    protected ?string $comment = null;
+
+    protected ?\DateTimeInterface $additionalDeliveryRequestAt = null;
+
+    protected ?string $additionalDeliveryRequestInitiator = null;
+
     protected ?string $paketId = null;
 
     protected ?string $lastChangedBy = null;
@@ -69,6 +75,37 @@ class PositionEntity extends Entity
     public function setOrderedAt(?\DateTimeInterface $orderedAt): void
     {
         $this->orderedAt = $orderedAt;
+    }
+
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(?string $comment): void
+    {
+        $this->comment = $comment;
+    }
+
+    public function getAdditionalDeliveryRequestAt(): ?\DateTimeInterface
+    {
+        return $this->additionalDeliveryRequestAt;
+    }
+
+    public function setAdditionalDeliveryRequestAt(?\DateTimeInterface $additionalDeliveryRequestAt): void
+    {
+        $this->additionalDeliveryRequestAt = $additionalDeliveryRequestAt;
+    }
+
+    public function getAdditionalDeliveryRequestInitiator(): ?string
+    {
+        return $this->additionalDeliveryRequestInitiator;
+    }
+
+    public function setAdditionalDeliveryRequestInitiator(?string $additionalDeliveryRequestInitiator): void
+    {
+        $this->additionalDeliveryRequestInitiator = $additionalDeliveryRequestInitiator;
     }
 
     public function getPaketId(): ?string

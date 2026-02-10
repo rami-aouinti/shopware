@@ -14,6 +14,11 @@ Shopware.Component.register('lieferzeiten-open', {
             required: false,
             default: null,
         },
+        onReloadOrder: {
+            type: Function,
+            required: false,
+            default: null,
+        },
     },
 
     computed: {
