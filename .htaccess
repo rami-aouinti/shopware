@@ -1,14 +1,22 @@
-DirectoryIndex index.html index.php
+DirectoryIndex public/index.php index.php index.html
 
 <IfModule mod_negotiation.c>
     Options -MultiViews
 </IfModule>
 
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Si le vhost pointe encore sur la racine du projet,
+    # on force toutes les requêtes vers /public.
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ /public/$1 [L]
+</IfModule>
+
 <IfModule mod_alias.c>
     # Restrict access to VCS directories
-    RedirectMatch 404 /\\.(svn|git|hg|bzr|cvs)(/|$)
+    RedirectMatch 404 /\.(svn|git|hg|bzr|cvs)(/|$)
 
     # Restrict access to root folder files
     RedirectMatch 404 /(composer\.(json|lock|phar)|README\.md|\.gitignore|.*\.dist|\.env.*)$
 </IfModule>
-
