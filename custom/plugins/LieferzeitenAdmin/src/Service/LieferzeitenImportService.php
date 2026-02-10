@@ -3,6 +3,8 @@
 namespace LieferzeitenAdmin\Service;
 
 use LieferzeitenAdmin\Entity\PaketEntity;
+use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
 use LieferzeitenAdmin\Sync\Adapter\ChannelOrderAdapterRegistry;
 use LieferzeitenAdmin\Sync\San6\San6Client;
 use LieferzeitenAdmin\Sync\San6\San6MatchingService;
@@ -31,6 +33,7 @@ class LieferzeitenImportService
         private readonly ChannelDateSettingsProvider $settingsProvider,
         private readonly BusinessDayDeliveryDateCalculator $deliveryDateCalculator,
         private readonly LockFactory $lockFactory,
+        private readonly NotificationEventService $notificationEventService,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -123,7 +126,8 @@ class LieferzeitenImportService
                     $matched['statusPushQueue'] = $queue;
 
                     $paketId = $this->upsertPaket($externalId, $matched, $context, $existingPaket);
-                    $this->upsertPositionAndTrackingHistory($paketId, $matched, $context);
+                    $trackingNumbers = $this->upsertPositionAndTrackingHistory($paketId, $matched, $context);
+                    $this->emitNotificationEvents($externalId, $channel, $matched, $trackingNumbers, $existingStatus, $mappedStatus, $context);
                 }
             }
         } finally {
@@ -184,11 +188,11 @@ class LieferzeitenImportService
     }
 
     /** @param array<string,mixed> $payload */
-    private function upsertPositionAndTrackingHistory(string $paketId, array $payload, Context $context): void
+    private function upsertPositionAndTrackingHistory(string $paketId, array $payload, Context $context): array
     {
         $positionNumber = (string) ($payload['positionNumber'] ?? $payload['orderNumber'] ?? $payload['externalId'] ?? '');
         if ($positionNumber === '') {
-            return;
+            return [];
         }
 
         $positionId = $this->findPositionIdByNumber($positionNumber, $context) ?? Uuid::randomHex();
@@ -213,6 +217,8 @@ class LieferzeitenImportService
                 'sendenummer' => $trackingNumber,
             ]], $context);
         }
+
+        return $trackingNumbers;
     }
 
     private function findPaketIdByNumber(string $paketNumber, Context $context): ?string
@@ -572,6 +578,88 @@ class LieferzeitenImportService
             'url' => (string) $this->config->get($map[$channel]['url']),
             'token' => (string) $this->config->get($map[$channel]['token']),
         ];
+    }
+
+
+    /**
+     * @param array<string,mixed> $payload
+     * @param array<int,string> $trackingNumbers
+     */
+    private function emitNotificationEvents(string $externalOrderId, string $sourceSystem, array $payload, array $trackingNumbers, ?int $existingStatus, int $mappedStatus, Context $context): void
+    {
+        foreach (NotificationTriggerCatalog::channels() as $channel) {
+            $this->notificationEventService->dispatch(
+                sprintf('order-created:%s:%s', $externalOrderId, $channel),
+                NotificationTriggerCatalog::ORDER_CREATED,
+                $channel,
+                $payload,
+                $context,
+                $externalOrderId,
+                $sourceSystem,
+            );
+
+            if ($existingStatus !== null && $existingStatus !== $mappedStatus) {
+                $this->notificationEventService->dispatch(
+                    sprintf('status-change:%s:%s:%s', $externalOrderId, (string) $mappedStatus, $channel),
+                    NotificationTriggerCatalog::ORDER_STATUS_CHANGED,
+                    $channel,
+                    [
+                        'from' => $existingStatus,
+                        'to' => $mappedStatus,
+                        'externalOrderId' => $externalOrderId,
+                    ],
+                    $context,
+                    $externalOrderId,
+                    $sourceSystem,
+                );
+            }
+
+            if ($trackingNumbers !== []) {
+                $this->notificationEventService->dispatch(
+                    sprintf('tracking:%s:%s', $externalOrderId, $channel),
+                    NotificationTriggerCatalog::TRACKING_UPDATED,
+                    $channel,
+                    [
+                        'trackingNumbers' => $trackingNumbers,
+                        'externalOrderId' => $externalOrderId,
+                    ],
+                    $context,
+                    $externalOrderId,
+                    $sourceSystem,
+                );
+            }
+
+            if (($payload['deliveryDate'] ?? null) !== null || ($payload['calculatedDeliveryDate'] ?? null) !== null) {
+                $this->notificationEventService->dispatch(
+                    sprintf('delivery-change:%s:%s', $externalOrderId, $channel),
+                    NotificationTriggerCatalog::DELIVERY_DATE_CHANGED,
+                    $channel,
+                    [
+                        'deliveryDate' => $payload['deliveryDate'] ?? null,
+                        'calculatedDeliveryDate' => $payload['calculatedDeliveryDate'] ?? null,
+                        'externalOrderId' => $externalOrderId,
+                    ],
+                    $context,
+                    $externalOrderId,
+                    $sourceSystem,
+                );
+            }
+
+            if (($payload['customsRequired'] ?? false) === true) {
+                $this->notificationEventService->dispatch(
+                    sprintf('customs:%s:%s', $externalOrderId, $channel),
+                    NotificationTriggerCatalog::CUSTOMS_REQUIRED,
+                    $channel,
+                    [
+                        'externalOrderId' => $externalOrderId,
+                        'customs' => $payload['customsData'] ?? null,
+                    ],
+                    $context,
+                    $externalOrderId,
+                    $sourceSystem,
+                );
+            }
+        }
     }
 
     private function normalizeStatusInt(mixed $value): ?int
