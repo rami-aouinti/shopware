@@ -108,6 +108,8 @@
         display: flex;
         flex-direction: column;
         min-height: 0;
+        max-height: calc(100vh - 260px);
+        overflow: hidden;
     }
 
     :global(.external-orders__page .mt-card.external-orders__channels) {
@@ -301,13 +303,22 @@
         border-radius: 0 0 10px 10px;
         flex: 1 1 auto;
         min-height: 0;
+        max-height: calc(100vh - 420px);
         overflow: auto;
     }
 
     &__table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 960px;
+        table-layout: fixed;
+        min-width: 0;
+    }
+
+    &__table th:nth-child(5),
+    &__table td:nth-child(5),
+    &__table th:nth-child(6),
+    &__table td:nth-child(6) {
+        overflow-wrap: anywhere;
     }
 
     &__cell {
