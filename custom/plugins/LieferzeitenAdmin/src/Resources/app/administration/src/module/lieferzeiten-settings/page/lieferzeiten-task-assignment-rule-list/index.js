@@ -6,6 +6,8 @@ const { Criteria } = Shopware.Data;
 Component.register('lieferzeiten-task-assignment-rule-list', {
     template,
 
+    mixins: ['notification'],
+
     inject: ['repositoryFactory'],
 
     data() {
@@ -52,44 +54,67 @@ Component.register('lieferzeiten-task-assignment-rule-list', {
     },
 
     methods: {
-        getList() {
+        extractErrorMessage(error) {
+            return error?.response?.data?.errors?.[0]?.detail
+                || error?.response?.data?.message
+                || error?.message
+                || this.$tc('global.default.error');
+        },
+
+        notifyRequestError(error, fallbackTitle) {
+            this.createNotificationError({
+                title: fallbackTitle,
+                message: this.extractErrorMessage(error),
+            });
+        },
+
+        async getList() {
             this.isLoading = true;
             const criteria = new Criteria(this.page, this.limit);
             criteria.addSorting(Criteria.sort('createdAt', 'DESC'));
 
-            return this.repository.search(criteria, Shopware.Context.api).then((result) => {
+            try {
+                const result = await this.repository.search(criteria, Shopware.Context.api);
                 this.items = result;
                 this.total = result.total;
-            }).finally(() => {
+            } catch (error) {
+                this.notifyRequestError(error, 'Task Assignment Rules');
+            } finally {
                 this.isLoading = false;
-            });
+            }
         },
         onPageChange({ page, limit }) {
             this.page = page;
             this.limit = limit;
             this.getList();
         },
-        onInlineEditSave(item) {
+        async onInlineEditSave(item) {
             if (!this.hasEditAccess) {
                 return Promise.resolve();
             }
 
             this.isLoading = true;
-            return this.repository.save(item, Shopware.Context.api).then(() => {
-                this.getList();
-            });
+            try {
+                await this.repository.save(item, Shopware.Context.api);
+                await this.getList();
+            } catch (error) {
+                this.notifyRequestError(error, 'Task Assignment Rules');
+            }
         },
-        onDelete(item) {
+        async onDelete(item) {
             if (!this.hasEditAccess) {
                 return Promise.resolve();
             }
 
             this.isLoading = true;
-            return this.repository.delete(item.id, Shopware.Context.api).then(() => {
-                this.getList();
-            });
+            try {
+                await this.repository.delete(item.id, Shopware.Context.api);
+                await this.getList();
+            } catch (error) {
+                this.notifyRequestError(error, 'Task Assignment Rules');
+            }
         },
-        onCreate() {
+        async onCreate() {
             if (!this.hasEditAccess) {
                 return Promise.resolve();
             }
@@ -99,9 +124,12 @@ Component.register('lieferzeiten-task-assignment-rule-list', {
             entity.triggerKey = this.triggerOptions[0];
             entity.assigneeType = this.assigneeTypeOptions[0];
             entity.active = false;
-            return this.repository.save(entity, Shopware.Context.api).then(() => {
-                this.getList();
-            });
+            try {
+                await this.repository.save(entity, Shopware.Context.api);
+                await this.getList();
+            } catch (error) {
+                this.notifyRequestError(error, 'Task Assignment Rules');
+            }
         },
     },
 });
