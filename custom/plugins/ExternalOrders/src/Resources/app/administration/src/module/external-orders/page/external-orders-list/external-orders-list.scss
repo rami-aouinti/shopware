@@ -497,44 +497,27 @@
     }
 
     &__pagination-limit {
-        min-width: 96px;
         margin-left: 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #52667a;
+        font-size: 13px;
+        font-weight: 600;
 
-        :global(.sw-single-select__selection) {
-            min-height: 32px;
-            padding: 0 10px;
-            font-size: 13px;
-            border-radius: 10px;
-        }
-
-        :global(.sw-single-select__selection-input) {
-            font-size: 13px;
-        }
-
-        :global(.sw-single-select__indicators) {
+        select {
+            min-width: 72px;
             height: 32px;
-        }
-
-        :global(.sw-single-select__selection-placeholder),
-        :global(.sw-single-select__selection-value) {
-            line-height: 32px;
-        }
-
-        :global(.sw-select-result) {
+            border: 1px solid #d7dde5;
+            border-radius: 10px;
+            padding: 0 28px 0 10px;
             font-size: 13px;
-            padding: 8px 12px;
-        }
-
-        :global(.sw-select-result.is--selected),
-        :global(.sw-select-result.is--highlighted) {
-            background-color: #d7f4e3;
-            color: #1f2d3d;
-        }
-
-        :global(.sw-select-result.is--selected::after) {
-            display: none;
+            color: #2c3e50;
+            background: #ffffff;
+            cursor: pointer;
         }
     }
+
 
     &__detail {
         display: flex;
