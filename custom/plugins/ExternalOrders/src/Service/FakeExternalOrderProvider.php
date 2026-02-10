@@ -92,11 +92,15 @@ class FakeExternalOrderProvider
         'Vorkasse',
     ];
 
-    private const STATUS_LABELS = [
-        'processing' => 'In Bearbeitung',
-        'shipped' => 'Versendet',
-        'closed' => 'Abgeschlossen',
-        'cancelled' => 'Storniert',
+    private const STATUS_DEFINITIONS = [
+        ['code' => 'paid_processing', 'label' => 'Bezahlt / in Bearbeitung', 'color' => '2196f3'],
+        ['code' => 'prepayment_open', 'label' => 'Vorkasse: Bezahlung offen', 'color' => 'f5e502'],
+        ['code' => 'not_paid_processing', 'label' => 'Nicht bezahlt / In Bearbeitung', 'color' => '2196f3'],
+        ['code' => 'shipped', 'label' => 'Versendet', 'color' => '45a845'],
+        ['code' => 'order_completed', 'label' => 'Bestellung abgeschlossen', 'color' => '111111'],
+        ['code' => 'internal_processing_open', 'label' => 'INTERN (Bearbeitung offen)', 'color' => null],
+        ['code' => 'cancellation_completed', 'label' => 'Stornierung abgeschlossen', 'color' => '9e9e9e'],
+        ['code' => 'internal_unconfirmed', 'label' => 'INTERN (Nicht bestätigt)', 'color' => null],
     ];
 
     /**
@@ -136,22 +140,35 @@ class FakeExternalOrderProvider
                     $this->slugify($lastName),
                     $index
                 );
-                $status = $this->pickValue(array_keys(self::STATUS_LABELS), $id, 3);
-                $statusLabel = self::STATUS_LABELS[$status] ?? 'In Bearbeitung';
+                $statusDefinition = $this->pickStatusDefinition($id, 3);
+                $status = $statusDefinition['code'];
+                $statusLabel = $statusDefinition['label'];
                 $totalItems = $this->randomInt($id, 1, 6, 4);
                 $pricePerItem = $this->randomInt($id, 2500, 19500, 5) / 100;
                 $totalRevenue = round($totalItems * $pricePerItem, 2);
+                $orderId = 1008000 + ($index * 10) + $this->randomInt($id, 1, 9, 6);
+                $auftragNumber = 446000 + $index;
+                $isTestOrder = $this->randomInt($id, 0, 19, 7) === 0;
 
                 $orders[] = [
                     'id' => $id,
+                    'externalId' => $id,
+                    'orderId' => $orderId,
                     'channel' => $channel,
                     'orderNumber' => $orderNumber,
+                    'auftragNumber' => $auftragNumber,
                     'customerName' => $customerName,
+                    'customersName' => $customerName,
                     'orderReference' => $orderReference,
                     'email' => $email,
+                    'customersEmailAddress' => $email,
                     'date' => $this->randomOrderDate($id),
+                    'datePurchased' => $this->randomOrderDateIso8601($id),
                     'status' => $status,
                     'statusLabel' => $statusLabel,
+                    'ordersStatusName' => $statusLabel,
+                    'orderStatusColor' => $statusDefinition['color'],
+                    'isTestOrder' => $isTestOrder,
                     'totalItems' => $totalItems,
                     'totalRevenue' => $totalRevenue,
                 ];
@@ -204,7 +221,8 @@ class FakeExternalOrderProvider
         $sumTotal = round($itemsTotal + $shippingTotal, 2);
         $orderNumber = $order['orderNumber'] ?? $id;
         $orderDate = $order['date'] ?? $this->randomOrderDate($id);
-        $statusLabel = $order['statusLabel'] ?? 'In Bearbeitung';
+        $statusLabel = $order['statusLabel'] ?? $order['ordersStatusName'] ?? 'Bezahlt / in Bearbeitung';
+        $statusColor = $order['orderStatusColor'] ?? null;
 
         return [
             'orderNumber' => $orderNumber,
@@ -234,7 +252,10 @@ class FakeExternalOrderProvider
                 'code' => strtolower($this->slugify($paymentMethod)),
                 'dueDate' => $this->randomOrderDate($id, 14),
                 'outstanding' => '0,00 €',
-                'settled' => 'Bezahlt',
+                'settled' => str_contains($this->toLowercase($statusLabel), 'nicht bezahlt')
+                    || str_contains($this->toLowercase($statusLabel), 'offen')
+                    ? 'Offen'
+                    : 'Bezahlt',
                 'extra' => 'Transaktion bestätigt',
             ],
             'shipping' => [
@@ -247,6 +268,7 @@ class FakeExternalOrderProvider
             'additional' => [
                 'orderDate' => $orderDate,
                 'status' => $statusLabel,
+                'statusColor' => $statusColor,
                 'orderType' => $this->pickValue(['Standard', 'Express', 'Premium'], $id, 13),
                 'notes' => $this->pickValue([
                     'Bitte vor 12 Uhr liefern.',
@@ -317,6 +339,25 @@ class FakeExternalOrderProvider
         $timestamp = time() - ($daysAgo * 86400) - $secondsOffset;
 
         return date('Y-m-d H:i', $timestamp);
+    }
+
+    private function randomOrderDateIso8601(string $seed, int $offsetDays = 0): string
+    {
+        $daysAgo = $this->randomInt($seed, 1 + $offsetDays, 120 + $offsetDays, 27);
+        $secondsOffset = $this->randomInt($seed, 0, 86400, 28);
+        $timestamp = time() - ($daysAgo * 86400) - $secondsOffset;
+
+        return gmdate('Y-m-d\\TH:i:s.000+00:00', $timestamp);
+    }
+
+    /**
+     * @return array{code: string, label: string, color: string|null}
+     */
+    private function pickStatusDefinition(string $seed, int $offset = 0): array
+    {
+        $index = $this->randomInt($seed, 0, count(self::STATUS_DEFINITIONS) - 1, $offset);
+
+        return self::STATUS_DEFINITIONS[$index] ?? self::STATUS_DEFINITIONS[0];
     }
 
     private function slugify(string $value): string
