@@ -15,12 +15,12 @@ class LieferzeitenOrdersService extends ApiService {
         return data?.data ?? data ?? [];
     }
 
-    async updateLieferterminLieferant(positionId, days) {
-        return this.post(`position/${positionId}/liefertermin-lieferant`, { days });
+    async updateLieferterminLieferant(positionId, payload) {
+        return this.post(`position/${positionId}/liefertermin-lieferant`, payload);
     }
 
-    async updateNeuerLiefertermin(positionId, days) {
-        return this.post(`position/${positionId}/neuer-liefertermin`, { days });
+    async updateNeuerLiefertermin(positionId, payload) {
+        return this.post(`position/${positionId}/neuer-liefertermin`, payload);
     }
 
     async updateComment(positionId, comment) {

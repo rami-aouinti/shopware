@@ -35,26 +35,18 @@
                         <td>{{ order.positions.length }}</td>
                         <td>{{ parcelSummary(order) }}</td>
                         <td>
-                            <sw-number-field
-                                v-model:value="order.lieferterminLieferantDays"
-                                :min="1"
-                                :max="14"
-                                :disabled="!hasEditAccess()"
-                                size="small"
-                            />
+                            <sw-datepicker v-model:value="order.lieferterminLieferantRange.from" :disabled="!hasEditAccess()" size="small" />
+                            <sw-datepicker v-model:value="order.lieferterminLieferantRange.to" :disabled="!hasEditAccess()" size="small" />
+                            <div>KW Preview: {{ weekLabelFromDate(order.lieferterminLieferantRange.to) }}</div>
                             <sw-button size="small" variant="primary" :disabled="!hasEditAccess() || !canSaveLiefertermin(order)" @click="saveLiefertermin(order)">
                                 {{ $t('global.default.save') }}
                             </sw-button>
                         </td>
-                        <td>{{ order.lieferterminLieferantKw || '-' }}</td>
+                        <td>{{ weekLabelFromDate(order.lieferterminLieferantRange.to) }}</td>
                         <td>
-                            <sw-number-field
-                                v-model:value="order.neuerLieferterminDays"
-                                :min="1"
-                                :max="4"
-                                :disabled="!hasEditAccess() || !order.lieferterminLieferantDays"
-                                size="small"
-                            />
+                            <sw-datepicker v-model:value="order.neuerLieferterminRange.from" :disabled="!hasEditAccess() || !order.lieferterminLieferantRange.from" size="small" />
+                            <sw-datepicker v-model:value="order.neuerLieferterminRange.to" :disabled="!hasEditAccess() || !order.lieferterminLieferantRange.to" size="small" />
+                            <div>KW Preview: {{ weekLabelFromDate(order.neuerLieferterminRange.to) }}</div>
                             <sw-button size="small" variant="primary" :disabled="!hasEditAccess() || !canSaveNeuerLiefertermin(order)" @click="saveNeuerLiefertermin(order)">
                                 {{ $t('global.default.save') }}
                             </sw-button>

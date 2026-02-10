@@ -38,6 +38,8 @@ class LieferterminLieferantHistoryDefinition extends EntityDefinition
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),
             (new FkField('position_id', 'positionId', PositionDefinition::class))->addFlags(new Required()),
+            new DateTimeField('liefertermin_from', 'lieferterminFrom'),
+            new DateTimeField('liefertermin_to', 'lieferterminTo'),
             new DateTimeField('liefertermin', 'liefertermin'),
             new StringField('last_changed_by', 'lastChangedBy'),
             new DateTimeField('last_changed_at', 'lastChangedAt'),
