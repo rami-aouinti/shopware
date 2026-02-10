@@ -241,6 +241,56 @@ class LieferzeitenSyncController extends AbstractController
         return new JsonResponse($result);
     }
 
+
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/demo-data/status',
+        name: 'api.admin.lieferzeiten.demo_data.status',
+        defaults: ['_acl' => ['lieferzeiten.editor']],
+        methods: [Request::METHOD_GET]
+    )]
+    public function demoDataStatus(): JsonResponse
+    {
+        return new JsonResponse([
+            'hasDemoData' => $this->demoDataSeederService->hasDemoData(),
+        ]);
+    }
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/demo-data/toggle',
+        name: 'api.admin.lieferzeiten.demo_data.toggle',
+        defaults: ['_acl' => ['lieferzeiten.editor']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function toggleDemoData(Context $context): JsonResponse
+    {
+        if ($this->demoDataSeederService->hasDemoData()) {
+            $result = $this->demoDataSeederService->removeDemoData($context);
+
+            $this->auditLogService->log('demo_data_removed', 'lieferzeiten_demo_data', null, $context, [
+                'deleted' => $result['deleted'] ?? [],
+            ], 'shopware');
+
+            return new JsonResponse(array_merge($result, [
+                'action' => 'removed',
+                'hasDemoData' => false,
+            ]));
+        }
+
+        $result = $this->demoDataSeederService->seed($context, true);
+
+        $this->auditLogService->log('demo_data_seeded', 'lieferzeiten_demo_data', null, $context, [
+            'reset' => true,
+            'created' => $result['created'] ?? [],
+            'deleted' => $result['deleted'] ?? [],
+        ], 'shopware');
+
+        return new JsonResponse(array_merge($result, [
+            'action' => 'inserted',
+            'hasDemoData' => true,
+        ]));
+    }
+
     #[Route(
         path: '/api/_action/lieferzeiten/tracking/{carrier}/{trackingNumber}',
         name: 'api.admin.lieferzeiten.tracking-history',

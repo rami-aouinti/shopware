@@ -6,6 +6,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\PrefixFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class ExternalOrderTestDataService
@@ -14,6 +15,37 @@ class ExternalOrderTestDataService
         private readonly EntityRepository $externalOrderRepository,
         private readonly FakeExternalOrderProvider $fakeExternalOrderProvider,
     ) {
+    }
+
+    public function hasSeededFakeOrders(Context $context): bool
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new PrefixFilter('externalId', 'fake-'));
+        $criteria->setLimit(1);
+
+        return $this->externalOrderRepository->search($criteria, $context)->getTotal() > 0;
+    }
+
+    public function removeSeededFakeOrders(Context $context): int
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new PrefixFilter('externalId', 'fake-'));
+        $criteria->setLimit(5000);
+
+        $result = $this->externalOrderRepository->search($criteria, $context);
+        $deletePayload = [];
+
+        foreach ($result->getEntities() as $entity) {
+            $deletePayload[] = ['id' => $entity->getId()];
+        }
+
+        if ($deletePayload === []) {
+            return 0;
+        }
+
+        $this->externalOrderRepository->delete($deletePayload, $context);
+
+        return count($deletePayload);
     }
 
     public function seedFakeOrdersOnce(Context $context): int
