@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/trunk/src/Core/System/SystemConfig/Schema/config.xsd">
+    <card>
+        <title lang="en-GB">Lieferzeiten Sync</title>
+        <title lang="de-DE">Lieferzeiten Sync</title>
+
+        <single-select>
+            <name>syncStrategy</name>
+            <label lang="en-GB">Sync strategy</label>
+            <label lang="de-DE">Sync-Strategie</label>
+            <defaultValue>scheduled</defaultValue>
+            <options>
+                <option><id>scheduled</id><name>Scheduled</name></option>
+                <option><id>on_demand</id><name>On-demand</name></option>
+                <option><id>both</id><name>Both</name></option>
+            </options>
+        </single-select>
+
+        <input-field type="text">
+            <name>shopwareApiUrl</name>
+            <label lang="en-GB">Shopware API URL</label>
+            <label lang="de-DE">Shopware API-URL</label>
+        </input-field>
+        <input-field type="text">
+            <name>shopwareApiToken</name>
+            <label lang="en-GB">Shopware API token</label>
+            <label lang="de-DE">Shopware API-Token</label>
+        </input-field>
+
+        <input-field type="text">
+            <name>gambioApiUrl</name>
+            <label lang="en-GB">Gambio API URL</label>
+            <label lang="de-DE">Gambio API-URL</label>
+        </input-field>
+        <input-field type="text">
+            <name>gambioApiToken</name>
+            <label lang="en-GB">Gambio API token</label>
+            <label lang="de-DE">Gambio API-Token</label>
+        </input-field>
+
+        <input-field type="text">
+            <name>san6ApiUrl</name>
+            <label lang="en-GB">San6 API URL</label>
+            <label lang="de-DE">San6 API-URL</label>
+        </input-field>
+        <input-field type="text">
+            <name>san6ApiToken</name>
+            <label lang="en-GB">San6 API token</label>
+            <label lang="de-DE">San6 API-Token</label>
+        </input-field>
+    </card>
+</config>

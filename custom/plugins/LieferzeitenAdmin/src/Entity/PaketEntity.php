@@ -15,6 +15,20 @@ class PaketEntity extends Entity
 
     protected ?\DateTimeInterface $shippingDate = null;
 
+    protected ?\DateTimeInterface $deliveryDate = null;
+
+    protected ?string $externalOrderId = null;
+
+    protected ?string $sourceSystem = null;
+
+    protected ?string $customerEmail = null;
+
+    protected ?string $paymentMethod = null;
+
+    protected ?\DateTimeInterface $orderDate = null;
+
+    protected ?string $syncBadge = null;
+
     protected ?string $lastChangedBy = null;
 
     protected ?\DateTimeInterface $lastChangedAt = null;
@@ -51,6 +65,76 @@ class PaketEntity extends Entity
         $this->shippingDate = $shippingDate;
     }
 
+
+    public function getDeliveryDate(): ?\DateTimeInterface
+    {
+        return $this->deliveryDate;
+    }
+
+    public function setDeliveryDate(?\DateTimeInterface $deliveryDate): void
+    {
+        $this->deliveryDate = $deliveryDate;
+    }
+
+    public function getExternalOrderId(): ?string
+    {
+        return $this->externalOrderId;
+    }
+
+    public function setExternalOrderId(?string $externalOrderId): void
+    {
+        $this->externalOrderId = $externalOrderId;
+    }
+
+    public function getSourceSystem(): ?string
+    {
+        return $this->sourceSystem;
+    }
+
+    public function setSourceSystem(?string $sourceSystem): void
+    {
+        $this->sourceSystem = $sourceSystem;
+    }
+
+    public function getCustomerEmail(): ?string
+    {
+        return $this->customerEmail;
+    }
+
+    public function setCustomerEmail(?string $customerEmail): void
+    {
+        $this->customerEmail = $customerEmail;
+    }
+
+    public function getPaymentMethod(): ?string
+    {
+        return $this->paymentMethod;
+    }
+
+    public function setPaymentMethod(?string $paymentMethod): void
+    {
+        $this->paymentMethod = $paymentMethod;
+    }
+
+    public function getOrderDate(): ?\DateTimeInterface
+    {
+        return $this->orderDate;
+    }
+
+    public function setOrderDate(?\DateTimeInterface $orderDate): void
+    {
+        $this->orderDate = $orderDate;
+    }
+
+    public function getSyncBadge(): ?string
+    {
+        return $this->syncBadge;
+    }
+
+    public function setSyncBadge(?string $syncBadge): void
+    {
+        $this->syncBadge = $syncBadge;
+    }
     public function getLastChangedBy(): ?string
     {
         return $this->lastChangedBy;
