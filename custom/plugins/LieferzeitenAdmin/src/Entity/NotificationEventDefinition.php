@@ -3,19 +3,19 @@
 namespace LieferzeitenAdmin\Entity;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\CreatedAtField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\JsonField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\UpdatedAtField;
 
-class NotificationToggleDefinition extends EntityDefinition
+class NotificationEventDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'lieferzeiten_notification_toggle';
+    public const ENTITY_NAME = 'lieferzeiten_notification_event';
 
     public function getEntityName(): string
     {
@@ -24,25 +24,26 @@ class NotificationToggleDefinition extends EntityDefinition
 
     public function getEntityClass(): string
     {
-        return NotificationToggleEntity::class;
+        return NotificationEventEntity::class;
     }
 
     public function getCollectionClass(): string
     {
-        return NotificationToggleCollection::class;
+        return NotificationEventCollection::class;
     }
 
     protected function defineFields(): FieldCollection
     {
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),
-            (new StringField('code', 'code'))->addFlags(new Required()),
+            (new StringField('event_key', 'eventKey'))->addFlags(new Required()),
             (new StringField('trigger_key', 'triggerKey'))->addFlags(new Required()),
             (new StringField('channel', 'channel'))->addFlags(new Required()),
-            new StringField('sales_channel_id', 'salesChannelId'),
-            (new BoolField('enabled', 'enabled'))->addFlags(new Required()),
-            new StringField('last_changed_by', 'lastChangedBy'),
-            new DateTimeField('last_changed_at', 'lastChangedAt'),
+            new StringField('external_order_id', 'externalOrderId'),
+            new StringField('source_system', 'sourceSystem'),
+            (new JsonField('payload', 'payload'))->addFlags(new Required()),
+            (new StringField('status', 'status'))->addFlags(new Required()),
+            new DateTimeField('dispatched_at', 'dispatchedAt'),
             new CreatedAtField(),
             new UpdatedAtField(),
         ]);

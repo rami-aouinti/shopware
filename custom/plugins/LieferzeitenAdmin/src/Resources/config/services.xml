@@ -14,6 +14,9 @@
         <service id="LieferzeitenAdmin\Entity\NotificationToggleDefinition">
             <tag name="shopware.entity.definition"/>
         </service>
+        <service id="LieferzeitenAdmin\Entity\NotificationEventDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
         <service id="LieferzeitenAdmin\Entity\PaketDefinition">
             <tag name="shopware.entity.definition"/>
         </service>
@@ -69,12 +72,29 @@
         <service id="LieferzeitenAdmin\Service\Tracking\TrackingHistoryService">
             <argument type="tagged_iterator" tag="lieferzeiten.tracking_client" />
         </service>
+
+        <service id="LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog" />
+        <service id="LieferzeitenAdmin\Service\Notification\NotificationToggleResolver">
+            <argument type="service" id="lieferzeiten_notification_toggle.repository" />
+        </service>
+        <service id="LieferzeitenAdmin\Service\Notification\NotificationEventService">
+            <argument type="service" id="lieferzeiten_notification_event.repository" />
+        </service>
+        <service id="LieferzeitenAdmin\Service\Notification\VorkassePaymentReminderService">
+            <argument type="service" id="lieferzeiten_paket.repository" />
+        </service>
         <service id="LieferzeitenAdmin\Controller\LieferzeitenSyncController" public="true" />
 
         <service id="LieferzeitenAdmin\ScheduledTask\LieferzeitenImportTask">
             <tag name="shopware.scheduled.task" />
         </service>
         <service id="LieferzeitenAdmin\ScheduledTask\LieferzeitenImportTaskHandler">
+            <tag name="messenger.message_handler" />
+        </service>
+        <service id="LieferzeitenAdmin\ScheduledTask\VorkassePaymentReminderTask">
+            <tag name="shopware.scheduled.task" />
+        </service>
+        <service id="LieferzeitenAdmin\ScheduledTask\VorkassePaymentReminderTaskHandler">
             <tag name="messenger.message_handler" />
         </service>
 
