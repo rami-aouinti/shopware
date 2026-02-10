@@ -684,7 +684,34 @@ Component.register('external-orders-list', {
         },
         normalizeOrderDetail(order) {
             const base = order ?? {};
-            const totals = base.totals ?? {};
+            const billing = base.billing ?? {};
+            const delivery = base.delivery ?? {};
+            const totals = Array.isArray(base.totals)
+                ? {
+                    items: Number(base.totals[0]?.value ?? 0),
+                    shipping: Number(base.totals[1]?.value ?? 0),
+                    sum: Number(base.totals[2]?.value ?? 0),
+                    tax: Number(base.totals[3]?.value ?? 0),
+                    net: Number(base.totals[4]?.value ?? 0),
+                }
+                : (base.totals ?? {});
+            const statusHistory = Array.isArray(base.statusHistory)
+                ? base.statusHistory.map((entry) => ({
+                    status: entry?.status ?? entry?.statusName ?? '',
+                    date: entry?.date ?? entry?.dateAdded ?? '',
+                    comment: entry?.comment ?? entry?.comments ?? '',
+                }))
+                : [];
+            const items = Array.isArray(base.items)
+                ? base.items.map((item) => ({
+                    name: item?.name ?? item?.productName ?? '',
+                    quantity: Number(item?.quantity ?? 0),
+                    netPrice: Number(item?.netPrice ?? item?.productPrice ?? 0),
+                    taxRate: Number(item?.taxRate ?? 19),
+                    grossPrice: Number(item?.grossPrice ?? item?.finalPrice ?? 0),
+                    totalPrice: Number(item?.totalPrice ?? item?.finalPrice ?? 0),
+                }))
+                : [];
 
             return {
                 ...base,
@@ -695,11 +722,14 @@ Component.register('external-orders-list', {
                     email: '',
                     group: '',
                     ...(base.customer ?? {}),
+                    number: base.customer?.number ?? String(base.customer?.id ?? ''),
+                    email: base.customer?.email ?? base.customer?.emailAddress ?? '',
+                    group: base.customer?.group ?? base.customer?.statusName ?? '',
                 },
                 payment: {
-                    method: '',
+                    method: base.paymentMethod ?? '',
                     code: '',
-                    dueDate: '',
+                    dueDate: base.datePurchased ?? '',
                     outstanding: '',
                     settled: '',
                     extra: '',
@@ -711,6 +741,10 @@ Component.register('external-orders-list', {
                     city: '',
                     country: '',
                     ...(base.billingAddress ?? {}),
+                    street: base.billingAddress?.street ?? billing.streetAddress ?? '',
+                    zip: base.billingAddress?.zip ?? billing.postcode ?? '',
+                    city: base.billingAddress?.city ?? billing.city ?? '',
+                    country: base.billingAddress?.country ?? billing.country ?? '',
                 },
                 shippingAddress: {
                     name: '',
@@ -718,10 +752,14 @@ Component.register('external-orders-list', {
                     zipCity: '',
                     country: '',
                     ...(base.shippingAddress ?? {}),
+                    name: base.shippingAddress?.name ?? delivery.name ?? '',
+                    street: base.shippingAddress?.street ?? delivery.streetAddress ?? '',
+                    zipCity: base.shippingAddress?.zipCity ?? `${delivery.postcode ?? ''} ${delivery.city ?? ''}`.trim(),
+                    country: base.shippingAddress?.country ?? delivery.country ?? '',
                 },
                 additional: {
-                    orderDate: '',
-                    status: '',
+                    orderDate: base.datePurchased ?? '',
+                    status: base.orderStatus ?? '',
                     orderType: '',
                     notes: '',
                     consultant: '',
@@ -741,8 +779,8 @@ Component.register('external-orders-list', {
                     trackingNumbers: [],
                     ...(base.shipping ?? {}),
                 },
-                items: Array.isArray(base.items) ? base.items : [],
-                statusHistory: Array.isArray(base.statusHistory) ? base.statusHistory : [],
+                items,
+                statusHistory,
                 totals: {
                     items: totals.items ?? 0,
                     shipping: totals.shipping ?? 0,
