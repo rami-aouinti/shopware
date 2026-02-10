@@ -86,6 +86,47 @@ class ExternalOrderController extends AbstractController
         ]);
     }
 
+
+    #[Route(
+        path: '/api/_action/external-orders/test-data/status',
+        name: 'api.admin.external-orders.test-data.status',
+        defaults: ['_acl' => ['admin']],
+        methods: [Request::METHOD_GET]
+    )]
+    public function testDataStatus(Context $context): Response
+    {
+        return new JsonResponse([
+            'hasDemoData' => $this->testDataService->hasSeededFakeOrders($context),
+        ]);
+    }
+
+    #[Route(
+        path: '/api/_action/external-orders/test-data/toggle',
+        name: 'api.admin.external-orders.test-data.toggle',
+        defaults: ['_acl' => ['admin']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function toggleTestData(Context $context): Response
+    {
+        if ($this->testDataService->hasSeededFakeOrders($context)) {
+            $removed = $this->testDataService->removeSeededFakeOrders($context);
+
+            return new JsonResponse([
+                'action' => 'removed',
+                'removed' => $removed,
+                'hasDemoData' => false,
+            ]);
+        }
+
+        $inserted = $this->testDataService->seedFakeOrdersOnce($context);
+
+        return new JsonResponse([
+            'action' => 'inserted',
+            'inserted' => $inserted,
+            'hasDemoData' => true,
+        ]);
+    }
+
     #[Route(
         path: '/api/_action/external-orders/sync-now',
         name: 'api.admin.external-orders.sync-now',

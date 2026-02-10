@@ -52,6 +52,25 @@ class ExternalOrderService extends ApiService {
         return data?.data ?? data;
     }
 
+
+    async getTestDataStatus() {
+        const response = await this.httpClient.get(`_action/${this.getApiBasePath()}/test-data/status`, {
+            headers: this.getBasicHeaders(),
+        });
+
+        const data = ApiService.handleResponse(response) ?? response?.data;
+        return data?.data ?? data;
+    }
+
+    async toggleTestData() {
+        const response = await this.httpClient.post(`_action/${this.getApiBasePath()}/test-data/toggle`, {}, {
+            headers: this.getBasicHeaders(),
+        });
+
+        const data = ApiService.handleResponse(response) ?? response?.data;
+        return data?.data ?? data;
+    }
+
     async seedTestData() {
         const response = await this.httpClient.post(`_action/${this.getApiBasePath()}/test-data`, {}, {
             headers: this.getBasicHeaders(),

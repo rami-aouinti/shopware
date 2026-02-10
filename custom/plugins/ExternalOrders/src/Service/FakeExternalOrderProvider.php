@@ -397,6 +397,11 @@ class FakeExternalOrderProvider
         return null;
     }
 
+    private function formatEuro(float $value): string
+    {
+        return number_format($value, 2, ',', '.') . ' EUR';
+    }
+
     /**
      * @param array<int, string> $values
      */
