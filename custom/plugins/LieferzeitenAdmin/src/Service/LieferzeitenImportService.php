@@ -743,14 +743,26 @@ class LieferzeitenImportService
             }
 
             if ($trackingNumbers !== []) {
+                $trackingPayload = [
+                    'trackingNumbers' => $trackingNumbers,
+                    'externalOrderId' => $externalOrderId,
+                ];
+
                 $this->notificationEventService->dispatch(
                     sprintf('tracking:%s:%s', $externalOrderId, $channel),
                     NotificationTriggerCatalog::TRACKING_UPDATED,
                     $channel,
-                    [
-                        'trackingNumbers' => $trackingNumbers,
-                        'externalOrderId' => $externalOrderId,
-                    ],
+                    $trackingPayload,
+                    $context,
+                    $externalOrderId,
+                    $sourceSystem,
+                );
+
+                $this->notificationEventService->dispatch(
+                    sprintf('shipping-confirmed:%s:%s', $externalOrderId, $channel),
+                    NotificationTriggerCatalog::SHIPPING_CONFIRMED,
+                    $channel,
+                    $trackingPayload,
                     $context,
                     $externalOrderId,
                     $sourceSystem,
@@ -787,8 +799,66 @@ class LieferzeitenImportService
                     $sourceSystem,
                 );
             }
+
+            if ($mappedStatus === 9 || ($payload['isStorno'] ?? false) === true) {
+                $this->notificationEventService->dispatch(
+                    sprintf('storno:%s:%s', $externalOrderId, $channel),
+                    NotificationTriggerCatalog::ORDER_CANCELLED_STORNO,
+                    $channel,
+                    ['externalOrderId' => $externalOrderId],
+                    $context,
+                    $externalOrderId,
+                    $sourceSystem,
+                );
+            }
+
+            if ($this->hasParcelState($payload, 'nicht_zustellbar')) {
+                $this->notificationEventService->dispatch(
+                    sprintf('delivery-impossible:%s:%s', $externalOrderId, $channel),
+                    NotificationTriggerCatalog::DELIVERY_IMPOSSIBLE,
+                    $channel,
+                    ['externalOrderId' => $externalOrderId],
+                    $context,
+                    $externalOrderId,
+                    $sourceSystem,
+                );
+            }
+
+            if ($this->hasParcelState($payload, 'retoure')) {
+                $this->notificationEventService->dispatch(
+                    sprintf('return-to-sender:%s:%s', $externalOrderId, $channel),
+                    NotificationTriggerCatalog::RETURN_TO_SENDER,
+                    $channel,
+                    ['externalOrderId' => $externalOrderId],
+                    $context,
+                    $externalOrderId,
+                    $sourceSystem,
+                );
+            }
         }
     }
+
+    /** @param array<string,mixed> $payload */
+    private function hasParcelState(array $payload, string $expectedState): bool
+    {
+        $parcels = $payload['parcels'] ?? [];
+        if (!is_array($parcels)) {
+            return false;
+        }
+
+        foreach ($parcels as $parcel) {
+            if (!is_array($parcel)) {
+                continue;
+            }
+
+            if ($this->normalizeParcelState($parcel) === $expectedState) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     private function normalizeStatusInt(mixed $value): ?int
     {
