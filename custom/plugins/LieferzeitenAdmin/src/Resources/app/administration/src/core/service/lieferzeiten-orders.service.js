@@ -7,7 +7,7 @@ class LieferzeitenOrdersService extends ApiService {
     }
 
     async getOrders() {
-        const response = await this.httpClient.get('/api/_action/lieferzeiten/orders', {
+        const response = await this.httpClient.get(`_action/${this.getApiBasePath()}/orders`, {
             headers: this.getBasicHeaders(),
         });
 
@@ -17,7 +17,7 @@ class LieferzeitenOrdersService extends ApiService {
 
 
     async getStatistics(params = {}) {
-        const response = await this.httpClient.get('/api/_action/lieferzeiten/statistics', {
+        const response = await this.httpClient.get(`_action/${this.getApiBasePath()}/statistics`, {
             params,
             headers: this.getBasicHeaders(),
         });
@@ -28,7 +28,7 @@ class LieferzeitenOrdersService extends ApiService {
 
 
     async getDemoDataStatus() {
-        const response = await this.httpClient.get('/api/_action/lieferzeiten/demo-data/status', {
+        const response = await this.httpClient.get(`_action/${this.getApiBasePath()}/demo-data/status`, {
             headers: this.getBasicHeaders(),
         });
 
@@ -36,7 +36,7 @@ class LieferzeitenOrdersService extends ApiService {
     }
 
     async toggleDemoData() {
-        const response = await this.httpClient.post('/api/_action/lieferzeiten/demo-data/toggle', {}, {
+        const response = await this.httpClient.post(`_action/${this.getApiBasePath()}/demo-data/toggle`, {}, {
             headers: this.getBasicHeaders(),
         });
 
@@ -44,7 +44,7 @@ class LieferzeitenOrdersService extends ApiService {
     }
 
     async seedDemoData(reset = false) {
-        const response = await this.httpClient.post('/api/_action/lieferzeiten/demo-data', { reset }, {
+        const response = await this.httpClient.post(`_action/${this.getApiBasePath()}/demo-data`, { reset }, {
             headers: this.getBasicHeaders(),
         });
 
@@ -68,7 +68,7 @@ class LieferzeitenOrdersService extends ApiService {
     }
 
     async post(path, payload) {
-        const response = await this.httpClient.post(`/api/_action/lieferzeiten/${path}`, payload, {
+        const response = await this.httpClient.post(`_action/${this.getApiBasePath()}/${path}`, payload, {
             headers: this.getBasicHeaders(),
         });
 
