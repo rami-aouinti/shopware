@@ -614,11 +614,21 @@
                         >
                             »
                         </button>
-                        <sw-single-select
-                            :value="limitSelection"
-                            :options="limitSelectOptions"
-                            size="small"
-                            class="external-orders__pagination-limit"></sw-single-select>
+                        <label class="external-orders__pagination-limit">
+                            <span>Pro Seite</span>
+                            <select
+                                :value="String(limit)"
+                                @change="onLimitChange($event.target.value)"
+                            >
+                                <option
+                                    v-for="option in limitOptions"
+                                    :key="option"
+                                    :value="String(option)"
+                                >
+                                    {{ option }}
+                                </option>
+                            </select>
+                        </label>
                     </div>
                 </div>
                 <sw-empty-state
