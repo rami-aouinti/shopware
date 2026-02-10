@@ -71,6 +71,12 @@
         "emptyState": {
             "title": "Keine offenen Bestellungen",
             "description": "Für den ausgewählten Bereich liegen aktuell keine offenen Bestellungen vor."
+        },
+        "tracking": {
+            "loading": "Tracking-Historie wird geladen …",
+            "empty": "Keine Tracking-Ereignisse gefunden.",
+            "loadError": "Tracking konnte nicht geladen werden.",
+            "missingCarrier": "Tracking nicht möglich: Kein Versanddienstleister hinterlegt."
         }
     }
 }

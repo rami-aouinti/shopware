@@ -59,6 +59,16 @@
             <argument type="service" id="lieferzeiten_sendenummer_history.repository" />
         </service>
 
+
+        <service id="LieferzeitenAdmin\Service\Tracking\DhlTrackingClient">
+            <tag name="lieferzeiten.tracking_client" />
+        </service>
+        <service id="LieferzeitenAdmin\Service\Tracking\GlsTrackingClient">
+            <tag name="lieferzeiten.tracking_client" />
+        </service>
+        <service id="LieferzeitenAdmin\Service\Tracking\TrackingHistoryService">
+            <argument type="tagged_iterator" tag="lieferzeiten.tracking_client" />
+        </service>
         <service id="LieferzeitenAdmin\Controller\LieferzeitenSyncController" public="true" />
 
         <service id="LieferzeitenAdmin\ScheduledTask\LieferzeitenImportTask">

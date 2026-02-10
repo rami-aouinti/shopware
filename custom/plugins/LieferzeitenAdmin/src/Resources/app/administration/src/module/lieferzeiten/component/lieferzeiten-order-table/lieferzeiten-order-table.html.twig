@@ -95,7 +95,18 @@
                                         <td>{{ position.number }}</td>
                                         <td>{{ position.label }}</td>
                                         <td>{{ position.quantity }}</td>
-                                        <td>{{ position.packages.join(', ') }}</td>
+                                        <td>
+                                            <template v-for="entry in resolveTrackingEntries(order, position)">
+                                                <button
+                                                    :key="`${position.id}-${entry.number}`"
+                                                    type="button"
+                                                    class="lieferzeiten-order-table__tracking-link"
+                                                    @click="openTrackingHistory(entry)"
+                                                >
+                                                    {{ entry.number }}
+                                                </button>
+                                            </template>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -104,6 +115,36 @@
                 </template>
             </tbody>
         </table>
+
+
+        <div
+            v-if="showTrackingModal"
+            class="lieferzeiten-order-table__tracking-overlay"
+            role="dialog"
+            aria-modal="true"
+        >
+            <div class="lieferzeiten-order-table__tracking-dialog">
+                <header class="lieferzeiten-order-table__tracking-header">
+                    <h3>
+                        Tracking {{ activeTracking && activeTracking.carrier && activeTracking.carrier.toUpperCase() }} / {{ activeTracking && activeTracking.number }}
+                    </h3>
+                    <button type="button" class="lieferzeiten-order-table__tracking-close" @click="closeTrackingModal">×</button>
+                </header>
+
+                <div class="lieferzeiten-order-table__tracking-body">
+                    <div v-if="isTrackingLoading">{{ $t('lieferzeiten.tracking.loading') }}</div>
+                    <div v-else-if="trackingError" class="lieferzeiten-order-table__tracking-error">{{ trackingError }}</div>
+                    <div v-else-if="!trackingEvents.length">{{ $t('lieferzeiten.tracking.empty') }}</div>
+                    <ul v-else class="lieferzeiten-order-table__tracking-list">
+                        <li v-for="(event, index) in trackingEvents" :key="`${event.timestamp}-${index}`">
+                            <strong>{{ event.status }}</strong>
+                            <div>{{ event.label }}</div>
+                            <small>{{ event.timestamp }}<span v-if="event.location"> · {{ event.location }}</span></small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
         <sw-empty-state
             v-if="displayedOrders.length === 0"
