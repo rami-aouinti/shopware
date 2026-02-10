@@ -110,6 +110,11 @@
             "status": {
                 "overdue": "Overdue"
             }
+        },
+        "loading": {
+            "errorTitle": "Unable to load orders",
+            "errorDescription": "An error occurred while loading orders.",
+            "retry": "Retry"
         }
     }
 }

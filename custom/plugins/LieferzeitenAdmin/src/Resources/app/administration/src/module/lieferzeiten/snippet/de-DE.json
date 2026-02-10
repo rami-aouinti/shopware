@@ -110,6 +110,11 @@
             "status": {
                 "overdue": "Überfällig"
             }
+        },
+        "loading": {
+            "errorTitle": "Bestellungen konnten nicht geladen werden",
+            "errorDescription": "Beim Laden der Bestellungen ist ein Fehler aufgetreten.",
+            "retry": "Erneut versuchen"
         }
     }
 }

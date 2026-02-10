@@ -18,32 +18,48 @@
                 </sw-card>
 
                 <sw-card class="lieferzeiten-index__tabs">
-                    <sw-tabs>
-                        <sw-tabs-item
-                            :to="{ name: 'lieferzeiten.all' }"
-                            :title="$t('lieferzeiten.tabs.all')"
-                        >
-                            {{ $t('lieferzeiten.tabs.all') }}
-                        </sw-tabs-item>
-                        <sw-tabs-item
-                            :to="{ name: 'lieferzeiten.open' }"
-                            :title="$t('lieferzeiten.tabs.open')"
-                        >
-                            {{ $t('lieferzeiten.tabs.open') }}
-                        </sw-tabs-item>
+                    <sw-loader v-if="isLoading" />
 
-                        <sw-tabs-item
-                            :to="{ name: 'lieferzeiten.statistics' }"
-                            :title="$t('lieferzeiten.tabs.statistics')"
-                        >
-                            {{ $t('lieferzeiten.tabs.statistics') }}
-                        </sw-tabs-item>
-                    </sw-tabs>
+                    <sw-empty-state
+                        v-else-if="loadError"
+                        :title="$t('lieferzeiten.loading.errorTitle')"
+                        :subline="$t('lieferzeiten.loading.errorDescription')"
+                    >
+                        <template #actions>
+                            <sw-button variant="primary" @click="loadOrders">
+                                {{ $t('lieferzeiten.loading.retry') }}
+                            </sw-button>
+                        </template>
+                    </sw-empty-state>
 
-                    <router-view
-                        :orders="filteredOrders"
-                        :selected-domain="selectedDomain"
-                    />
+                    <template v-else>
+                        <sw-tabs>
+                            <sw-tabs-item
+                                :to="{ name: 'lieferzeiten.all' }"
+                                :title="$t('lieferzeiten.tabs.all')"
+                            >
+                                {{ $t('lieferzeiten.tabs.all') }}
+                            </sw-tabs-item>
+                            <sw-tabs-item
+                                :to="{ name: 'lieferzeiten.open' }"
+                                :title="$t('lieferzeiten.tabs.open')"
+                            >
+                                {{ $t('lieferzeiten.tabs.open') }}
+                            </sw-tabs-item>
+
+                            <sw-tabs-item
+                                :to="{ name: 'lieferzeiten.statistics' }"
+                                :title="$t('lieferzeiten.tabs.statistics')"
+                            >
+                                {{ $t('lieferzeiten.tabs.statistics') }}
+                            </sw-tabs-item>
+                        </sw-tabs>
+
+                        <router-view
+                            :orders="filteredOrders"
+                            :selected-domain="selectedDomain"
+                        />
+                    </template>
                 </sw-card>
             </sw-card-view>
         </template>
