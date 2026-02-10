@@ -5,6 +5,10 @@ services:
     ports:
       - "8080:80"
 
+  phpmyadmin:
+    ports:
+      - "8081:80"
+
   database:
     ports:
       - "3306:3306"
