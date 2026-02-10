@@ -92,6 +92,332 @@ class FakeExternalOrderProvider
         'Vorkasse',
     ];
 
+    private const DETAIL_TEMPLATES = [
+        [
+            'paymentMethod' => 'ebay',
+            'shippingMethod' => 'ebay',
+            'items' => [
+                [
+                    'productName' => 'HYPAFIX Hautfreundliches Klebevlies Flexibel Anpassbar Luftdurchlässig Fixierung[ohne Rezept,15 cm x 10 m,Mit geschnittenem Abdeckpapier]',
+                    'quantity' => 1,
+                    'finalPrice' => 22.99,
+                    'productPrice' => 0.0,
+                    'productTax' => 0.0,
+                ],
+            ],
+            'totals' => [
+                ['title' => 'Warenwert:', 'value' => '22.9900', 'text' => '22,99 EUR'],
+                ['title' => 'Versandkosten:', 'value' => '0.0000', 'text' => '0,00 EUR'],
+                ['title' => '<b>Summe</b>:', 'value' => '22.9900', 'text' => '22,99 EUR'],
+                ['title' => 'inkl. 19% MwSt.:', 'value' => '3.6707', 'text' => '3,67 EUR'],
+                ['title' => 'Summe netto:', 'value' => '19.3193', 'text' => '19,32 EUR'],
+            ],
+            'customer' => [
+                'id' => 9556,
+                'cid' => 'N/A',
+                'vatId' => 'N/A',
+                'status' => 12,
+                'statusName' => 'Kundengruppe Ebay DE',
+                'statusImage' => '',
+                'statusDiscount' => 0.00,
+                'name' => 'Andreas Nanke',
+                'firstName' => 'Andreas',
+                'lastName' => 'Nanke',
+                'gender' => '',
+                'company' => '',
+                'streetAddress' => 'Genossenschaftsstraße 13',
+                'houseNumber' => '',
+                'additionalInfo' => '',
+                'suburb' => 'N/A',
+                'city' => 'Bröckel',
+                'postcode' => '29356',
+                'state' => '',
+                'country' => 'Germany',
+                'telephone' => '',
+                'emailAddress' => '43ad1d549beae3625950@members.ebay.com',
+                'addressFormatId' => 5,
+            ],
+            'billing' => [
+                'name' => 'Andreas Nanke',
+                'firstName' => 'Andreas',
+                'lastName' => 'Nanke',
+                'gender' => '',
+                'company' => '',
+                'streetAddress' => 'Genossenschaftsstraße 13',
+                'houseNumber' => '',
+                'additionalInfo' => '',
+                'suburb' => 'N/A',
+                'city' => 'Bröckel',
+                'postcode' => '29356',
+                'state' => '',
+                'country' => 'Germany',
+                'countryIsoCode2' => 'DE',
+                'addressFormatId' => 5,
+            ],
+            'delivery' => [
+                'name' => 'Andreas Nanke',
+                'firstName' => 'Andreas',
+                'lastName' => 'Nanke',
+                'gender' => '',
+                'company' => '',
+                'streetAddress' => 'Genossenschaftsstraße 13',
+                'houseNumber' => '',
+                'additionalInfo' => '',
+                'suburb' => 'N/A',
+                'city' => 'Bröckel',
+                'postcode' => '29356',
+                'state' => '',
+                'country' => 'Germany',
+                'countryIsoCode2' => 'DE',
+                'addressFormatId' => 5,
+            ],
+        ],
+        [
+            'paymentMethod' => 'ebay',
+            'shippingMethod' => 'ebay',
+            'items' => [
+                [
+                    'productName' => 'PRÄZISA Einmal-Skalpelle 10er Set Steril Edelstahl Medizinische Chirurgie[Fig. 23]',
+                    'quantity' => 1,
+                    'finalPrice' => 9.99,
+                    'productPrice' => 0.0,
+                    'productTax' => 0.0,
+                ],
+            ],
+            'totals' => [
+                ['title' => 'Warenwert:', 'value' => '9.9900', 'text' => '9,99 EUR'],
+                ['title' => 'Versandkosten:', 'value' => '0.0000', 'text' => '0,00 EUR'],
+                ['title' => '<b>Summe</b>:', 'value' => '9.9900', 'text' => '9,99 EUR'],
+                ['title' => 'inkl. 19% MwSt.:', 'value' => '1.5950', 'text' => '1,60 EUR'],
+                ['title' => 'Summe netto:', 'value' => '8.3950', 'text' => '8,39 EUR'],
+            ],
+            'customer' => [
+                'id' => 9509,
+                'cid' => '',
+                'vatId' => '',
+                'status' => 12,
+                'statusName' => 'Kundengruppe Ebay DE',
+                'statusImage' => '',
+                'statusDiscount' => 0.00,
+                'name' => 'Peter Baisel',
+                'firstName' => 'Peter',
+                'lastName' => 'Baisel',
+                'gender' => '',
+                'company' => '',
+                'streetAddress' => 'Kienbergstr. 22',
+                'houseNumber' => '',
+                'additionalInfo' => '',
+                'suburb' => '',
+                'city' => 'Traunstein',
+                'postcode' => '83278',
+                'state' => '',
+                'country' => 'Germany',
+                'telephone' => '',
+                'emailAddress' => '439dd0cb31e0b2bff771@members.ebay.com',
+                'addressFormatId' => 5,
+            ],
+            'billing' => [
+                'name' => 'Peter Baisel',
+                'firstName' => 'Peter',
+                'lastName' => 'Baisel',
+                'gender' => '',
+                'company' => '',
+                'streetAddress' => 'Kienbergstr. 22',
+                'houseNumber' => '',
+                'additionalInfo' => '',
+                'suburb' => '',
+                'city' => 'Traunstein',
+                'postcode' => '83278',
+                'state' => '',
+                'country' => 'Germany',
+                'countryIsoCode2' => 'DE',
+                'addressFormatId' => 5,
+            ],
+            'delivery' => [
+                'name' => 'Peter Baisel',
+                'firstName' => 'Peter',
+                'lastName' => 'Baisel',
+                'gender' => '',
+                'company' => '',
+                'streetAddress' => 'Münchener Str. 20',
+                'houseNumber' => '',
+                'additionalInfo' => '',
+                'suburb' => '',
+                'city' => 'Traunreut',
+                'postcode' => '83301',
+                'state' => '',
+                'country' => 'Germany',
+                'countryIsoCode2' => 'DE',
+                'addressFormatId' => 5,
+            ],
+        ],
+        [
+            'paymentMethod' => 'ebay',
+            'shippingMethod' => 'ebay',
+            'items' => [
+                [
+                    'productName' => 'RAPPAPORT Stethoskop Ersatz Membranen 35mm & 45mm Set Medizinisches Zubehör',
+                    'quantity' => 1,
+                    'finalPrice' => 7.99,
+                    'productPrice' => 0.0,
+                    'productTax' => 0.0,
+                ],
+                [
+                    'productName' => 'RAPPAPORT Stethoskop Ersatzschläuche Schwarz Medizinisches Zubehör',
+                    'quantity' => 1,
+                    'finalPrice' => 10.99,
+                    'productPrice' => 0.0,
+                    'productTax' => 0.0,
+                ],
+            ],
+            'totals' => [
+                ['title' => 'Warenwert:', 'value' => '18.9800', 'text' => '18,98 EUR'],
+                ['title' => 'Versandkosten:', 'value' => '0.0000', 'text' => '0,00 EUR'],
+                ['title' => '<b>Summe</b>:', 'value' => '18.9800', 'text' => '18,98 EUR'],
+                ['title' => 'inkl. 19% MwSt.:', 'value' => '3.0304', 'text' => '3,03 EUR'],
+                ['title' => 'Summe netto:', 'value' => '15.9496', 'text' => '15,95 EUR'],
+            ],
+            'customer' => [
+                'id' => 9443,
+                'cid' => '',
+                'vatId' => '',
+                'status' => 12,
+                'statusName' => 'Kundengruppe Ebay DE',
+                'statusImage' => '',
+                'statusDiscount' => 0.00,
+                'name' => 'Atamanchuk Kostiantyn',
+                'firstName' => 'Atamanchuk',
+                'lastName' => 'Kostiantyn',
+                'gender' => '',
+                'company' => '',
+                'streetAddress' => 'Vilsweg 3',
+                'houseNumber' => '',
+                'additionalInfo' => '',
+                'suburb' => '',
+                'city' => 'Neutraubling',
+                'postcode' => '93073',
+                'state' => '',
+                'country' => 'Germany',
+                'telephone' => '',
+                'emailAddress' => '438411568442d3c52f46@members.ebay.com',
+                'addressFormatId' => 5,
+            ],
+            'billing' => [
+                'name' => 'Atamanchuk Kostiantyn',
+                'firstName' => 'Atamanchuk',
+                'lastName' => 'Kostiantyn',
+                'gender' => '',
+                'company' => '',
+                'streetAddress' => 'Vilsweg 3',
+                'houseNumber' => '',
+                'additionalInfo' => '',
+                'suburb' => '',
+                'city' => 'Neutraubling',
+                'postcode' => '93073',
+                'state' => '',
+                'country' => 'Germany',
+                'countryIsoCode2' => 'DE',
+                'addressFormatId' => 5,
+            ],
+            'delivery' => [
+                'name' => 'Kostiantyn Atamanchuk',
+                'firstName' => 'Kostiantyn',
+                'lastName' => 'Atamanchuk',
+                'gender' => '',
+                'company' => '',
+                'streetAddress' => 'Vilsweg 3',
+                'houseNumber' => '',
+                'additionalInfo' => '',
+                'suburb' => '',
+                'city' => 'Neutraubling',
+                'postcode' => '93073',
+                'state' => '',
+                'country' => 'Germany',
+                'countryIsoCode2' => 'DE',
+                'addressFormatId' => 5,
+            ],
+        ],
+        [
+            'paymentMethod' => 'ebay',
+            'shippingMethod' => 'ebay',
+            'items' => [
+                [
+                    'productName' => 'Sterican Tief-Intramuskulär Einmalkanülen 100St Chrom-Nickel Stahl Sonderkanülen[G 20 x 2 3/4"]',
+                    'quantity' => 1,
+                    'finalPrice' => 12.99,
+                    'productPrice' => 0.0,
+                    'productTax' => 0.0,
+                ],
+            ],
+            'totals' => [
+                ['title' => 'Warenwert:', 'value' => '12.9900', 'text' => '12,99 EUR'],
+                ['title' => 'Versandkosten:', 'value' => '0.0000', 'text' => '0,00 EUR'],
+                ['title' => '<b>Summe</b>:', 'value' => '12.9900', 'text' => '12,99 EUR'],
+                ['title' => 'inkl. 19% MwSt.:', 'value' => '2.0740', 'text' => '2,07 EUR'],
+                ['title' => 'Summe netto:', 'value' => '10.9160', 'text' => '10,92 EUR'],
+            ],
+            'customer' => [
+                'id' => 9428,
+                'cid' => '',
+                'vatId' => '',
+                'status' => 12,
+                'statusName' => 'Kundengruppe Ebay DE',
+                'statusImage' => '',
+                'statusDiscount' => 0.00,
+                'name' => 'Andreas Papendick',
+                'firstName' => 'Andreas',
+                'lastName' => 'Papendick',
+                'gender' => '',
+                'company' => '',
+                'streetAddress' => 'Kiebitzstr. 68',
+                'houseNumber' => '',
+                'additionalInfo' => '',
+                'suburb' => '',
+                'city' => 'Euskirchen',
+                'postcode' => '53881',
+                'state' => '',
+                'country' => 'Germany',
+                'telephone' => '',
+                'emailAddress' => '43812aa24e2ad3724a73@members.ebay.com',
+                'addressFormatId' => 5,
+            ],
+            'billing' => [
+                'name' => 'Andreas Papendick',
+                'firstName' => 'Andreas',
+                'lastName' => 'Papendick',
+                'gender' => '',
+                'company' => '',
+                'streetAddress' => 'Kiebitzstr. 68',
+                'houseNumber' => '',
+                'additionalInfo' => '',
+                'suburb' => '',
+                'city' => 'Euskirchen',
+                'postcode' => '53881',
+                'state' => '',
+                'country' => 'Germany',
+                'countryIsoCode2' => 'DE',
+                'addressFormatId' => 5,
+            ],
+            'delivery' => [
+                'name' => 'Andreas Papendick',
+                'firstName' => 'Andreas',
+                'lastName' => 'Papendick',
+                'gender' => '',
+                'company' => '',
+                'streetAddress' => 'Packstation 102',
+                'houseNumber' => '',
+                'additionalInfo' => '23665827',
+                'suburb' => '',
+                'city' => 'Euskirchen',
+                'postcode' => '53881',
+                'state' => '',
+                'country' => 'Germany',
+                'countryIsoCode2' => 'DE',
+                'addressFormatId' => 5,
+            ],
+        ],
+    ];
+
     private const STATUS_DEFINITIONS = [
         ['code' => 'paid_processing', 'label' => 'Bezahlt / in Bearbeitung', 'color' => '2196f3'],
         ['code' => 'prepayment_open', 'label' => 'Vorkasse: Bezahlung offen', 'color' => 'f5e502'],
@@ -185,44 +511,13 @@ class FakeExternalOrderProvider
     private function buildFakeOrderDetail(array $order): array
     {
         $id = (string) ($order['id'] ?? '');
-        $firstName = $this->pickValue(self::FIRST_NAMES, $id, 1);
-        $lastName = $this->pickValue(self::LAST_NAMES, $id, 2);
-        $city = $this->pickValue(self::CITIES, $id, 3);
-        $country = $this->pickValue(self::COUNTRIES, $id, 4);
-        $street = $this->pickValue(self::STREETS, $id, 5);
-        $streetNumber = $this->randomInt($id, 1, 42, 6);
-        $zip = str_pad((string) $this->randomInt($id, 10000, 99999, 7), 5, '0', STR_PAD_LEFT);
-        $paymentMethod = $this->pickValue(self::PAYMENT_METHODS, $id, 8);
-        $items = [];
-        $itemCount = $this->randomInt($id, 1, 4, 9);
-        $itemsTotal = 0.0;
-        $taxTotal = 0.0;
-
-        for ($index = 1; $index <= $itemCount; $index += 1) {
-            $quantity = $this->randomInt($id, 1, 3, 10 + $index);
-            $netPrice = $this->randomInt($id, 1500, 9000, 20 + $index) / 100;
-            $taxRate = 19;
-            $grossPrice = round($netPrice * (1 + ($taxRate / 100)), 2);
-            $lineTotal = round($grossPrice * $quantity, 2);
-            $itemsTotal += $lineTotal;
-            $taxTotal += round(($grossPrice - $netPrice) * $quantity, 2);
-
-            $items[] = [
-                'productName' => sprintf('Medizinisches Produkt %d', $index),
-                'quantity' => $quantity,
-                'finalPrice' => $lineTotal,
-                'productPrice' => $netPrice,
-                'productTax' => round(($grossPrice - $netPrice) * $quantity, 2),
-            ];
-        }
-
-        $shippingTotal = $this->randomInt($id, 490, 1290, 30) / 100;
-        $sumTotal = round($itemsTotal + $shippingTotal, 2);
+        $detailTemplate = $this->pickDetailTemplate($id);
         $orderDateIso = $order['datePurchased'] ?? $this->randomOrderDateIso8601($id);
         $statusLabel = $order['statusLabel'] ?? $order['ordersStatusName'] ?? 'Bezahlt / in Bearbeitung';
         $statusColor = $order['orderStatusColor'] ?? $this->resolveStatusColorByLabel($statusLabel);
-        $customerName = trim(sprintf('%s %s', $firstName, $lastName));
-        $countryIsoCode2 = $country === 'Österreich' ? 'AT' : ($country === 'Schweiz' ? 'CH' : 'DE');
+        $customer = $detailTemplate['customer'];
+        $email = (string) ($order['email'] ?? $customer['emailAddress']);
+        $lastName = (string) ($customer['lastName'] ?? 'Unknown');
         $statusHistory = $this->buildStatusHistory(
             $id,
             $statusLabel,
@@ -235,81 +530,28 @@ class FakeExternalOrderProvider
         return [
             'orderId' => (int) ($order['orderId'] ?? 0),
             'datePurchased' => $orderDateIso,
-            'paymentMethod' => $this->slugify($paymentMethod),
+            'paymentMethod' => (string) $detailTemplate['paymentMethod'],
             'orderStatus' => $statusLabel,
             'orderStatusColor' => $statusColor,
-            'shippingMethod' => $this->slugify($this->pickValue(['DHL', 'DPD', 'ebay'], $id, 36)),
+            'shippingMethod' => (string) $detailTemplate['shippingMethod'],
             'auftragNumber' => (int) ($order['auftragNumber'] ?? 0),
-            'items' => $items,
-            'totals' => [
-                ['title' => 'Warenwert:', 'value' => number_format($itemsTotal, 4, '.', ''), 'text' => $this->formatEuro($itemsTotal)],
-                ['title' => 'Versandkosten:', 'value' => number_format($shippingTotal, 4, '.', ''), 'text' => $this->formatEuro($shippingTotal)],
-                ['title' => '<b>Summe</b>:', 'value' => number_format($sumTotal, 4, '.', ''), 'text' => $this->formatEuro($sumTotal)],
-                ['title' => 'inkl. 19% MwSt.:', 'value' => number_format($taxTotal, 4, '.', ''), 'text' => $this->formatEuro($taxTotal)],
-                ['title' => 'Summe netto:', 'value' => number_format($sumTotal - $taxTotal, 4, '.', ''), 'text' => $this->formatEuro($sumTotal - $taxTotal)],
-            ],
+            'items' => $detailTemplate['items'],
+            'totals' => $detailTemplate['totals'],
             'statusHistory' => $statusHistory,
-            'customer' => [
-                'id' => $this->randomInt($id, 1000, 99999, 37),
-                'cid' => 'N/A',
-                'vatId' => 'N/A',
-                'status' => 12,
-                'statusName' => 'Kundengruppe Ebay DE',
-                'statusImage' => '',
-                'statusDiscount' => 0.00,
-                'name' => $customerName,
-                'firstName' => $firstName,
-                'lastName' => $lastName,
-                'gender' => '',
-                'company' => '',
-                'streetAddress' => sprintf('%s %d', $street, $streetNumber),
-                'houseNumber' => '',
-                'additionalInfo' => '',
-                'suburb' => 'N/A',
-                'city' => $city,
-                'postcode' => $zip,
-                'state' => '',
-                'country' => $country,
-                'telephone' => '',
-                'emailAddress' => $order['email']
-                    ?? sprintf('%s.%s@example.com', $this->slugify($firstName), $this->slugify($lastName)),
-                'addressFormatId' => 5,
-            ],
-            'billing' => [
-                'name' => $customerName,
-                'firstName' => $firstName,
-                'lastName' => $lastName,
-                'gender' => '',
-                'company' => '',
-                'streetAddress' => sprintf('%s %d', $street, $streetNumber),
-                'houseNumber' => '',
-                'additionalInfo' => '',
-                'suburb' => 'N/A',
-                'city' => $city,
-                'postcode' => $zip,
-                'state' => '',
-                'country' => $country,
-                'countryIsoCode2' => $countryIsoCode2,
-                'addressFormatId' => 5,
-            ],
-            'delivery' => [
-                'name' => $customerName,
-                'firstName' => $firstName,
-                'lastName' => $lastName,
-                'gender' => '',
-                'company' => '',
-                'streetAddress' => sprintf('%s %d', $street, $streetNumber),
-                'houseNumber' => '',
-                'additionalInfo' => '',
-                'suburb' => 'N/A',
-                'city' => $city,
-                'postcode' => $zip,
-                'state' => '',
-                'country' => $country,
-                'countryIsoCode2' => $countryIsoCode2,
-                'addressFormatId' => 5,
-            ],
+            'customer' => array_merge($customer, ['emailAddress' => $email]),
+            'billing' => $detailTemplate['billing'],
+            'delivery' => $detailTemplate['delivery'],
         ];
+    }
+
+    /**
+     * @return array{paymentMethod: string, shippingMethod: string, items: array<int, array<string, mixed>>, totals: array<int, array<string, string>>, customer: array<string, mixed>, billing: array<string, mixed>, delivery: array<string, mixed>}
+     */
+    private function pickDetailTemplate(string $seed): array
+    {
+        $index = $this->randomInt($seed, 0, count(self::DETAIL_TEMPLATES) - 1, 40);
+
+        return self::DETAIL_TEMPLATES[$index] ?? self::DETAIL_TEMPLATES[0];
     }
 
     /**
