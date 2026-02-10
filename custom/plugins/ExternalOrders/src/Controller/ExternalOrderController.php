@@ -127,6 +127,23 @@ class ExternalOrderController extends AbstractController
         ]);
     }
 
+
+    #[Route(
+        path: '/api/_action/external-orders/mark-test',
+        name: 'api.admin.external-orders.mark-test',
+        defaults: ['_acl' => ['admin']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function markTest(Request $request, Context $context): Response
+    {
+        $payload = json_decode($request->getContent(), true);
+        $orderIds = is_array($payload['orderIds'] ?? null) ? $payload['orderIds'] : [];
+
+        $result = $this->externalOrderService->markOrdersAsTest($context, $orderIds);
+
+        return new JsonResponse($result);
+    }
+
     #[Route(
         path: '/api/_action/external-orders/sync-now',
         name: 'api.admin.external-orders.sync-now',

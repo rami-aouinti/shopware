@@ -5,6 +5,7 @@ namespace ExternalOrders\Service;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 
@@ -117,6 +118,71 @@ readonly class ExternalOrderService
         }
 
         return $this->mapExternalPayloadToDetail($payload, $entity->getExternalId());
+    }
+
+    /**
+     * @param array<int, string> $orderIds
+     *
+     * @return array{updated:int, alreadyMarked:int, notFound:int}
+     */
+    public function markOrdersAsTest(Context $context, array $orderIds): array
+    {
+        $normalizedIds = array_values(array_unique(array_filter(array_map(
+            static fn (mixed $id): string => trim((string) $id),
+            $orderIds,
+        ), static fn (string $id): bool => $id !== '')));
+
+        if ($normalizedIds === []) {
+            return ['updated' => 0, 'alreadyMarked' => 0, 'notFound' => 0];
+        }
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsAnyFilter('externalId', $normalizedIds));
+        $entities = $this->externalOrderRepository->search($criteria, $context)->getEntities();
+
+        $upserts = [];
+        $foundIds = [];
+        $alreadyMarked = 0;
+
+        foreach ($entities as $entity) {
+            $payload = $entity->getPayload();
+            if (!is_array($payload)) {
+                continue;
+            }
+
+            $foundIds[] = $entity->getExternalId();
+            $isAlreadyMarked = (bool) ($payload['isTestOrder'] ?? false);
+            if ($isAlreadyMarked) {
+                $alreadyMarked++;
+                continue;
+            }
+
+            $payload['isTestOrder'] = true;
+            $payload['status'] = 'test';
+            $payload['statusLabel'] = 'Test';
+            $payload['ordersStatusName'] = 'Test';
+            $payload['orderStatusColor'] = '9e9e9e';
+
+            if (isset($payload['detail']) && is_array($payload['detail'])) {
+                $payload['detail']['additional']['status'] = 'Test';
+            }
+
+            $upserts[] = [
+                'id' => $entity->getId(),
+                'externalId' => $entity->getExternalId(),
+                'payload' => $payload,
+            ];
+        }
+
+        if ($upserts !== []) {
+            $this->externalOrderRepository->upsert($upserts, $context);
+        }
+
+        return [
+            'updated' => count($upserts),
+            'alreadyMarked' => $alreadyMarked,
+            'notFound' => count(array_diff($normalizedIds, $foundIds)),
+        ];
     }
 
     private function mapExternalPayloadToListItem(array $payload, string $externalId): array

@@ -799,8 +799,56 @@ Component.register('external-orders-list', {
         closeTestMarkingModal() {
             this.showTestMarkingModal = false;
         },
-        applyTestMarking() {
-            this.showTestMarkingModal = false;
+        async applyTestMarking() {
+            if (!this.selectedOrders.length) {
+                this.showTestMarkingModal = false;
+                return;
+            }
+
+            const orderIds = this.selectedOrders
+                .map((order) => order?.id)
+                .filter((id) => typeof id === 'string' && id.length > 0);
+
+            if (!orderIds.length) {
+                this.showTestMarkingModal = false;
+                return;
+            }
+
+            this.isLoading = true;
+            try {
+                const result = await this.externalOrderService.markOrdersAsTest(orderIds);
+                const nowIso = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+                this.orders = this.orders.map((order) => {
+                    if (!orderIds.includes(order?.id)) {
+                        return order;
+                    }
+
+                    return {
+                        ...order,
+                        isTestOrder: true,
+                        status: 'test',
+                        statusLabel: 'Test',
+                        ordersStatusName: 'Test',
+                        orderStatusColor: '9e9e9e',
+                        date: order?.date || nowIso,
+                    };
+                });
+
+                this.createNotificationSuccess({
+                    title: 'Testmarkierung gespeichert',
+                    message: `${result?.updated ?? orderIds.length} Bestellung(en) als Test markiert.`,
+                });
+            } catch (error) {
+                this.createNotificationError({
+                    title: 'Testmarkierung fehlgeschlagen',
+                    message: error?.message || 'Die ausgewählten Bestellungen konnten nicht als Test markiert werden.',
+                });
+            } finally {
+                this.showTestMarkingModal = false;
+                this.selectedOrders = [];
+                this.isLoading = false;
+            }
         },
         getOrderKey(order) {
             return order?.id ?? order?.orderNumber ?? '';
@@ -986,7 +1034,12 @@ Component.register('external-orders-list', {
             }
         },
         getOrdersForExport() {
-            return this.filteredOrders;
+            return this.filteredOrders.filter((order) => !this.isTestOrder(order));
+        },
+        isTestOrder(order) {
+            const statusLabel = String(order?.statusLabel ?? '').trim().toLowerCase();
+            const status = String(order?.status ?? '').trim().toLowerCase();
+            return Boolean(order?.isTestOrder) || statusLabel === 'test' || status === 'test';
         },
         buildExportRows(orders) {
             const header = [
