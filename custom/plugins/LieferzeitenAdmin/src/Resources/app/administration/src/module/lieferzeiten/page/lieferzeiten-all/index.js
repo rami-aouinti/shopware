@@ -16,34 +16,6 @@ Shopware.Component.register('lieferzeiten-all', {
         },
     },
 
-    data() {
-        return {
-            columns: [
-                {
-                    property: 'orderNumber',
-                    label: 'lieferzeiten.table.orderNumber',
-                    primary: true,
-                    sortable: false,
-                },
-                {
-                    property: 'domain',
-                    label: 'lieferzeiten.table.domain',
-                    sortable: false,
-                },
-                {
-                    property: 'parcels',
-                    label: 'lieferzeiten.table.parcels',
-                    sortable: false,
-                },
-                {
-                    property: 'status',
-                    label: 'lieferzeiten.table.status',
-                    sortable: false,
-                },
-            ],
-        };
-    },
-
     computed: {
         openOrders() {
             return this.orders.filter((order) => this.isOrderOpen(order));
@@ -61,16 +33,7 @@ Shopware.Component.register('lieferzeiten-all', {
 
     methods: {
         isOrderOpen(order) {
-            return order.parcels.every((parcel) => !parcel.closed);
-        },
-        parcelSummary(order) {
-            const openParcels = order.parcels.filter((parcel) => !parcel.closed).length;
-            return `${openParcels}/${order.parcels.length}`;
-        },
-        orderStatusLabel(order) {
-            return this.isOrderOpen(order)
-                ? this.$t('lieferzeiten.status.open')
-                : this.$t('lieferzeiten.status.closed');
+            return order.parcels.some((parcel) => !parcel.closed);
         },
     },
 });

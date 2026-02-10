@@ -1,0 +1,114 @@
+{% block lieferzeiten_order_table %}
+    <div class="lieferzeiten-order-table">
+        <table class="sw-data-grid__table">
+            <thead>
+                <tr>
+                    <th colspan="4">{{ $t('lieferzeiten.zones.order') }}</th>
+                    <th colspan="5">{{ $t('lieferzeiten.zones.delivery') }}</th>
+                    <th colspan="3">{{ $t('lieferzeiten.zones.status') }}</th>
+                </tr>
+                <tr>
+                    <th>{{ $t('lieferzeiten.table.orderNumber') }}</th>
+                    <th>{{ $t('lieferzeiten.table.domain') }}</th>
+                    <th>{{ $t('lieferzeiten.table.positions') }}</th>
+                    <th>{{ $t('lieferzeiten.table.parcels') }}</th>
+                    <th>{{ $t('lieferzeiten.fields.supplierDate') }}</th>
+                    <th>{{ $t('lieferzeiten.fields.supplierWeek') }}</th>
+                    <th>{{ $t('lieferzeiten.fields.newDate') }}</th>
+                    <th>{{ $t('lieferzeiten.fields.comment') }}</th>
+                    <th>{{ $t('lieferzeiten.fields.history') }}</th>
+                    <th>{{ $t('lieferzeiten.table.status') }}</th>
+                    <th>{{ $t('lieferzeiten.fields.shippingType') }}</th>
+                    <th>{{ $t('lieferzeiten.fields.audit') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <template v-for="order in displayedOrders">
+                    <tr :key="order.id">
+                        <td>
+                            <sw-button size="small" variant="ghost" @click="toggleOrder(order.id)">
+                                {{ isExpanded(order.id) ? '-' : '+' }}
+                            </sw-button>
+                            {{ order.orderNumber }}
+                        </td>
+                        <td>{{ order.domain }}</td>
+                        <td>{{ order.positions.length }}</td>
+                        <td>{{ parcelSummary(order) }}</td>
+                        <td>
+                            <sw-number-field
+                                v-model:value="order.lieferterminLieferantDays"
+                                :min="1"
+                                :max="14"
+                                size="small"
+                            />
+                            <sw-button size="small" variant="primary" :disabled="!canSaveLiefertermin(order)" @click="saveLiefertermin(order)">
+                                {{ $t('global.default.save') }}
+                            </sw-button>
+                        </td>
+                        <td>{{ order.lieferterminLieferantKw || '-' }}</td>
+                        <td>
+                            <sw-number-field
+                                v-model:value="order.neuerLieferterminDays"
+                                :min="1"
+                                :max="4"
+                                :disabled="!order.lieferterminLieferantDays"
+                                size="small"
+                            />
+                            <sw-button size="small" variant="primary" :disabled="!canSaveNeuerLiefertermin(order)" @click="saveNeuerLiefertermin(order)">
+                                {{ $t('global.default.save') }}
+                            </sw-button>
+                        </td>
+                        <td>
+                            <sw-text-field v-model:value="order.comment" size="small" />
+                            <sw-button size="small" @click="saveComment(order)">
+                                {{ $t('global.default.save') }}
+                            </sw-button>
+                        </td>
+                        <td>
+                            <ul>
+                                <li v-for="entry in order.lieferterminLieferantHistory" :key="entry">{{ entry }}</li>
+                                <li v-for="entry in order.neuerLieferterminHistory" :key="entry">{{ entry }}</li>
+                                <li v-for="entry in order.commentHistory" :key="entry">{{ entry }}</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <sw-label :variant="isOrderOpen(order) ? 'warning' : 'success'">
+                                {{ isOrderOpen(order) ? $t('lieferzeiten.status.open') : $t('lieferzeiten.status.closed') }}
+                            </sw-label>
+                        </td>
+                        <td>{{ shippingLabel(order) }}</td>
+                        <td>{{ order.audit || '-' }}</td>
+                    </tr>
+                    <tr v-if="isExpanded(order.id)" :key="`${order.id}-positions`">
+                        <td colspan="12">
+                            <table class="sw-data-grid__table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ $t('lieferzeiten.table.position') }}</th>
+                                        <th>{{ $t('lieferzeiten.table.article') }}</th>
+                                        <th>{{ $t('lieferzeiten.table.quantity') }}</th>
+                                        <th>{{ $t('lieferzeiten.table.packageNumbers') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="position in order.positions" :key="position.id">
+                                        <td>{{ position.number }}</td>
+                                        <td>{{ position.label }}</td>
+                                        <td>{{ position.quantity }}</td>
+                                        <td>{{ position.packages.join(', ') }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+
+        <sw-empty-state
+            v-if="displayedOrders.length === 0"
+            :title="$t('lieferzeiten.emptyState.title')"
+            :description="$t('lieferzeiten.emptyState.description')"
+        />
+    </div>
+{% endblock %}

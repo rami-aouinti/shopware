@@ -15,27 +15,6 @@
             </sw-card>
         </sw-container>
 
-        <sw-data-grid
-            class="lieferzeiten-orders-grid"
-            :dataSource="openOrders"
-            :columns="columns"
-            :showSelection="false"
-            :showActions="false"
-        >
-            <template #column-parcels="{ item }">
-                {{ parcelSummary(item) }}
-            </template>
-            <template #column-status="{ item }">
-                <sw-label variant="warning">
-                    {{ orderStatusLabel(item) }}
-                </sw-label>
-            </template>
-        </sw-data-grid>
-
-        <sw-empty-state
-            v-if="openOrders.length === 0"
-            :title="$t('lieferzeiten.emptyState.title')"
-            :description="$t('lieferzeiten.emptyState.description')"
-        />
+        <lieferzeiten-order-table :orders="orders" :only-open="true" />
     </div>
 {% endblock %}
