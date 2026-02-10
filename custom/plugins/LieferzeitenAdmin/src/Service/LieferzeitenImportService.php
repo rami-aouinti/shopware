@@ -5,6 +5,7 @@ namespace LieferzeitenAdmin\Service;
 use LieferzeitenAdmin\Entity\PaketEntity;
 use LieferzeitenAdmin\Service\Audit\AuditLogService;
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Integration\IntegrationContractValidator;
 use LieferzeitenAdmin\Service\Reliability\IntegrationReliabilityService;
 use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
 use LieferzeitenAdmin\Sync\Adapter\ChannelOrderAdapterRegistry;
@@ -37,6 +38,7 @@ class LieferzeitenImportService
         private readonly LockFactory $lockFactory,
         private readonly NotificationEventService $notificationEventService,
         private readonly IntegrationReliabilityService $reliabilityService,
+        private readonly IntegrationContractValidator $contractValidator,
         private readonly AuditLogService $auditLogService,
         private readonly LoggerInterface $logger,
     ) {
@@ -85,6 +87,16 @@ class LieferzeitenImportService
                     $adapter = $this->adapterRegistry->resolve($channel, $order);
                     $normalized = $adapter?->normalize($order) ?? $order;
 
+                    $apiViolations = $this->contractValidator->validateApiPayload($channel, $normalized);
+                    if ($apiViolations !== []) {
+                        $this->logger->warning('Payload rejected: API contract violation.', [
+                            'channel' => $channel,
+                            'violations' => $apiViolations,
+                            'payload' => $normalized,
+                        ]);
+                        continue;
+                    }
+
                     $externalId = (string) ($normalized['externalId'] ?? $normalized['id'] ?? $normalized['orderNumber'] ?? '');
                     if ($externalId === '') {
                         continue;
@@ -98,6 +110,18 @@ class LieferzeitenImportService
                     $normalized['isTestOrder'] = false;
 
                     $san6 = $this->san6Client->fetchByOrderNumber((string) ($normalized['orderNumber'] ?? $externalId));
+                    if ($san6 !== []) {
+                        $san6Violations = $this->contractValidator->validateApiPayload('san6', $san6);
+                        if ($san6Violations !== []) {
+                            $this->logger->warning('SAN6 payload ignored: API contract violation.', [
+                                'externalOrderId' => $externalId,
+                                'violations' => $san6Violations,
+                                'payload' => $san6,
+                            ]);
+                            $san6 = [];
+                        }
+                    }
+
                     $matched = $this->matchingService->match($normalized, $san6);
 
                     $resolution = $this->baseDateResolver->resolve($matched);
@@ -107,7 +131,11 @@ class LieferzeitenImportService
                     $matched['baseDateType'] = $resolution['baseDateType'];
                     $matched['paymentDate'] = $matched['paymentDate'] ?? null;
                     $matched['calculatedDeliveryDate'] = $calculatedDeliveryDate?->format(DATE_ATOM);
-                    $matched['sourceSystem'] = $matched['sourceSystem'] ?? $channel;
+                    $matched['sourceSystem'] = $this->contractValidator->resolveValueByPriority(
+                        $matched['sourceSystem'] ?? $channel,
+                        null,
+                        $san6['sourceSystem'] ?? null,
+                    ) ?? $channel;
 
                     if (($resolution['missingPaymentDate'] ?? false) === true) {
                         $this->logger->warning('Missing payment date for prepayment order, using order date fallback.', [
@@ -121,6 +149,17 @@ class LieferzeitenImportService
                             'externalOrderId' => $externalId,
                             'conflicts' => $matched['matchingConflicts'] ?? [],
                         ]);
+                    }
+
+
+                    $paketContractViolations = $this->contractValidator->validatePersistencePayload('paket', $matched);
+                    if ($paketContractViolations !== []) {
+                        $this->logger->warning('Payload rejected: persistence contract violation.', [
+                            'externalOrderId' => $externalId,
+                            'violations' => $paketContractViolations,
+                            'payload' => $matched,
+                        ]);
+                        continue;
                     }
 
                     $existingPaket = $this->findPaketByNumber((string) ($matched['paketNumber'] ?? $matched['packageNumber'] ?? $matched['orderNumber'] ?? $externalId), $context);
