@@ -310,7 +310,15 @@
     &__table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 960px;
+        table-layout: fixed;
+        min-width: 0;
+    }
+
+    &__table th:nth-child(5),
+    &__table td:nth-child(5),
+    &__table th:nth-child(6),
+    &__table td:nth-child(6) {
+        overflow-wrap: anywhere;
     }
 
     &__cell {
