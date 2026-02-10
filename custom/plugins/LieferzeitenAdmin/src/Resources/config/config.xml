@@ -5,17 +5,14 @@
         <title lang="en-GB">Lieferzeiten Sync</title>
         <title lang="de-DE">Lieferzeiten Sync</title>
 
-        <single-select>
+        <input-field type="text">
             <name>syncStrategy</name>
             <label lang="en-GB">Sync strategy</label>
             <label lang="de-DE">Sync-Strategie</label>
+            <helpText lang="en-GB">Allowed values: scheduled, on_demand, both</helpText>
+            <helpText lang="de-DE">Erlaubte Werte: scheduled, on_demand, both</helpText>
             <defaultValue>scheduled</defaultValue>
-            <options>
-                <option><id>scheduled</id><name>Scheduled</name></option>
-                <option><id>on_demand</id><name>On-demand</name></option>
-                <option><id>both</id><name>Both</name></option>
-            </options>
-        </single-select>
+        </input-field>
 
         <input-field type="text">
             <name>shopwareApiUrl</name>
