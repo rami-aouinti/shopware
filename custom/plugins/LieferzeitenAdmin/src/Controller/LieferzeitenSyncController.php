@@ -7,6 +7,7 @@ use LieferzeitenAdmin\Service\LieferzeitenImportService;
 use LieferzeitenAdmin\Service\LieferzeitenOrderOverviewService;
 use LieferzeitenAdmin\Service\LieferzeitenPositionWriteService;
 use LieferzeitenAdmin\Service\LieferzeitenTaskService;
+use LieferzeitenAdmin\Service\WriteEndpointConflictException;
 use LieferzeitenAdmin\Service\LieferzeitenStatisticsService;
 use LieferzeitenAdmin\Service\Tracking\TrackingHistoryService;
 use Shopware\Core\Framework\Context;
@@ -255,6 +256,11 @@ class LieferzeitenSyncController extends AbstractController
         }
 
         $payload = $request->toArray();
+        $expectedUpdatedAt = trim((string) ($payload['updatedAt'] ?? ''));
+        if ($expectedUpdatedAt === '') {
+            return new JsonResponse(['status' => 'error', 'message' => 'updatedAt is required for optimistic concurrency control'], Response::HTTP_BAD_REQUEST);
+        }
+
         $range = $this->extractDateRange($payload);
         if ($range === null) {
             return new JsonResponse(['status' => 'error', 'message' => 'from/to are required date values'], Response::HTTP_BAD_REQUEST);
@@ -265,10 +271,26 @@ class LieferzeitenSyncController extends AbstractController
             return $validationError;
         }
 
-        $this->positionWriteService->updateLieferterminLieferant($positionId, $range['from'], $range['to'], $context);
+        try {
+            $this->positionWriteService->updateLieferterminLieferant($positionId, $range['from'], $range['to'], $expectedUpdatedAt, $context);
+        } catch (WriteEndpointConflictException $e) {
+            $this->auditLogService->log('liefertermin_lieferant_update_conflict', 'lieferzeiten_position', $positionId, $context, [
+                'expectedUpdatedAt' => $expectedUpdatedAt,
+                'refresh' => $e->getRefresh(),
+            ], 'shopware');
+
+            return new JsonResponse([
+                'status' => 'error',
+                'code' => 'CONCURRENT_MODIFICATION',
+                'message' => $e->getMessage(),
+                'refresh' => $e->getRefresh(),
+            ], Response::HTTP_CONFLICT);
+        }
+
         $this->auditLogService->log('liefertermin_lieferant_updated', 'lieferzeiten_position', $positionId, $context, [
             'from' => $range['from']->format('Y-m-d'),
             'to' => $range['to']->format('Y-m-d'),
+            'expectedUpdatedAt' => $expectedUpdatedAt,
         ], 'shopware');
 
         return new JsonResponse(['status' => 'ok']);
@@ -288,6 +310,11 @@ class LieferzeitenSyncController extends AbstractController
         }
 
         $payload = $request->toArray();
+        $expectedUpdatedAt = trim((string) ($payload['updatedAt'] ?? ''));
+        if ($expectedUpdatedAt === '') {
+            return new JsonResponse(['status' => 'error', 'message' => 'updatedAt is required for optimistic concurrency control'], Response::HTTP_BAD_REQUEST);
+        }
+
         $range = $this->extractDateRange($payload);
         if ($range === null) {
             return new JsonResponse(['status' => 'error', 'message' => 'from/to are required date values'], Response::HTTP_BAD_REQUEST);
@@ -307,10 +334,26 @@ class LieferzeitenSyncController extends AbstractController
             return new JsonResponse(['status' => 'error', 'message' => 'New delivery date range must be inside supplier delivery range'], Response::HTTP_BAD_REQUEST);
         }
 
-        $this->positionWriteService->updateNeuerLiefertermin($positionId, $range['from'], $range['to'], $context);
+        try {
+            $this->positionWriteService->updateNeuerLiefertermin($positionId, $range['from'], $range['to'], $expectedUpdatedAt, $context);
+        } catch (WriteEndpointConflictException $e) {
+            $this->auditLogService->log('neuer_liefertermin_update_conflict', 'lieferzeiten_position', $positionId, $context, [
+                'expectedUpdatedAt' => $expectedUpdatedAt,
+                'refresh' => $e->getRefresh(),
+            ], 'shopware');
+
+            return new JsonResponse([
+                'status' => 'error',
+                'code' => 'CONCURRENT_MODIFICATION',
+                'message' => $e->getMessage(),
+                'refresh' => $e->getRefresh(),
+            ], Response::HTTP_CONFLICT);
+        }
+
         $this->auditLogService->log('neuer_liefertermin_updated', 'lieferzeiten_position', $positionId, $context, [
             'from' => $range['from']->format('Y-m-d'),
             'to' => $range['to']->format('Y-m-d'),
+            'expectedUpdatedAt' => $expectedUpdatedAt,
         ], 'shopware');
 
         return new JsonResponse(['status' => 'ok']);
@@ -331,9 +374,31 @@ class LieferzeitenSyncController extends AbstractController
 
         $payload = $request->toArray();
         $comment = trim((string) ($payload['comment'] ?? ''));
+        $expectedUpdatedAt = trim((string) ($payload['updatedAt'] ?? ''));
+        if ($expectedUpdatedAt === '') {
+            return new JsonResponse(['status' => 'error', 'message' => 'updatedAt is required for optimistic concurrency control'], Response::HTTP_BAD_REQUEST);
+        }
 
-        $this->positionWriteService->updateComment($positionId, $comment, $context);
-        $this->auditLogService->log('comment_updated', 'lieferzeiten_position', $positionId, $context, ['comment' => $comment], 'shopware');
+        try {
+            $this->positionWriteService->updateComment($positionId, $comment, $expectedUpdatedAt, $context);
+        } catch (WriteEndpointConflictException $e) {
+            $this->auditLogService->log('comment_update_conflict', 'lieferzeiten_position', $positionId, $context, [
+                'expectedUpdatedAt' => $expectedUpdatedAt,
+                'refresh' => $e->getRefresh(),
+            ], 'shopware');
+
+            return new JsonResponse([
+                'status' => 'error',
+                'code' => 'CONCURRENT_MODIFICATION',
+                'message' => $e->getMessage(),
+                'refresh' => $e->getRefresh(),
+            ], Response::HTTP_CONFLICT);
+        }
+
+        $this->auditLogService->log('comment_updated', 'lieferzeiten_position', $positionId, $context, [
+            'comment' => $comment,
+            'expectedUpdatedAt' => $expectedUpdatedAt,
+        ], 'shopware');
 
         return new JsonResponse(['status' => 'ok']);
     }

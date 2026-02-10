@@ -243,6 +243,58 @@ Shopware.Component.register('lieferzeiten-order-table', {
             return newRange.from >= supplierRange.from && newRange.to <= supplierRange.to;
         },
 
+
+
+        resolveConcurrencyToken(order) {
+            return order.updatedAt || order.lastChangedAt || order.currentUpdatedAt || null;
+        },
+
+        applyConflictRefresh(order, refresh) {
+            if (!refresh || refresh.exists === false) {
+                return;
+            }
+
+            if (refresh.updatedAt) {
+                order.updatedAt = refresh.updatedAt;
+            }
+            if (refresh.lastChangedAt) {
+                order.lastChangedAt = refresh.lastChangedAt;
+            }
+            if (Object.prototype.hasOwnProperty.call(refresh, 'comment')) {
+                order.comment = refresh.comment || '';
+            }
+
+            if (refresh.lieferterminLieferant) {
+                order.lieferterminLieferantRange = {
+                    from: refresh.lieferterminLieferant.from || null,
+                    to: refresh.lieferterminLieferant.to || null,
+                };
+                order.originalLieferterminLieferantRange = { ...order.lieferterminLieferantRange };
+            }
+
+            if (refresh.neuerLiefertermin) {
+                order.neuerLieferterminRange = {
+                    from: refresh.neuerLiefertermin.from || null,
+                    to: refresh.neuerLiefertermin.to || null,
+                };
+                order.originalNeuerLieferterminRange = { ...order.neuerLieferterminRange };
+            }
+        },
+
+        handleConflictError(error, order) {
+            const data = error?.response?.data;
+            if (data?.code !== 'CONCURRENT_MODIFICATION') {
+                return false;
+            }
+
+            this.applyConflictRefresh(order, data?.refresh || null);
+            this.createNotificationWarning({
+                title: this.$t('global.default.warning'),
+                message: data?.message || 'Conflit d’édition détecté. Ligne rafraîchie, veuillez réappliquer vos modifications.',
+            });
+
+            return true;
+        },
         weekLabelFromDate(dateValue) {
             if (!dateValue) {
                 return '-';
@@ -277,10 +329,15 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 await this.lieferzeitenOrdersService.updateLieferterminLieferant(positionId, {
                     from: order.lieferterminLieferantRange.from,
                     to: order.lieferterminLieferantRange.to,
+                    updatedAt: this.resolveConcurrencyToken(order),
                 });
                 this.createNotificationSuccess({ title: this.$t('global.default.success'), message: this.$t('lieferzeiten.audit.savedSupplierDate') });
                 await this.reloadOrder(order);
             } catch (error) {
+                if (this.handleConflictError(error, order)) {
+                    return;
+                }
+
                 this.createNotificationError({
                     title: this.$t('global.default.error'),
                     message: error?.response?.data?.message || error?.message || this.$t('global.default.error'),
@@ -303,10 +360,15 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 await this.lieferzeitenOrdersService.updateNeuerLiefertermin(positionId, {
                     from: order.neuerLieferterminRange.from,
                     to: order.neuerLieferterminRange.to,
+                    updatedAt: this.resolveConcurrencyToken(order),
                 });
                 this.createNotificationSuccess({ title: this.$t('global.default.success'), message: this.$t('lieferzeiten.audit.savedNewDate') });
                 await this.reloadOrder(order);
             } catch (error) {
+                if (this.handleConflictError(error, order)) {
+                    return;
+                }
+
                 this.createNotificationError({
                     title: this.$t('global.default.error'),
                     message: error?.response?.data?.message || error?.message || this.$t('global.default.error'),
@@ -326,10 +388,17 @@ Shopware.Component.register('lieferzeiten-order-table', {
             }
 
             try {
-                await this.lieferzeitenOrdersService.updateComment(positionId, order.comment || '');
+                await this.lieferzeitenOrdersService.updateComment(positionId, {
+                    comment: order.comment || '',
+                    updatedAt: this.resolveConcurrencyToken(order),
+                });
                 this.createNotificationSuccess({ title: this.$t('global.default.success'), message: this.$t('lieferzeiten.audit.savedComment') });
                 await this.reloadOrder(order);
             } catch (error) {
+                if (this.handleConflictError(error, order)) {
+                    return;
+                }
+
                 this.createNotificationError({
                     title: this.$t('global.default.error'),
                     message: error?.response?.data?.message || error?.message || this.$t('global.default.error'),
