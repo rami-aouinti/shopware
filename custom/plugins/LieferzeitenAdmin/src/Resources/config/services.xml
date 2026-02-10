@@ -43,6 +43,15 @@
 
         <service id="LieferzeitenAdmin\Sync\San6\San6Client" />
         <service id="LieferzeitenAdmin\Sync\San6\San6MatchingService" />
+        <service id="LieferzeitenAdmin\Service\BaseDateResolver" />
+        <service id="LieferzeitenAdmin\Service\ChannelDateSettingsProvider" />
+        <service id="LieferzeitenAdmin\Service\BusinessDayDeliveryDateCalculator" />
+        <service id="LieferzeitenAdmin\Service\PaketDeliveryDateRecalculationService">
+            <argument type="service" id="lieferzeiten_paket.repository" />
+        </service>
+        <service id="LieferzeitenAdmin\Subscriber\DeliveryDateRecalculationSubscriber">
+            <tag name="kernel.event_subscriber" />
+        </service>
 
         <service id="LieferzeitenAdmin\Service\LieferzeitenImportService">
             <argument type="service" id="lieferzeiten_paket.repository" />

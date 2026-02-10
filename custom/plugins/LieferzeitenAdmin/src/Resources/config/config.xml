@@ -40,6 +40,24 @@
         </input-field>
 
         <input-field type="text">
+            <name>shopwareDateSettings</name>
+            <label lang="en-GB">Shopware date settings (JSON)</label>
+            <label lang="de-DE">Shopware Datums-Einstellungen (JSON)</label>
+            <helpText lang="en-GB">Format: {"workingDays":2,"cutoff":"14:00"}</helpText>
+            <helpText lang="de-DE">Format: {"workingDays":2,"cutoff":"14:00"}</helpText>
+            <defaultValue>{"workingDays":2,"cutoff":"14:00"}</defaultValue>
+        </input-field>
+
+        <input-field type="text">
+            <name>gambioDateSettings</name>
+            <label lang="en-GB">Gambio date settings (JSON)</label>
+            <label lang="de-DE">Gambio Datums-Einstellungen (JSON)</label>
+            <helpText lang="en-GB">Format: {"workingDays":2,"cutoff":"14:00"}</helpText>
+            <helpText lang="de-DE">Format: {"workingDays":2,"cutoff":"14:00"}</helpText>
+            <defaultValue>{"workingDays":2,"cutoff":"14:00"}</defaultValue>
+        </input-field>
+
+        <input-field type="text">
             <name>san6ApiUrl</name>
             <label lang="en-GB">San6 API URL</label>
             <label lang="de-DE">San6 API-URL</label>

@@ -19,7 +19,10 @@ class Migration2026021000LieferzeitenImportEnhancements extends MigrationStep
             'source_system' => 'VARCHAR(64) NULL',
             'customer_email' => 'VARCHAR(255) NULL',
             'payment_method' => 'VARCHAR(255) NULL',
+            'payment_date' => 'DATETIME(3) NULL',
+            'base_date_type' => 'VARCHAR(64) NULL',
             'order_date' => 'DATETIME(3) NULL',
+            'calculated_delivery_date' => 'DATETIME(3) NULL',
             'delivery_date' => 'DATETIME(3) NULL',
             'sync_badge' => 'VARCHAR(64) NULL',
         ];

@@ -14,6 +14,8 @@ class ShopwareOrderAdapter implements ChannelOrderAdapterInterface
         $payload['sourceSystem'] = 'shopware';
         $payload['customerEmail'] = $payload['customerEmail'] ?? ($payload['orderCustomer']['email'] ?? null);
         $payload['paymentMethod'] = $payload['paymentMethod'] ?? ($payload['transactions'][0]['paymentMethod']['name'] ?? null);
+        $payload['paymentDate'] = $payload['paymentDate']
+            ?? ($payload['transactions'][0]['createdAt'] ?? null);
 
         return $payload;
     }
