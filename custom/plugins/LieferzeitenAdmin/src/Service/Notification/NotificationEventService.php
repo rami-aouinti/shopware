@@ -2,6 +2,8 @@
 
 namespace LieferzeitenAdmin\Service\Notification;
 
+use LieferzeitenAdmin\Service\Audit\AuditLogService;
+use LieferzeitenAdmin\Service\Reliability\IntegrationReliabilityService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -15,6 +17,8 @@ class NotificationEventService
         private readonly EntityRepository $notificationEventRepository,
         private readonly NotificationToggleResolver $toggleResolver,
         private readonly LoggerInterface $logger,
+        private readonly IntegrationReliabilityService $reliabilityService,
+        private readonly AuditLogService $auditLogService,
     ) {
     }
 
@@ -39,23 +43,30 @@ class NotificationEventService
             return false;
         }
 
-        $this->notificationEventRepository->create([[
-            'id' => Uuid::randomHex(),
-            'eventKey' => $eventKey,
-            'triggerKey' => $triggerKey,
-            'channel' => $channel,
-            'externalOrderId' => $externalOrderId,
-            'sourceSystem' => $sourceSystem,
-            'payload' => $payload,
-            'status' => 'queued',
-            'dispatchedAt' => (new \DateTimeImmutable())->format(DATE_ATOM),
-        ]], $context);
+        $this->reliabilityService->executeWithRetry('mails', 'queue_notification_event', function () use ($eventKey, $triggerKey, $channel, $payload, $context, $externalOrderId, $sourceSystem): void {
+            $this->notificationEventRepository->create([[
+                'id' => Uuid::randomHex(),
+                'eventKey' => $eventKey,
+                'triggerKey' => $triggerKey,
+                'channel' => $channel,
+                'externalOrderId' => $externalOrderId,
+                'sourceSystem' => $sourceSystem,
+                'payload' => $payload,
+                'status' => 'queued',
+                'dispatchedAt' => (new \DateTimeImmutable())->format(DATE_ATOM),
+            ]], $context);
+        }, $context, payload: ['eventKey' => $eventKey, 'channel' => $channel]);
 
         $this->logger->info('Notification event queued.', [
             'eventKey' => $eventKey,
             'triggerKey' => $triggerKey,
             'channel' => $channel,
         ]);
+
+        $this->auditLogService->log('notification_queued', 'notification_event', $eventKey, $context, [
+            'triggerKey' => $triggerKey,
+            'channel' => $channel,
+        ], 'mails');
 
         return true;
     }

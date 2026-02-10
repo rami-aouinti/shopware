@@ -39,9 +39,10 @@
                                 v-model:value="order.lieferterminLieferantDays"
                                 :min="1"
                                 :max="14"
+                                :disabled="!hasEditAccess()"
                                 size="small"
                             />
-                            <sw-button size="small" variant="primary" :disabled="!canSaveLiefertermin(order)" @click="saveLiefertermin(order)">
+                            <sw-button size="small" variant="primary" :disabled="!hasEditAccess() || !canSaveLiefertermin(order)" @click="saveLiefertermin(order)">
                                 {{ $t('global.default.save') }}
                             </sw-button>
                         </td>
@@ -51,19 +52,19 @@
                                 v-model:value="order.neuerLieferterminDays"
                                 :min="1"
                                 :max="4"
-                                :disabled="!order.lieferterminLieferantDays"
+                                :disabled="!hasEditAccess() || !order.lieferterminLieferantDays"
                                 size="small"
                             />
-                            <sw-button size="small" variant="primary" :disabled="!canSaveNeuerLiefertermin(order)" @click="saveNeuerLiefertermin(order)">
+                            <sw-button size="small" variant="primary" :disabled="!hasEditAccess() || !canSaveNeuerLiefertermin(order)" @click="saveNeuerLiefertermin(order)">
                                 {{ $t('global.default.save') }}
                             </sw-button>
                         </td>
                         <td>
-                            <sw-text-field v-model:value="order.comment" size="small" />
-                            <sw-button size="small" @click="saveComment(order)">
+                            <sw-text-field v-model:value="order.comment" :disabled="!hasEditAccess()" size="small" />
+                            <sw-button size="small" :disabled="!hasEditAccess()" @click="saveComment(order)">
                                 {{ $t('global.default.save') }}
                             </sw-button>
-                            <sw-button size="small" variant="ghost" @click="requestAdditionalDeliveryDate(order)">
+                            <sw-button size="small" variant="ghost" :disabled="!hasEditAccess()" @click="requestAdditionalDeliveryDate(order)">
                                 {{ $t('lieferzeiten.additionalRequest.button') }}
                             </sw-button>
                         </td>

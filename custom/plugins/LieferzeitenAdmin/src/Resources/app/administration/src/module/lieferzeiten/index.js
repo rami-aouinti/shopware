@@ -15,6 +15,17 @@ Module.register('lieferzeiten', {
     color: '#2B8CBF',
     icon: 'regular-clock',
 
+    privileges: {
+        viewer: {
+            permissions: ['lieferzeiten.viewer'],
+            dependencies: [],
+        },
+        editor: {
+            permissions: ['lieferzeiten.editor'],
+            dependencies: ['lieferzeiten.viewer'],
+        },
+    },
+
     routes: {
         index: {
             component: 'lieferzeiten-index',
@@ -26,6 +37,7 @@ Module.register('lieferzeiten', {
                     path: 'all',
                     meta: {
                         parentPath: 'lieferzeiten.index',
+                        privilege: 'lieferzeiten.viewer',
                     },
                 },
                 open: {
@@ -33,6 +45,7 @@ Module.register('lieferzeiten', {
                     path: 'open',
                     meta: {
                         parentPath: 'lieferzeiten.index',
+                        privilege: 'lieferzeiten.viewer',
                     },
                 },
                 statistics: {
@@ -40,6 +53,7 @@ Module.register('lieferzeiten', {
                     path: 'statistics',
                     meta: {
                         parentPath: 'lieferzeiten.index',
+                        privilege: 'lieferzeiten.viewer',
                     },
                 },
             },
@@ -55,6 +69,7 @@ Module.register('lieferzeiten', {
             icon: 'regular-clock',
             parent: 'sw-order',
             position: 100,
+            privilege: 'lieferzeiten.viewer',
         },
     ],
 });

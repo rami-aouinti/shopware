@@ -2,6 +2,7 @@
 
 namespace LieferzeitenAdmin\Controller;
 
+use LieferzeitenAdmin\Service\Audit\AuditLogService;
 use LieferzeitenAdmin\Service\LieferzeitenImportService;
 use LieferzeitenAdmin\Service\LieferzeitenOrderOverviewService;
 use LieferzeitenAdmin\Service\Tracking\TrackingHistoryService;
@@ -21,17 +22,17 @@ class LieferzeitenSyncController extends AbstractController
         private readonly LieferzeitenImportService $importService,
         private readonly TrackingHistoryService $trackingHistoryService,
         private readonly LieferzeitenOrderOverviewService $orderOverviewService,
+        private readonly AuditLogService $auditLogService,
     ) {
     }
-
 
     #[Route(
         path: '/api/_action/lieferzeiten/orders',
         name: 'api.admin.lieferzeiten.orders',
-        defaults: ['_acl' => ['admin']],
+        defaults: ['_acl' => ['lieferzeiten.viewer']],
         methods: [Request::METHOD_GET]
     )]
-    public function orders(Request $request): JsonResponse
+    public function orders(Request $request, Context $context): JsonResponse
     {
         $payload = $this->orderOverviewService->listOrders(
             (int) $request->query->get('page', 1),
@@ -53,18 +54,24 @@ class LieferzeitenSyncController extends AbstractController
             ],
         );
 
+        $this->auditLogService->log('orders_viewed', 'lieferzeiten_orders', null, $context, [
+            'page' => (int) $request->query->get('page', 1),
+            'limit' => (int) $request->query->get('limit', 25),
+        ], 'shopware');
+
         return new JsonResponse($payload);
     }
 
     #[Route(
         path: '/api/_action/lieferzeiten/sync',
         name: 'api.admin.lieferzeiten.sync',
-        defaults: ['_acl' => ['admin']],
+        defaults: ['_acl' => ['lieferzeiten.editor']],
         methods: [Request::METHOD_POST]
     )]
     public function syncNow(Context $context): JsonResponse
     {
         $this->importService->sync($context, 'on_demand');
+        $this->auditLogService->log('sync_started', 'lieferzeiten_sync', null, $context, [], 'shopware');
 
         return new JsonResponse(['status' => 'ok']);
     }
@@ -72,12 +79,13 @@ class LieferzeitenSyncController extends AbstractController
     #[Route(
         path: '/api/_action/lieferzeiten/tracking/{carrier}/{trackingNumber}',
         name: 'api.admin.lieferzeiten.tracking-history',
-        defaults: ['_acl' => ['admin']],
+        defaults: ['_acl' => ['lieferzeiten.viewer']],
         methods: [Request::METHOD_GET]
     )]
-    public function trackingHistory(string $carrier, string $trackingNumber): JsonResponse
+    public function trackingHistory(string $carrier, string $trackingNumber, Context $context): JsonResponse
     {
         $response = $this->trackingHistoryService->fetchHistory($carrier, $trackingNumber);
+        $this->auditLogService->log('tracking_viewed', 'tracking', $trackingNumber, $context, ['carrier' => $carrier], 'shopware');
 
         if (($response['ok'] ?? false) === true) {
             return new JsonResponse($response);
@@ -93,5 +101,4 @@ class LieferzeitenSyncController extends AbstractController
 
         return new JsonResponse($response, $httpCode);
     }
-
 }
