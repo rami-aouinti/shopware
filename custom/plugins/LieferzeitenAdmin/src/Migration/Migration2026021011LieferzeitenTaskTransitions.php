@@ -31,7 +31,7 @@ class Migration2026021011LieferzeitenTaskTransitions extends MigrationStep
     {
     }
 
-    private function columnExists(Connection $connection, string $table, string $column): bool
+    protected function columnExists(Connection $connection, string $table, string $column): bool
     {
         return (int) $connection->fetchOne(
             'SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :tableName AND COLUMN_NAME = :columnName',
@@ -39,7 +39,7 @@ class Migration2026021011LieferzeitenTaskTransitions extends MigrationStep
         ) > 0;
     }
 
-    private function indexExists(Connection $connection, string $table, string $index): bool
+    protected function indexExists(Connection $connection, string $table, string $index): bool
     {
         return (int) $connection->fetchOne(
             'SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :tableName AND INDEX_NAME = :indexName',

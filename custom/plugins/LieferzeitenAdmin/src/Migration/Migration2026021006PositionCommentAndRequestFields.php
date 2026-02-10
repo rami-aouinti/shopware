@@ -23,7 +23,7 @@ class Migration2026021006PositionCommentAndRequestFields extends MigrationStep
     {
     }
 
-    private function addColumnIfMissing(Connection $connection, string $column, string $definition): void
+    protected function addColumnIfMissing(Connection $connection, string $column, string $definition): void
     {
         $exists = (int) $connection->fetchOne(
             'SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :table AND COLUMN_NAME = :column',

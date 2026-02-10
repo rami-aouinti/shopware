@@ -54,7 +54,7 @@ class Migration2026021009OrderOverviewHistoryRangeIndexes extends MigrationStep
     {
     }
 
-    private function addIndexIfMissing(Connection $connection, string $table, string $indexName, string $definition): void
+    protected function addIndexIfMissing(Connection $connection, string $table, string $indexName, string $definition): void
     {
         $exists = (int) $connection->fetchOne(
             'SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :tableName AND INDEX_NAME = :indexName',

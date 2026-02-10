@@ -39,7 +39,7 @@ class Migration2026021003LieferzeitenOverviewIndexes extends MigrationStep
     {
     }
 
-    private function indexExists(Connection $connection, string $table, string $index): bool
+    protected function indexExists(Connection $connection, string $table, string $index): bool
     {
         $indexes = $connection->createSchemaManager()->listTableIndexes($table);
 

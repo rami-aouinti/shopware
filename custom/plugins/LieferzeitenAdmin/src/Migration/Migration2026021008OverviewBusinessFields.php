@@ -31,7 +31,7 @@ class Migration2026021008OverviewBusinessFields extends MigrationStep
     {
     }
 
-    private function addColumnIfMissing(Connection $connection, string $table, string $column, string $definition): void
+    protected function addColumnIfMissing(Connection $connection, string $table, string $column, string $definition): void
     {
         $exists = (int) $connection->fetchOne(
             'SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :tableName AND COLUMN_NAME = :columnName',
@@ -45,7 +45,7 @@ class Migration2026021008OverviewBusinessFields extends MigrationStep
         $connection->executeStatement(sprintf('ALTER TABLE `%s` ADD COLUMN `%s` %s', $table, $column, $definition));
     }
 
-    private function addIndexIfMissing(Connection $connection, string $table, string $indexName, string $definition): void
+    protected function addIndexIfMissing(Connection $connection, string $table, string $indexName, string $definition): void
     {
         $exists = (int) $connection->fetchOne(
             'SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :tableName AND INDEX_NAME = :indexName',
