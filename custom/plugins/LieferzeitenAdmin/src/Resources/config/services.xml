@@ -120,8 +120,9 @@
             <argument type="service" id="lieferzeiten_notification_template.repository" />
         </service>
         <service id="LieferzeitenAdmin\Service\Notification\QueuedNotificationEmailProcessor">
-            <argument type="service" id="lieferzeiten_notification_event.repository" />
-            <argument type="service" id="Doctrine\DBAL\Connection" />
+            <argument key="$notificationEventRepository" type="service" id="lieferzeiten_notification_event.repository" />
+            <argument key="$mailService" type="service" id="Shopware\Core\Content\Mail\Service\MailService" />
+            <argument key="$connection" type="service" id="Doctrine\DBAL\Connection" />
         </service>
         <service id="LieferzeitenAdmin\Service\Notification\VorkassePaymentReminderService">
             <argument type="service" id="lieferzeiten_paket.repository" />
