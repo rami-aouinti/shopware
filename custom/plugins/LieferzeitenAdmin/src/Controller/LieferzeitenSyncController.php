@@ -3,6 +3,7 @@
 namespace LieferzeitenAdmin\Controller;
 
 use LieferzeitenAdmin\Service\LieferzeitenImportService;
+use LieferzeitenAdmin\Service\LieferzeitenOrderOverviewService;
 use LieferzeitenAdmin\Service\Tracking\TrackingHistoryService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -19,7 +20,40 @@ class LieferzeitenSyncController extends AbstractController
     public function __construct(
         private readonly LieferzeitenImportService $importService,
         private readonly TrackingHistoryService $trackingHistoryService,
+        private readonly LieferzeitenOrderOverviewService $orderOverviewService,
     ) {
+    }
+
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/orders',
+        name: 'api.admin.lieferzeiten.orders',
+        defaults: ['_acl' => ['admin']],
+        methods: [Request::METHOD_GET]
+    )]
+    public function orders(Request $request): JsonResponse
+    {
+        $payload = $this->orderOverviewService->listOrders(
+            (int) $request->query->get('page', 1),
+            (int) $request->query->get('limit', 25),
+            $request->query->get('sort') ? (string) $request->query->get('sort') : null,
+            $request->query->get('order') ? (string) $request->query->get('order') : null,
+            [
+                'bestellnummer' => $request->query->get('bestellnummer'),
+                'san6' => $request->query->get('san6'),
+                'orderDateFrom' => $request->query->get('orderDateFrom'),
+                'orderDateTo' => $request->query->get('orderDateTo'),
+                'shippingDateFrom' => $request->query->get('shippingDateFrom'),
+                'shippingDateTo' => $request->query->get('shippingDateTo'),
+                'deliveryDateFrom' => $request->query->get('deliveryDateFrom'),
+                'deliveryDateTo' => $request->query->get('deliveryDateTo'),
+                'user' => $request->query->get('user'),
+                'sendenummer' => $request->query->get('sendenummer'),
+                'status' => $request->query->get('status'),
+            ],
+        );
+
+        return new JsonResponse($payload);
     }
 
     #[Route(
