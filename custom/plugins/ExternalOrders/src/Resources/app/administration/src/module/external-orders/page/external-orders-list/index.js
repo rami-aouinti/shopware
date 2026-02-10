@@ -873,7 +873,10 @@ Component.register('external-orders-list', {
         },
 
         statusClass(order) {
-            const normalizedStatusLabel = String(order?.statusLabel ?? '').trim().toLowerCase();
+            return this.statusClassFromLabel(order?.statusLabel);
+        },
+        statusClassFromLabel(statusLabel) {
+            const normalizedStatusLabel = String(statusLabel ?? '').trim().toLowerCase();
 
             if ([
                 'bezahlt / in bearbeitung',

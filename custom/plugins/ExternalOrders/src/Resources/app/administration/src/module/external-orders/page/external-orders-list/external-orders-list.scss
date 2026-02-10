@@ -678,6 +678,42 @@
         word-break: break-word;
     }
 
+
+    &__detail-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    &__detail-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 720px;
+
+        th,
+        td {
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid #e5eaf1;
+            vertical-align: top;
+        }
+
+        th {
+            font-weight: 600;
+            color: #1f2d3d;
+            background: #f8fafc;
+        }
+
+        td {
+            color: #2c3e50;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+    }
+
     &__totals {
         display: flex;
         flex-direction: column;
