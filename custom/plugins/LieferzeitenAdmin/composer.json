@@ -22,5 +22,10 @@
       "en-GB": "Lieferzeiten Admin",
       "de-DE": "Lieferzeiten Admin"
     }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "LieferzeitenAdmin\\Tests\\": "tests/"
+    }
   }
 }

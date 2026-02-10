@@ -4,6 +4,7 @@ namespace LieferzeitenAdmin\Entity;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\CreatedAtField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
@@ -50,6 +51,7 @@ class PaketDefinition extends EntityDefinition
             new StringField('base_date_type', 'baseDateType'),
             new DateTimeField('calculated_delivery_date', 'calculatedDeliveryDate'),
             new StringField('sync_badge', 'syncBadge'),
+            new BoolField('is_test_order', 'isTestOrder'),
             new JsonField('status_push_queue', 'statusPushQueue'),
             new StringField('last_changed_by', 'lastChangedBy'),
             new DateTimeField('last_changed_at', 'lastChangedAt'),

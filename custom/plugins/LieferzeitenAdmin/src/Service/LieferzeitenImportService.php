@@ -70,7 +70,7 @@ class LieferzeitenImportService
                 }
 
                 foreach ($orders as $order) {
-                    if (!is_array($order) || $this->isTestOrder($order)) {
+                    if (!is_array($order)) {
                         continue;
                     }
 
@@ -81,6 +81,13 @@ class LieferzeitenImportService
                     if ($externalId === '') {
                         continue;
                     }
+
+                    if ($this->isTestOrder($order) || $this->isTestOrder($normalized)) {
+                        $this->markExistingOrderAsTest($externalId, $normalized, $context);
+                        continue;
+                    }
+
+                    $normalized['isTestOrder'] = false;
 
                     $san6 = $this->san6Client->fetchByOrderNumber((string) ($normalized['orderNumber'] ?? $externalId));
                     $matched = $this->matchingService->match($normalized, $san6);
@@ -181,6 +188,7 @@ class LieferzeitenImportService
             'baseDateType' => $payload['baseDateType'] ?? null,
             'calculatedDeliveryDate' => $this->parseDate($payload['calculatedDeliveryDate'] ?? null),
             'syncBadge' => $payload['syncBadge'] ?? null,
+            'isTestOrder' => (bool) ($payload['isTestOrder'] ?? false),
             'statusPushQueue' => $payload['statusPushQueue'] ?? [],
         ]], $context);
 
@@ -224,6 +232,15 @@ class LieferzeitenImportService
     private function findPaketIdByNumber(string $paketNumber, Context $context): ?string
     {
         return $this->findPaketByNumber($paketNumber, $context)?->getId();
+    }
+
+    private function findPaketIdByExternalOrderId(string $externalOrderId, Context $context): ?string
+    {
+        $criteria = new Criteria();
+        $criteria->setLimit(1);
+        $criteria->addFilter(new EqualsFilter('externalOrderId', $externalOrderId));
+
+        return $this->paketRepository->search($criteria, $context)->first()?->getId();
     }
 
     private function findPaketByNumber(string $paketNumber, Context $context): ?PaketEntity
@@ -306,18 +323,76 @@ class LieferzeitenImportService
     /** @param array<string,mixed> $payload */
     private function isTestOrder(array $payload): bool
     {
-        if (($payload['isTest'] ?? false) === true) {
-            return true;
+        $candidates = [
+            $payload['Testbestellung'] ?? null,
+            $payload['testbestellung'] ?? null,
+            $payload['isTestOrder'] ?? null,
+            $payload['testOrder'] ?? null,
+            $payload['test_order'] ?? null,
+            $payload['isTest'] ?? null,
+        ];
+
+        $additional = $payload['additional'] ?? null;
+        if (is_array($additional)) {
+            $candidates[] = $additional['Testbestellung'] ?? null;
+            $candidates[] = $additional['testbestellung'] ?? null;
+            $candidates[] = $additional['isTestOrder'] ?? null;
         }
 
-        foreach (['orderNumber', 'email', 'customerEmail', 'environment'] as $field) {
-            $value = (string) ($payload[$field] ?? '');
-            if ($value !== '' && preg_match('/\b(test|dummy|sandbox|example)\b/i', $value) === 1) {
+        $detail = $payload['detail'] ?? null;
+        if (is_array($detail)) {
+            $detailAdditional = $detail['additional'] ?? null;
+            if (is_array($detailAdditional)) {
+                $candidates[] = $detailAdditional['Testbestellung'] ?? null;
+                $candidates[] = $detailAdditional['testbestellung'] ?? null;
+                $candidates[] = $detailAdditional['isTestOrder'] ?? null;
+            }
+        }
+
+        foreach ($candidates as $candidate) {
+            if ($this->toBool($candidate)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    private function toBool(mixed $value): bool
+    {
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        if (is_int($value) || is_float($value)) {
+            return (int) $value === 1;
+        }
+
+        if (!is_string($value)) {
+            return false;
+        }
+
+        return in_array(mb_strtolower(trim($value)), ['1', 'true', 'yes', 'ja', 'y', 'x'], true);
+    }
+
+    private function markExistingOrderAsTest(string $externalId, array $payload, Context $context): void
+    {
+        $paketNumber = (string) ($payload['paketNumber'] ?? $payload['packageNumber'] ?? $payload['orderNumber'] ?? $externalId);
+        $paketId = $this->findPaketIdByExternalOrderId($externalId, $context)
+            ?? $this->findPaketIdByNumber($paketNumber, $context);
+
+        if ($paketId === null) {
+            return;
+        }
+
+        $this->paketRepository->upsert([
+            [
+                'id' => $paketId,
+                'isTestOrder' => true,
+                'lastChangedBy' => 'sync',
+                'lastChangedAt' => date(DATE_ATOM),
+            ],
+        ], $context);
     }
 
     /** @param array<string,mixed> $order */

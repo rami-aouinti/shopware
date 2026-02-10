@@ -35,6 +35,8 @@ class PaketEntity extends Entity
 
     protected ?string $syncBadge = null;
 
+    protected ?bool $isTestOrder = null;
+
     /** @var array<int, array<string, mixed>>|null */
     protected ?array $statusPushQueue = null;
 
@@ -170,6 +172,17 @@ class PaketEntity extends Entity
         return $this->syncBadge;
     }
 
+
+
+    public function getIsTestOrder(): ?bool
+    {
+        return $this->isTestOrder;
+    }
+
+    public function setIsTestOrder(?bool $isTestOrder): void
+    {
+        $this->isTestOrder = $isTestOrder;
+    }
 
     /** @return array<int, array<string, mixed>>|null */
     public function getStatusPushQueue(): ?array
