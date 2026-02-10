@@ -15,6 +15,7 @@ class LieferzeitenPositionWriteService
         private readonly Connection $connection,
         private readonly EntityRepository $lieferterminLieferantHistoryRepository,
         private readonly EntityRepository $neuerLieferterminHistoryRepository,
+        private readonly LieferzeitenTaskService $taskService,
     ) {
     }
 
@@ -123,6 +124,19 @@ class LieferzeitenPositionWriteService
                 'lastChangedAt' => $changedAt,
             ],
         ], $context);
+
+        $this->taskService->createTask(
+            [
+                'taskType' => 'additional-delivery-request',
+                'positionId' => $positionId,
+                'createdBy' => $actor,
+                'createdAt' => $changedAt->format(DATE_ATOM),
+            ],
+            $initiator,
+            null,
+            null,
+            $context,
+        );
     }
 
     private function touchPosition(string $positionId, string $actor, \DateTimeImmutable $changedAt, Context $context): void

@@ -7,7 +7,6 @@ use LieferzeitenAdmin\Entity\TaskAssignmentRuleEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
@@ -17,8 +16,7 @@ class ShippingDateOverdueTaskService
     public function __construct(
         private readonly EntityRepository $positionRepository,
         private readonly EntityRepository $taskAssignmentRuleRepository,
-        private readonly EntityRepository $notificationEventRepository,
-        private readonly NotificationEventService $notificationEventService,
+        private readonly EntityRepository $taskRepository,
     ) {
     }
 
@@ -48,33 +46,27 @@ class ShippingDateOverdueTaskService
                 continue;
             }
 
-            $eventKey = sprintf('task:%s:%s', $trigger, $position->getUniqueIdentifier());
-
             $rule = $this->resolveAssignmentRule($trigger, $context);
-            $dueDate = $this->nextBusinessDay($now)->format('Y-m-d');
+            $dueDate = $this->nextBusinessDay($now);
 
-            $payload = [
-                'taskType' => 'shipping-date-overdue',
-                'positionId' => $position->getUniqueIdentifier(),
-                'positionNumber' => $position->getPositionNumber(),
-                'articleNumber' => $position->getArticleNumber(),
-                'externalOrderId' => $paket->getExternalOrderId(),
-                'trigger' => $trigger,
+            $this->taskRepository->create([[
+                'id' => \Shopware\Core\Framework\Uuid\Uuid::randomHex(),
+                'status' => 'open',
+                'assignee' => is_array($rule) ? ($rule['assigneeIdentifier'] ?? null) : null,
                 'dueDate' => $dueDate,
-                'assignment' => $rule,
-            ];
-
-            foreach (NotificationTriggerCatalog::channels() as $channel) {
-                $this->notificationEventService->dispatch(
-                    $eventKey . ':' . $channel,
-                    $trigger,
-                    $channel,
-                    $payload,
-                    $context,
-                    $paket->getExternalOrderId(),
-                    $paket->getSourceSystem(),
-                );
-            }
+                'initiator' => 'system',
+                'payload' => [
+                    'taskType' => 'shipping-date-overdue',
+                    'positionId' => $position->getUniqueIdentifier(),
+                    'positionNumber' => $position->getPositionNumber(),
+                    'articleNumber' => $position->getArticleNumber(),
+                    'externalOrderId' => $paket->getExternalOrderId(),
+                    'sourceSystem' => $paket->getSourceSystem(),
+                    'trigger' => $trigger,
+                    'dueDate' => $dueDate->format('Y-m-d'),
+                    'assignment' => $rule,
+                ],
+            ]], $context);
         }
     }
 
@@ -82,11 +74,11 @@ class ShippingDateOverdueTaskService
     {
         $criteria = new Criteria();
         $criteria->setLimit(1);
-        $criteria->addFilter(new EqualsFilter('triggerKey', $trigger));
         $criteria->addFilter(new EqualsFilter('payload.positionId', $positionId));
-        $criteria->addFilter(new EqualsAnyFilter('status', ['queued', 'pending', 'processing', 'open', 'active']));
+        $criteria->addFilter(new EqualsFilter('payload.trigger', $trigger));
+        $criteria->addFilter(new EqualsFilter('closedAt', null));
 
-        return $this->notificationEventRepository->search($criteria, $context)->first() !== null;
+        return $this->taskRepository->search($criteria, $context)->first() !== null;
     }
 
     /**
