@@ -33,8 +33,8 @@ class LieferzeitenOrdersService extends ApiService {
         return this.post(`position/${positionId}/neuer-liefertermin`, payload);
     }
 
-    async updateComment(positionId, comment) {
-        return this.post(`position/${positionId}/comment`, { comment });
+    async updateComment(positionId, payload) {
+        return this.post(`position/${positionId}/comment`, payload);
     }
 
     async createAdditionalDeliveryRequest(positionId, initiator) {
