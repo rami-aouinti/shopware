@@ -17,6 +17,9 @@
         <service id="LieferzeitenAdmin\Entity\NotificationEventDefinition">
             <tag name="shopware.entity.definition"/>
         </service>
+        <service id="LieferzeitenAdmin\Entity\NotificationTemplateDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
         <service id="LieferzeitenAdmin\Entity\LieferzeitenTaskDefinition">
             <tag name="shopware.entity.definition"/>
         </service>
@@ -102,6 +105,13 @@
         <service id="LieferzeitenAdmin\Service\Notification\NotificationEventService">
             <argument type="service" id="lieferzeiten_notification_event.repository" />
         </service>
+        <service id="LieferzeitenAdmin\Service\Notification\NotificationTemplateResolver">
+            <argument type="service" id="lieferzeiten_notification_template.repository" />
+        </service>
+        <service id="LieferzeitenAdmin\Service\Notification\QueuedNotificationEmailProcessor">
+            <argument type="service" id="lieferzeiten_notification_event.repository" />
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+        </service>
         <service id="LieferzeitenAdmin\Service\Notification\VorkassePaymentReminderService">
             <argument type="service" id="lieferzeiten_paket.repository" />
         </service>
@@ -122,6 +132,12 @@
             <tag name="shopware.scheduled.task" />
         </service>
         <service id="LieferzeitenAdmin\ScheduledTask\VorkassePaymentReminderTaskHandler">
+            <tag name="messenger.message_handler" />
+        </service>
+        <service id="LieferzeitenAdmin\ScheduledTask\NotificationDispatchTask">
+            <tag name="shopware.scheduled.task" />
+        </service>
+        <service id="LieferzeitenAdmin\ScheduledTask\NotificationDispatchTaskHandler">
             <tag name="messenger.message_handler" />
         </service>
         <service id="LieferzeitenAdmin\ScheduledTask\ShippingDateOverdueTask">
