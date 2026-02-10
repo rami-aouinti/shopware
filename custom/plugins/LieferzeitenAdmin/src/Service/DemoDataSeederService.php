@@ -15,6 +15,36 @@ class DemoDataSeederService
     {
     }
 
+
+    public function hasDemoData(): bool
+    {
+        $result = $this->connection->fetchOne(
+            'SELECT 1 FROM `lieferzeiten_paket` WHERE external_order_id LIKE :prefix LIMIT 1',
+            ['prefix' => self::ORDER_PREFIX . '%'],
+        );
+
+        return $result !== false;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function removeDemoData(Context $context): array
+    {
+        $deleted = [];
+
+        $this->connection->transactional(function () use (&$deleted): void {
+            $deleted = $this->cleanup();
+        });
+
+        return [
+            'status' => 'ok',
+            'deleted' => $deleted,
+            'created' => [],
+            'message' => 'Demo data removed successfully.',
+        ];
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -24,7 +54,10 @@ class DemoDataSeederService
         $deleted = [];
 
         $this->connection->transactional(function () use ($reset, &$created, &$deleted): void {
-            $deleted = $this->cleanup();
+            if ($reset) {
+                $deleted = $this->cleanup();
+            }
+
             $created = $this->insertDemoData();
         });
 

@@ -1,8 +1,8 @@
 const { Component, Mixin } = Shopware;
 
-Component.register('external-orders-testdata-button', {
+Component.register('lieferzeiten-demo-data-button', {
     template: `
-        <div class="external-orders-testdata-button">
+        <div class="lieferzeiten-demo-data-button">
             <label class="sw-field__label" v-if="label">{{ label }}</label>
             <sw-button
                 variant="primary"
@@ -18,7 +18,7 @@ Component.register('external-orders-testdata-button', {
         </div>
     `,
 
-    inject: ['externalOrderService'],
+    inject: ['lieferzeitenOrdersService'],
 
     mixins: [
         Mixin.getByName('notification'),
@@ -60,7 +60,7 @@ Component.register('external-orders-testdata-button', {
             this.isLoading = true;
 
             try {
-                const response = await this.externalOrderService.getTestDataStatus();
+                const response = await this.lieferzeitenOrdersService.getDemoDataStatus();
                 this.hasDemoData = Boolean(response?.hasDemoData);
             } catch (error) {
                 this.createNotificationError({
@@ -80,32 +80,36 @@ Component.register('external-orders-testdata-button', {
             this.isLoading = true;
 
             try {
-                const response = await this.externalOrderService.toggleTestData();
+                const response = await this.lieferzeitenOrdersService.toggleDemoData();
                 this.hasDemoData = Boolean(response?.hasDemoData);
 
                 if (response?.action === 'removed') {
-                    const removed = response?.removed ?? 0;
+                    const removed = response?.deleted || {};
+                    const totalRemoved = Object.values(removed).reduce((sum, value) => sum + Number(value || 0), 0);
+
                     this.createNotificationSuccess({
                         title: 'Demo-Daten entfernt',
-                        message: removed > 0
-                            ? `${removed} Demo-Bestellungen wurden entfernt.`
-                            : 'Keine Demo-Bestellungen waren vorhanden.',
+                        message: totalRemoved > 0
+                            ? `${totalRemoved} Demo-Datensätze wurden entfernt.`
+                            : 'Keine Demo-Daten waren vorhanden.',
                     });
 
                     return;
                 }
 
-                const inserted = response?.inserted ?? 0;
+                const created = response?.created || {};
+                const totalCreated = Object.values(created).reduce((sum, value) => sum + Number(value || 0), 0);
+
                 this.createNotificationSuccess({
                     title: 'Demo-Daten gespeichert',
-                    message: inserted > 0
-                        ? `Es wurden ${inserted} Demo-Bestellungen gespeichert.`
-                        : 'Keine neuen Demo-Bestellungen wurden gespeichert.',
+                    message: totalCreated > 0
+                        ? `${totalCreated} Demo-Datensätze wurden gespeichert.`
+                        : 'Keine neuen Demo-Datensätze wurden gespeichert.',
                 });
             } catch (error) {
                 this.createNotificationError({
                     title: 'Demo-Daten',
-                    message: error?.message || 'Aktion konnte nicht ausgeführt werden.',
+                    message: error?.response?.data?.message || error?.message || 'Aktion konnte nicht ausgeführt werden.',
                 });
             } finally {
                 this.isLoading = false;

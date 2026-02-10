@@ -19,6 +19,7 @@ Component.register('lieferzeiten-channel-settings-list', {
             page: 1,
             limit: 25,
             isSeedingDemoData: false,
+            hasDemoData: false,
         };
     },
 
@@ -41,6 +42,7 @@ Component.register('lieferzeiten-channel-settings-list', {
     created() {
         this.repository = this.repositoryFactory.create('lieferzeiten_channel_settings');
         this.getList();
+        this.loadDemoDataStatus();
     },
 
     methods: {
@@ -58,7 +60,16 @@ Component.register('lieferzeiten-channel-settings-list', {
             });
         },
 
-        async onSeedDemoData(reset = false) {
+        async loadDemoDataStatus() {
+            try {
+                const response = await this.lieferzeitenOrdersService.getDemoDataStatus();
+                this.hasDemoData = Boolean(response?.hasDemoData);
+            } catch (error) {
+                this.notifyRequestError(error, 'DemoDaten');
+            }
+        },
+
+        async onToggleDemoData() {
             if (!this.hasEditAccess) {
                 return;
             }
@@ -66,7 +77,20 @@ Component.register('lieferzeiten-channel-settings-list', {
             this.isSeedingDemoData = true;
 
             try {
-                const response = await this.lieferzeitenOrdersService.seedDemoData(reset);
+                const response = await this.lieferzeitenOrdersService.toggleDemoData();
+                this.hasDemoData = Boolean(response?.hasDemoData);
+
+                if (response?.action === 'removed') {
+                    const deleted = response?.deleted || {};
+                    const totalDeleted = Object.values(deleted).reduce((sum, value) => sum + Number(value || 0), 0);
+                    this.createNotificationSuccess({
+                        title: 'DemoDaten',
+                        message: totalDeleted > 0 ? `Entfernt (${totalDeleted} Datensätze).` : 'Keine Demo-Daten vorhanden.',
+                    });
+
+                    return;
+                }
+
                 const created = response?.created || {};
                 const totalCreated = Object.values(created).reduce((sum, value) => sum + Number(value || 0), 0);
 
@@ -75,7 +99,7 @@ Component.register('lieferzeiten-channel-settings-list', {
                     message: `Erfolgreich generiert (${totalCreated} Datensätze).`,
                 });
             } catch (error) {
-                const message = error?.response?.data?.message || error?.message || 'DemoDaten konnten nicht erzeugt werden.';
+                const message = error?.response?.data?.message || error?.message || 'DemoDaten konnten nicht verarbeitet werden.';
                 this.createNotificationError({
                     title: 'DemoDaten',
                     message,

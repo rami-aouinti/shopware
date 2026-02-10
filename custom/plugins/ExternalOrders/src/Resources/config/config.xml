@@ -47,8 +47,8 @@
             <name>seedTestData</name>
             <label lang="en-GB">Test data</label>
             <label lang="de-DE">Testdaten</label>
-            <helpText lang="en-GB">Store the demo orders from FakeExternalOrderProvider once in the database.</helpText>
-            <helpText lang="de-DE">Speichert die Demo-Bestellungen aus dem FakeExternalOrderProvider einmalig in der Datenbank.</helpText>
+            <helpText lang="en-GB">Stores demo orders if none exists, otherwise removes existing demo data from the database.</helpText>
+            <helpText lang="de-DE">Speichert Demo-Bestellungen, wenn keine vorhanden sind, oder entfernt vorhandene Demo-Daten aus der Datenbank.</helpText>
         </component>
 
     </card>

@@ -26,6 +26,23 @@ class LieferzeitenOrdersService extends ApiService {
     }
 
 
+
+    async getDemoDataStatus() {
+        const response = await this.httpClient.get('/api/_action/lieferzeiten/demo-data/status', {
+            headers: this.getBasicHeaders(),
+        });
+
+        return ApiService.handleResponse(response) ?? response?.data ?? {};
+    }
+
+    async toggleDemoData() {
+        const response = await this.httpClient.post('/api/_action/lieferzeiten/demo-data/toggle', {}, {
+            headers: this.getBasicHeaders(),
+        });
+
+        return ApiService.handleResponse(response) ?? response?.data ?? {};
+    }
+
     async seedDemoData(reset = false) {
         const response = await this.httpClient.post('/api/_action/lieferzeiten/demo-data', { reset }, {
             headers: this.getBasicHeaders(),
