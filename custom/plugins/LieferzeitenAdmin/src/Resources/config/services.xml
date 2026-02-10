@@ -63,6 +63,7 @@
         <service id="LieferzeitenAdmin\Service\BaseDateResolver" />
         <service id="LieferzeitenAdmin\Service\ChannelDateSettingsProvider" />
         <service id="LieferzeitenAdmin\Service\BusinessDayDeliveryDateCalculator" />
+        <service id="LieferzeitenAdmin\Service\Status8TrackingMappingProvider" />
         <service id="LieferzeitenAdmin\Service\PaketDeliveryDateRecalculationService">
             <argument type="service" id="lieferzeiten_paket.repository" />
         </service>

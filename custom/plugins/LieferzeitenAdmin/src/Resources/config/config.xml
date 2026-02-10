@@ -80,6 +80,16 @@
             <defaultValue>{"workingDays":2,"cutoff":"14:00"}</defaultValue>
         </input-field>
 
+
+        <input-field type="text">
+            <name>status8CarrierMapping</name>
+            <label lang="en-GB">Status 8 carrier mapping override (JSON)</label>
+            <label lang="de-DE">Status-8-Carrier-Mapping Override (JSON)</label>
+            <helpText lang="en-GB">Versioned override schema: {"version":2,"global":{"state":true},"carriers":{"dhl":{"state":false},"gls":{"state":true}}}</helpText>
+            <helpText lang="de-DE">Versioniertes Override-Schema: {"version":2,"global":{"state":true},"carriers":{"dhl":{"state":false},"gls":{"state":true}}}</helpText>
+            <defaultValue>{"version":1,"global":{},"carriers":{}}</defaultValue>
+        </input-field>
+
         <input-field type="text">
             <name>san6ApiUrl</name>
             <label lang="en-GB">San6 API URL</label>
