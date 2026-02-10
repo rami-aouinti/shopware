@@ -1,23 +1,41 @@
 const { Component, Mixin } = Shopware;
 
+import './external-orders-channel-config.scss';
+import channelIllustration from './images/external-orders-hero.svg';
+
 Component.register('external-orders-channel-config', {
     template: `
         <div class="external-orders-channel-config">
-            <label class="sw-field__label" v-if="label">{{ label }}</label>
+            <div class="external-orders-channel-config__header">
+                <div>
+                    <label class="sw-field__label" v-if="label">{{ label }}</label>
+                    <h3 class="external-orders-channel-config__headline">External Orders Hub</h3>
+                    <p class="external-orders-channel-config__subtitle">
+                        Verwalte alle Zugangsdaten zentral und starte den Sync mit einem Klick.
+                    </p>
+                </div>
+                <img
+                    class="external-orders-channel-config__hero-image"
+                    :src="channelIllustration"
+                    alt="External orders"
+                />
+            </div>
 
-            <div class="external-orders-channel-config__grid">
-                <button
-                    v-for="channel in channels"
-                    :key="channel.id"
-                    type="button"
-                    class="external-orders-channel-config__item"
-                    @click="openChannelModal(channel)"
-                >
-                    <span class="external-orders-channel-config__logo">
-                        <img :src="channel.logo" :alt="channel.label" />
-                    </span>
-                    <span class="external-orders-channel-config__title">{{ channel.label }}</span>
-                </button>
+            <div class="external-orders-channel-config__panel">
+                <div class="external-orders-channel-config__grid">
+                    <button
+                        v-for="channel in channels"
+                        :key="channel.id"
+                        type="button"
+                        class="external-orders-channel-config__item"
+                        @click="openChannelModal(channel)"
+                    >
+                        <span class="external-orders-channel-config__logo">
+                            <img :src="channel.logo" :alt="channel.label" />
+                        </span>
+                        <span class="external-orders-channel-config__title">{{ channel.label }}</span>
+                    </button>
+                </div>
             </div>
 
             <div class="external-orders-channel-config__cron">
@@ -72,6 +90,7 @@ Component.register('external-orders-channel-config', {
 
     data() {
         return {
+            channelIllustration,
             showModal: false,
             selectedChannel: null,
             isSaving: false,

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 280" role="img" aria-labelledby="title desc">
+  <title id="title">External Orders Illustration</title>
+  <desc id="desc">Stylized package and global channels for external order sync.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e9f2ff"/>
+      <stop offset="100%" stop-color="#d7e7ff"/>
+    </linearGradient>
+    <linearGradient id="box" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4f8cff"/>
+      <stop offset="100%" stop-color="#2c62d6"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="10" y="10" width="400" height="260" rx="24" fill="url(#bg)"/>
+  <circle cx="75" cy="65" r="26" fill="#fff" opacity=".9"/>
+  <circle cx="350" cy="210" r="18" fill="#fff" opacity=".75"/>
+
+  <g transform="translate(100 70)">
+    <rect x="60" y="25" width="120" height="110" rx="12" fill="url(#box)"/>
+    <path d="M60 62l60-35 60 35" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M120 27v108" fill="none" stroke="#fff" stroke-width="7"/>
+    <circle cx="30" cy="80" r="18" fill="#28c76f"/>
+    <circle cx="210" cy="80" r="18" fill="#ff9f43"/>
+    <circle cx="120" cy="160" r="20" fill="#7367f0"/>
+
+    <path d="M48 80h36M192 80h-36M120 140v-28" stroke="#5a6b82" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <text x="210" y="245" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#1f3b73" font-weight="700">
+    External Orders
+  </text>
+</svg>
