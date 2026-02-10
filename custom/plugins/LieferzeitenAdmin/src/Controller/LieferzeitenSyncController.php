@@ -6,6 +6,7 @@ use LieferzeitenAdmin\Service\Audit\AuditLogService;
 use LieferzeitenAdmin\Service\LieferzeitenImportService;
 use LieferzeitenAdmin\Service\LieferzeitenOrderOverviewService;
 use LieferzeitenAdmin\Service\LieferzeitenPositionWriteService;
+use LieferzeitenAdmin\Service\LieferzeitenTaskService;
 use LieferzeitenAdmin\Service\Tracking\TrackingHistoryService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -25,8 +26,69 @@ class LieferzeitenSyncController extends AbstractController
         private readonly TrackingHistoryService $trackingHistoryService,
         private readonly LieferzeitenOrderOverviewService $orderOverviewService,
         private readonly LieferzeitenPositionWriteService $positionWriteService,
+        private readonly LieferzeitenTaskService $taskService,
         private readonly AuditLogService $auditLogService,
     ) {
+    }
+
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/tasks',
+        name: 'api.admin.lieferzeiten.tasks.list',
+        defaults: ['_acl' => ['lieferzeiten.viewer']],
+        methods: [Request::METHOD_GET]
+    )]
+    public function listTasks(Request $request, Context $context): JsonResponse
+    {
+        $data = $this->taskService->listTasks(
+            $context,
+            $request->query->get('status') ? (string) $request->query->get('status') : null,
+            $request->query->get('assignee') ? (string) $request->query->get('assignee') : null,
+            (int) $request->query->get('page', 1),
+            (int) $request->query->get('limit', 25),
+        );
+
+        return new JsonResponse($data);
+    }
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/tasks/{taskId}/assign',
+        name: 'api.admin.lieferzeiten.tasks.assign',
+        defaults: ['_acl' => ['lieferzeiten.editor']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function assignTask(string $taskId, Request $request, Context $context): JsonResponse
+    {
+        if (!Uuid::isValid($taskId)) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Invalid task id'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $payload = $request->toArray();
+        $assignee = trim((string) ($payload['assignee'] ?? ''));
+        if ($assignee === '') {
+            return new JsonResponse(['status' => 'error', 'message' => 'assignee is required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->taskService->assignTask($taskId, $assignee, $context);
+
+        return new JsonResponse(['status' => 'ok']);
+    }
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/tasks/{taskId}/close',
+        name: 'api.admin.lieferzeiten.tasks.close',
+        defaults: ['_acl' => ['lieferzeiten.editor']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function closeTask(string $taskId, Context $context): JsonResponse
+    {
+        if (!Uuid::isValid($taskId)) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Invalid task id'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->taskService->closeTask($taskId, $context);
+
+        return new JsonResponse(['status' => 'ok']);
     }
 
     #[Route(
