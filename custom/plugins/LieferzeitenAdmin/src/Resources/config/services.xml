@@ -71,6 +71,7 @@
 
         <service id="LieferzeitenAdmin\Service\LieferzeitenPositionWriteService">
             <argument type="service" id="lieferzeiten_position.repository" />
+            <argument type="service" id="Doctrine\DBAL\Connection" />
             <argument type="service" id="lieferzeiten_liefertermin_lieferant_history.repository" />
             <argument type="service" id="lieferzeiten_neuer_liefertermin_history.repository" />
         </service>

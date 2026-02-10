@@ -11,6 +11,10 @@ class LieferterminLieferantHistoryEntity extends Entity
 
     protected ?string $positionId = null;
 
+    protected ?\DateTimeInterface $lieferterminFrom = null;
+
+    protected ?\DateTimeInterface $lieferterminTo = null;
+
     protected ?\DateTimeInterface $liefertermin = null;
 
     protected ?string $lastChangedBy = null;
@@ -27,6 +31,26 @@ class LieferterminLieferantHistoryEntity extends Entity
     public function setPositionId(?string $positionId): void
     {
         $this->positionId = $positionId;
+    }
+
+    public function getLieferterminFrom(): ?\DateTimeInterface
+    {
+        return $this->lieferterminFrom;
+    }
+
+    public function setLieferterminFrom(?\DateTimeInterface $lieferterminFrom): void
+    {
+        $this->lieferterminFrom = $lieferterminFrom;
+    }
+
+    public function getLieferterminTo(): ?\DateTimeInterface
+    {
+        return $this->lieferterminTo;
+    }
+
+    public function setLieferterminTo(?\DateTimeInterface $lieferterminTo): void
+    {
+        $this->lieferterminTo = $lieferterminTo;
     }
 
     public function getLiefertermin(): ?\DateTimeInterface

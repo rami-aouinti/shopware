@@ -61,10 +61,15 @@ Shopware.Component.register('lieferzeiten-order-table', {
 
         getEditableOrder(order) {
             if (!this.editableOrders[order.id]) {
+                const supplierRange = this.resolveInitialRange(order, 'lieferterminLieferant', 14);
+                const newRange = this.resolveInitialRange(order, 'neuerLiefertermin', 4);
+
                 this.$set(this.editableOrders, order.id, {
                     ...order,
-                    originalLieferterminLieferantDays: order.lieferterminLieferantDays,
-                    originalNeuerLieferterminDays: order.neuerLieferterminDays,
+                    lieferterminLieferantRange: supplierRange,
+                    neuerLieferterminRange: newRange,
+                    originalLieferterminLieferantRange: { ...supplierRange },
+                    originalNeuerLieferterminRange: { ...newRange },
                     additionalDeliveryRequest: order.additionalDeliveryRequest || null,
                 });
             }
@@ -72,6 +77,47 @@ Shopware.Component.register('lieferzeiten-order-table', {
             this.notifyInitiatorIfClosed(this.editableOrders[order.id]);
 
             return this.editableOrders[order.id];
+        },
+
+        resolveInitialRange(order, fieldPrefix, fallbackMaxDays) {
+            const from = this.normalizeDate(order[`${fieldPrefix}From`]);
+            const to = this.normalizeDate(order[`${fieldPrefix}To`] || order[fieldPrefix]);
+
+            if (from && to) {
+                return { from, to };
+            }
+
+            const fallbackDays = Number(order[`${fieldPrefix}Days`]);
+            if (Number.isInteger(fallbackDays) && fallbackDays >= 1 && fallbackDays <= fallbackMaxDays) {
+                return this.buildRangeFromDayOffset(fallbackDays);
+            }
+
+            return { from: null, to: null };
+        },
+
+        normalizeDate(value) {
+            if (!value) {
+                return null;
+            }
+
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) {
+                return null;
+            }
+
+            return date.toISOString().slice(0, 10);
+        },
+
+        buildRangeFromDayOffset(days) {
+            const fromDate = new Date();
+            fromDate.setDate(fromDate.getDate() + 1);
+            const toDate = new Date();
+            toDate.setDate(toDate.getDate() + days);
+
+            return {
+                from: fromDate.toISOString().slice(0, 10),
+                to: toDate.toISOString().slice(0, 10),
+            };
         },
 
         toggleOrder(orderId) {
@@ -155,22 +201,65 @@ Shopware.Component.register('lieferzeiten-order-table', {
             return labels[order.versandart] || this.$t('lieferzeiten.shipping.unclear');
         },
 
+        rangeToDays(range) {
+            if (!range?.from || !range?.to) {
+                return null;
+            }
+
+            const from = new Date(range.from);
+            const to = new Date(range.to);
+            if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) {
+                return null;
+            }
+
+            return Math.floor((to.getTime() - from.getTime()) / 86400000) + 1;
+        },
+
+        isRangeValid(range, minDays, maxDays) {
+            const days = this.rangeToDays(range);
+            return Number.isInteger(days) && days >= minDays && days <= maxDays;
+        },
+
+        isRangeChanged(range, originalRange) {
+            return (range?.from || null) !== (originalRange?.from || null)
+                || (range?.to || null) !== (originalRange?.to || null);
+        },
+
         canSaveLiefertermin(order) {
-            const value = Number(order.lieferterminLieferantDays);
-            return Number.isInteger(value) && value >= 1 && value <= 14 && value !== order.originalLieferterminLieferantDays;
+            return this.isRangeValid(order.lieferterminLieferantRange, 1, 14)
+                && this.isRangeChanged(order.lieferterminLieferantRange, order.originalLieferterminLieferantRange);
         },
 
         canSaveNeuerLiefertermin(order) {
-            const parentValue = Number(order.lieferterminLieferantDays);
-            const value = Number(order.neuerLieferterminDays);
+            const supplierRange = order.lieferterminLieferantRange;
+            const newRange = order.neuerLieferterminRange;
 
-            return Number.isInteger(parentValue)
-                && parentValue >= 1
-                && parentValue <= 14
-                && Number.isInteger(value)
-                && value >= 1
-                && value <= 4
-                && value !== order.originalNeuerLieferterminDays;
+            if (!this.isRangeValid(supplierRange, 1, 14)
+                || !this.isRangeValid(newRange, 1, 4)
+                || !this.isRangeChanged(newRange, order.originalNeuerLieferterminRange)) {
+                return false;
+            }
+
+            return newRange.from >= supplierRange.from && newRange.to <= supplierRange.to;
+        },
+
+        weekLabelFromDate(dateValue) {
+            if (!dateValue) {
+                return '-';
+            }
+
+            const base = new Date(dateValue);
+            if (Number.isNaN(base.getTime())) {
+                return '-';
+            }
+
+            const date = new Date(Date.UTC(base.getFullYear(), base.getMonth(), base.getDate()));
+            const dayNum = date.getUTCDay() || 7;
+            date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+            const week = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+
+            return `KW ${week}`;
         },
 
         async saveLiefertermin(order) {
@@ -184,10 +273,11 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 return;
             }
 
-            const value = Number(order.lieferterminLieferantDays);
-
             try {
-                await this.lieferzeitenOrdersService.updateLieferterminLieferant(positionId, value);
+                await this.lieferzeitenOrdersService.updateLieferterminLieferant(positionId, {
+                    from: order.lieferterminLieferantRange.from,
+                    to: order.lieferterminLieferantRange.to,
+                });
                 this.createNotificationSuccess({ title: this.$t('global.default.success'), message: this.$t('lieferzeiten.audit.savedSupplierDate') });
                 await this.reloadOrder(order);
             } catch (error) {
@@ -209,10 +299,11 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 return;
             }
 
-            const value = Number(order.neuerLieferterminDays);
-
             try {
-                await this.lieferzeitenOrdersService.updateNeuerLiefertermin(positionId, value);
+                await this.lieferzeitenOrdersService.updateNeuerLiefertermin(positionId, {
+                    from: order.neuerLieferterminRange.from,
+                    to: order.neuerLieferterminRange.to,
+                });
                 this.createNotificationSuccess({ title: this.$t('global.default.success'), message: this.$t('lieferzeiten.audit.savedNewDate') });
                 await this.reloadOrder(order);
             } catch (error) {
@@ -307,19 +398,6 @@ Shopware.Component.register('lieferzeiten-order-table', {
             }
 
             this.updateAudit(order, this.$t('lieferzeiten.audit.savedComment'));
-        },
-
-        toWeekLabel(days) {
-            const base = new Date();
-            base.setDate(base.getDate() + days);
-
-            const date = new Date(Date.UTC(base.getFullYear(), base.getMonth(), base.getDate()));
-            const dayNum = date.getUTCDay() || 7;
-            date.setUTCDate(date.getUTCDate() + 4 - dayNum);
-            const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-            const week = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
-
-            return `KW ${week}`;
         },
     },
 });

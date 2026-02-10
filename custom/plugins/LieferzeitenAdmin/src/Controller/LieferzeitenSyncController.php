@@ -119,13 +119,21 @@ class LieferzeitenSyncController extends AbstractController
         }
 
         $payload = $request->toArray();
-        $days = (int) ($payload['days'] ?? 0);
-        if ($days < 1 || $days > 14) {
-            return new JsonResponse(['status' => 'error', 'message' => 'days must be between 1 and 14'], Response::HTTP_BAD_REQUEST);
+        $range = $this->extractDateRange($payload);
+        if ($range === null) {
+            return new JsonResponse(['status' => 'error', 'message' => 'from/to are required date values'], Response::HTTP_BAD_REQUEST);
         }
 
-        $this->positionWriteService->updateLieferterminLieferant($positionId, $days, $context);
-        $this->auditLogService->log('liefertermin_lieferant_updated', 'lieferzeiten_position', $positionId, $context, ['days' => $days], 'shopware');
+        $validationError = $this->validateRange($range['from'], $range['to'], 1, 14);
+        if ($validationError !== null) {
+            return $validationError;
+        }
+
+        $this->positionWriteService->updateLieferterminLieferant($positionId, $range['from'], $range['to'], $context);
+        $this->auditLogService->log('liefertermin_lieferant_updated', 'lieferzeiten_position', $positionId, $context, [
+            'from' => $range['from']->format('Y-m-d'),
+            'to' => $range['to']->format('Y-m-d'),
+        ], 'shopware');
 
         return new JsonResponse(['status' => 'ok']);
     }
@@ -144,13 +152,30 @@ class LieferzeitenSyncController extends AbstractController
         }
 
         $payload = $request->toArray();
-        $days = (int) ($payload['days'] ?? 0);
-        if ($days < 1 || $days > 4) {
-            return new JsonResponse(['status' => 'error', 'message' => 'days must be between 1 and 4'], Response::HTTP_BAD_REQUEST);
+        $range = $this->extractDateRange($payload);
+        if ($range === null) {
+            return new JsonResponse(['status' => 'error', 'message' => 'from/to are required date values'], Response::HTTP_BAD_REQUEST);
         }
 
-        $this->positionWriteService->updateNeuerLiefertermin($positionId, $days, $context);
-        $this->auditLogService->log('neuer_liefertermin_updated', 'lieferzeiten_position', $positionId, $context, ['days' => $days], 'shopware');
+        $validationError = $this->validateRange($range['from'], $range['to'], 1, 4);
+        if ($validationError !== null) {
+            return $validationError;
+        }
+
+        $supplierRange = $this->positionWriteService->getLatestLieferterminLieferantRange($positionId);
+        if ($supplierRange === null) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Supplier delivery date range must be saved first'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($range['from'] < $supplierRange['from'] || $range['to'] > $supplierRange['to']) {
+            return new JsonResponse(['status' => 'error', 'message' => 'New delivery date range must be inside supplier delivery range'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->positionWriteService->updateNeuerLiefertermin($positionId, $range['from'], $range['to'], $context);
+        $this->auditLogService->log('neuer_liefertermin_updated', 'lieferzeiten_position', $positionId, $context, [
+            'from' => $range['from']->format('Y-m-d'),
+            'to' => $range['to']->format('Y-m-d'),
+        ], 'shopware');
 
         return new JsonResponse(['status' => 'ok']);
     }
@@ -197,6 +222,50 @@ class LieferzeitenSyncController extends AbstractController
         $this->auditLogService->log('additional_delivery_request_created', 'lieferzeiten_position', $positionId, $context, ['initiator' => $initiator], 'shopware');
 
         return new JsonResponse(['status' => 'ok']);
+    }
+
+
+    /**
+     * @param array<string, mixed> $payload
+     * @return array{from: \DateTimeImmutable, to: \DateTimeImmutable}|null
+     */
+    private function extractDateRange(array $payload): ?array
+    {
+        $fromValue = trim((string) ($payload['from'] ?? ''));
+        $toValue = trim((string) ($payload['to'] ?? ''));
+
+        if ($fromValue === '' || $toValue === '') {
+            return null;
+        }
+
+        try {
+            $from = new \DateTimeImmutable($fromValue . ' 00:00:00');
+            $to = new \DateTimeImmutable($toValue . ' 00:00:00');
+        } catch (\Throwable) {
+            return null;
+        }
+
+        return ['from' => $from, 'to' => $to];
+    }
+
+    private function validateRange(\DateTimeImmutable $from, \DateTimeImmutable $to, int $minDays, int $maxDays): ?JsonResponse
+    {
+        if ($to < $from) {
+            return new JsonResponse(['status' => 'error', 'message' => 'to must be greater than or equal to from'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $now = new \DateTimeImmutable('today');
+        $startDiff = (int) $now->diff($from)->format('%r%a');
+        if ($startDiff < 1) {
+            return new JsonResponse(['status' => 'error', 'message' => 'from must be at least +1 day'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $rangeDays = (int) $from->diff($to)->format('%a') + 1;
+        if ($rangeDays < $minDays || $rangeDays > $maxDays) {
+            return new JsonResponse(['status' => 'error', 'message' => sprintf('range must be between %d and %d days', $minDays, $maxDays)], Response::HTTP_BAD_REQUEST);
+        }
+
+        return null;
     }
 
     private function validatePositionId(string $positionId): ?JsonResponse
