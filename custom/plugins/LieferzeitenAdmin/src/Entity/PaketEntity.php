@@ -31,6 +31,15 @@ class PaketEntity extends Entity
 
     protected ?string $baseDateType = null;
 
+
+    protected ?string $shippingAssignmentType = null;
+
+    protected ?string $partialShipmentQuantity = null;
+
+    protected ?\DateTimeInterface $businessDateFrom = null;
+
+    protected ?\DateTimeInterface $businessDateTo = null;
+
     protected ?\DateTimeInterface $calculatedDeliveryDate = null;
 
     protected ?string $syncBadge = null;
@@ -155,6 +164,47 @@ class PaketEntity extends Entity
     public function setBaseDateType(?string $baseDateType): void
     {
         $this->baseDateType = $baseDateType;
+    }
+
+
+    public function getShippingAssignmentType(): ?string
+    {
+        return $this->shippingAssignmentType;
+    }
+
+    public function setShippingAssignmentType(?string $shippingAssignmentType): void
+    {
+        $this->shippingAssignmentType = $shippingAssignmentType;
+    }
+
+    public function getPartialShipmentQuantity(): ?string
+    {
+        return $this->partialShipmentQuantity;
+    }
+
+    public function setPartialShipmentQuantity(?string $partialShipmentQuantity): void
+    {
+        $this->partialShipmentQuantity = $partialShipmentQuantity;
+    }
+
+    public function getBusinessDateFrom(): ?\DateTimeInterface
+    {
+        return $this->businessDateFrom;
+    }
+
+    public function setBusinessDateFrom(?\DateTimeInterface $businessDateFrom): void
+    {
+        $this->businessDateFrom = $businessDateFrom;
+    }
+
+    public function getBusinessDateTo(): ?\DateTimeInterface
+    {
+        return $this->businessDateTo;
+    }
+
+    public function setBusinessDateTo(?\DateTimeInterface $businessDateTo): void
+    {
+        $this->businessDateTo = $businessDateTo;
     }
 
     public function getCalculatedDeliveryDate(): ?\DateTimeInterface

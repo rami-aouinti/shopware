@@ -18,6 +18,9 @@ readonly class LieferzeitenOrderOverviewService
         'user',
         'sendenummer',
         'status',
+        'shippingAssignmentType',
+        'businessDateFrom',
+        'businessDateTo',
     ];
 
     public function __construct(private Connection $connection)
@@ -69,11 +72,12 @@ readonly class LieferzeitenOrderOverviewService
                 p.delivery_date AS spaeteste_lieferung,
                 p.last_changed_by AS user,
                 p.status AS status,
+                p.shipping_assignment_type AS shipping_assignment_type,
                 MAX(sh.sendenummer) AS sendenummer
              FROM `lieferzeiten_paket` p
              %s
              %s
-             GROUP BY p.id, p.external_order_id, p.paket_number, p.order_date, p.shipping_date, p.delivery_date, p.last_changed_by, p.status
+             GROUP BY p.id, p.external_order_id, p.paket_number, p.order_date, p.shipping_date, p.delivery_date, p.last_changed_by, p.status, p.shipping_assignment_type
              ORDER BY %s %s
              LIMIT :limit OFFSET :offset',
             $joinSql,
@@ -153,6 +157,11 @@ readonly class LieferzeitenOrderOverviewService
             $params['status'] = '%' . $value . '%';
         }
 
+        if (($value = trim((string) ($filters['shippingAssignmentType'] ?? ''))) !== '') {
+            $conditions[] = 'p.shipping_assignment_type = :shippingAssignmentType';
+            $params['shippingAssignmentType'] = $value;
+        }
+
         if (($value = trim((string) ($filters['sendenummer'] ?? ''))) !== '') {
             $joins[] = 'LEFT JOIN `lieferzeiten_position` pos ON pos.paket_id = p.id';
             $joins[] = 'LEFT JOIN `lieferzeiten_sendenummer_history` sh ON sh.position_id = pos.id';
@@ -166,6 +175,7 @@ readonly class LieferzeitenOrderOverviewService
         $this->addDateRangeCondition($conditions, $params, 'p.order_date', 'orderDateFrom', 'orderDateTo', $filters);
         $this->addDateRangeCondition($conditions, $params, 'p.shipping_date', 'shippingDateFrom', 'shippingDateTo', $filters);
         $this->addDateRangeCondition($conditions, $params, 'p.delivery_date', 'deliveryDateFrom', 'deliveryDateTo', $filters);
+        $this->addDateRangeCondition($conditions, $params, 'p.business_date_from', 'businessDateFrom', 'businessDateTo', $filters);
 
         if ($conditions === []) {
             return '';

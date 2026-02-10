@@ -19,6 +19,8 @@ class PositionEntity extends Entity
 
     protected ?string $comment = null;
 
+    protected ?string $currentComment = null;
+
     protected ?\DateTimeInterface $additionalDeliveryRequestAt = null;
 
     protected ?string $additionalDeliveryRequestInitiator = null;
@@ -86,6 +88,17 @@ class PositionEntity extends Entity
     public function setComment(?string $comment): void
     {
         $this->comment = $comment;
+    }
+
+
+    public function getCurrentComment(): ?string
+    {
+        return $this->currentComment;
+    }
+
+    public function setCurrentComment(?string $currentComment): void
+    {
+        $this->currentComment = $currentComment;
     }
 
     public function getAdditionalDeliveryRequestAt(): ?\DateTimeInterface
