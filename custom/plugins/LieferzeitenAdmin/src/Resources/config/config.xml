@@ -65,7 +65,6 @@
             <label lang="de-DE">Shopware Datums-Einstellungen (JSON)</label>
             <helpText lang="en-GB">Format: {"workingDays":2,"cutoff":"14:00"}</helpText>
             <helpText lang="de-DE">Format: {"workingDays":2,"cutoff":"14:00"}</helpText>
-            <defaultValue>{"workingDays":2,"cutoff":"14:00"}</defaultValue>
         </input-field>
 
         <input-field type="text">
@@ -74,7 +73,6 @@
             <label lang="de-DE">Gambio Datums-Einstellungen (JSON)</label>
             <helpText lang="en-GB">Format: {"workingDays":2,"cutoff":"14:00"}</helpText>
             <helpText lang="de-DE">Format: {"workingDays":2,"cutoff":"14:00"}</helpText>
-            <defaultValue>{"workingDays":2,"cutoff":"14:00"}</defaultValue>
         </input-field>
 
 
@@ -84,7 +82,6 @@
             <label lang="de-DE">Status-8-Carrier-Mapping Override (JSON)</label>
             <helpText lang="en-GB">Versioned override schema: {"version":2,"global":{"state":true},"carriers":{"dhl":{"state":false},"gls":{"state":true}}}</helpText>
             <helpText lang="de-DE">Versioniertes Override-Schema: {"version":2,"global":{"state":true},"carriers":{"dhl":{"state":false},"gls":{"state":true}}}</helpText>
-            <defaultValue>{"version":1,"global":{},"carriers":{}}</defaultValue>
         </input-field>
 
         <input-field type="text">
