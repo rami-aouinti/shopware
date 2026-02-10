@@ -26,6 +26,9 @@ class LieferzeitenImportService
         private readonly ChannelOrderAdapterRegistry $adapterRegistry,
         private readonly San6Client $san6Client,
         private readonly San6MatchingService $matchingService,
+        private readonly BaseDateResolver $baseDateResolver,
+        private readonly ChannelDateSettingsProvider $settingsProvider,
+        private readonly BusinessDayDeliveryDateCalculator $deliveryDateCalculator,
         private readonly LockFactory $lockFactory,
         private readonly LoggerInterface $logger,
     ) {
@@ -75,6 +78,21 @@ class LieferzeitenImportService
 
                     $san6 = $this->san6Client->fetchByOrderNumber((string) ($normalized['orderNumber'] ?? $externalId));
                     $matched = $this->matchingService->match($normalized, $san6);
+
+                    $resolution = $this->baseDateResolver->resolve($matched);
+                    $settings = $this->settingsProvider->getForChannel($channel);
+                    $calculatedDeliveryDate = $this->deliveryDateCalculator->calculate($resolution['baseDate'], $settings);
+
+                    $matched['baseDateType'] = $resolution['baseDateType'];
+                    $matched['paymentDate'] = $matched['paymentDate'] ?? null;
+                    $matched['calculatedDeliveryDate'] = $calculatedDeliveryDate?->format(DATE_ATOM);
+
+                    if (($resolution['missingPaymentDate'] ?? false) === true) {
+                        $this->logger->warning('Missing payment date for prepayment order, using order date fallback.', [
+                            'externalOrderId' => $externalId,
+                            'channel' => $channel,
+                        ]);
+                    }
 
                     if (($matched['hasConflict'] ?? false) === true) {
                         $this->logger->warning('Lieferzeiten import conflict detected.', [
@@ -132,7 +150,10 @@ class LieferzeitenImportService
             'sourceSystem' => $payload['sourceSystem'] ?? null,
             'customerEmail' => $payload['customerEmail'] ?? null,
             'paymentMethod' => $payload['paymentMethod'] ?? null,
+            'paymentDate' => $this->parseDate($payload['paymentDate'] ?? null),
             'orderDate' => $this->parseDate($payload['orderDate'] ?? $payload['date'] ?? null),
+            'baseDateType' => $payload['baseDateType'] ?? null,
+            'calculatedDeliveryDate' => $this->parseDate($payload['calculatedDeliveryDate'] ?? null),
             'syncBadge' => $payload['syncBadge'] ?? null,
         ]], $context);
 

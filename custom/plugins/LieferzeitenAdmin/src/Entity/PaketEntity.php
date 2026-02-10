@@ -25,7 +25,13 @@ class PaketEntity extends Entity
 
     protected ?string $paymentMethod = null;
 
+    protected ?\DateTimeInterface $paymentDate = null;
+
     protected ?\DateTimeInterface $orderDate = null;
+
+    protected ?string $baseDateType = null;
+
+    protected ?\DateTimeInterface $calculatedDeliveryDate = null;
 
     protected ?string $syncBadge = null;
 
@@ -124,6 +130,36 @@ class PaketEntity extends Entity
     public function setOrderDate(?\DateTimeInterface $orderDate): void
     {
         $this->orderDate = $orderDate;
+    }
+
+    public function getPaymentDate(): ?\DateTimeInterface
+    {
+        return $this->paymentDate;
+    }
+
+    public function setPaymentDate(?\DateTimeInterface $paymentDate): void
+    {
+        $this->paymentDate = $paymentDate;
+    }
+
+    public function getBaseDateType(): ?string
+    {
+        return $this->baseDateType;
+    }
+
+    public function setBaseDateType(?string $baseDateType): void
+    {
+        $this->baseDateType = $baseDateType;
+    }
+
+    public function getCalculatedDeliveryDate(): ?\DateTimeInterface
+    {
+        return $this->calculatedDeliveryDate;
+    }
+
+    public function setCalculatedDeliveryDate(?\DateTimeInterface $calculatedDeliveryDate): void
+    {
+        $this->calculatedDeliveryDate = $calculatedDeliveryDate;
     }
 
     public function getSyncBadge(): ?string
