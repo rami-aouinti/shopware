@@ -95,6 +95,10 @@
             <argument type="service" id="Doctrine\DBAL\Connection" />
         </service>
 
+        <service id="LieferzeitenAdmin\Service\DemoDataSeederService">
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+        </service>
+
         <service id="LieferzeitenAdmin\Service\Tracking\DhlTrackingClient">
             <tag name="lieferzeiten.tracking_client" />
         </service>

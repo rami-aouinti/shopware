@@ -6,7 +6,9 @@ const { Criteria } = Shopware.Data;
 Component.register('lieferzeiten-channel-settings-list', {
     template,
 
-    inject: ['repositoryFactory'],
+    mixins: ['notification'],
+
+    inject: ['repositoryFactory', 'lieferzeitenOrdersService'],
 
     data() {
         return {
@@ -16,6 +18,7 @@ Component.register('lieferzeiten-channel-settings-list', {
             total: 0,
             page: 1,
             limit: 25,
+            isSeedingDemoData: false,
         };
     },
 
@@ -41,6 +44,33 @@ Component.register('lieferzeiten-channel-settings-list', {
     },
 
     methods: {
+        async onSeedDemoData(reset = false) {
+            if (!this.hasEditAccess) {
+                return;
+            }
+
+            this.isSeedingDemoData = true;
+
+            try {
+                const response = await this.lieferzeitenOrdersService.seedDemoData(reset);
+                const created = response?.created || {};
+                const totalCreated = Object.values(created).reduce((sum, value) => sum + Number(value || 0), 0);
+
+                this.createNotificationSuccess({
+                    title: 'DemoDaten',
+                    message: `Erfolgreich generiert (${totalCreated} Datensätze).`,
+                });
+            } catch (error) {
+                const message = error?.response?.data?.message || error?.message || 'DemoDaten konnten nicht erzeugt werden.';
+                this.createNotificationError({
+                    title: 'DemoDaten',
+                    message,
+                });
+            } finally {
+                this.isSeedingDemoData = false;
+            }
+        },
+
         getList() {
             this.isLoading = true;
             const criteria = new Criteria(this.page, this.limit);

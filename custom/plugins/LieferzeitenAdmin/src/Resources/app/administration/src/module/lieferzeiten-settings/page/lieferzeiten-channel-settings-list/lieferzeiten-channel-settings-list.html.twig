@@ -4,6 +4,8 @@
     </template>
 
     <template #smart-bar-actions>
+        <sw-button v-if="hasEditAccess" :isLoading="isSeedingDemoData" variant="default" @click="onSeedDemoData(false)">DemoDaten</sw-button>
+        <sw-button v-if="hasEditAccess" :isLoading="isSeedingDemoData" variant="danger" @click="onSeedDemoData(true)">Reset DemoDaten</sw-button>
         <sw-button v-if="hasEditAccess" variant="primary" @click="onCreate">Create</sw-button>
     </template>
 
