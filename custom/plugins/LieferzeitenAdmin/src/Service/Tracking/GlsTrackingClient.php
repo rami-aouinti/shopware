@@ -2,13 +2,16 @@
 
 namespace LieferzeitenAdmin\Service\Tracking;
 
+use LieferzeitenAdmin\Service\Reliability\IntegrationReliabilityService;
 use Symfony\Contracts\HttpClient\Exception\TimeoutExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 readonly class GlsTrackingClient implements TrackingClientInterface
 {
-    public function __construct(private HttpClientInterface $httpClient)
-    {
+    public function __construct(
+        private HttpClientInterface $httpClient,
+        private IntegrationReliabilityService $reliabilityService,
+    ) {
     }
 
     public function supportsCarrier(string $carrier): bool
@@ -33,35 +36,37 @@ readonly class GlsTrackingClient implements TrackingClientInterface
         }
 
         try {
-            $response = $this->httpClient->request('GET', rtrim($endpoint, '/') . '/' . urlencode($trackingNumber), ['timeout' => 8.0]);
-            $statusCode = $response->getStatusCode();
+            return $this->reliabilityService->executeWithRetry('gls', 'tracking_history', function () use ($endpoint, $trackingNumber): array {
+                $response = $this->httpClient->request('GET', rtrim($endpoint, '/') . '/' . urlencode($trackingNumber), ['timeout' => 8.0]);
+                $statusCode = $response->getStatusCode();
 
-            if ($statusCode === 429) {
-                throw new TrackingProviderException('rate_limit', 'GLS API Limit erreicht.');
-            }
-            if ($statusCode >= 400) {
-                throw new TrackingProviderException('provider_error', 'GLS Tracking derzeit nicht erreichbar.');
-            }
-
-            $payload = $response->toArray(false);
-            $events = $payload['history'] ?? [];
-
-            if (!is_array($events)) {
-                return [];
-            }
-
-            return array_values(array_filter(array_map(static function ($event): ?array {
-                if (!is_array($event)) {
-                    return null;
+                if ($statusCode === 429) {
+                    throw new TrackingProviderException('rate_limit', 'GLS API Limit erreicht.');
+                }
+                if ($statusCode >= 400) {
+                    throw new TrackingProviderException('provider_error', 'GLS Tracking derzeit nicht erreichbar.');
                 }
 
-                return [
-                    'status' => (string) ($event['code'] ?? $event['status'] ?? ''),
-                    'label' => (string) ($event['text'] ?? $event['label'] ?? ''),
-                    'timestamp' => (string) ($event['dateTime'] ?? $event['timestamp'] ?? ''),
-                    'location' => (string) ($event['city'] ?? $event['location'] ?? ''),
-                ];
-            }, $events)));
+                $payload = $response->toArray(false);
+                $events = $payload['history'] ?? [];
+
+                if (!is_array($events)) {
+                    return [];
+                }
+
+                return array_values(array_filter(array_map(static function ($event): ?array {
+                    if (!is_array($event)) {
+                        return null;
+                    }
+
+                    return [
+                        'status' => (string) ($event['code'] ?? $event['status'] ?? ''),
+                        'label' => (string) ($event['text'] ?? $event['label'] ?? ''),
+                        'timestamp' => (string) ($event['dateTime'] ?? $event['timestamp'] ?? ''),
+                        'location' => (string) ($event['city'] ?? $event['location'] ?? ''),
+                    ];
+                }, $events)));
+            }, maxAttempts: 3, payload: ['trackingNumber' => $trackingNumber]);
         } catch (TimeoutExceptionInterface) {
             throw new TrackingProviderException('timeout', 'Zeitüberschreitung bei GLS Tracking.');
         }

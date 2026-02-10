@@ -42,6 +42,14 @@ Shopware.Component.register('lieferzeiten-order-table', {
     },
 
     methods: {
+
+        hasViewAccess() {
+            return this.acl.can('lieferzeiten.viewer') || this.acl.can('admin');
+        },
+
+        hasEditAccess() {
+            return this.acl.can('lieferzeiten.editor') || this.acl.can('admin');
+        },
         isOrderOpen(order) {
             return order.parcels.some((parcel) => !parcel.closed);
         },
@@ -161,6 +169,9 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         saveLiefertermin(order) {
+            if (!this.hasEditAccess()) {
+                return;
+            }
             if (!this.canSaveLiefertermin(order)) {
                 return;
             }
@@ -174,6 +185,9 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         saveNeuerLiefertermin(order) {
+            if (!this.hasEditAccess()) {
+                return;
+            }
             if (!this.canSaveNeuerLiefertermin(order)) {
                 return;
             }
@@ -186,11 +200,17 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         saveComment(order) {
+            if (!this.hasEditAccess()) {
+                return;
+            }
             this.pushHistory(order, 'commentHistory', order.comment || '-');
             this.updateAudit(order, this.$t('lieferzeiten.audit.savedComment'));
         },
 
         requestAdditionalDeliveryDate(order) {
+            if (!this.hasEditAccess()) {
+                return;
+            }
             const initiator = this.$t('lieferzeiten.additionalRequest.defaultInitiator');
             order.additionalDeliveryRequest = {
                 requestedAt: new Date().toISOString(),

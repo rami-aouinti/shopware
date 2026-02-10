@@ -3,7 +3,9 @@
 namespace LieferzeitenAdmin\Service;
 
 use LieferzeitenAdmin\Entity\PaketEntity;
+use LieferzeitenAdmin\Service\Audit\AuditLogService;
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Reliability\IntegrationReliabilityService;
 use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
 use LieferzeitenAdmin\Sync\Adapter\ChannelOrderAdapterRegistry;
 use LieferzeitenAdmin\Sync\San6\San6Client;
@@ -34,6 +36,8 @@ class LieferzeitenImportService
         private readonly BusinessDayDeliveryDateCalculator $deliveryDateCalculator,
         private readonly LockFactory $lockFactory,
         private readonly NotificationEventService $notificationEventService,
+        private readonly IntegrationReliabilityService $reliabilityService,
+        private readonly AuditLogService $auditLogService,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -61,8 +65,12 @@ class LieferzeitenImportService
                 }
 
                 $token = (string) $this->config->get($keys['token']);
-                $response = $this->httpClient->request('GET', $url, $token !== '' ? ['headers' => ['Authorization' => sprintf('Bearer %s', $token)]] : []);
-                $payload = $response->toArray(false);
+                $payload = $this->reliabilityService->executeWithRetry('shopware', 'import_channel_' . $channel, function () use ($url, $token): array {
+                    $response = $this->httpClient->request('GET', $url, $token !== '' ? ['headers' => ['Authorization' => sprintf('Bearer %s', $token)]] : []);
+                    $data = $response->toArray(false);
+
+                    return is_array($data) ? $data : [];
+                }, $context, payload: ['url' => $url, 'channel' => $channel]);
                 $orders = $payload['orders'] ?? $payload;
 
                 if (!is_array($orders)) {
@@ -134,6 +142,11 @@ class LieferzeitenImportService
 
                     $paketId = $this->upsertPaket($externalId, $matched, $context, $existingPaket);
                     $trackingNumbers = $this->upsertPositionAndTrackingHistory($paketId, $matched, $context);
+                    $this->auditLogService->log('order_synced', 'paket', $paketId, $context, [
+                        'externalOrderId' => $externalId,
+                        'channel' => $channel,
+                        'status' => $mappedStatus,
+                    ], 'shopware');
                     $this->emitNotificationEvents($externalId, $channel, $matched, $trackingNumbers, $existingStatus, $mappedStatus, $context);
                 }
             }

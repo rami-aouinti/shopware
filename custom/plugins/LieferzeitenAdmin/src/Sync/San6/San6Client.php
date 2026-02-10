@@ -2,6 +2,7 @@
 
 namespace LieferzeitenAdmin\Sync\San6;
 
+use LieferzeitenAdmin\Service\Reliability\IntegrationReliabilityService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -10,6 +11,7 @@ class San6Client
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly SystemConfigService $config,
+        private readonly IntegrationReliabilityService $reliabilityService,
     ) {
     }
 
@@ -27,9 +29,11 @@ class San6Client
             $options['headers'] = ['Authorization' => sprintf('Bearer %s', $token)];
         }
 
-        $response = $this->httpClient->request('GET', $url, $options);
-        $data = $response->toArray(false);
+        return $this->reliabilityService->executeWithRetry('san6', 'fetchByOrderNumber', function () use ($url, $options): array {
+            $response = $this->httpClient->request('GET', $url, $options);
+            $data = $response->toArray(false);
 
-        return is_array($data) ? $data : [];
+            return is_array($data) ? $data : [];
+        }, payload: ['query' => ['orderNumber' => $orderNumber]]);
     }
 }

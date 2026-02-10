@@ -44,6 +44,12 @@
             <argument type="tagged_iterator" tag="lieferzeiten.adapter" />
         </service>
 
+
+        <service id="LieferzeitenAdmin\Service\CorrelationIdProvider" />
+        <service id="LieferzeitenAdmin\Service\Audit\AuditLogService" />
+        <service id="LieferzeitenAdmin\Service\Reliability\DeadLetterService" />
+        <service id="LieferzeitenAdmin\Service\Reliability\IntegrationReliabilityService" />
+
         <service id="LieferzeitenAdmin\Sync\San6\San6Client" />
         <service id="LieferzeitenAdmin\Sync\San6\San6MatchingService" />
         <service id="LieferzeitenAdmin\Service\BaseDateResolver" />
