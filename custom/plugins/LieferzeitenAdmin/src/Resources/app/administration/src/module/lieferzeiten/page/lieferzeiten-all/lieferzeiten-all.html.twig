@@ -19,21 +19,6 @@
             </sw-card>
         </sw-container>
 
-        <sw-data-grid
-            class="lieferzeiten-orders-grid"
-            :dataSource="orders"
-            :columns="columns"
-            :showSelection="false"
-            :showActions="false"
-        >
-            <template #column-parcels="{ item }">
-                {{ parcelSummary(item) }}
-            </template>
-            <template #column-status="{ item }">
-                <sw-label :variant="isOrderOpen(item) ? 'warning' : 'success'">
-                    {{ orderStatusLabel(item) }}
-                </sw-label>
-            </template>
-        </sw-data-grid>
+        <lieferzeiten-order-table :orders="orders" />
     </div>
 {% endblock %}

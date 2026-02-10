@@ -5,11 +5,16 @@
             "description": "Monitoring der Lieferzeiten im Admin",
             "infoTitle": "Hinweis",
             "timezoneInfo": "Zeitberechnungen basieren auf der Zeitzone Europe/Berlin.",
-            "openDefinition": "„Offen“ bedeutet nicht abgeschlossen: Alle Pakete sind noch nicht geschlossen."
+            "openDefinition": "„Offen“ bedeutet mindestens ein noch nicht geschlossenes Paket."
         },
         "tabs": {
             "all": "Alle Bestellungen",
             "open": "Offene Bestellungen"
+        },
+        "zones": {
+            "order": "Bestellung",
+            "delivery": "Lieferung",
+            "status": "Status"
         },
         "domainSelection": {
             "placeholder": "Bitte Bereich wählen",
@@ -31,7 +36,33 @@
             "domain": "Bereich",
             "parcels": "Pakete offen/gesamt",
             "openParcels": "Offene Pakete",
+            "positions": "Positionen",
+            "position": "Position",
+            "article": "Artikel",
+            "quantity": "Menge",
+            "packageNumbers": "Pakete",
             "status": "Status"
+        },
+        "fields": {
+            "supplierDate": "Liefertermin Lieferant (1-14 Tage)",
+            "supplierWeek": "KW",
+            "newDate": "Neuer Liefertermin (1-4 Tage)",
+            "comment": "Kommentar",
+            "history": "Historie",
+            "shippingType": "Versandart",
+            "audit": "Audit",
+            "days": "Tage"
+        },
+        "shipping": {
+            "unclear": "Unklar",
+            "complete": "Gesamt",
+            "partial": "Teil",
+            "split": "Trennung"
+        },
+        "audit": {
+            "savedSupplierDate": "Liefertermin Lieferant gespeichert",
+            "savedNewDate": "Neuer Liefertermin gespeichert",
+            "savedComment": "Kommentar gespeichert"
         },
         "status": {
             "open": "Offen",

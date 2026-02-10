@@ -2,6 +2,7 @@ import './page/lieferzeiten-index';
 import './page/lieferzeiten-all';
 import './page/lieferzeiten-open';
 import './component/lieferzeiten-domain-selection';
+import './component/lieferzeiten-order-table';
 
 const { Module } = Shopware;
 

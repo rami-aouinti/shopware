@@ -2,21 +2,26 @@
     "lieferzeiten": {
         "general": {
             "mainMenuItemGeneral": "Delivery times",
-            "description": "Monitor delivery times in the admin",
-            "infoTitle": "Note",
-            "timezoneInfo": "Time calculations use the Europe/Berlin timezone.",
-            "openDefinition": "“Open” means not finished: all parcels are still not closed."
+            "description": "Delivery time monitoring in admin",
+            "infoTitle": "Notice",
+            "timezoneInfo": "Time calculations are based on timezone Europe/Berlin.",
+            "openDefinition": "\"Open\" means at least one parcel is still not closed."
         },
         "tabs": {
             "all": "All orders",
             "open": "Open orders"
         },
+        "zones": {
+            "order": "Order",
+            "delivery": "Delivery",
+            "status": "Status"
+        },
         "domainSelection": {
-            "placeholder": "Select domain",
+            "placeholder": "Choose domain",
             "reset": "Reset selection",
-            "modalTitle": "Select domain",
-            "modalDescription": "Choose a domain to load the delivery time views.",
-            "persistLabel": "Remember selection on this device",
+            "modalTitle": "Choose domain",
+            "modalDescription": "Choose a domain to load delivery-time views.",
+            "persistLabel": "Persist selection on this device",
             "confirm": "Apply selection"
         },
         "kpi": {
@@ -31,7 +36,33 @@
             "domain": "Domain",
             "parcels": "Open/total parcels",
             "openParcels": "Open parcels",
+            "positions": "Positions",
+            "position": "Position",
+            "article": "Article",
+            "quantity": "Quantity",
+            "packageNumbers": "Parcels",
             "status": "Status"
+        },
+        "fields": {
+            "supplierDate": "Supplier delivery date (1-14 days)",
+            "supplierWeek": "Week",
+            "newDate": "New delivery date (1-4 days)",
+            "comment": "Comment",
+            "history": "History",
+            "shippingType": "Shipping type",
+            "audit": "Audit",
+            "days": "days"
+        },
+        "shipping": {
+            "unclear": "Unclear",
+            "complete": "Complete",
+            "partial": "Partial",
+            "split": "Split"
+        },
+        "audit": {
+            "savedSupplierDate": "Supplier date saved",
+            "savedNewDate": "New date saved",
+            "savedComment": "Comment saved"
         },
         "status": {
             "open": "Open",
