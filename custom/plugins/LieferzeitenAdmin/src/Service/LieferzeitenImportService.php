@@ -459,21 +459,57 @@ class LieferzeitenImportService
             return false;
         }
 
-        $delivered = 0;
+        $closedParcels = 0;
         foreach ($parcels as $parcel) {
             if (!is_array($parcel)) {
                 continue;
             }
 
-            $state = strtolower((string) ($parcel['status'] ?? $parcel['state'] ?? ''));
-            $closed = (bool) ($parcel['closed'] ?? false);
-
-            if ($closed || in_array($state, ['delivered', 'zugestellt', 'completed', '8'], true)) {
-                ++$delivered;
+            if ($this->isClosedParcelStatusForStatus8($parcel)) {
+                ++$closedParcels;
             }
         }
 
-        return $delivered > 0 && $delivered === count($parcels);
+        return $closedParcels > 0 && $closedParcels === count($parcels);
+    }
+
+    /** @param array<string,mixed> $parcel */
+    private function isClosedParcelStatusForStatus8(array $parcel): bool
+    {
+        $state = $this->normalizeParcelState($parcel);
+
+        $statusMapping = [
+            'paketshop_non_retire' => false,
+            'paketshop_not_collected' => false,
+            'paketshop_retire' => true,
+            'paketshop_collected' => true,
+            'ablageort' => true,
+            'retoure' => false,
+            'nicht_zustellbar' => false,
+            'verweigert' => false,
+            'zoll_abgelehnt' => false,
+            'zugestellt' => true,
+        ];
+
+        if (array_key_exists($state, $statusMapping)) {
+            return $statusMapping[$state];
+        }
+
+        $closed = $parcel['closed'] ?? null;
+        if ($closed !== null) {
+            return (bool) $closed;
+        }
+
+        return in_array($state, ['delivered', 'completed', '8'], true);
+    }
+
+    /** @param array<string,mixed> $parcel */
+    private function normalizeParcelState(array $parcel): string
+    {
+        $rawState = (string) ($parcel['trackingStatus'] ?? $parcel['san6Status'] ?? $parcel['status'] ?? $parcel['state'] ?? '');
+        $state = mb_strtolower(trim($rawState));
+
+        return str_replace([' ', '-', '/'], '_', $state);
     }
 
     private function isManualStatus7Change(array $payload, ?PaketEntity $existingPaket, ?int $existingStatus): bool
