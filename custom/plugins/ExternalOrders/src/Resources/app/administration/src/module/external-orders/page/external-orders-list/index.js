@@ -3,6 +3,28 @@ import './external-orders-list.scss';
 
 const { Component, Mixin } = Shopware;
 
+function createInlineChannelLogo(shortLabel, backgroundColor) {
+    const escapedLabel = String(shortLabel ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const escapedColor = String(backgroundColor ?? '#166b73').replace(/"/g, '');
+
+    const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="${escapedLabel}">
+            <rect x="0" y="0" width="64" height="64" rx="12" fill="${escapedColor}" />
+            <text
+                x="32"
+                y="37"
+                text-anchor="middle"
+                font-family="Arial, Helvetica, sans-serif"
+                font-size="20"
+                font-weight="700"
+                fill="#ffffff"
+            >${escapedLabel}</text>
+        </svg>
+    `;
+
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg.trim())}`;
+}
+
 Component.register('external-orders-list', {
     template,
 
@@ -28,37 +50,37 @@ Component.register('external-orders-list', {
                 {
                     id: 'b2b',
                     label: 'First-medical-shop.de',
-                    logo: 'http://controlling.first-medical.de:8480/assets/images/b2b1.png',
+                    logo: createInlineChannelLogo('B2B', '#0B7F8A'),
                 },
                 {
                     id: 'ebay_de',
                     label: 'Ebay.DE',
-                    logo: 'http://controlling.first-medical.de:8480/assets/images/ebay1.png',
+                    logo: createInlineChannelLogo('EB', '#2F4F8F'),
                 },
                 {
                     id: 'kaufland',
                     label: 'KaufLand',
-                    logo: 'http://controlling.first-medical.de:8480/assets/images/kaufland1.png',
+                    logo: createInlineChannelLogo('KL', '#D04444'),
                 },
                 {
                     id: 'ebay_at',
                     label: 'Ebay.AT',
-                    logo: 'http://controlling.first-medical.de:8480/assets/images/ebayAT.png',
+                    logo: createInlineChannelLogo('AT', '#6B4FD3'),
                 },
                 {
                     id: 'zonami',
                     label: 'Zonami',
-                    logo: 'http://controlling.first-medical.de:8480/assets/images/zonami1.png',
+                    logo: createInlineChannelLogo('ZO', '#21936B'),
                 },
                 {
                     id: 'peg',
                     label: 'PEG',
-                    logo: 'http://controlling.first-medical.de:8480/assets/images/peg2.png',
+                    logo: createInlineChannelLogo('PG', '#2B6EA0'),
                 },
                 {
                     id: 'bezb',
                     label: 'BEZB',
-                    logo: 'http://controlling.first-medical.de:8480/assets/images/bezb1.png',
+                    logo: createInlineChannelLogo('BZ', '#6A7A1F'),
                 },
             ],
             activeChannel: 'b2b',
