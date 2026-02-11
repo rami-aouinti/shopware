@@ -3,11 +3,11 @@
   "entryPoints": {
     "external-orders": {
       "css": [
-        "/bundles/externalorders/administration/assets/external-orders-5E8RP3M3.css"
+        "/bundles/externalorders/administration/assets/external-orders-DxvnU9-X.css"
       ],
       "dynamic": [],
       "js": [
-        "/bundles/externalorders/administration/assets/external-orders-CsyiabBY.js"
+        "/bundles/externalorders/administration/assets/external-orders-DdGW9mfl.js"
       ],
       "legacy": false,
       "preload": []
