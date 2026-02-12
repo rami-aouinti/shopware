@@ -14,6 +14,7 @@ services:
       - composer-cache:/tmp/composer-cache
     environment:
       COMPOSER_CACHE_DIR: /tmp/composer-cache
+      DATABASE_URL: mysql://root:root@database:3306/shopware
 
   nginx:
     image: nginx:1.27-alpine
