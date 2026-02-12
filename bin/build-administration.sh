@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck source-path=SCRIPTDIR
+# Usage: run this script with bash (`./bin/build-administration.sh` or `bash bin/build-administration.sh`), not `php`.
 
 unset CDPATH
 CWD="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
