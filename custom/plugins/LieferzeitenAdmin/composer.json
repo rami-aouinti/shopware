@@ -1,32 +1,32 @@
 {
-  "name": "custom/lieferzeiten-admin",
-  "description": "Lieferzeiten admin module.",
-  "type": "shopware-platform-plugin",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Custom"
-    }
-  ],
-  "require": {
-    "shopware/core": "*"
-  },
-  "autoload": {
-    "psr-4": {
-      "LieferzeitenAdmin\\": "src/"
-    }
-  },
-  "extra": {
-    "shopware-plugin-class": "LieferzeitenAdmin\\LieferzeitenAdmin",
-    "label": {
-      "en-GB": "Lieferzeiten Admin",
-      "de-DE": "Lieferzeiten Admin"
+    "name": "custom/lieferzeiten-admin",
+    "description": "Lieferzeiten admin module.",
+    "type": "shopware-platform-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Custom"
+        }
+    ],
+    "require": {
+        "shopware/core": "^6.7"
     },
-    "plugin-icon": "https://first-medical-shop.de/images/Graupner_Logo_medical_group_rot.webp"
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "LieferzeitenAdmin\\Tests\\": "tests/"
+    "autoload": {
+        "psr-4": {
+            "LieferzeitenAdmin\\": "src/"
+        }
+    },
+    "extra": {
+        "shopware-plugin-class": "LieferzeitenAdmin\\LieferzeitenAdmin",
+        "label": {
+            "en-GB": "Lieferzeiten Admin",
+            "de-DE": "Lieferzeiten Admin"
+        },
+        "plugin-icon": "https://first-medical-shop.de/images/Graupner_Logo_medical_group_rot.webp"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "LieferzeitenAdmin\\Tests\\": "tests/"
+        }
     }
-  }
 }
