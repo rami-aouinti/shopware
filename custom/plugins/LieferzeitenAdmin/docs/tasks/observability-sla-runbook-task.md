@@ -1,31 +1,31 @@
-# Task — Observabilité, alertes, SLA et runbook incident
+# Task — Observability, Alerts, SLA und Incident-Runbook
 
-Statut: `done`  
-Owner: `LieferzeitenAdmin`  
-Référence: `docs/observability-sla-runbook.md`
+Status: `done`
+Owner: `LieferzeitenAdmin`
+Referenz: `docs/observability-sla-runbook.md`
 
-## Objectif
-Définir un cadre opérationnel versionné pour:
-- les métriques clés (sync, push status 7/8, notifications, tâches overdue),
-- les alertes (erreurs répétées, dead-letter en hausse, latence API),
-- les SLA cibles (listing et délai de sync),
-- un runbook incident (diagnostic + actions).
+## Ziel
+Definition eines versionierten operativen Rahmens für:
+- zentrale Metriken (Sync, Status-Push 7/8, Benachrichtigungen, überfällige Tasks),
+- Alerts (wiederholte Fehler, steigende Dead-Letter, API-Latenz),
+- Ziel-SLAs (Listing und Sync-Dauer),
+- Incident-Runbook (Diagnose + Maßnahmen).
 
-## Périmètre livré
-- Catalogue de métriques actionnables et exploitables en dashboard.
-- Seuils d'alerting avec niveaux de sévérité et actions initiales.
-- Cibles SLA explicites (P95/P99).
-- Runbook opérationnel pour 3 familles d'incident.
-- Branchement documenté sur les sources existantes du plugin:
+## Gelieferter Umfang
+- Katalog handlungsorientierter Metriken für Dashboards.
+- Alert-Schwellen mit Schweregrad und Sofortmaßnahmen.
+- Explizite SLA-Ziele (P95/P99).
+- Operatives Runbook für drei Incident-Familien.
+- Dokumentierte Anbindung an bestehende Plugin-Quellen:
   - `lieferzeiten_audit_log`,
   - `lieferzeiten_dead_letter`,
   - `lieferzeiten_notification_event`,
   - `lieferzeiten_task`.
 
-## Critères d'acceptation
-- [x] Document versionné présent: `docs/observability-sla-runbook.md`
-- [x] Métriques couvrent sync, status 7/8, notifications, overdue tasks.
-- [x] Alertes définies pour erreurs répétées, dead-letter, latence API.
-- [x] SLA listing + délai sync définis avec objectifs mesurables.
-- [x] Runbook incident avec étapes de diagnostic et actions.
-- [x] Branchement explicite aux logs/audit/dead-letter existants.
+## Abnahmekriterien
+- [x] Versioniertes Dokument vorhanden: `docs/observability-sla-runbook.md`
+- [x] Metriken decken Sync, Status 7/8, Benachrichtigungen und Overdue-Tasks ab.
+- [x] Alerts für wiederholte Fehler, Dead-Letter und API-Latenz sind definiert.
+- [x] Listing-/Sync-SLAs sind messbar definiert.
+- [x] Incident-Runbook enthält Diagnoseschritte und Maßnahmen.
+- [x] Explizite Anbindung an bestehende Log-/Audit-/Dead-Letter-Quellen.

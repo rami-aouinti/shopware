@@ -1,166 +1,110 @@
-# Observabilité, alerting, SLA et runbook — LieferzeitenAdmin
+# Observability, Alerting, SLA und Runbook — LieferzeitenAdmin
 
 Version: `1.0.0`  
-Dernière mise à jour: `2026-02-10`
+Letzte Aktualisierung: `2026-02-10`
 
-## 1) Objectif
+## 1) Ziel
 
-Définir un socle opérationnel concret pour suivre la santé du plugin, déclencher des alertes actionnables et accélérer la résolution d'incidents, en s'appuyant sur les données déjà persistées dans:
+Definition eines belastbaren Betriebsfundaments, um den Plugin-Zustand zu überwachen, handlungsfähige Alarme auszulösen und Incidents schneller zu lösen – auf Basis bereits persistierter Daten in:
 - `lieferzeiten_audit_log`,
 - `lieferzeiten_dead_letter`,
 - `lieferzeiten_notification_event`,
 - `lieferzeiten_task`,
 - `lieferzeiten_paket` / `lieferzeiten_position`.
 
-## 2) Métriques à surveiller
+## 2) Zu überwachende Metriken
 
 ### 2.1 Sync
-- **Volume sync**: nombre d'événements `order_synced` dans `lieferzeiten_audit_log` (par 5 min / 1h / 24h).
-- **Taux de succès sync**: ratio `integration_success` vs `integration_dead_letter` par `source_system`.
-- **Sync skipped**: occurrences du log applicatif `Lieferzeiten sync skipped due to active lock.`.
+- **Sync-Volumen**: Anzahl `order_synced`-Events in `lieferzeiten_audit_log` (pro 5 Min / 1h / 24h).
+- **Sync-Erfolgsrate**: Verhältnis `integration_success` zu `integration_dead_letter` je `source_system`.
+- **Sync übersprungen**: Vorkommen des App-Logs `Lieferzeiten sync skipped due to active lock.`.
 
-### 2.2 Push status 7/8
-- **Backlog status 7/8**: nombre de `lieferzeiten_paket` avec `status` in (`7`, `8`) et sans événement récent de progression.
-- **Âge status 7/8**: temps moyen et P95 depuis dernière mise à jour (`last_changed_at`) des commandes en status 7/8.
-- **Régression status**: cas où un ordre passe de `8` vers un statut inférieur (détecté via audit/correlationId).
+### 2.2 Status-Push 7/8
+- **Backlog Status 7/8**: Anzahl `lieferzeiten_paket` mit `status` in (`7`, `8`) ohne aktuelle Fortschrittsereignisse.
+- **Alter Status 7/8**: Mittelwert und P95 seit `last_changed_at` für Aufträge in Status 7/8.
+- **Status-Regression**: Fälle von `8` auf niedrigeren Status (über Audit/Correlation-ID erkennbar).
 
-### 2.3 Notifications
-- **Événements en file**: nombre de `lieferzeiten_notification_event.status = queued`.
-- **Âge de queue notifications**: P95 du délai `now - dispatched_at` pour les événements non consommés.
-- **Taux de duplication évitée**: événements ignorés par idempotence (`event_key` déjà existant).
+### 2.3 Benachrichtigungen
+- **Ereignisse in Queue**: Anzahl `lieferzeiten_notification_event.status = queued`.
+- **Alter der Notification-Queue**: P95 von `now - dispatched_at` für nicht konsumierte Events.
+- **Vermeidete Duplikate**: durch Idempotenz ignorierte Events (`event_key` bereits vorhanden).
 
-### 2.4 Tâches overdue
-- **Overdue count**: nombre de tâches ouvertes (`status != closed`) avec `due_date < now`.
-- **Overdue aging**: ancienneté moyenne/P95 des tâches overdue.
-- **Flux de clôture**: ratio tâches clôturées / tâches créées par jour.
+### 2.4 Überfällige Aufgaben
+- **Overdue Count**: offene Tasks (`status != closed`) mit `due_date < now`.
+- **Overdue Aging**: Mittelwert/P95 des Alters überfälliger Tasks.
+- **Abschlussfluss**: Verhältnis abgeschlossener zu neu eröffneten Tasks pro Zeitraum.
 
-## 3) Alertes
+## 3) Alerting (Schwellen und Schweregrade)
 
-### 3.1 Erreurs répétées (intégration)
-- **Signal source**: `lieferzeiten_audit_log.action = integration_dead_letter` + logs applicatifs `Integration call failed.`.
-- **Condition**: ≥ 5 erreurs sur 10 minutes pour un couple (`source_system`, `target_id`).
-- **Sévérité**: `high`.
-- **Action initiale**: activer runbook section 6.1.
+### 3.1 Wiederholte Integrationsfehler
+- **Warnung**: > 20 `integration_dead_letter` in 15 Minuten pro `source_system`.
+- **Kritisch**: > 50 `integration_dead_letter` in 15 Minuten oder > 15 Minuten ohne `integration_success`.
+- **Erstmaßnahmen**:
+  1. Letzte Dead-Letter-Einträge prüfen.
+  2. Externe API-Erreichbarkeit prüfen.
+  3. Scheduler-/Worker-Prozesse verifizieren.
 
-### 3.2 Dead-letter en hausse
-- **Signal source**: table `lieferzeiten_dead_letter`.
-- **Condition**: pente > +30% sur 30 minutes (comparée à la fenêtre précédente) ou > 20 nouvelles entrées/15 min.
-- **Sévérité**: `high`.
-- **Action initiale**: activer runbook section 6.2.
+### 3.2 Dead-Letter-Anstieg
+- **Warnung**: Dead-Letter-Queue wächst 3 Intervalle hintereinander.
+- **Kritisch**: Queue-Alter > 30 Minuten bei gleichzeitiger Wachstumsrate.
+- **Erstmaßnahmen**:
+  1. Fehlercodes clustern.
+  2. Hohe Wiederholungsrate identifizieren.
+  3. Problematische Quellen temporär drosseln.
 
-### 3.3 Latence API
-- **Signal source**: mesure applicative autour de `IntegrationReliabilityService::executeWithRetry()` + logs corrélés.
-- **Condition**: P95 latence > 2.5s sur 15 minutes pour un système externe (`shopware`, `gambio`, `san6`, `mails`, transporteur).
-- **Sévérité**: `medium` (puis `high` si > 5 min consécutives).
-- **Action initiale**: activer runbook section 6.3.
+### 3.3 API-Latenz
+- **Warnung**: P95 > 2 s auf Tracking-/Sync-Endpunkten.
+- **Kritisch**: P99 > 5 s über 10 Minuten.
+- **Erstmaßnahmen**:
+  1. Upstream-Latenz vergleichen.
+  2. DB-Locks und langsame Queries prüfen.
+  3. Worker-Kapazität erhöhen.
 
-## 4) SLA cibles
+## 4) SLA-Ziele
 
-- **Temps de chargement listing** (`/api/_action/lieferzeiten/orders`):
-  - P95 < **1.5s**,
-  - P99 < **2.5s**.
-- **Délai sync** (ordre disponible en vue admin après événement source):
-  - P95 < **5 min**,
-  - P99 < **10 min**.
-- **Délai notification** (création d'événement à `queued`):
-  - P95 < **60s**.
-- **Overdue task ratio**:
-  - < **10%** des tâches ouvertes.
+### 4.1 Listing-SLA (Admin-Ansicht)
+- P95 Antwortzeit Listings: **< 1,5 s**.
+- P99 Antwortzeit Listings: **< 3 s**.
+- Fehlerquote 5xx auf Listing-Endpunkten: **< 1 %** je Stunde.
 
-## 5) Branchement aux données déjà présentes
+### 4.2 Sync-SLA
+- End-to-End-Zeit Eingang → persistiert: **P95 < 10 Min**.
+- Geplante Sync-Läufe pro Stunde: **≥ 99 % erfolgreich gestartet**.
+- Dead-Letter-Wiederaufnahme: **< 30 Min** bis Erstbearbeitung.
 
-### 5.1 Audit log (`lieferzeiten_audit_log`)
-Utiliser les actions existantes:
-- `integration_success`,
-- `integration_dead_letter`,
-- `order_synced`,
-- `notification_queued`,
-- événements métier (mise à jour dates/commentaires, etc.).
+## 5) Incident-Runbook
 
-Usage:
-- séries temporelles de succès/échec,
-- suivi des corrélations (`correlation_id`) pour un incident donné,
-- analyse de parcours d'une commande (`externalOrderId` dans payload).
+### 5.1 Incident-Typ A — Integrationsfehler (Shop/Gambio/San6)
+1. Incident über `source_system`, Fehlercode, Correlation-ID eingrenzen.
+2. Letzte Einträge in `lieferzeiten_dead_letter` und `lieferzeiten_audit_log` prüfen.
+3. Payload-Vertrag gegen `IntegrationContractValidator` validieren.
+4. Bei externem Ausfall: Fallback aktiv lassen, Stakeholder informieren.
+5. Nach Behebung: Replay betroffener Dead-Letter-Batches.
 
-### 5.2 Dead-letter (`lieferzeiten_dead_letter`)
-Utiliser:
-- `system`, `operation`, `attempts`, `error_message`, `correlation_id`, `created_at`.
+### 5.2 Incident-Typ B — Tracking-Feed verzögert
+1. Queue-Backlog und `tracking_history`-Lücken prüfen.
+2. Carrier-API-Limits/429 verifizieren.
+3. Polling-Intervalle und Retry-Strategie temporär anpassen.
+4. Nach Stabilisierung Rückstellung auf Standardkonfiguration.
 
-Usage:
-- alertes de volumétrie et de pente,
-- top erreurs par système/opération,
-- file de reprise manuelle.
+### 5.3 Incident-Typ C — Überfällige Aufgaben steigen stark an
+1. Task-Backlog nach `triggerKey`, Team, Priorität analysieren.
+2. Blockierende Abhängigkeiten im Notification-/Sync-Pfad prüfen.
+3. Kurzfristig Rebalancing der Task-Zuweisung aktivieren.
+4. Operative Nachsteuerung dokumentieren und Ursachenanalyse anstoßen.
 
-### 5.3 Notifications (`lieferzeiten_notification_event`)
-Utiliser:
-- `event_key`, `trigger_key`, `channel`, `status`, `dispatched_at`, `source_system`.
+## 6) Betriebscadence
+- **Täglich**: Dashboard-Review (Sync, Dead-Letter, Overdue-Tasks).
+- **Wöchentlich**: SLA-Review und Top-Fehlerquellen.
+- **Monatlich**: Schwellwerte neu kalibrieren, Runbook-Drills durchführen.
 
-Usage:
-- backlog de queue,
-- latence de dispatch,
-- audit de non-réémission (idempotence).
+## 7) Mindestanforderungen an Dashboards
+- Filter nach `source_system`, Zeitraum, Schweregrad.
+- Drill-down bis Correlation-ID und Einzelereignis.
+- Overlay von Deployments zur Korrelation von Regressionen.
+- Sicht auf Queue-Alter und Durchsatz gleichzeitig.
 
-### 5.4 Tasks (`lieferzeiten_task`)
-Utiliser:
-- `status`, `due_date`, `created_at`, `closed_at`, `payload`.
-
-Usage:
-- overdue et aging,
-- capacité de traitement,
-- détection des goulots par type de tâche.
-
-## 6) Runbook incident
-
-### 6.1 Incident "erreurs répétées"
-1. **Qualifier** la fenêtre d'incident (début, système, opération).
-2. **Corréler** via `correlation_id` dans audit/dead-letter/logs.
-3. **Vérifier** connectivité/API externe et validité payload minimal.
-4. **Décider**: retry manuel ciblé ou bascule fallback métier.
-5. **Documenter** cause racine + action préventive.
-
-### 6.2 Incident "dead-letter en hausse"
-1. **Lister** top `system + operation` sur 30 min.
-2. **Classer** erreurs (auth, timeout, schéma, données manquantes).
-3. **Isoler** les payloads invalides (sans bloquer le reste du flux).
-4. **Relancer** progressivement (batch réduit) après correctif.
-5. **Surveiller** retour à la normale (pente dead-letter < 0).
-
-### 6.3 Incident "latence API"
-1. **Identifier** le système externe impacté (P95/P99).
-2. **Vérifier** saturation locale (CPU/DB lock/queue) vs lenteur fournisseur.
-3. **Adapter** temporairement retries/timeouts/fenêtres de sync.
-4. **Limiter** les appels non critiques si nécessaire.
-5. **Confirmer** normalisation latence avant clôture incident.
-
-## 7) Requêtes SQL de base (dashboard / debug)
-
-```sql
--- 1) Succès vs dead-letter sur 24h
-SELECT action, source_system, COUNT(*) AS total
-FROM lieferzeiten_audit_log
-WHERE created_at >= NOW() - INTERVAL 24 HOUR
-  AND action IN ('integration_success', 'integration_dead_letter')
-GROUP BY action, source_system;
-
--- 2) Dead-letter par système/opération sur 1h
-SELECT system, operation, COUNT(*) AS total
-FROM lieferzeiten_dead_letter
-WHERE created_at >= NOW() - INTERVAL 1 HOUR
-GROUP BY system, operation
-ORDER BY total DESC;
-
--- 3) Notifications en queue et âgées
-SELECT status,
-       COUNT(*) AS total,
-       MAX(TIMESTAMPDIFF(MINUTE, dispatched_at, NOW())) AS max_queue_age_min
-FROM lieferzeiten_notification_event
-WHERE status = 'queued'
-GROUP BY status;
-
--- 4) Tâches overdue ouvertes
-SELECT COUNT(*) AS overdue_open_tasks
-FROM lieferzeiten_task
-WHERE (closed_at IS NULL)
-  AND due_date IS NOT NULL
-  AND due_date < NOW();
-```
+## 8) Change-Management
+- Jede Änderung an Schwellwerten/SLAs versionieren.
+- Änderungen im Changelog und Operations-Channel kommunizieren.
+- Nach kritischen Incidents Post-Mortem inkl. Maßnahmen-Tracking pflegen.
