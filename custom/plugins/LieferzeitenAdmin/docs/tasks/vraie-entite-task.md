@@ -1,37 +1,37 @@
-# Task — vraie entité Task
+# Task — Echte Task-Entität
 
-Statut: `done`  
+Status: `done`
 Owner: `LieferzeitenAdmin`
 
-## Statuts autorisés
+## Erlaubte Statuswerte
 - `open`
 - `in_progress`
 - `done`
 - `reopened`
 - `cancelled`
 
-## Transitions autorisées
+## Erlaubte Transitionen
 - `open` -> `in_progress`, `done`, `cancelled`
 - `in_progress` -> `done`, `cancelled`
 - `done` -> `reopened`
 - `reopened` -> `in_progress`, `done`, `cancelled`
 - `cancelled` -> `reopened`
 
-## Règles de fermeture
-- **Manuelle**: via API `POST /api/_action/lieferzeiten/tasks/{taskId}/close` (transition vers `done`).
-- **Automatique**: toute tâche fermée existante (`done`/`cancelled`) est réouverte automatiquement lors d'une nouvelle création pour le même couple `(positionId, triggerKey)`.
+## Regeln zum Schließen
+- **Manuell**: über API `POST /api/_action/lieferzeiten/tasks/{taskId}/close` (Transition nach `done`).
+- **Automatisch**: Jede vorhandene geschlossene Task (`done`/`cancelled`) wird bei einer Neuanlage für dasselbe Paar `(positionId, triggerKey)` automatisch wieder geöffnet.
 
-## Règles de non-duplication (position/trigger)
-- Clé de déduplication: `(positionId, triggerKey)`.
-- Une contrainte unique empêche la création de doublons DB pour ce couple.
-- Lors d'une création:
-  - si une tâche active existe déjà sur ce couple, son `id` est réutilisé;
-  - si la tâche existante est fermée, elle est réouverte.
+## Regeln zur Duplikatvermeidung (Position/Trigger)
+- Deduplizierungs-Schlüssel: `(positionId, triggerKey)`.
+- Eine Unique-Constraint verhindert doppelte DB-Einträge für dieses Paar.
+- Bei einer Erstellung:
+  - existiert bereits eine aktive Task für dieses Paar, wird deren `id` wiederverwendet;
+  - ist die vorhandene Task geschlossen, wird sie wieder geöffnet.
 
-## Notifications initiateur
-- Notification envoyée à l'initiateur sur clôture (`done` / `cancelled`).
-- Notification envoyée à l'initiateur sur réouverture (`reopened`).
+## Benachrichtigungen für Initiator
+- Benachrichtigung an Initiator bei Abschluss (`done` / `cancelled`).
+- Benachrichtigung an Initiator bei Wiedereröffnung (`reopened`).
 
-## Tests attendus
-- Tests unitaires des transitions (valide/invalide, fermeture, réouverture, annulation).
-- Tests d'intégration API des endpoints de transition (`assign`, `close`, `reopen`, `cancel`) + validation des ACL.
+## Erwartete Tests
+- Unit-Tests der Transitionen (gültig/ungültig, Abschluss, Wiedereröffnung, Abbruch).
+- API-Integrationstests für Transition-Endpunkte (`assign`, `close`, `reopen`, `cancel`) inkl. ACL-Validierung.

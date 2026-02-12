@@ -1,31 +1,31 @@
-# Task — Endpoints write: concurrence optimiste et gestion de conflit
+# Task — Write-Endpunkte: Optimistische Parallelität und Konfliktbehandlung
 
-Statut: `done`  
-Owner: `LieferzeitenAdmin`  
-Référence: `src/Controller/LieferzeitenSyncController.php`, `src/Service/LieferzeitenPositionWriteService.php`
+Status: `done`
+Owner: `LieferzeitenAdmin`
+Referenz: `src/Controller/LieferzeitenSyncController.php`, `src/Service/LieferzeitenPositionWriteService.php`
 
-## Objectif
-Sécuriser les endpoints write de position (`liefertermin-lieferant`, `neuer-liefertermin`, `comment`) contre les écrasements silencieux lors d’éditions concurrentes.
+## Ziel
+Write-Endpunkte für Positionen (`liefertermin-lieferant`, `neuer-liefertermin`, `comment`) gegen stille Überschreibungen bei parallelen Bearbeitungen absichern.
 
-## Périmètre livré
-- Contrôle de concurrence optimiste via `updatedAt` côté requête.
-- Erreur API explicite en cas de conflit d’édition (`409 CONCURRENT_MODIFICATION`).
-- Stratégie de refresh partiel de ligne via payload `refresh` exploitable par l’UI.
-- Journalisation d’audit des conflits avec corrélation de requête (`correlation_id`).
-- Test automatisé d’édition concurrente (deux utilisateurs sur la même position).
+## Gelieferter Umfang
+- Optimistische Parallelitätskontrolle über `updatedAt` in der Anfrage.
+- Expliziter API-Fehler bei Bearbeitungskonflikten (`409 CONCURRENT_MODIFICATION`).
+- Strategie für partielles Zeilen-Refresh via `refresh`-Payload für die UI.
+- Audit-Logging von Konflikten mit Request-Korrelation (`correlation_id`).
+- Automatisierter Test für parallele Bearbeitung (zwei Benutzer auf derselben Position).
 
-## Contrat API write (nouveau)
-- Les endpoints write concernés exigent `updatedAt` dans le payload.
-- En cas de jeton obsolète:
+## Neuer Write-API-Vertrag
+- Betroffene Write-Endpunkte verlangen `updatedAt` im Payload.
+- Bei veraltetem Token:
   - HTTP `409`,
   - `code = CONCURRENT_MODIFICATION`,
-  - `message` explicite,
-  - `refresh` contenant la version courante partielle de la ligne.
+  - eindeutige Fehlermeldung,
+  - `refresh` mit aktueller partieller Zeilenversion.
 
-## Critères d’acceptation
-- [x] Les writes refusent un payload sans `updatedAt`.
-- [x] Les conflits d’édition ne peuvent plus écraser la version courante.
-- [x] L’API renvoie une réponse de conflit lisible par le frontend.
-- [x] Le frontend applique le refresh partiel de ligne après conflit.
-- [x] Les événements de conflit sont tracés dans l’audit log avec corrélation.
-- [x] Test d’édition concurrente présent et au vert.
+## Abnahmekriterien
+- [x] Writes ohne `updatedAt` werden abgelehnt.
+- [x] Bearbeitungskonflikte können die aktuelle Version nicht mehr überschreiben.
+- [x] API liefert eine vom Frontend auswertbare Konfliktantwort.
+- [x] Frontend wendet partielles Zeilen-Refresh nach Konflikt an.
+- [x] Konflikt-Ereignisse werden im Audit-Log mit Korrelation protokolliert.
+- [x] Test für parallele Bearbeitung vorhanden und grün.

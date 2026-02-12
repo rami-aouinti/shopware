@@ -1,80 +1,80 @@
 # LieferzeitenAdmin
 
-## 1. Présentation
+## 1. Übersicht
 
-### Objectif du plugin
-`LieferzeitenAdmin` ajoute un module d’administration Shopware pour piloter les délais de livraison et les opérations associées (import, suivi transporteurs, gestion de tâches, notifications et actions manuelles), avec un focus sur la visibilité opérationnelle des commandes.  
-Le plugin expose aussi des endpoints Admin API (`/api/_action/lieferzeiten/...`) pour orchestrer ces flux.
+### Ziel des Plugins
+`LieferzeitenAdmin` ergänzt Shopware um ein Administrationsmodul zur Steuerung von Lieferzeiten und zugehörigen Abläufen (Import, Carrier-Tracking, Aufgabenmanagement, Benachrichtigungen und manuelle Aktionen) mit Fokus auf operative Transparenz.
+Zusätzlich stellt das Plugin Admin-API-Endpunkte unter `/api/_action/lieferzeiten/...` bereit.
 
-### Périmètre fonctionnel
-- **Administration** : module `lieferzeiten` sous **Orders** + module `lieferzeiten-settings` sous **Settings**.
-- **Import** : synchronisation de données via sync on-demand et tâche planifiée.
-- **Tracking** : consultation historique tracking par transporteur/numéro.
-- **Statuts** : consultation liste commandes et statistiques agrégées.
-- **Notifications** : rappels prépaiement, overdue shipping date, dispatch des notifications.
-- **Tâches** : listage, assignation, clôture/réouverture/annulation des tâches métier.
+### Funktionsumfang
+- **Administration**: Modul `lieferzeiten` unter **Bestellungen** und Modul `lieferzeiten-settings` unter **Einstellungen**.
+- **Import**: Datensynchronisierung per On-Demand-Sync und geplanten Tasks.
+- **Tracking**: Historie je Carrier/Trackingnummer.
+- **Status**: Auftragslisten und aggregierte Statistiken.
+- **Benachrichtigungen**: Vorkasse-Erinnerungen, Overdue-Shipping-Date, Notification-Dispatch.
+- **Aufgaben**: Listen, Zuweisung, Abschließen/Wiederöffnen/Abbrechen von Business-Tasks.
 
 ---
 
-## 2. Prérequis
+## 2. Voraussetzungen
 
-### Versions
-- **Shopware** : compatible avec ce repo en `6.7.6.2` (cf. `composer.json` racine).
-- **PHP** : utiliser une version compatible avec Shopware 6.7 (l’environnement courant exécute `PHP 8.5.3-dev`).
+### Versionen
+- **Shopware**: kompatibel mit diesem Repository in `6.7.6.2` (siehe Root-`composer.json`).
+- **PHP**: eine mit Shopware 6.7 kompatible Version verwenden (aktuelles Umfeld: `PHP 8.5.3-dev`).
 
-### Services attendus
-- **Base de données MySQL** accessible via `DATABASE_URL` (dans ce repo: `mysql://root:root@localhost/shopware`).
-- **Queue/Messenger** active pour les scheduled tasks (`MESSENGER_TRANSPORT_DSN` selon votre infra, ou transport Doctrine selon configuration).
-- **APIs externes optionnelles** (si utilisées) configurables dans le plugin:
+### Benötigte Dienste
+- **MySQL-Datenbank** über `DATABASE_URL` erreichbar (in diesem Repo: `mysql://root:root@localhost/shopware`).
+- **Queue/Messenger** für Scheduled Tasks aktiv (`MESSENGER_TRANSPORT_DSN` abhängig von der Infrastruktur oder Doctrine-Transport gemäß Konfiguration).
+- **Optionale externe APIs** (falls genutzt) über Plugin-Konfiguration:
   - `shopwareApiUrl`, `shopwareStatusPushApiUrl`
   - `gambioApiUrl`, `gambioStatusPushApiUrl`
   - `san6ApiUrl`
-  - tracking transporteurs (DHL/GLS) côté services backend.
+  - Carrier-Tracking (DHL/GLS) über Backend-Services.
 
 ---
 
-## 3. Installation / Activation plugin
+## 3. Installation / Aktivierung
 
-Depuis la racine du projet (`/workspace/shopware`):
+Aus dem Projekt-Root (`/workspace/shopware`):
 
 ```bash
-# 0) Dépendances projet (si nécessaire)
+# 0) Projektabhängigkeiten (falls erforderlich)
 composer install
 
-# 1) Refresh plugins
+# 1) Plugins aktualisieren
 bin/console plugin:refresh
 
-# 2) Installation du plugin
+# 2) Plugin installieren
 bin/console plugin:install --activate LieferzeitenAdmin
 
-# 3) (optionnel) si déjà installé et mise à jour de code
+# 3) (optional) bei bestehender Installation und Code-Update
 bin/console plugin:update LieferzeitenAdmin
 
-# 4) Clear cache (recommandé après activation/update)
+# 4) Cache leeren (nach Aktivierung/Update empfohlen)
 bin/console cache:clear
 ```
 
 ---
 
-## 4. Migrations base de données
+## 4. Datenbank-Migrationen
 
-### Exécuter les migrations
+### Migrationen ausführen
 ```bash
-# Migrations globales
+# Globale Migrationen
 bin/console database:migrate --all
 
-# Alternative ciblée plugin (si supportée par votre version)
+# Plugin-spezifische Alternative (falls von der Version unterstützt)
 bin/console database:migrate --identifier=LieferzeitenAdmin
 ```
 
-### Vérifier les tables du plugin
-Exemple SQL (via client MySQL):
+### Plugin-Tabellen prüfen
+Beispiel-SQL:
 
 ```sql
 SHOW TABLES LIKE 'lieferzeiten_%';
 ```
 
-Tables principales attendues (non exhaustif):
+Wichtige Tabellen (nicht abschließend):
 - `lieferzeiten_paket`
 - `lieferzeiten_position`
 - `lieferzeiten_task`
@@ -83,10 +83,10 @@ Tables principales attendues (non exhaustif):
 - `lieferzeiten_audit_log`
 - `lieferzeiten_dead_letter`
 
-### Rollback minimal
-Les migrations Shopware du plugin ne fournissent pas de rollback fin-grain. En pratique:
-1. restaurer un backup DB, **ou**
-2. désinstaller le plugin avec suppression des données:
+### Minimaler Rollback
+Die Shopware-Migrationen des Plugins bieten kein fein granulars Rollback. In der Praxis:
+1. DB-Backup wiederherstellen, **oder**
+2. Plugin mit Datenlöschung deinstallieren:
 
 ```bash
 bin/console plugin:uninstall --clearUserData LieferzeitenAdmin
@@ -94,80 +94,78 @@ bin/console plugin:uninstall --clearUserData LieferzeitenAdmin
 
 ---
 
-## 5. Build et exécution Administration
+## 5. Administration-Build und Ausführung
 
-### Build administration
+### Administration bauen
 ```bash
-# Build administration global projet
+# Globaler Build der Administration im Projekt
 bin/build-administration.sh
 ```
 
-### Mode watch (développement)
-Selon votre setup front local Shopware:
+### Watch-Modus (Entwicklung)
+Abhängig vom lokalen Shopware-Frontend-Setup:
 ```bash
-# Exemple fréquent
+# Häufiges Beispiel
 bin/watch-administration.sh
 ```
 
-### Où vérifier la visibilité du module admin
-Après build + login admin:
-- Menu **Orders**: entrée **Lieferzeiten** (`lieferzeiten.index`).
-- Menu **Settings**: entrée **Lieferzeiten Settings** (`lieferzeiten.settings.channelSettings`, puis sous-pages rules/notifications).
+### Sichtbarkeit im Admin prüfen
+Nach Build + Admin-Login:
+- Menü **Bestellungen**: Eintrag **Lieferzeiten** (`lieferzeiten.index`).
+- Menü **Einstellungen**: Eintrag **Lieferzeiten Settings** (`lieferzeiten.settings.channelSettings` inkl. Unterseiten für Regeln/Benachrichtigungen).
 
 ---
 
-## 6. Commandes runtime importantes
+## 6. Wichtige Runtime-Befehle
 
-### Sync on-demand
-L’action sync on-demand est exposée par API admin:
-
+### On-Demand-Sync
 ```bash
 curl -X POST "${APP_URL}/api/_action/lieferzeiten/sync" \
   -H "Authorization: Bearer <ADMIN_API_TOKEN>" \
   -H "Content-Type: application/json"
 ```
 
-### Scheduled tasks
+### Scheduled Tasks
 ```bash
-# Lister les tâches planifiées
+# Geplante Tasks auflisten
 bin/console scheduled-task:list
 
-# Exécuter le scheduler
+# Scheduler ausführen
 bin/console scheduled-task:run
 
-# Consommer la queue messenger
+# Messenger-Queue konsumieren
 bin/console messenger:consume -vv
 ```
 
-Tâches plugin attendues:
+Erwartete Plugin-Tasks:
 - `lieferzeiten_admin.import_task`
 - `lieferzeiten_admin.vorkasse_payment_reminder_task`
 - `lieferzeiten_admin.shipping_date_overdue_task`
 - `lieferzeiten_admin.notification_dispatch_task`
 
-### Debug / logs utiles
+### Debug / nützliche Logs
 ```bash
-# Logs app
+# App-Logs
 ls -lah var/log/
 tail -f var/log/*.log
 
-# État queues/worker (selon transport)
+# Queue-/Worker-Status (abhängig vom Transport)
 bin/console messenger:stats
 ```
 
 ---
 
-## 7. API du plugin
+## 7. Plugin-API
 
-> Base path: `/api/_action/lieferzeiten`  
-> ACL via rôles plugin: `lieferzeiten.viewer`, `lieferzeiten.editor`.
+> Basis-Pfad: `/api/_action/lieferzeiten`
+> ACL über Plugin-Rollen: `lieferzeiten.viewer`, `lieferzeiten.editor`.
 
 ### 7.1 Orders
 - **GET** `/orders`
 - **ACL**: `lieferzeiten.viewer`
-- **Paramètres principaux**: `page`, `limit`, `sort`, `order`, `bestellnummer`, `san6`, `status`, filtres dates (`orderDateFrom`, `orderDateTo`, etc.).
+- **Wichtige Parameter**: `page`, `limit`, `sort`, `order`, `bestellnummer`, `san6`, `status`, Datumsfilter (`orderDateFrom`, `orderDateTo` usw.).
 
-Exemple:
+Beispiel:
 ```bash
 curl -G "${APP_URL}/api/_action/lieferzeiten/orders" \
   -H "Authorization: Bearer <ADMIN_API_TOKEN>" \
@@ -176,7 +174,7 @@ curl -G "${APP_URL}/api/_action/lieferzeiten/orders" \
   --data-urlencode "status=open"
 ```
 
-Réponse (exemple simplifié):
+Beispielantwort (vereinfacht):
 ```json
 {
   "data": [
@@ -192,9 +190,9 @@ Réponse (exemple simplifié):
 ### 7.2 Sync
 - **POST** `/sync`
 - **ACL**: `lieferzeiten.editor`
-- **Body**: none
+- **Body**: keiner
 
-Réponse:
+Antwort:
 ```json
 { "status": "ok" }
 ```
@@ -202,24 +200,24 @@ Réponse:
 ### 7.3 Tracking
 - **GET** `/tracking/{carrier}/{trackingNumber}`
 - **ACL**: `lieferzeiten.viewer`
-- **Codes d’erreur typiques**: `400`, `429`, `502`, `504` selon `errorCode`.
+- **Typische Fehlercodes**: `400`, `429`, `502`, `504` je nach `errorCode`.
 
-Exemple:
+Beispiel:
 ```bash
 curl "${APP_URL}/api/_action/lieferzeiten/tracking/dhl/00340434161234567890" \
   -H "Authorization: Bearer <ADMIN_API_TOKEN>"
 ```
 
-### 7.4 Endpoints write (actuels)
+### 7.4 Write-Endpunkte (aktuell)
 - **POST** `/position/{positionId}/liefertermin-lieferant`
 - **POST** `/position/{positionId}/neuer-liefertermin`
 - **POST** `/position/{positionId}/comment`
 - **POST** `/position/{positionId}/additional-delivery-request`
 
-ACL: `lieferzeiten.editor`.  
-Les endpoints de date/comment exigent `updatedAt` pour la concurrence optimiste (retour `409 CONCURRENT_MODIFICATION` en cas de conflit).
+ACL: `lieferzeiten.editor`.
+Die Datums-/Kommentar-Endpunkte verlangen `updatedAt` für optimistische Parallelitätskontrolle (bei Konflikt `409 CONCURRENT_MODIFICATION`).
 
-Exemple body (`neuer-liefertermin`):
+Beispiel-Body (`neuer-liefertermin`):
 ```json
 {
   "from": "2026-02-15",
@@ -228,85 +226,85 @@ Exemple body (`neuer-liefertermin`):
 }
 ```
 
-### 7.5 Endpoints tasks
+### 7.5 Task-Endpunkte
 - **GET** `/tasks`
 - **POST** `/tasks/{taskId}/assign`
 - **POST** `/tasks/{taskId}/close`
 - **POST** `/tasks/{taskId}/reopen`
 - **POST** `/tasks/{taskId}/cancel`
 
-ACL lecture: `viewer`, mutation: `editor`.
+ACL: Lesen `viewer`, Mutation `editor`.
 
 ---
 
-## 8. DemoDaten
+## 8. Demo-Daten
 
-### Lancer l’injection depuis le backend
-Dans l’Administration:
-1. **Settings → Lieferzeiten Settings → Channel Settings**.
-2. Cliquer sur **DemoDaten**.
+### Dateninjektion aus dem Backend starten
+In der Administration:
+1. **Einstellungen → Lieferzeiten Settings → Channel Settings**.
+2. Auf **DemoDaten** klicken.
 
-### Option reset
-- Bouton **Reset DemoDaten** pour réinitialiser puis regénérer.
-- API sous-jacente: `POST /api/_action/lieferzeiten/demo-data` avec body `{ "reset": true|false }`.
+### Reset-Option
+- Button **Reset DemoDaten**, um Daten zurückzusetzen und neu zu erzeugen.
+- Zugehörige API: `POST /api/_action/lieferzeiten/demo-data` mit Body `{ "reset": true|false }`.
 
-### Résultat attendu UI
-Après injection:
-- Données visibles dans listings Lieferzeiten (orders/statistics selon jeux injectés).
-- Message de notification de succès avec nombre d’enregistrements créés.
+### Erwartetes UI-Ergebnis
+Nach der Injektion:
+- Daten in Lieferzeiten-Listen sichtbar (Orders/Statistiken je nach Datensatz).
+- Erfolgsmeldung mit Anzahl der erzeugten Datensätze.
 
 ---
 
 ## 9. Troubleshooting
 
-### Erreurs fréquentes
-- **ACL / 403**: utilisateur admin sans rôles `lieferzeiten.viewer`/`lieferzeiten.editor`.
-- **Endpoint externe non configuré**: URLs/tokens manquants dans config plugin.
-- **Build admin KO**: assets non rebuild après mise à jour plugin.
-- **Queue non consommée**: scheduled task marquée mais worker messenger arrêté.
+### Häufige Fehler
+- **ACL / 403**: Admin-Benutzer ohne Rollen `lieferzeiten.viewer`/`lieferzeiten.editor`.
+- **Externer Endpunkt nicht konfiguriert**: fehlende URLs/Tokens in der Plugin-Konfiguration.
+- **Admin-Build fehlgeschlagen**: Assets nach Plugin-Update nicht neu gebaut.
+- **Queue wird nicht konsumiert**: Scheduled Task markiert, aber Messenger-Worker läuft nicht.
 
-### Checks rapides
+### Schnelle Checks
 ```bash
-# Plugin installé / actif
+# Plugin installiert / aktiv
 bin/console plugin:list | rg LieferzeitenAdmin
 
-# Vérifier tâches planifiées
+# Geplante Tasks prüfen
 bin/console scheduled-task:list | rg lieferzeiten_admin
 
-# Vérifier logs applicatifs
+# Applikationslogs prüfen
 tail -n 200 var/log/*.log
 
-# Vérifier que le code admin est présent
+# Prüfen, ob Admin-Code vorhanden ist
 test -f custom/plugins/LieferzeitenAdmin/src/Resources/app/administration/src/main.js && echo "admin sources OK"
 ```
 
 ---
 
-## 10. Quickstart (< 10 min)
+## 10. Quickstart (< 10 Min)
 
-> Copiez-collez depuis la racine projet.
+> Von der Projektwurzel ausführen.
 
 ```bash
-# 0) Préparer dépendances
+# 0) Abhängigkeiten vorbereiten
 composer install
 
-# 1) Installer/activer le plugin
+# 1) Plugin installieren/aktivieren
 bin/console plugin:refresh
 bin/console plugin:install --activate LieferzeitenAdmin
 
-# 2) Appliquer migrations + cache
+# 2) Migrationen + Cache
 bin/console database:migrate --all
 bin/console cache:clear
 
-# 3) Build admin
+# 3) Admin-Build
 bin/build-administration.sh
 
-# 4) Vérifier tâches et lancer scheduler/worker
+# 4) Tasks prüfen und Scheduler/Worker starten
 bin/console scheduled-task:list | rg lieferzeiten_admin
 bin/console scheduled-task:run
 bin/console messenger:consume -vv
 ```
 
-Ensuite, ouvrir l’admin Shopware:
-- **Orders → Lieferzeiten** pour l’overview commandes.
-- **Settings → Lieferzeiten Settings** pour config, règles de tâches, toggles notifications, et injection DemoDaten.
+Danach im Shopware-Admin:
+- **Bestellungen → Lieferzeiten** für die Auftragsübersicht.
+- **Einstellungen → Lieferzeiten Settings** für Konfiguration, Task-Regeln, Notification-Toggles und DemoDaten-Injektion.

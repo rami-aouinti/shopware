@@ -1,24 +1,24 @@
-# Task — Contrat d'intégration multi-sources
+# Task — Multi-Source-Integrationsvertrag
 
-Statut: `done`  
-Owner: `LieferzeitenAdmin`  
-Référence: `docs/integration-contract.md`
+Status: `done`
+Owner: `LieferzeitenAdmin`
+Referenz: `docs/integration-contract.md`
 
-## Objectif
-Définir, documenter et valider un contrat d'intégration unique pour:
+## Ziel
+Definition, Dokumentation und Validierung eines einheitlichen Integrationsvertrags für:
 - Shopware,
 - Gambio,
 - San6,
 - DHL/GLS.
 
-## Périmètre livré
-- Contrats d'entrée/sortie documentés.
-- Priorité des sources en cas de conflit documentée et implémentée.
-- Règles de fallback documentées et appliquées.
-- Champs minimaux de persistance définis et validés.
+## Gelieferter Umfang
+- Dokumentierte Ein-/Ausgabe-Verträge.
+- Dokumentierte und implementierte Quellenpriorität bei Konflikten.
+- Dokumentierte und angewendete Fallback-Regeln.
+- Definierte und validierte Mindestfelder für Persistenz.
 
-## Critères d'acceptation
-- [x] Document versionné présent: `docs/integration-contract.md`
-- [x] Exemples de payloads réels (anonymisés) inclus.
-- [x] Validation technique centralisée dans un validateur unique.
-- [x] Tests unitaires couvrant les contrats API, persistance et priorité.
+## Abnahmekriterien
+- [x] Versioniertes Dokument vorhanden: `docs/integration-contract.md`
+- [x] Reale (anonymisierte) Payload-Beispiele enthalten.
+- [x] Zentrale technische Validierung über einen einheitlichen Validator.
+- [x] Unit-Tests decken API-Verträge, Persistenz und Priorisierung ab.

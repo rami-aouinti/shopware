@@ -1,59 +1,58 @@
-# Task — Statistiques backend
+# Task — Backend-Statistiken auf Basis echter Persistenzdaten
 
-Statut: `todo`  
-Owner: `LieferzeitenAdmin`  
-Référence: `docs/observability-sla-runbook.md`
+Status: `open`
+Owner: `LieferzeitenAdmin`
 
-## Objectif
-Fiabiliser les KPI d'administration en imposant une agrégation backend exclusivement basée sur des données persistées, traçables et testées.
+## Ziel
+Sicherstellen, dass alle in der Administration angezeigten KPI aus den real persistierten Backend-Daten kommen und nicht aus Frontend-Mocks.
 
-## Périmètre imposé
-- Agrégation KPI depuis les tables persistées suivantes (et uniquement celles-ci) :
-  - `lieferzeiten_paket` (`paket`),
-  - `lieferzeiten_position` (`position`),
-  - `lieferzeiten_audit_log` (`audit`),
-  - `lieferzeiten_task` (`task`).
-- Interdiction explicite d'utiliser des mocks frontend comme source de vérité KPI.
-- Définition standardisée des fenêtres temporelles pour les KPI (au minimum `7j`, `30j`, `90j`, plus fenêtre custom bornée).
-- Normalisation de tous les calculs temporels et regroupements en timezone `Europe/Berlin`.
+## Verbindlicher Umfang
+- KPI-Aggregation ausschließlich aus den folgenden Tabellen:
+  - `lieferzeiten_paket` (`paket`)
+  - `lieferzeiten_position` (`position`)
+  - `lieferzeiten_audit_log` (`audit`)
+  - `lieferzeiten_task` (`task`)
+- Explizites Verbot, Frontend-Mocks als KPI-Quelle zu verwenden.
+- Standardisierte Zeitfenster für KPI (`7d`, `30d`, `90d` + begrenztes benutzerdefiniertes Fenster).
+- Einheitliche Auswertung aller Zeitberechnungen in `Europe/Berlin`.
 
-## Exigences techniques
+## Technische Anforderungen
 
-### 1) Source de données et agrégation
-- Les KPI doivent être calculés côté backend via requêtes SQL/DAL sur tables persistées.
-- Toute donnée de démonstration frontend est limitée à l'affichage de fallback visuel (jamais pour une valeur KPI business).
-- Les agrégations doivent être documentées KPI par KPI (formule, table source, filtres, dimensions temporelles).
+### 1) Datenquelle und Aggregation
+- KPI-Berechnung im Backend per SQL/DAL auf persistierten Tabellen.
+- Frontend-Demodaten nur als visuelle Fallback-Anzeige, nie als Business-KPI.
+- KPI-Dokumentation je Kennzahl (Formel, Quelltabelle, Filter, Zeitdimensionen).
 
-### 2) Fenêtres temporelles + timezone
-- Chaque endpoint de statistiques accepte une fenêtre temporelle explicite (`from`, `to` ou `period`).
-- Les bornes temporelles et regroupements journaliers/hebdomadaires sont évalués en `Europe/Berlin`.
-- Le contrat d'API précise le comportement aux changements d'heure (DST) et l'inclusivité des bornes.
+### 2) Zeitfenster + Zeitzone
+- Statistik-Endpunkte akzeptieren explizit `from`, `to` oder `period`.
+- Zeitgrenzen und Tages-/Wochenaggregation werden in `Europe/Berlin` berechnet.
+- API-Vertrag beschreibt DST-Verhalten (Sommer-/Winterzeit) und Inklusivität der Grenzen.
 
-### 3) Endpoint versionné
-- Exposer un endpoint versionné dédié aux statistiques backend (exemple: `/api/_action/lieferzeiten/v1/statistics`).
-- Maintenir la compatibilité des consommateurs existants via plan de transition (dépréciation documentée si endpoint historique).
-- Versionner explicitement le schéma de réponse (champs KPI, dimensions, metadata de fenêtre).
+### 3) Versionierter Endpoint
+- Versionierten Statistik-Endpoint bereitstellen (z. B. `/api/_action/lieferzeiten/v1/statistics`).
+- Kompatibilität für bestehende Verbraucher per Übergangsplan (dokumentierte Deprecation).
+- Antwortschema explizit versionieren (KPI-Felder, Dimensionen, Fenster-Metadaten).
 
-### 4) Validation par jeux de données de référence
-- Créer un ou plusieurs jeux de données de référence (fixtures) couvrant:
-  - cas nominal,
-  - cas limites temporels (DST, minuit, bornes),
-  - données manquantes/partielles,
-  - volumes multi-sources (`paket`, `position`, `audit`, `task`).
-- Définir les valeurs KPI attendues pour ces fixtures et les stocker dans une oracle de test versionnée.
+### 4) Validierung über Referenzdatensätze
+- Referenz-Fixtures für folgende Szenarien erstellen:
+  - Normalfall,
+  - zeitliche Randfälle (DST, Mitternacht, Grenzwerte),
+  - fehlende/partielle Daten,
+  - Multi-Source-Volumen (`paket`, `position`, `audit`, `task`).
+- Erwartete KPI pro Fixture als versionierte Test-Oracle pflegen.
 
-### 5) Tests d'agrégation reproductibles
-- Ajouter des tests d'intégration (ou fonctionnels) qui:
-  - chargent les fixtures de référence,
-  - exécutent les agrégations backend,
-  - comparent le résultat aux KPI attendus.
-- Les tests doivent être déterministes (freeze time, timezone forcée, seed fixe).
-- Les tests doivent être rejouables en CI et local, sans dépendre d'un état externe.
+### 5) Reproduzierbare Aggregationstests
+- Integrations-/funktionale Tests, die:
+  - Referenz-Fixtures laden,
+  - Backend-Aggregationen ausführen,
+  - Ergebnisse mit erwarteten KPI vergleichen.
+- Deterministisch durch Time-Freeze, erzwungene Zeitzone und festen Seed.
+- Lokal und in CI wiederholbar ohne externe Abhängigkeiten.
 
-## Critères d'acceptation
-- [ ] Aucun KPI affiché en admin ne dépend de mocks frontend.
-- [ ] Les KPI backend proviennent de `paket`, `position`, `audit`, `task` persistés.
-- [ ] Fenêtres temporelles et timezone `Europe/Berlin` sont appliquées et testées.
-- [ ] Endpoint versionné statistiques exposé et documenté.
-- [ ] Jeux de données de référence versionnés + KPI attendus validés.
-- [ ] Tests d'agrégation reproductibles au vert en CI.
+## Abnahmekriterien
+- [ ] Kein in der Admin angezeigter KPI hängt von Frontend-Mocks ab.
+- [ ] Backend-KPI stammen aus persistierten `paket`-, `position`-, `audit`- und `task`-Daten.
+- [ ] Zeitfenster und Zeitzone `Europe/Berlin` sind implementiert und getestet.
+- [ ] Versionierter Statistik-Endpoint ist verfügbar und dokumentiert.
+- [ ] Versionierte Referenzdatensätze + erwartete KPI sind validiert.
+- [ ] Reproduzierbare Aggregationstests sind in CI grün.

@@ -1,61 +1,61 @@
-# Task: sécurisation des migrations (SQL/DAL)
+# Aufgabe: Absicherung von Migrationen (SQL/DAL)
 
-## Objectif
-Assurer que les prochaines migrations du plugin `ExternalOrders` sont déployables en production sans interruption, avec une stratégie claire de compatibilité, de rollback et de validation.
+## Ziel
+Sicherstellen, dass kommende Migrationen des Plugins `ExternalOrders` ohne Unterbrechung in Produktion ausgerollt werden können – mit klarer Strategie für Kompatibilität, Rollback und Validierung.
 
-## Scope
-- Migrations SQL (`MigrationStep::update`) et impacts DAL (Definition/Entity/Repository).
-- Ajout de nouveaux champs et scripts de backfill associés.
-- Exécution sûre sur bases existantes (données historiques hétérogènes).
+## Umfang
+- SQL-Migrationen (`MigrationStep::update`) und DAL-Auswirkungen (Definition/Entity/Repository).
+- Hinzufügen neuer Felder inkl. zugehöriger Backfill-Skripte.
+- Sichere Ausführung auf bestehenden Datenbanken (heterogene Altdaten).
 
-## Livrables attendus
+## Erwartete Ergebnisse
 
-### 1) Ordre des migrations SQL/DAL
-- Définir l'ordre exact d'exécution:
-  1. Ajout schéma SQL backward-compatible (tables/colonnes/index nullable ou avec defaults sûrs).
-  2. Adaptation DAL (Definition/Entity/Service) pour lire l'ancien + nouveau modèle.
-  3. Activation progressive de l'écriture sur nouveaux champs.
-  4. Nettoyage/destructive migration dans une release ultérieure.
-- Documenter les dépendances inter-migrations (timestamp + prérequis techniques).
+### 1) Reihenfolge von SQL-/DAL-Migrationen
+- Exakte Ausführungsreihenfolge festlegen:
+  1. Rückwärtskompatible SQL-Schema-Erweiterung (Tabellen/Spalten/Indizes nullable oder mit sicheren Defaults).
+  2. DAL-Anpassung (Definition/Entity/Service), damit altes und neues Modell lesbar sind.
+  3. Schrittweise Aktivierung von Schreibvorgängen auf neue Felder.
+  4. Bereinigung/destruktive Migration in einem späteren Release.
+- Abhängigkeiten zwischen Migrationen dokumentieren (Timestamp + technische Voraussetzungen).
 
-### 2) Scripts de backfill pour nouveaux champs
-- Créer un script de backfill dédié (command/service) pour remplir les nouveaux champs à partir des données existantes.
-- Exiger un mode batch/paginé (limitation mémoire, reprise possible).
-- Ajouter des logs de progression + métriques (total traité, erreurs, relances).
-- Prévoir un mode dry-run pour estimer l'impact avant exécution réelle.
+### 2) Backfill-Skripte für neue Felder
+- Eigenes Backfill-Skript (Command/Service) erstellen, das neue Felder aus Bestandsdaten befüllt.
+- Batch-/Paging-Modus erzwingen (Speicherlimit, Wiederaufnahme möglich).
+- Fortschrittslogs und Metriken ergänzen (gesamt verarbeitet, Fehler, Wiederholungen).
+- Dry-Run-Modus vorsehen, um Auswirkungen vor echter Ausführung zu schätzen.
 
-### 3) Compatibilité avec les données existantes
-- Vérifier explicitement:
-  - nullabilité / valeurs par défaut,
-  - formats legacy,
-  - contraintes uniques et collisions possibles,
-  - lecture applicative avant/après migration.
-- Documenter les cas limites et la stratégie de correction automatique.
+### 3) Kompatibilität mit Bestandsdaten
+- Explizit prüfen:
+  - Nullbarkeit / Standardwerte,
+  - Legacy-Formate,
+  - Unique-Constraints und mögliche Kollisionen,
+  - Anwendungssicht vor/nach Migration.
+- Randfälle und automatische Korrekturstrategie dokumentieren.
 
-### 4) Procédure de rollback (technique + opérationnelle)
-- **Technique**:
-  - rollback applicatif vers version N-1,
-  - stratégie DB (snapshot/restauration, scripts compensatoires, flags de désactivation).
-- **Opérationnelle**:
-  - runbook incident (qui fait quoi, ordre des actions, délais cibles),
-  - communication interne (support/ops/dev),
-  - critères Go/No-Go et déclenchement rollback.
+### 4) Rollback-Prozedur (technisch + operativ)
+- **Technisch**:
+  - Anwendungsrollback auf Version N-1,
+  - DB-Strategie (Snapshot/Wiederherstellung, kompensierende Skripte, Deaktivierungs-Flags).
+- **Operativ**:
+  - Incident-Runbook (Verantwortlichkeiten, Reihenfolge der Aktionen, Zielzeiten),
+  - interne Kommunikation (Support/Ops/Dev),
+  - Go/No-Go-Kriterien und Rollback-Auslösung.
 
-### 5) Checklist de validation post-migration
-- Migration exécutée sans erreur SQL.
-- Intégrité des données validée (comptages avant/après).
-- Backfill terminé et taux d'échec documenté.
-- Parcours applicatifs critiques validés (liste de smoke tests).
-- Monitoring/alerting vérifié pendant la fenêtre de stabilisation.
-- Validation métier finale et clôture du changement.
+### 5) Checkliste für Post-Migrations-Validierung
+- Migration ohne SQL-Fehler ausgeführt.
+- Datenintegrität validiert (Zählungen vorher/nachher).
+- Backfill abgeschlossen und Fehlerrate dokumentiert.
+- Kritische Anwendungspfade validiert (Smoke-Test-Liste).
+- Monitoring/Alerting während Stabilisierung geprüft.
+- Fachliche Endabnahme und Abschluss des Changes.
 
-## Critères d'acceptation
-- Plan de migration versionné et relu.
-- Runbook de rollback disponible et testé en environnement de recette.
-- Preuve de compatibilité sur dataset représentatif de production.
-- Tests automatisés de migration idempotente ajoutés et au vert.
+## Abnahmekriterien
+- Versionierter und geprüfter Migrationsplan.
+- Rollback-Runbook vorhanden und in der Testumgebung validiert.
+- Kompatibilitätsnachweis auf produktionsnahem Datensatz.
+- Automatisierte Tests für idempotente Migrationen hinzugefügt und grün.
 
-## Tests à implémenter (idempotence)
-- Exécuter chaque migration `update()` au moins 2 fois dans les tests.
-- Vérifier l'absence d'erreur et l'absence de corruption de schéma/données.
-- Valider que `updateDestructive()` reste sûr lorsqu'il est rejoué.
+## Umzusetzende Tests (Idempotenz)
+- Jede `update()`-Migration mindestens zweimal in Tests ausführen.
+- Fehlerfreiheit sowie unveränderte Schema-/Datenintegrität verifizieren.
+- Sicherstellen, dass `updateDestructive()` auch bei Wiederholung stabil bleibt.

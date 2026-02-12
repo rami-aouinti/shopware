@@ -1,25 +1,25 @@
-# Integration Contract — LieferzeitenAdmin
+# Integrationsvertrag — LieferzeitenAdmin
 
 Version: `1.0.0`  
-Dernière mise à jour: `2026-02-10`
+Letzte Aktualisierung: `2026-02-10`
 
-## 1) Contrats d'entrée/sortie des APIs
+## 1) Ein-/Ausgabe-Verträge der APIs
 
-## 1.1 Shopware API (channel: `shopware`)
+## 1.1 Shopware API (Kanal: `shopware`)
 
-### Entrée minimale attendue
-- `externalId` **ou** `id` **ou** `orderNumber`
+### Minimale erwartete Eingabe
+- `externalId` **oder** `id` **oder** `orderNumber`
 - `status`
-- `date` **ou** `orderDate`
+- `date` **oder** `orderDate`
 
-### Sortie normalisée utilisée dans le plugin
+### Normalisierte Ausgabe im Plugin
 - `externalId`
 - `orderNumber`
 - `status`
 - `orderDate`
 - `sourceSystem`
 
-### Exemple de payload réel (anonymisé)
+### Beispiel-Payload (anonymisiert)
 ```json
 {
   "id": "SW-2026-100045",
@@ -31,21 +31,21 @@ Dernière mise à jour: `2026-02-10`
 }
 ```
 
-## 1.2 Gambio API (channel: `gambio`)
+## 1.2 Gambio API (Kanal: `gambio`)
 
-### Entrée minimale attendue
-- `externalId` **ou** `id` **ou** `orderNumber`
+### Minimale erwartete Eingabe
+- `externalId` **oder** `id` **oder** `orderNumber`
 - `status`
-- `date` **ou** `orderDate`
+- `date` **oder** `orderDate`
 
-### Sortie normalisée utilisée dans le plugin
+### Normalisierte Ausgabe im Plugin
 - `externalId`
 - `orderNumber`
 - `status`
 - `orderDate`
 - `sourceSystem`
 
-### Exemple de payload réel (anonymisé)
+### Beispiel-Payload (anonymisiert)
 ```json
 {
   "externalId": "GX-556677",
@@ -59,17 +59,17 @@ Dernière mise à jour: `2026-02-10`
 
 ## 1.3 San6 API
 
-### Entrée minimale attendue
+### Minimale erwartete Eingabe
 - `orderNumber`
-- `shippingDate` **ou** `deliveryDate`
+- `shippingDate` **oder** `deliveryDate`
 
-### Sortie (merge) vers le modèle métier
+### Ausgabe (Merge) ins Geschäftsmodell
 - `shippingDate`
 - `deliveryDate`
 - `parcels`
-- `sourceSystem` (optionnel; prend la priorité si présent)
+- `sourceSystem` (optional; hat Priorität, wenn vorhanden)
 
-### Exemple de payload réel (anonymisé)
+### Beispiel-Payload (anonymisiert)
 ```json
 {
   "orderNumber": "100045",
@@ -90,18 +90,18 @@ Dernière mise à jour: `2026-02-10`
 
 ## 1.4 DHL / GLS Tracking API
 
-### Entrée minimale attendue
+### Minimale erwartete Eingabe
 - `trackingNumber`
 - `status`
-- `eventTime` **ou** `timestamp`
+- `eventTime` **oder** `timestamp`
 
-### Sortie normalisée
+### Normalisierte Ausgabe
 - `trackingNumber`
 - `status`
 - `eventTime`
 - `carrier`
 
-### Exemple de payload réel (anonymisé)
+### Beispiel-Payload (anonymisiert)
 ```json
 {
   "trackingNumber": "00340434161234567890",
@@ -111,54 +111,54 @@ Dernière mise à jour: `2026-02-10`
 }
 ```
 
-## 2) Priorité des sources en cas de conflit
+## 2) Priorität der Quellen bei Konflikten
 
-Règle globale (par défaut):
+Standardregel:
 1. `San6`
 2. `Tracking (DHL/GLS)`
 3. `Shop (Shopware/Gambio)`
 
-Application actuelle:
-- `sourceSystem` persistant: San6 gagne si fourni.
-- `shippingDate` / `deliveryDate`: San6 gagne sur la valeur shop.
-- Données tracking (états colis): tracking gagne sur shop pour les événements de transport.
+Aktuelle Anwendung:
+- Persistentes `sourceSystem`: San6 gewinnt, wenn vorhanden.
+- `shippingDate` / `deliveryDate`: San6 hat Vorrang vor Shop-Werten.
+- Tracking-Daten (Paketstatus): Tracking gewinnt gegenüber Shop-Events.
 
-## 3) Règles de fallback (source indisponible)
+## 3) Fallback-Regeln (Quelle nicht verfügbar)
 
-- **San6 indisponible ou invalide**: le flux continue avec la donnée shop normalisée.
-- **Tracking indisponible**: aucune rupture de sync; le statut colis reste inchangé jusqu'au prochain cycle.
-- **Shop API invalide**: l'enregistrement est ignoré (pas de persistance partielle) avec log de violation de contrat.
-- **Date de paiement manquante en prépaiement**: fallback sur `orderDate` (comportement métier existant).
+- **San6 nicht verfügbar oder ungültig**: Fluss läuft mit normalisierten Shop-Daten weiter.
+- **Tracking nicht verfügbar**: Kein Sync-Abbruch; Paketstatus bleibt bis zum nächsten Zyklus unverändert.
+- **Shop-API ungültig**: Datensatz wird verworfen (keine partielle Persistenz) und als Vertragsverletzung geloggt.
+- **Fehlendes Zahlungsdatum bei Vorkasse**: Fallback auf `orderDate` (bestehendes Business-Verhalten).
 
-## 4) Champs obligatoires/minimaux pour persister
+## 4) Pflicht-/Minimalfelder für Persistenz
 
-### 4.1 Enregistrement `paket`
-- `externalOrderId` **ou** `externalId` **ou** `orderNumber`
-- `paketNumber` **ou** `packageNumber` **ou** `orderNumber`
+### 4.1 Datensatz `paket`
+- `externalOrderId` **oder** `externalId` **oder** `orderNumber`
+- `paketNumber` **oder** `packageNumber` **oder** `orderNumber`
 - `sourceSystem`
 
-### 4.2 Enregistrement `position`
-- `positionNumber` **ou** `orderNumber` **ou** `externalId`
+### 4.2 Datensatz `position`
+- `positionNumber` **oder** `orderNumber` **oder** `externalId`
 - `status`
 
-### 4.3 Enregistrement `tracking_history`
-- `trackingNumber` **ou** `sendenummer`
+### 4.3 Datensatz `tracking_history`
+- `trackingNumber` **oder** `sendenummer`
 - `status`
-- `eventTime` **ou** `timestamp`
+- `eventTime` **oder** `timestamp`
 
-## 5) Validation implémentée
+## 5) Implementierte Validierung
 
-La validation contractuelle est centralisée dans:
+Die Vertragsvalidierung ist zentralisiert in:
 - `LieferzeitenAdmin\Service\Integration\IntegrationContractValidator`
 
-Validation active:
-- Contrats d'entrée Shopware/Gambio avant traitement.
-- Contrat San6 avant merge.
-- Contrat minimal de persistance (`paket`) avant upsert.
+Aktive Validierung:
+- Eingangsverträge für Shopware/Gambio vor der Verarbeitung.
+- San6-Vertrag vor dem Merge.
+- Minimaler Persistenzvertrag (`paket`) vor dem Upsert.
 
-## 6) Évolution du contrat
+## 6) Weiterentwicklung des Vertrags
 
-Toute évolution doit:
-1. incrémenter la version du document,
-2. mettre à jour les tests unitaires,
-3. conserver la rétrocompatibilité des alias de clés (`externalId|id|orderNumber`, etc.) quand possible.
+Jede Vertragsänderung muss:
+1. die Dokumentversion erhöhen,
+2. die Unit-Tests aktualisieren,
+3. Rückwärtskompatibilität von Schlüssel-Aliasen (`externalId|id|orderNumber` usw.) soweit möglich erhalten.
