@@ -48,6 +48,11 @@ Component.register('external-orders-list', {
             channelSources: {},
             channels: [
                 {
+                    id: 'all',
+                    label: 'All',
+                    logo: createInlineChannelLogo('ALL', '#525F7F'),
+                },
+                {
                     id: 'b2b',
                     label: 'First-medical-shop.de',
                     logo: createInlineChannelLogo('B2B', '#0B7F8A'),
@@ -83,7 +88,7 @@ Component.register('external-orders-list', {
                     logo: createInlineChannelLogo('BZ', '#6A7A1F'),
                 },
             ],
-            activeChannel: 'b2b',
+            activeChannel: 'all',
             tableSearchTerm: '',
             columnFilterMatchMode: 'all',
             columnFilterMatchOptions: [
@@ -327,6 +332,7 @@ Component.register('external-orders-list', {
                 const defaultColumnsPerPage = Number.parseInt(getConfigValue('defaultColumnsPerPage'), 10);
 
                 this.channelSources = {
+                    all: 'Alle External Orders',
                     b2b: getConfigValue('externalOrdersApiUrlB2b'),
                     ebay_de: getConfigValue('externalOrdersApiUrlEbayDe'),
                     kaufland: getConfigValue('externalOrdersApiUrlKaufland'),
@@ -358,7 +364,9 @@ Component.register('external-orders-list', {
             this.page = 1;
 
             try {
-                const selectedChannel = this.activeChannel || null;
+                const selectedChannel = !this.activeChannel || this.activeChannel === 'all'
+                    ? null
+                    : this.activeChannel;
                 const response = await this.externalOrderService.list({
                     channel: selectedChannel,
                 });
