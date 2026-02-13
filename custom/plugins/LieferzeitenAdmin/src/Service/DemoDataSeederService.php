@@ -18,12 +18,34 @@ class DemoDataSeederService
 
     public function hasDemoData(): bool
     {
-        $result = $this->connection->fetchOne(
-            'SELECT 1 FROM `lieferzeiten_paket` WHERE external_order_id LIKE :prefix LIMIT 1',
-            ['prefix' => self::ORDER_PREFIX . '%'],
-        );
+        $checks = [
+            [
+                'sql' => 'SELECT 1 FROM `lieferzeiten_paket` WHERE external_order_id LIKE :prefix LIMIT 1',
+                'params' => ['prefix' => self::ORDER_PREFIX . '%'],
+            ],
+            [
+                'sql' => 'SELECT 1 FROM `lieferzeiten_channel_settings` WHERE sales_channel_id LIKE :prefix OR last_changed_by = :changedBy LIMIT 1',
+                'params' => ['prefix' => 'demo_%', 'changedBy' => 'demo.seeder'],
+            ],
+            [
+                'sql' => 'SELECT 1 FROM `lieferzeiten_task_assignment_rule` WHERE name LIKE :prefix OR trigger_key LIKE :prefix LIMIT 1',
+                'params' => ['prefix' => 'demo_%'],
+            ],
+            [
+                'sql' => 'SELECT 1 FROM `lieferzeiten_notification_toggle` WHERE code LIKE :prefix OR trigger_key LIKE :prefix LIMIT 1',
+                'params' => ['prefix' => 'demo_%'],
+            ],
+        ];
 
-        return $result !== false;
+        foreach ($checks as $check) {
+            $result = $this->connection->fetchOne($check['sql'], $check['params']);
+
+            if ($result === false) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
