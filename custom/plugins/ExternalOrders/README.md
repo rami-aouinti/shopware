@@ -46,6 +46,81 @@ Nach der Aktivierung erscheint in der Administration unter **Bestellungen** ein 
 - Gültiger Token: Rückgabe `200` mit `Content-Type: application/xml` und Export-XML.
 - Ungültiger oder abgelaufener Token: Rückgabe `404`.
 
+## Validation en intégration / préprod (SAN6 `filetransferurl`)
+
+Cette procédure permet de valider le comportement de l’URL signée en dehors du réseau interne Shopware.
+
+### 1) Générer une URL signée via `TopmSan6OrderExportService`
+
+1. Vérifier que la stratégie d’envoi est bien `filetransferurl` dans la configuration du plugin.
+2. Déclencher un export depuis l’API admin (cela appelle `TopmSan6OrderExportService::exportOrder()` qui génère l’URL signée et la transmet à SAN6) :
+   ```bash
+   curl -sS -X POST "https://<shop-domain>/api/_action/external-orders/export/<orderId>" \
+     -H "Authorization: Bearer <admin-api-token>" \
+     -H "Content-Type: application/json"
+   ```
+3. Récupérer l’URL signée depuis la trace de la requête sortante vers SAN6 (proxy sortant/WAF/log applicatif SAN6).
+   - Le format attendu est : `https://<shop-domain>/api/external-orders/topm-export/<token>`.
+
+### 2) Tester l’URL depuis l’extérieur (hors réseau interne Shopware)
+
+Depuis une machine externe (ex: poste hors VPN, runner public, etc.) :
+
+```bash
+curl -i "https://<shop-domain>/api/external-orders/topm-export/<token>"
+```
+
+Résultat attendu :
+- HTTP `200 OK`
+- Header `Content-Type: application/xml; charset=utf-8`
+- Body XML non vide (payload exporté)
+
+### 3) Tester token invalide / expiré
+
+#### Token invalide
+```bash
+curl -i "https://<shop-domain>/api/external-orders/topm-export/<token_invalide>"
+```
+
+Attendu : HTTP `404 Not Found`.
+
+#### Token expiré
+Le token signé expire après ~10 minutes (TTL 600 s). Rejouer exactement la même URL après expiration :
+
+```bash
+curl -i "https://<shop-domain>/api/external-orders/topm-export/<token_expire>"
+```
+
+Attendu : HTTP `404 Not Found`.
+
+### 4) Vérifier reverse proxy et base URL (`core.basicInformation.shopwareUrl`)
+
+Le service construit l’URL signée à partir de `core.basicInformation.shopwareUrl` (fallback: `APP_URL`). Cette valeur doit être publiquement routable.
+
+Vérifier la valeur configurée :
+
+```sql
+SELECT configuration_value
+FROM system_config
+WHERE configuration_key = 'core.basicInformation.shopwareUrl';
+```
+
+Critères de conformité infra :
+- domaine public résolvable (DNS externe) ;
+- terminaison TLS valide sur le reverse proxy (`https`) ;
+- routage vers Shopware pour `GET /api/external-orders/topm-export/{token}` ;
+- conservation du host/proto (`X-Forwarded-Host`, `X-Forwarded-Proto`) cohérente avec l’URL publique ;
+- pas de blocage WAF/CDN sur cette route de type machine-to-machine.
+
+### 5) Prérequis d’infrastructure (checklist)
+
+- `core.basicInformation.shopwareUrl` pointe sur l’URL publique finale.
+- Le reverse proxy publie `/api/external-orders/topm-export/*` sans authentification additionnelle.
+- Les sorties réseau vers SAN6 sont autorisées (DNS/443).
+- Horloge serveur synchronisée (NTP), sinon faux positifs “token expiré”.
+- La valeur `APP_SECRET` est stable entre nœuds (si multi-instance), sinon validation HMAC incohérente.
+- Monitoring conseillé : taux HTTP 404 sur la route signée + alertes sur erreurs SAN6.
+
 ## Version
 - **1.0.0**
 
