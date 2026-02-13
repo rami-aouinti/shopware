@@ -8,7 +8,7 @@ Component.register('lieferzeiten-channel-settings-list', {
 
     mixins: ['notification'],
 
-    inject: ['repositoryFactory', 'lieferzeitenOrdersService'],
+    inject: ['repositoryFactory', 'lieferzeitenOrdersService', 'acl'],
 
     data() {
         return {
@@ -25,6 +25,10 @@ Component.register('lieferzeiten-channel-settings-list', {
 
     computed: {
         hasEditAccess() {
+            if (typeof this.acl?.can !== 'function') {
+                return false;
+            }
+
             return this.acl.can('lieferzeiten.editor') || this.acl.can('admin');
         },
 

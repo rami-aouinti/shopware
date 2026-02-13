@@ -6,7 +6,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
 
     mixins: ['notification'],
 
-    inject: ['lieferzeitenTrackingService', 'lieferzeitenOrdersService'],
+    inject: ['lieferzeitenTrackingService', 'lieferzeitenOrdersService', 'acl'],
 
     props: {
         orders: {
@@ -49,10 +49,18 @@ Shopware.Component.register('lieferzeiten-order-table', {
     methods: {
 
         hasViewAccess() {
+            if (typeof this.acl?.can !== 'function') {
+                return false;
+            }
+
             return this.acl.can('lieferzeiten.viewer') || this.acl.can('admin');
         },
 
         hasEditAccess() {
+            if (typeof this.acl?.can !== 'function') {
+                return false;
+            }
+
             return this.acl.can('lieferzeiten.editor') || this.acl.can('admin');
         },
         isOrderOpen(order) {
