@@ -34,6 +34,18 @@ class ExternalOrderSyncService
             $apiUrl = (string) $this->systemConfigService->get($config['urlKey']);
             $apiToken = (string) $this->systemConfigService->get($config['tokenKey']);
 
+            if ($config['channel'] === 'san6') {
+                $san6Url = (string) $this->systemConfigService->get('ExternalOrders.config.externalOrdersSan6BaseUrl');
+                if ($san6Url !== '') {
+                    $apiUrl = $this->buildSan6ApiUrl($san6Url);
+                }
+
+                $san6Auth = (string) $this->systemConfigService->get('ExternalOrders.config.externalOrdersSan6Authentifizierung');
+                if ($san6Auth !== '') {
+                    $apiToken = $san6Auth;
+                }
+            }
+
             if ($apiUrl === '') {
                 $this->logger->warning('External Orders sync skipped: missing API URL.', [
                     'channel' => $config['channel'],
@@ -112,10 +124,30 @@ class ExternalOrderSyncService
             ],
             [
                 'channel' => 'san6',
-                'urlKey' => 'ExternalOrders.config.externalOrdersApiUrlSan6',
-                'tokenKey' => 'ExternalOrders.config.externalOrdersApiTokenSan6',
+                'urlKey' => 'ExternalOrders.config.externalOrdersSan6BaseUrl',
+                'tokenKey' => 'ExternalOrders.config.externalOrdersSan6Authentifizierung',
             ],
         ];
+    }
+
+
+    private function buildSan6ApiUrl(string $baseUrl): string
+    {
+        $query = array_filter([
+            'company' => (string) $this->systemConfigService->get('ExternalOrders.config.externalOrdersSan6Company'),
+            'product' => (string) $this->systemConfigService->get('ExternalOrders.config.externalOrdersSan6Product'),
+            'mandant' => (string) $this->systemConfigService->get('ExternalOrders.config.externalOrdersSan6Mandant'),
+            'sys' => (string) $this->systemConfigService->get('ExternalOrders.config.externalOrdersSan6Sys'),
+            'authentifizierung' => (string) $this->systemConfigService->get('ExternalOrders.config.externalOrdersSan6Authentifizierung'),
+        ], static fn (string $value): bool => $value !== '');
+
+        if ($query === []) {
+            return $baseUrl;
+        }
+
+        $separator = str_contains($baseUrl, '?') ? '&' : '?';
+
+        return $baseUrl . $separator . http_build_query($query);
     }
 
     private function syncChannelOrders(

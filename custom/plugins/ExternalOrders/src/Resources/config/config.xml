@@ -51,5 +51,87 @@
             <helpText lang="de-DE">Speichert Demo-Bestellungen, wenn keine vorhanden sind, oder entfernt vorhandene Demo-Daten aus der Datenbank.</helpText>
         </component>
 
+        <title lang="en-GB">SAN6 configuration</title>
+        <title lang="de-DE">SAN6 Konfiguration</title>
+
+        <input-field type="text">
+            <name>externalOrdersSan6BaseUrl</name>
+            <label lang="en-GB">SAN6 base URL</label>
+            <label lang="de-DE">SAN6 Basis-URL</label>
+            <placeholder>https://example.com:4443</placeholder>
+        </input-field>
+
+        <input-field type="text">
+            <name>externalOrdersSan6Company</name>
+            <label lang="en-GB">SAN6 company</label>
+            <label lang="de-DE">SAN6 Company</label>
+        </input-field>
+
+        <input-field type="text">
+            <name>externalOrdersSan6Product</name>
+            <label lang="en-GB">SAN6 product</label>
+            <label lang="de-DE">SAN6 Product</label>
+        </input-field>
+
+        <single-select>
+            <name>externalOrdersSan6Mandant</name>
+            <label lang="en-GB">SAN6 mandant</label>
+            <label lang="de-DE">SAN6 Mandant</label>
+            <options>
+                <option>
+                    <id>Schule</id>
+                    <name>Schule</name>
+                </option>
+                <option>
+                    <id>Zentrale</id>
+                    <name>Zentrale</name>
+                </option>
+            </options>
+            <defaultValue>Schule</defaultValue>
+        </single-select>
+
+        <input-field type="text">
+            <name>externalOrdersSan6Sys</name>
+            <label lang="en-GB">SAN6 sys</label>
+            <label lang="de-DE">SAN6 Sys</label>
+        </input-field>
+
+        <input-field type="text">
+            <name>externalOrdersSan6Authentifizierung</name>
+            <label lang="en-GB">SAN6 authentification</label>
+            <label lang="de-DE">SAN6 Authentifizierung</label>
+        </input-field>
+
+        <input-field type="text">
+            <name>externalOrdersSan6ReadFunction</name>
+            <label lang="en-GB">SAN6 read function</label>
+            <label lang="de-DE">SAN6 Lese-Funktion</label>
+            <defaultValue>API-AUFTRAEGE</defaultValue>
+        </input-field>
+
+        <input-field type="text">
+            <name>externalOrdersSan6WriteFunction</name>
+            <label lang="en-GB">SAN6 write function</label>
+            <label lang="de-DE">SAN6 Schreib-Funktion</label>
+            <defaultValue>API-AUFTRAGNEU2</defaultValue>
+        </input-field>
+
+        <single-select>
+            <name>externalOrdersSan6SendStrategy</name>
+            <label lang="en-GB">SAN6 send strategy</label>
+            <label lang="de-DE">SAN6 Versandstrategie</label>
+            <options>
+                <option>
+                    <id>filetransferurl</id>
+                    <name>filetransferurl</name>
+                </option>
+                <option>
+                    <id>post-xml</id>
+                    <name>post-xml</name>
+                </option>
+            </options>
+            <defaultValue>filetransferurl</defaultValue>
+        </single-select>
+
     </card>
 </config>

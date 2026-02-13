@@ -24,6 +24,15 @@ class ExternalOrdersConfigSubscriber implements EventSubscriberInterface
         'ExternalOrders.config.externalOrdersApiTokenPeg',
         'ExternalOrders.config.externalOrdersApiUrlBezb',
         'ExternalOrders.config.externalOrdersApiTokenBezb',
+        'ExternalOrders.config.externalOrdersSan6BaseUrl',
+        'ExternalOrders.config.externalOrdersSan6Company',
+        'ExternalOrders.config.externalOrdersSan6Product',
+        'ExternalOrders.config.externalOrdersSan6Mandant',
+        'ExternalOrders.config.externalOrdersSan6Sys',
+        'ExternalOrders.config.externalOrdersSan6Authentifizierung',
+        'ExternalOrders.config.externalOrdersSan6ReadFunction',
+        'ExternalOrders.config.externalOrdersSan6WriteFunction',
+        'ExternalOrders.config.externalOrdersSan6SendStrategy',
     ];
 
     public function __construct(private readonly ExternalOrderSyncService $syncService)
