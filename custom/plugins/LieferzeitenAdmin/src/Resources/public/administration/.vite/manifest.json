@@ -1,0 +1,11 @@
+{
+  "main.js": {
+    "file": "assets/lieferzeiten-admin-w8tKv3Cv.js",
+    "name": "lieferzeiten-admin",
+    "src": "main.js",
+    "isEntry": true,
+    "css": [
+      "assets/lieferzeiten-admin-CG0frL2o.css"
+    ]
+  }
+}
