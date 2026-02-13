@@ -420,6 +420,77 @@ class TopmSan6OrderExportServiceTest extends TestCase
         static::assertSame(base64_encode('schule payload'), (string) $xml->Anlagen->Anlage[0]->Datei);
     }
 
+    public function testExportOrderHandlesSchuleEdgeCasesForVariantsReferencesAttachmentsAndSpecialCharacters(): void
+    {
+        $connection = $this->createConnection();
+        $orderId = Uuid::randomHex();
+
+        $capturedUrl = null;
+        $capturedXml = null;
+        $topmResponse = '<response><response_code>0</response_code><response_message>OK Schule Edge Cases</response_message></response>';
+
+        $topmClient = $this->createMock(TopmSan6Client::class);
+        $topmClient->expects(static::once())
+            ->method('sendByPostXml')
+            ->willReturnCallback(static function (string $url, string $token, string $xml) use (&$capturedUrl, &$capturedXml, $topmResponse): string {
+                $capturedUrl = $url;
+                $capturedXml = $xml;
+
+                return $topmResponse;
+            });
+
+        $service = $this->createService(
+            $this->createOrderRepository($this->createOrderForSchuleEdgeCases($orderId)),
+            $topmClient,
+            $this->createConfig([
+                'ExternalOrders.config.externalOrdersSan6SendStrategy' => 'post-xml',
+                'ExternalOrders.config.externalOrdersSan6BaseUrl' => 'https://topm.example/api',
+                'ExternalOrders.config.externalOrdersSan6Company' => 'fms',
+                'ExternalOrders.config.externalOrdersSan6Product' => 'sw6',
+                'ExternalOrders.config.externalOrdersSan6Mandant' => 'Schule',
+                'ExternalOrders.config.externalOrdersSan6Sys' => 'stage',
+                'ExternalOrders.config.externalOrdersSan6Authentifizierung' => 'schule-token',
+            ]),
+            $connection,
+            $this->createMock(LoggerInterface::class),
+            $this->createUrlGenerator('/unused')
+        );
+
+        $result = $service->exportOrder($orderId, Context::createDefaultContext());
+
+        static::assertSame('sent', $result['status']);
+        static::assertSame('https://topm.example/api?company=fms&product=sw6&mandant=Schule&sys=stage&authentifizierung=schule-token', $capturedUrl);
+
+        $xml = simplexml_load_string($capturedXml ?: '');
+        static::assertInstanceOf(\SimpleXMLElement::class, $xml);
+
+        static::assertSame('École & Co', (string) $xml->Kunde->Firma);
+        static::assertSame("L'été d'André & Fils", (string) $xml->Positionen->Position[0]->Bezeichnung);
+        static::assertSame('ART', (string) $xml->Positionen->Position[0]->Referenz);
+        static::assertSame('01', (string) $xml->Positionen->Position[0]->Gr);
+
+        static::assertSame('ART', (string) $xml->Positionen->Position[1]->Referenz);
+        static::assertSame('01', (string) $xml->Positionen->Position[1]->Gr);
+
+        static::assertSame('NO-VARIANT-ART', (string) $xml->Positionen->Position[2]->Referenz);
+        static::assertSame('00', (string) $xml->Positionen->Position[2]->Gr);
+
+        static::assertSame(base64_encode('petite pièce jointe avec accents éèà & apostrophe\''), (string) $xml->Anlagen->Anlage[0]->Datei);
+
+        $largeAttachment = str_repeat('SAN6-LARGE-', 25000);
+        static::assertSame(base64_encode($largeAttachment), (string) $xml->Anlagen->Anlage[1]->Datei);
+
+        $row = $connection->fetchAssociative('SELECT request_xml, response_xml, response_code, response_message FROM external_order_export WHERE id = :id', [
+            'id' => Uuid::fromHexToBytes($result['exportId']),
+        ]);
+
+        static::assertIsArray($row);
+        static::assertSame($capturedXml, $row['request_xml']);
+        static::assertSame($topmResponse, $row['response_xml']);
+        static::assertSame(0, (int) $row['response_code']);
+        static::assertSame('OK Schule Edge Cases', $row['response_message']);
+    }
+
     public function testServeSignedExportXmlValidTokenExpiredAndInvalidSignature(): void
     {
         $_ENV['APP_SECRET'] = 'test-secret';
@@ -730,6 +801,78 @@ class TopmSan6OrderExportServiceTest extends TestCase
         $order->method('getCustomFields')->willReturn([
             'externalOrderAttachments' => [$wrappedBase64],
             'externalOrderAttachmentNames' => ['auftrag-schule-wrapped.txt'],
+        ]);
+
+        return $order;
+    }
+
+    private function createOrderForSchuleEdgeCases(string $orderId): OrderEntity
+    {
+        $billing = new OrderAddressEntity();
+        $billing->setCompany('École & Co');
+        $billing->setFirstName('André');
+        $billing->setLastName('D\'Hôte');
+        $billing->setStreet('Rue de l\'Église 7');
+        $billing->setZipcode('44000');
+        $billing->setCity('Nantes');
+
+        $price = $this->createMock(\Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice::class);
+        $price->method('getUnitPrice')->willReturn(19.95);
+
+        $lineItemWithDotReference = $this->createMock(OrderLineItemEntity::class);
+        $lineItemWithDotReference->method('getType')->willReturn('product');
+        $lineItemWithDotReference->method('getIdentifier')->willReturn('SKU-DOT');
+        $lineItemWithDotReference->method('getReferencedId')->willReturn(null);
+        $lineItemWithDotReference->method('getLabel')->willReturn("L'été d'André & Fils");
+        $lineItemWithDotReference->method('getQuantity')->willReturn(1);
+        $lineItemWithDotReference->method('getPrice')->willReturn($price);
+        $lineItemWithDotReference->method('getPayload')->willReturn(['Gr' => '01', 'topmArticleNumber' => 'ART.01']);
+
+        $lineItemWithSpacedReference = $this->createMock(OrderLineItemEntity::class);
+        $lineItemWithSpacedReference->method('getType')->willReturn('product');
+        $lineItemWithSpacedReference->method('getIdentifier')->willReturn('SKU-SPACES');
+        $lineItemWithSpacedReference->method('getReferencedId')->willReturn(null);
+        $lineItemWithSpacedReference->method('getLabel')->willReturn('Référence avec espaces');
+        $lineItemWithSpacedReference->method('getQuantity')->willReturn(1);
+        $lineItemWithSpacedReference->method('getPrice')->willReturn($price);
+        $lineItemWithSpacedReference->method('getPayload')->willReturn(['Gr' => '1', 'topmArticleNumber' => 'ART      01']);
+
+        $lineItemWithEmptyVariant = $this->createMock(OrderLineItemEntity::class);
+        $lineItemWithEmptyVariant->method('getType')->willReturn('product');
+        $lineItemWithEmptyVariant->method('getIdentifier')->willReturn('SKU-EMPTY-GR');
+        $lineItemWithEmptyVariant->method('getReferencedId')->willReturn(null);
+        $lineItemWithEmptyVariant->method('getLabel')->willReturn('Variant vide');
+        $lineItemWithEmptyVariant->method('getQuantity')->willReturn(1);
+        $lineItemWithEmptyVariant->method('getPrice')->willReturn($price);
+        $lineItemWithEmptyVariant->method('getPayload')->willReturn(['Gr' => '', 'topmArticleNumber' => 'NO-VARIANT-ART']);
+
+        $customer = new OrderCustomerEntity();
+        $customer->setEmail('ecole@example.test');
+        $customer->setCustomerNumber('CUST-ECOLE');
+
+        $largeAttachment = str_repeat('SAN6-LARGE-', 25000);
+
+        $order = $this->createMock(OrderEntity::class);
+        $order->method('getId')->willReturn($orderId);
+        $order->method('getOrderNumber')->willReturn('ORDER-ECOLE-001');
+        $order->method('getOrderDateTime')->willReturn(new \DateTimeImmutable('2026-02-01 08:09:10'));
+        $order->method('getBillingAddress')->willReturn($billing);
+        $order->method('getDeliveries')->willReturn(new OrderDeliveryCollection([]));
+        $order->method('getLineItems')->willReturn(new OrderLineItemCollection([
+            $lineItemWithDotReference,
+            $lineItemWithSpacedReference,
+            $lineItemWithEmptyVariant,
+        ]));
+        $order->method('getOrderCustomer')->willReturn($customer);
+        $order->method('getCustomFields')->willReturn([
+            'externalOrderAttachments' => [
+                'petite pièce jointe avec accents éèà & apostrophe\'',
+                $largeAttachment,
+            ],
+            'externalOrderAttachmentNames' => [
+                'ecole-special.txt',
+                'ecole-large.bin',
+            ],
         ]);
 
         return $order;
