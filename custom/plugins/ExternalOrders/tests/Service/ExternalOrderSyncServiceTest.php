@@ -209,6 +209,61 @@ class ExternalOrderSyncServiceTest extends TestCase
         $service->syncNewOrders($context);
     }
 
+
+    public function testSyncNewOrdersLogsAndSkipsWhenSan6ConfigIsInvalid(): void
+    {
+        $context = Context::createDefaultContext();
+
+        $repository = $this->createMock(EntityRepository::class);
+        $repository->expects($this->never())->method('upsert');
+
+        $httpClient = $this->createMock(HttpClientInterface::class);
+        $httpClient->expects($this->never())->method('request');
+
+        $configService = $this->createMock(SystemConfigService::class);
+        $configService->method('get')->willReturnCallback(static function (string $key) {
+            $map = [
+                'ExternalOrders.config.externalOrdersApiUrlB2b' => '',
+                'ExternalOrders.config.externalOrdersApiTokenB2b' => '',
+                'ExternalOrders.config.externalOrdersApiUrlEbayDe' => '',
+                'ExternalOrders.config.externalOrdersApiTokenEbayDe' => '',
+                'ExternalOrders.config.externalOrdersApiUrlKaufland' => '',
+                'ExternalOrders.config.externalOrdersApiTokenKaufland' => '',
+                'ExternalOrders.config.externalOrdersApiUrlEbayAt' => '',
+                'ExternalOrders.config.externalOrdersApiTokenEbayAt' => '',
+                'ExternalOrders.config.externalOrdersApiUrlZonami' => '',
+                'ExternalOrders.config.externalOrdersApiTokenZonami' => '',
+                'ExternalOrders.config.externalOrdersApiUrlPeg' => '',
+                'ExternalOrders.config.externalOrdersApiTokenPeg' => '',
+                'ExternalOrders.config.externalOrdersApiUrlBezb' => '',
+                'ExternalOrders.config.externalOrdersApiTokenBezb' => '',
+                'ExternalOrders.config.externalOrdersSan6BaseUrl' => 'https://example.test/san6/api?ssid=abc&company=fms&mandant=1&sys=live',
+                'ExternalOrders.config.externalOrdersSan6Authentifizierung' => 'secret',
+                'ExternalOrders.config.externalOrdersSan6ReadFunction' => TopmSan6Client::DEFAULT_READ_FUNCTION,
+                'ExternalOrders.config.externalOrdersTimeout' => 2.5,
+            ];
+
+            return $map[$key] ?? null;
+        });
+
+        $logger = new InMemoryLogger();
+
+        $topmClient = $this->createMock(TopmSan6Client::class);
+        $topmClient->expects($this->once())
+            ->method('fetchOrders')
+            ->willThrowException(new \InvalidArgumentException('Incomplete SAN6 config. Missing required fields: product, authentifizierung.'));
+
+        $service = new ExternalOrderSyncService($repository, $httpClient, $configService, $logger, $topmClient);
+
+        $service->syncNewOrders($context);
+
+        static::assertTrue($logger->hasRecord('error', 'External Orders sync skipped: invalid SAN6 config.', [
+            'channel' => 'san6',
+            'url' => 'https://example.test/san6/api?ssid=abc&company=fms&mandant=1&sys=live&authentifizierung=%2A%2A%2A',
+            'error' => 'Incomplete SAN6 config. Missing required fields: product, authentifizierung.',
+        ]));
+    }
+
     public function testSyncNewOrdersLogsErrorWhenHttpClientFails(): void
     {
         $context = Context::createDefaultContext();
