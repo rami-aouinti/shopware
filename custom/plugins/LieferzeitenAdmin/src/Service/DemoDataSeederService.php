@@ -191,7 +191,7 @@ class DemoDataSeederService
                 'business_date_to' => $dataset['businessTo']->format('Y-m-d H:i:s'),
                 'payment_date' => $dataset['paymentDate']->format('Y-m-d H:i:s'),
                 'calculated_delivery_date' => $dataset['calculatedDeliveryDate']->format('Y-m-d H:i:s'),
-                'is_test_order' => $dataset['isTestOrder'] ? 1 : 0,
+                'is_test_order' => 0,
                 'last_changed_by' => 'demo.seeder',
                 'last_changed_at' => $now->format('Y-m-d H:i:s'),
                 'created_at' => $now->format('Y-m-d H:i:s'),
