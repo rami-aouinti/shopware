@@ -277,6 +277,72 @@ class TopmSan6OrderExportServiceTest extends TestCase
     }
 
 
+    public function testExportOrderWithMandantSchuleCapturesRequestAndResponsePayloads(): void
+    {
+        $connection = $this->createConnection();
+        $orderId = Uuid::randomHex();
+
+        $capturedUrl = null;
+        $capturedXml = null;
+        $topmResponse = '<response><response_code>0</response_code><response_message>OK Schule</response_message></response>';
+
+        $topmClient = $this->createMock(TopmSan6Client::class);
+        $topmClient->expects(static::once())
+            ->method('sendByPostXml')
+            ->willReturnCallback(static function (string $url, string $token, string $xml) use (&$capturedUrl, &$capturedXml, $topmResponse): string {
+                $capturedUrl = $url;
+                $capturedXml = $xml;
+
+                return $topmResponse;
+            });
+
+        $service = $this->createService(
+            $this->createOrderRepository($this->createOrderForXml($orderId)),
+            $topmClient,
+            $this->createConfig([
+                'ExternalOrders.config.externalOrdersSan6SendStrategy' => 'post-xml',
+                'ExternalOrders.config.externalOrdersSan6BaseUrl' => 'https://topm.example/api',
+                'ExternalOrders.config.externalOrdersSan6Company' => 'fms',
+                'ExternalOrders.config.externalOrdersSan6Product' => 'sw6',
+                'ExternalOrders.config.externalOrdersSan6Mandant' => 'Schule',
+                'ExternalOrders.config.externalOrdersSan6Sys' => 'live',
+                'ExternalOrders.config.externalOrdersSan6Authentifizierung' => 'schule-token',
+            ]),
+            $connection,
+            $this->createMock(LoggerInterface::class),
+            $this->createUrlGenerator('/unused')
+        );
+
+        $result = $service->exportOrder($orderId, Context::createDefaultContext());
+
+        static::assertSame('sent', $result['status']);
+        static::assertSame('https://topm.example/api?company=fms&product=sw6&mandant=Schule&sys=live&authentifizierung=schule-token', $capturedUrl);
+        static::assertIsString($capturedXml);
+        static::assertStringStartsWith('<?xml version="1.0" encoding="UTF-8"?>', $capturedXml ?: '');
+
+        $xml = simplexml_load_string($capturedXml ?: '');
+        static::assertInstanceOf(\SimpleXMLElement::class, $xml);
+        static::assertSame('ORDER-123', (string) $xml->Referenz);
+        static::assertSame('CUST-7788', (string) $xml->Kunde->Nummer);
+        static::assertSame('TOPM-331', (string) $xml->Positionen->Position[0]->Referenz);
+        static::assertSame('03', (string) $xml->Positionen->Position[0]->Gr);
+        static::assertSame('auftrag-schule.txt', (string) $xml->Anlagen->Anlage[0]->Dateiname);
+        static::assertSame(base64_encode('schule payload'), (string) $xml->Anlagen->Anlage[0]->Datei);
+        static::assertSame('2026-01-17T10:11:12', (string) $xml->Datum);
+        static::assertSame('9.99', (string) $xml->Positionen->Position[0]->Preis);
+
+        $row = $connection->fetchAssociative('SELECT request_xml, response_xml, response_code, response_message FROM external_order_export WHERE id = :id', [
+            'id' => Uuid::fromHexToBytes($result['exportId']),
+        ]);
+
+        static::assertIsArray($row);
+        static::assertSame($capturedXml, $row['request_xml']);
+        static::assertSame($topmResponse, $row['response_xml']);
+        static::assertSame(0, (int) $row['response_code']);
+        static::assertSame('OK Schule', $row['response_message']);
+    }
+
+
     public function testExportOrderNormalizesReferenceVariantAndKeepsBase64Attachment(): void
     {
         $connection = $this->createConnection();
