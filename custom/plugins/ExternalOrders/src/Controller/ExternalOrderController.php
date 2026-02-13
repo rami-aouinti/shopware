@@ -238,6 +238,10 @@ class ExternalOrderController extends AbstractController
     #[Route(
         path: '/api/external-orders/topm-export/{token}',
         name: 'api.external-orders.export.file-transfer',
+        defaults: [
+            'auth_required' => false,
+            '_acl' => [],
+        ],
         methods: [Request::METHOD_GET]
     )]
     public function serveTopmExportFile(string $token): Response
