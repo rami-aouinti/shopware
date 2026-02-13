@@ -96,6 +96,42 @@ class TopmSan6ClientTest extends TestCase
         static::assertSame('A-200', $result['orders'][0]['externalId'] ?? null);
     }
 
+
+    public function testSendByFileTransferUrlUsesLowercaseTopmQueryParam(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getContent')->with(false)->willReturn('ok');
+
+        $httpClient = $this->createMock(HttpClientInterface::class);
+        $httpClient->expects($this->once())
+            ->method('request')
+            ->with(
+                'GET',
+                $this->callback(static function (string $url): bool {
+                    $queryString = (string) parse_url($url, PHP_URL_QUERY);
+                    parse_str($queryString, $params);
+
+                    return str_contains($queryString, 'filetransferurl=')
+                        && !str_contains($queryString, 'fileTransferUrl=')
+                        && ($params['filetransferurl'] ?? null) === 'https://files.example.test/orders.xml';
+                }),
+                ['timeout' => 1.5]
+            )
+            ->willReturn($response);
+
+        $logger = new TopmInMemoryLogger();
+        $client = new TopmSan6Client($httpClient, $logger, new TopmSan6OrderMapper());
+
+        $result = $client->sendByFileTransferUrl(
+            'https://example.test/api?ssid=abc&company=fms&product=sw&mandant=1&sys=live',
+            'secret',
+            'https://files.example.test/orders.xml',
+            1.5
+        );
+
+        static::assertSame('ok', $result);
+    }
+
     public function testSendByPostXmlUsesCustomWriteFunctionWhenProvided(): void
     {
         $response = $this->createMock(ResponseInterface::class);

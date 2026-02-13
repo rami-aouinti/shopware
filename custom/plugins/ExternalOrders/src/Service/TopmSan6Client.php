@@ -44,7 +44,8 @@ class TopmSan6Client
     public function sendByFileTransferUrl(string $apiUrl, string $apiToken, string $fileTransferUrl, float $timeout, ?string $writeFunction = null): string
     {
         $url = $this->buildTopmUrl($apiUrl, $writeFunction ?? self::DEFAULT_WRITE_FUNCTION, $apiToken, [
-            'fileTransferUrl' => $fileTransferUrl,
+            // TopM expects this exact lowercase query parameter name.
+            'filetransferurl' => $fileTransferUrl,
         ]);
         $options = $this->buildTimeoutOptions($timeout);
 
