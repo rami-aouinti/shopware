@@ -39,6 +39,13 @@ Wenn das Plugin aktualisiert wurde (z. B. neue Version aus dem Repository), kön
 ## Nutzung
 Nach der Aktivierung erscheint in der Administration unter **Bestellungen** ein neuer Menüpunkt. Dort können externe Bestellungen eingesehen und nach Kanal oder Suchbegriff gefiltert werden.
 
+### SAN6 Versandstrategie `filetransferurl`
+- Bei der Strategie `filetransferurl` erzeugt das Plugin für jeden Export eine signierte Download-URL (`api.external-orders.export.file-transfer`).
+- Diese URL ist explizit für Machine-to-Machine-Zugriffe ohne Admin-API-Login freigegeben (`auth_required=false`, keine ACL).
+- Der Schutz erfolgt ausschließlich über den signierten Token in der URL (HMAC-Signatur + Ablaufzeit).
+- Gültiger Token: Rückgabe `200` mit `Content-Type: application/xml` und Export-XML.
+- Ungültiger oder abgelaufener Token: Rückgabe `404`.
+
 ## Version
 - **1.0.0**
 
