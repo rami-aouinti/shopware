@@ -355,26 +355,25 @@ class TopmSan6OrderExportService
         $shipping = $delivery?->getShippingOrderAddress();
 
         $xml = new \SimpleXMLElement('<AuftragNeu2/>');
-        $header = $xml->addChild('Kopf');
-        $header->addChild('Bestellnummer', htmlspecialchars($order->getOrderNumber() ?? ''));
-        $header->addChild('Bestelldatum', $order->getOrderDateTime()->format('Y-m-d H:i:s'));
-        $header->addChild('Waehrung', htmlspecialchars($order->getCurrencyFactor() ? 'EUR' : 'EUR'));
+        $xml->addChild('Referenz', $this->xmlValue($order->getOrderNumber() ?? ''));
+        $xml->addChild('Datum', $this->formatXmlDate($order->getOrderDateTime()));
 
-        $billingNode = $header->addChild('Rechnungsadresse');
-        $billingNode->addChild('Firma', htmlspecialchars((string) ($billing?->getCompany() ?? '')));
-        $billingNode->addChild('Vorname', htmlspecialchars((string) ($billing?->getFirstName() ?? '')));
-        $billingNode->addChild('Nachname', htmlspecialchars((string) ($billing?->getLastName() ?? '')));
-        $billingNode->addChild('Strasse', htmlspecialchars((string) ($billing?->getStreet() ?? '')));
-        $billingNode->addChild('PLZ', htmlspecialchars((string) ($billing?->getZipcode() ?? '')));
-        $billingNode->addChild('Ort', htmlspecialchars((string) ($billing?->getCity() ?? '')));
+        $kunde = $xml->addChild('Kunde');
+        $kunde->addChild('Firma', $this->xmlValue((string) ($billing?->getCompany() ?? '')));
+        $kunde->addChild('Vorname', $this->xmlValue((string) ($billing?->getFirstName() ?? '')));
+        $kunde->addChild('Nachname', $this->xmlValue((string) ($billing?->getLastName() ?? '')));
+        $kunde->addChild('Strasse', $this->xmlValue((string) ($billing?->getStreet() ?? '')));
+        $kunde->addChild('PLZ', $this->xmlValue((string) ($billing?->getZipcode() ?? '')));
+        $kunde->addChild('Ort', $this->xmlValue((string) ($billing?->getCity() ?? '')));
+        $kunde->addChild('Email', $this->xmlValue((string) ($order->getOrderCustomer()?->getEmail() ?? '')));
 
-        $shippingNode = $header->addChild('Lieferadresse');
-        $shippingNode->addChild('Firma', htmlspecialchars((string) ($shipping?->getCompany() ?? $billing?->getCompany() ?? '')));
-        $shippingNode->addChild('Vorname', htmlspecialchars((string) ($shipping?->getFirstName() ?? $billing?->getFirstName() ?? '')));
-        $shippingNode->addChild('Nachname', htmlspecialchars((string) ($shipping?->getLastName() ?? $billing?->getLastName() ?? '')));
-        $shippingNode->addChild('Strasse', htmlspecialchars((string) ($shipping?->getStreet() ?? $billing?->getStreet() ?? '')));
-        $shippingNode->addChild('PLZ', htmlspecialchars((string) ($shipping?->getZipcode() ?? $billing?->getZipcode() ?? '')));
-        $shippingNode->addChild('Ort', htmlspecialchars((string) ($shipping?->getCity() ?? $billing?->getCity() ?? '')));
+        $lieferadresse = $xml->addChild('Lieferadresse');
+        $lieferadresse->addChild('Firma', $this->xmlValue((string) ($shipping?->getCompany() ?? $billing?->getCompany() ?? '')));
+        $lieferadresse->addChild('Vorname', $this->xmlValue((string) ($shipping?->getFirstName() ?? $billing?->getFirstName() ?? '')));
+        $lieferadresse->addChild('Nachname', $this->xmlValue((string) ($shipping?->getLastName() ?? $billing?->getLastName() ?? '')));
+        $lieferadresse->addChild('Strasse', $this->xmlValue((string) ($shipping?->getStreet() ?? $billing?->getStreet() ?? '')));
+        $lieferadresse->addChild('PLZ', $this->xmlValue((string) ($shipping?->getZipcode() ?? $billing?->getZipcode() ?? '')));
+        $lieferadresse->addChild('Ort', $this->xmlValue((string) ($shipping?->getCity() ?? $billing?->getCity() ?? '')));
 
         $positionen = $xml->addChild('Positionen');
         foreach ($order->getLineItems() ?? [] as $lineItem) {
@@ -383,15 +382,12 @@ class TopmSan6OrderExportService
             }
 
             $position = $positionen->addChild('Position');
-            $position->addChild('Artikelnummer', htmlspecialchars((string) ($lineItem->getReferencedId() ?? $lineItem->getIdentifier())));
-            $position->addChild('Bezeichnung', htmlspecialchars((string) $lineItem->getLabel()));
+            $position->addChild('Referenz', $this->xmlValue((string) ($lineItem->getReferencedId() ?? $lineItem->getIdentifier())));
+            $position->addChild('Bezeichnung', $this->xmlValue((string) $lineItem->getLabel()));
+            $position->addChild('Gr', $this->normalizeVariantGr($lineItem->getPayload()));
             $position->addChild('Menge', (string) $lineItem->getQuantity());
-            $position->addChild('Einzelpreis', number_format((float) ($lineItem->getPrice()?->getUnitPrice() ?? 0.0), 2, '.', ''));
+            $position->addChild('Preis', number_format((float) ($lineItem->getPrice()?->getUnitPrice() ?? 0.0), 2, '.', ''));
         }
-
-        $refs = $xml->addChild('Referenzen');
-        $refs->addChild('ShopwareOrderId', $order->getId());
-        $refs->addChild('ShopwareVersionId', $order->getVersionId());
 
         $attachmentsNode = $xml->addChild('Anlagen');
         $customFields = $order->getCustomFields() ?? [];
@@ -404,11 +400,60 @@ class TopmSan6OrderExportService
 
                 $item = $attachmentsNode->addChild('Anlage');
                 $item->addChild('Dateiname', sprintf('attachment-%d.txt', $index + 1));
-                $item->addChild('InhaltBase64', base64_encode($attachment));
+                $item->addChild('Datei', base64_encode(trim($attachment)));
             }
         }
 
+        $this->assertXmlHasMandatoryNodes($xml, ['Referenz', 'Datum', 'Kunde', 'Positionen', 'Anlagen']);
+
         return $xml->asXML() ?: '';
+    }
+
+    private function xmlValue(string $value): string
+    {
+        return trim($value);
+    }
+
+    private function formatXmlDate(\DateTimeInterface $date): string
+    {
+        return $date->format('Y-m-d\\TH:i:s');
+    }
+
+    /**
+     * @param array<string, mixed>|null $payload
+     */
+    private function normalizeVariantGr(?array $payload): string
+    {
+        $candidate = '';
+        if ($payload !== null) {
+            foreach (['Gr', 'gr', 'size', 'variant', 'option'] as $key) {
+                $value = $payload[$key] ?? null;
+                if (is_scalar($value) && trim((string) $value) !== '') {
+                    $candidate = (string) $value;
+
+                    break;
+                }
+            }
+        }
+
+        $normalized = strtoupper(trim($candidate));
+        if ($normalized === '') {
+            return '00';
+        }
+
+        return str_pad(mb_substr($normalized, 0, 2), 2, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * @param array<int, string> $requiredNodes
+     */
+    private function assertXmlHasMandatoryNodes(\SimpleXMLElement $xml, array $requiredNodes): void
+    {
+        foreach ($requiredNodes as $nodeName) {
+            if (!isset($xml->{$nodeName}) || trim((string) $xml->{$nodeName}) === '' && $xml->{$nodeName}->count() === 0) {
+                throw new \RuntimeException(sprintf('Generated AuftragNeu2 XML is missing mandatory node "%s".', $nodeName));
+            }
+        }
     }
 
     private function maskSecrets(string $input): string
