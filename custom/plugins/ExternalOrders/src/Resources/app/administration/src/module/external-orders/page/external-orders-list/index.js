@@ -364,29 +364,40 @@ Component.register('external-orders-list', {
             this.page = 1;
 
             try {
-                const selectedChannel = !this.activeChannel || this.activeChannel === 'all'
-                    ? null
-                    : this.activeChannel;
-                const response = await this.externalOrderService.list({
-                    channel: selectedChannel,
-                });
+                const channelsForAllOverview = this.channels
+                    .map((channel) => channel.id)
+                    .filter((channelId) => channelId !== 'all');
 
-                const payload = response?.data?.data ?? response?.data ?? response;
+                let apiOrders = [];
 
-                const apiOrders = Array.isArray(payload?.orders) ? payload.orders : [];
+                if (this.activeChannel === 'all') {
+                    const responses = await Promise.all(
+                        channelsForAllOverview.map((channelId) => this.externalOrderService.list({ channel: channelId })),
+                    );
+
+                    const mergedOrders = responses.flatMap((response) => {
+                        const payload = response?.data?.data ?? response?.data ?? response;
+                        return Array.isArray(payload?.orders) ? payload.orders : [];
+                    });
+
+                    apiOrders = Array.from(new Map(
+                        mergedOrders.map((order) => [this.getOrderKey(order), order]),
+                    ).values());
+                } else {
+                    const response = await this.externalOrderService.list({
+                        channel: this.activeChannel,
+                    });
+                    const payload = response?.data?.data ?? response?.data ?? response;
+                    apiOrders = Array.isArray(payload?.orders) ? payload.orders : [];
+                }
 
                 this.orders = apiOrders;
                 this.page = 1;
-
-                if (payload?.summary) {
-                    this.summary = payload.summary;
-                } else {
-                    this.summary = {
-                        orderCount: apiOrders.length,
-                        totalRevenue: apiOrders.reduce((sum, order) => sum + (order.totalRevenue || 0), 0),
-                        totalItems: apiOrders.reduce((sum, order) => sum + (order.totalItems || 0), 0),
-                    };
-                }
+                this.summary = {
+                    orderCount: apiOrders.length,
+                    totalRevenue: apiOrders.reduce((sum, order) => sum + (order.totalRevenue || 0), 0),
+                    totalItems: apiOrders.reduce((sum, order) => sum + (order.totalItems || 0), 0),
+                };
             } catch (error) {
                 this.orders = [];
                 this.summary = {
