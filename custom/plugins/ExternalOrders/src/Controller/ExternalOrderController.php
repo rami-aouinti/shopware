@@ -5,11 +5,13 @@ namespace ExternalOrders\Controller;
 use ExternalOrders\Service\ExternalOrderService;
 use ExternalOrders\Service\ExternalOrderSyncService;
 use ExternalOrders\Service\ExternalOrderTestDataService;
+use ExternalOrders\Service\TopmSan6OrderExportService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\DBAL\Connection;
@@ -22,6 +24,7 @@ class ExternalOrderController extends AbstractController
         private readonly ExternalOrderService $externalOrderService,
         private readonly ExternalOrderTestDataService $testDataService,
         private readonly ExternalOrderSyncService $syncService,
+        private readonly TopmSan6OrderExportService $orderExportService,
         private readonly Connection $connection,
     ) {
     }
@@ -199,5 +202,51 @@ class ExternalOrderController extends AbstractController
             'lastExecutionTime' => $lastExecutionTime,
             'isSuccess' => $status !== 'failed' && $lastExecutionTime !== null,
         ]);
+    }
+
+    #[Route(
+        path: '/api/_action/external-orders/export/{orderId}',
+        name: 'api.admin.external-orders.export-order',
+        defaults: ['_acl' => ['admin']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function exportOrder(string $orderId, Context $context): Response
+    {
+        try {
+            return new JsonResponse($this->orderExportService->exportOrder($orderId, $context));
+        } catch (\Throwable $exception) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    #[Route(
+        path: '/api/_action/external-orders/export-status/{orderId}',
+        name: 'api.admin.external-orders.export-status',
+        defaults: ['_acl' => ['admin']],
+        methods: [Request::METHOD_GET]
+    )]
+    public function exportStatus(string $orderId): Response
+    {
+        $status = $this->orderExportService->getLatestExportStatus($orderId);
+
+        return new JsonResponse($status ?? ['status' => 'not_found'], $status === null ? Response::HTTP_NOT_FOUND : Response::HTTP_OK);
+    }
+
+    #[Route(
+        path: '/api/external-orders/topm-export/{token}',
+        name: 'api.external-orders.export.file-transfer',
+        methods: [Request::METHOD_GET]
+    )]
+    public function serveTopmExportFile(string $token): Response
+    {
+        $xml = $this->orderExportService->serveSignedExportXml($token);
+        if ($xml === null) {
+            return new Response('Not found', Response::HTTP_NOT_FOUND);
+        }
+
+        return new HttpResponse($xml, Response::HTTP_OK, ['Content-Type' => 'application/xml; charset=utf-8']);
     }
 }

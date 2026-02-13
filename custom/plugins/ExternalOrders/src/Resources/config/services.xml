@@ -18,6 +18,9 @@
         </service>
         <service id="ExternalOrders\Service\TopmSan6OrderMapper" />
         <service id="ExternalOrders\Service\TopmSan6Client" />
+        <service id="ExternalOrders\Service\TopmSan6OrderExportService">
+            <argument type="service" id="order.repository" />
+        </service>
         <service id="ExternalOrders\Service\ExternalOrderSyncService">
             <argument type="service" id="external_order.repository" />
         </service>
@@ -27,6 +30,13 @@
             <tag name="shopware.scheduled.task" />
         </service>
         <service id="ExternalOrders\ScheduledTask\ExternalOrdersSyncTaskHandler">
+            <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="ExternalOrders\ScheduledTask\ExternalOrdersExportRetryTask">
+            <tag name="shopware.scheduled.task" />
+        </service>
+        <service id="ExternalOrders\ScheduledTask\ExternalOrdersExportRetryTaskHandler">
             <tag name="messenger.message_handler" />
         </service>
 
