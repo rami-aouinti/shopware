@@ -8,8 +8,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class TopmSan6Client
 {
-    private const READ_FUNCTION = 'API-AUFTRAEGE';
-    private const WRITE_FUNCTION = 'API-AUFTRAGNEU2';
+    public const DEFAULT_READ_FUNCTION = 'API-AUFTRAEGE';
+    public const DEFAULT_WRITE_FUNCTION = 'API-AUFTRAGNEU2';
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
@@ -21,9 +21,9 @@ class TopmSan6Client
     /**
      * @return array{orders: array<int, array<string, mixed>>}
      */
-    public function fetchOrders(string $apiUrl, string $apiToken, float $timeout): array
+    public function fetchOrders(string $apiUrl, string $apiToken, float $timeout, ?string $readFunction = null): array
     {
-        $url = $this->buildTopmUrl($apiUrl, self::READ_FUNCTION, $apiToken);
+        $url = $this->buildTopmUrl($apiUrl, $readFunction ?? self::DEFAULT_READ_FUNCTION, $apiToken);
         $options = $this->buildTimeoutOptions($timeout);
 
         try {
@@ -41,9 +41,9 @@ class TopmSan6Client
         return ['orders' => $this->mapXmlOrders($rawXml)];
     }
 
-    public function sendByFileTransferUrl(string $apiUrl, string $apiToken, string $fileTransferUrl, float $timeout): string
+    public function sendByFileTransferUrl(string $apiUrl, string $apiToken, string $fileTransferUrl, float $timeout, ?string $writeFunction = null): string
     {
-        $url = $this->buildTopmUrl($apiUrl, self::WRITE_FUNCTION, $apiToken, [
+        $url = $this->buildTopmUrl($apiUrl, $writeFunction ?? self::DEFAULT_WRITE_FUNCTION, $apiToken, [
             'fileTransferUrl' => $fileTransferUrl,
         ]);
         $options = $this->buildTimeoutOptions($timeout);
@@ -53,9 +53,9 @@ class TopmSan6Client
         return $response->getContent(false);
     }
 
-    public function sendByPostXml(string $apiUrl, string $apiToken, string $xmlBody, float $timeout): string
+    public function sendByPostXml(string $apiUrl, string $apiToken, string $xmlBody, float $timeout, ?string $writeFunction = null): string
     {
-        $url = $this->buildTopmUrl($apiUrl, self::WRITE_FUNCTION, $apiToken);
+        $url = $this->buildTopmUrl($apiUrl, $writeFunction ?? self::DEFAULT_WRITE_FUNCTION, $apiToken);
         $options = $this->buildTimeoutOptions($timeout);
         $options['headers']['Content-Type'] = 'application/xml';
         $options['body'] = $xmlBody;
