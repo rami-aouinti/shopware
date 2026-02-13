@@ -139,6 +139,9 @@ openssl s_client -connect <shop-domain>:443 -servername <shop-domain> </dev/null
 - La valeur `APP_SECRET` est stable entre nœuds (si multi-instance), sinon validation HMAC incohérente.
 - Monitoring conseillé : taux HTTP 404 sur la route signée + alertes sur erreurs SAN6.
 
+## Runbooks
+- Exploitation export SAN6: `docs/runbook-export-san6.md`
+
 ## Version
 - **1.0.0**
 
