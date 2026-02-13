@@ -14,6 +14,7 @@ class TopmSan6Client
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly LoggerInterface $logger,
+        private readonly TopmSan6OrderMapper $orderMapper,
     ) {
     }
 
@@ -157,11 +158,12 @@ class TopmSan6Client
                 continue;
             }
 
-            $externalId = $this->resolveExternalId($orderData);
+            $mappedOrder = $this->orderMapper->mapOrder($orderData);
+            $externalId = $this->resolveExternalId($mappedOrder);
 
-            $orders[] = array_merge($orderData, [
+            $orders[] = array_merge($mappedOrder, [
                 'externalId' => $externalId,
-                'orderNumber' => $orderData['orderNumber'] ?? $orderData['auftragsnummer'] ?? $externalId,
+                'orderNumber' => $mappedOrder['orderNumber'] ?? $externalId,
                 'channel' => 'san6',
             ]);
         }

@@ -16,6 +16,7 @@
         <service id="ExternalOrders\Service\ExternalOrderService">
             <argument type="service" id="external_order.repository" />
         </service>
+        <service id="ExternalOrders\Service\TopmSan6OrderMapper" />
         <service id="ExternalOrders\Service\TopmSan6Client" />
         <service id="ExternalOrders\Service\ExternalOrderSyncService">
             <argument type="service" id="external_order.repository" />

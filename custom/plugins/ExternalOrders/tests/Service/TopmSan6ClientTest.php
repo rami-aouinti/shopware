@@ -3,6 +3,7 @@
 namespace ExternalOrders\Tests\Service;
 
 use ExternalOrders\Service\TopmSan6Client;
+use ExternalOrders\Service\TopmSan6OrderMapper;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -34,7 +35,7 @@ class TopmSan6ClientTest extends TestCase
             ->willReturn($response);
 
         $logger = new TopmInMemoryLogger();
-        $client = new TopmSan6Client($httpClient, $logger);
+        $client = new TopmSan6Client($httpClient, $logger, new TopmSan6OrderMapper());
 
         $result = $client->fetchOrders('https://example.test/api?ssid=abc&company=fms&product=sw&mandant=1&sys=live', 'secret', 2.5);
 
@@ -51,7 +52,7 @@ class TopmSan6ClientTest extends TestCase
         $httpClient->method('request')->willReturn($response);
 
         $logger = new TopmInMemoryLogger();
-        $client = new TopmSan6Client($httpClient, $logger);
+        $client = new TopmSan6Client($httpClient, $logger, new TopmSan6OrderMapper());
 
         $result = $client->fetchOrders('https://example.test/api?ssid=abc&company=fms&product=sw&mandant=1&sys=live', 'secret', 0);
 
@@ -83,7 +84,7 @@ class TopmSan6ClientTest extends TestCase
             ->willReturn($response);
 
         $logger = new TopmInMemoryLogger();
-        $client = new TopmSan6Client($httpClient, $logger);
+        $client = new TopmSan6Client($httpClient, $logger, new TopmSan6OrderMapper());
 
         $result = $client->sendByPostXml('https://example.test/api?ssid=abc&company=fms&product=sw&mandant=1&sys=live', 'secret', '<xml />', 3.0);
 
