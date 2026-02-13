@@ -246,7 +246,7 @@ class LieferzeitenSyncController extends AbstractController
     #[Route(
         path: '/api/_action/lieferzeiten/demo-data/status',
         name: 'api.admin.lieferzeiten.demo_data.status',
-        defaults: ['_acl' => ['lieferzeiten.editor']],
+        defaults: ['_acl' => ['lieferzeiten.viewer']],
         methods: [Request::METHOD_GET]
     )]
     public function demoDataStatus(): JsonResponse
