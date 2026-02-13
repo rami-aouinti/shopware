@@ -57,6 +57,7 @@ class LieferzeitenSyncControllerAclTest extends TestCase
         yield 'read orders requires viewer' => ['GET', '/api/_action/lieferzeiten/orders', 'lieferzeiten.viewer'];
         yield 'read statistics requires viewer' => ['GET', '/api/_action/lieferzeiten/statistics', 'lieferzeiten.viewer'];
         yield 'read tracking requires viewer' => ['GET', '/api/_action/lieferzeiten/tracking/{carrier}/{trackingNumber}', 'lieferzeiten.viewer'];
+        yield 'read demo data status requires viewer' => ['GET', '/api/_action/lieferzeiten/demo-data/status', 'lieferzeiten.viewer'];
 
         yield 'assign task requires editor' => ['POST', '/api/_action/lieferzeiten/tasks/{taskId}/assign', 'lieferzeiten.editor'];
         yield 'close task requires editor' => ['POST', '/api/_action/lieferzeiten/tasks/{taskId}/close', 'lieferzeiten.editor'];
@@ -64,6 +65,7 @@ class LieferzeitenSyncControllerAclTest extends TestCase
         yield 'cancel task requires editor' => ['POST', '/api/_action/lieferzeiten/tasks/{taskId}/cancel', 'lieferzeiten.editor'];
         yield 'sync import requires editor' => ['POST', '/api/_action/lieferzeiten/sync', 'lieferzeiten.editor'];
         yield 'seed demo data requires editor' => ['POST', '/api/_action/lieferzeiten/demo-data', 'lieferzeiten.editor'];
+        yield 'toggle demo data requires editor' => ['POST', '/api/_action/lieferzeiten/demo-data/toggle', 'lieferzeiten.editor'];
         yield 'update supplier date requires editor' => ['POST', '/api/_action/lieferzeiten/position/{positionId}/liefertermin-lieferant', 'lieferzeiten.editor'];
         yield 'update new date requires editor' => ['POST', '/api/_action/lieferzeiten/position/{positionId}/neuer-liefertermin', 'lieferzeiten.editor'];
         yield 'update comment requires editor' => ['POST', '/api/_action/lieferzeiten/position/{positionId}/comment', 'lieferzeiten.editor'];
