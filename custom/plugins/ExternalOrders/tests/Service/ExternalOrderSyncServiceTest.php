@@ -6,6 +6,7 @@ use ExternalOrders\Entity\ExternalOrderCollection;
 use ExternalOrders\Entity\ExternalOrderDefinition;
 use ExternalOrders\Entity\ExternalOrderEntity;
 use ExternalOrders\Service\ExternalOrderSyncService;
+use ExternalOrders\Service\TopmSan6Client;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
@@ -32,7 +33,7 @@ class ExternalOrderSyncServiceTest extends TestCase
         $configService = $this->createConfigService('');
         $logger = new InMemoryLogger();
 
-        $service = new ExternalOrderSyncService($repository, $httpClient, $configService, $logger);
+        $service = new ExternalOrderSyncService($repository, $httpClient, $configService, $logger, $this->createTopmClientMock());
 
         $service->syncNewOrders($context);
 
@@ -60,7 +61,7 @@ class ExternalOrderSyncServiceTest extends TestCase
         $configService = $this->createConfigService('https://example.test/api/orders');
         $logger = new InMemoryLogger();
 
-        $service = new ExternalOrderSyncService($repository, $httpClient, $configService, $logger);
+        $service = new ExternalOrderSyncService($repository, $httpClient, $configService, $logger, $this->createTopmClientMock());
 
         $service->syncNewOrders($context);
 
@@ -91,7 +92,7 @@ class ExternalOrderSyncServiceTest extends TestCase
         $configService = $this->createConfigService('https://example.test/api/orders');
         $logger = new InMemoryLogger();
 
-        $service = new ExternalOrderSyncService($repository, $httpClient, $configService, $logger);
+        $service = new ExternalOrderSyncService($repository, $httpClient, $configService, $logger, $this->createTopmClientMock());
 
         $service->syncNewOrders($context);
 
@@ -142,7 +143,7 @@ class ExternalOrderSyncServiceTest extends TestCase
 
         $logger = new InMemoryLogger();
 
-        $service = new ExternalOrderSyncService($repository, $httpClient, $configService, $logger);
+        $service = new ExternalOrderSyncService($repository, $httpClient, $configService, $logger, $this->createTopmClientMock());
 
         $service->syncNewOrders($context);
 
@@ -172,7 +173,7 @@ class ExternalOrderSyncServiceTest extends TestCase
 
         $logger = new InMemoryLogger();
 
-        $service = new ExternalOrderSyncService($repository, $httpClient, $configService, $logger);
+        $service = new ExternalOrderSyncService($repository, $httpClient, $configService, $logger, $this->createTopmClientMock());
 
         $service->syncNewOrders($context);
 
@@ -202,10 +203,22 @@ class ExternalOrderSyncServiceTest extends TestCase
             ['ExternalOrders.config.externalOrdersApiTokenPeg', null, ''],
             ['ExternalOrders.config.externalOrdersApiUrlBezb', null, ''],
             ['ExternalOrders.config.externalOrdersApiTokenBezb', null, ''],
+            ['ExternalOrders.config.externalOrdersApiUrlSan6', null, ''],
+            ['ExternalOrders.config.externalOrdersApiTokenSan6', null, ''],
             ['ExternalOrders.config.externalOrdersTimeout', null, 2.5],
         ]);
 
         return $configService;
+    }
+
+
+
+    private function createTopmClientMock(): TopmSan6Client
+    {
+        $topmClient = $this->createMock(TopmSan6Client::class);
+        $topmClient->method('fetchOrders')->willReturn(['orders' => []]);
+
+        return $topmClient;
     }
 
     /**
