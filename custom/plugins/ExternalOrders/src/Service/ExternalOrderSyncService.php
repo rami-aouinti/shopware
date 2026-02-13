@@ -183,6 +183,14 @@ class ExternalOrderSyncService
                 $response = $this->httpClient->request('GET', $apiUrl, $options);
                 $payload = $response->toArray(false);
             }
+        } catch (\InvalidArgumentException $exception) {
+            $this->logger->error('External Orders sync skipped: invalid SAN6 config.', [
+                'channel' => $channel,
+                'url' => $this->sanitizeUrl($apiUrl),
+                'error' => $exception->getMessage(),
+            ]);
+
+            return;
         } catch (ExceptionInterface $exception) {
             $durationMs = (microtime(true) - $startTime) * 1000;
             $statusCode = null;

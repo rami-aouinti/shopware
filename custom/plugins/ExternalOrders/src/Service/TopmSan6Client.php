@@ -23,10 +23,6 @@ class TopmSan6Client
      */
     public function fetchOrders(string $apiUrl, string $apiToken, float $timeout, ?string $readFunction = null): array
     {
-        if (!$this->hasRequiredSan6Parameters($apiUrl, $apiToken)) {
-            return ['orders' => []];
-        }
-
         $url = $this->buildTopmUrl($apiUrl, $readFunction ?? self::DEFAULT_READ_FUNCTION, $apiToken);
         $options = $this->buildTimeoutOptions($timeout);
 
@@ -47,10 +43,6 @@ class TopmSan6Client
 
     public function sendByFileTransferUrl(string $apiUrl, string $apiToken, string $fileTransferUrl, float $timeout, ?string $writeFunction = null): string
     {
-        if (!$this->hasRequiredSan6Parameters($apiUrl, $apiToken)) {
-            return '';
-        }
-
         $url = $this->buildTopmUrl($apiUrl, $writeFunction ?? self::DEFAULT_WRITE_FUNCTION, $apiToken, [
             // TopM expects this exact lowercase query parameter name.
             'filetransferurl' => $fileTransferUrl,
@@ -64,10 +56,6 @@ class TopmSan6Client
 
     public function sendByPostXml(string $apiUrl, string $apiToken, string $xmlBody, float $timeout, ?string $writeFunction = null): string
     {
-        if (!$this->hasRequiredSan6Parameters($apiUrl, $apiToken)) {
-            return '';
-        }
-
         $url = $this->buildTopmUrl($apiUrl, $writeFunction ?? self::DEFAULT_WRITE_FUNCTION, $apiToken);
         $options = $this->buildTimeoutOptions($timeout);
         $options['headers']['Content-Type'] = 'application/xml';
@@ -85,7 +73,7 @@ class TopmSan6Client
     {
         $parts = parse_url($apiUrl);
         if ($parts === false) {
-            return $apiUrl;
+            throw new \InvalidArgumentException('Invalid SAN6 base URL.');
         }
 
         $query = [];
@@ -93,13 +81,29 @@ class TopmSan6Client
             parse_str($parts['query'], $query);
         }
 
+        $requiredFields = [
+            'company' => (string) ($query['company'] ?? ''),
+            'product' => (string) ($query['product'] ?? ''),
+            'mandant' => (string) ($query['mandant'] ?? ''),
+            'sys' => (string) ($query['sys'] ?? ''),
+            'authentifizierung' => (string) ($query['authentifizierung'] ?? $apiToken),
+        ];
+
+        $missingFields = array_keys(array_filter($requiredFields, static fn (string $value): bool => trim($value) === ''));
+        if ($missingFields !== []) {
+            throw new \InvalidArgumentException(sprintf(
+                'Incomplete SAN6 config. Missing required fields: %s.',
+                implode(', ', $missingFields)
+            ));
+        }
+
         $requiredParams = [
             'ssid' => ($query['ssid'] ?? '') !== '' ? (string) $query['ssid'] : 'nosession',
-            'company' => $query['company'] ?? '',
-            'product' => $query['product'] ?? '',
-            'mandant' => $query['mandant'] ?? '',
-            'sys' => $query['sys'] ?? '',
-            'authentifizierung' => $query['authentifizierung'] ?? $apiToken,
+            'company' => $requiredFields['company'],
+            'product' => $requiredFields['product'],
+            'mandant' => $requiredFields['mandant'],
+            'sys' => $requiredFields['sys'],
+            'authentifizierung' => $requiredFields['authentifizierung'],
             'funktion' => $funktion,
         ];
 
@@ -125,41 +129,6 @@ class TopmSan6Client
         $baseUrl .= $parts['path'] ?? '';
 
         return $baseUrl . '?' . http_build_query($query);
-    }
-
-    private function hasRequiredSan6Parameters(string $apiUrl, string $apiToken): bool
-    {
-        $parts = parse_url($apiUrl);
-        if ($parts === false) {
-            $this->logger->error('TopM san6 request skipped: invalid base URL.');
-
-            return false;
-        }
-
-        $query = [];
-        if (isset($parts['query']) && $parts['query'] !== '') {
-            parse_str($parts['query'], $query);
-        }
-
-        $requiredParams = [
-            'company' => (string) ($query['company'] ?? ''),
-            'product' => (string) ($query['product'] ?? ''),
-            'mandant' => (string) ($query['mandant'] ?? ''),
-            'sys' => (string) ($query['sys'] ?? ''),
-            'authentifizierung' => (string) ($query['authentifizierung'] ?? $apiToken),
-        ];
-
-        $missingParams = array_keys(array_filter($requiredParams, static fn (string $value): bool => $value === ''));
-        if ($missingParams !== []) {
-            $this->logger->error('TopM san6 request skipped: incomplete SAN6 config.', [
-                'url' => $this->sanitizeUrl($apiUrl),
-                'missing' => $missingParams,
-            ]);
-
-            return false;
-        }
-
-        return true;
     }
 
     /**

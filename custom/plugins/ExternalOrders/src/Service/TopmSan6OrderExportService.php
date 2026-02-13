@@ -90,6 +90,29 @@ class TopmSan6OrderExportService
                 'responseMessage' => $message,
                 'correlationId' => $correlationId,
             ];
+        } catch (\InvalidArgumentException $exception) {
+            $this->connection->update('external_order_export', [
+                'status' => 'failed_permanent',
+                'response_message' => mb_substr($this->maskSecrets($exception->getMessage()), 0, 2000),
+                'last_error' => mb_substr($this->maskSecrets($exception->getMessage()), 0, 2000),
+                'updated_at' => (new \DateTimeImmutable())->format('Y-m-d H:i:s.v'),
+            ], ['id' => Uuid::fromHexToBytes($exportId)]);
+
+            $this->logger->error('TopM order export skipped: invalid SAN6 config.', [
+                'orderId' => $orderId,
+                'exportId' => $exportId,
+                'correlationId' => $correlationId,
+                'error' => $this->maskSecrets($exception->getMessage()),
+            ]);
+
+            return [
+                'exportId' => $exportId,
+                'orderId' => $orderId,
+                'status' => 'failed_permanent',
+                'responseCode' => null,
+                'responseMessage' => $this->maskSecrets($exception->getMessage()),
+                'correlationId' => $correlationId,
+            ];
         } catch (\Throwable $exception) {
             $this->scheduleRetry($exportId, $exception->getMessage());
 

@@ -74,7 +74,7 @@ class TopmSan6ClientTest extends TestCase
         static::assertSame('A-101', $result['orders'][0]['externalId'] ?? null);
     }
 
-    public function testFetchOrdersSkipsRequestWhenRequiredSan6ParamsAreMissing(): void
+    public function testFetchOrdersThrowsWhenRequiredSan6ParamsAreMissingAndDoesNotCallHttp(): void
     {
         $httpClient = $this->createMock(HttpClientInterface::class);
         $httpClient->expects($this->never())
@@ -83,10 +83,10 @@ class TopmSan6ClientTest extends TestCase
         $logger = new TopmInMemoryLogger();
         $client = new TopmSan6Client($httpClient, $logger, new TopmSan6OrderMapper());
 
-        $result = $client->fetchOrders('https://example.test/api?company=fms&mandant=1&sys=live', 'secret', 0);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Incomplete SAN6 config. Missing required fields: product.');
 
-        static::assertSame([], $result['orders']);
-        static::assertTrue($logger->hasRecord('error', 'TopM san6 request skipped: incomplete SAN6 config.'));
+        $client->fetchOrders('https://example.test/api?company=fms&mandant=1&sys=live', 'secret', 0);
     }
 
     public function testFetchOrdersLogsXmlErrorAndReturnsEmptyOrders(): void

@@ -181,6 +181,47 @@ class TopmSan6OrderExportServiceTest extends TestCase
         static::assertNull($permanent['next_retry_at']);
     }
 
+
+    public function testExportOrderMarksFailedPermanentWhenSan6ConfigIsInvalid(): void
+    {
+        $connection = $this->createConnection();
+        $orderId = Uuid::randomHex();
+        $topmClient = $this->createMock(TopmSan6Client::class);
+        $topmClient->method('sendByPostXml')->willThrowException(new \InvalidArgumentException('Incomplete SAN6 config. Missing required fields: product.'));
+
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects(static::once())
+            ->method('error')
+            ->with('TopM order export skipped: invalid SAN6 config.', static::arrayHasKey('error'));
+
+        $service = $this->createService(
+            $this->createOrderRepository($this->createOrderForXml($orderId)),
+            $topmClient,
+            $this->createConfig([
+                'ExternalOrders.config.externalOrdersSan6SendStrategy' => 'post-xml',
+                'ExternalOrders.config.externalOrdersSan6BaseUrl' => 'https://topm.example/api',
+                'ExternalOrders.config.externalOrdersSan6Authentifizierung' => 'api-token',
+            ]),
+            $connection,
+            $logger,
+            $this->createUrlGenerator('/unused')
+        );
+
+        $result = $service->exportOrder($orderId, Context::createDefaultContext());
+
+        static::assertSame('failed_permanent', $result['status']);
+        static::assertSame('Incomplete SAN6 config. Missing required fields: product.', $result['responseMessage']);
+
+        $row = $connection->fetchAssociative('SELECT status, attempts, last_error, response_message FROM external_order_export WHERE id = :id', [
+            'id' => Uuid::fromHexToBytes($result['exportId']),
+        ]);
+
+        static::assertIsArray($row);
+        static::assertSame('failed_permanent', $row['status']);
+        static::assertSame(0, (int) $row['attempts']);
+        static::assertSame('Incomplete SAN6 config. Missing required fields: product.', $row['last_error']);
+    }
+
     public function testServeSignedExportXmlValidTokenExpiredAndInvalidSignature(): void
     {
         $_ENV['APP_SECRET'] = 'test-secret';
