@@ -25,7 +25,7 @@ class ExternalOrderControllerTest extends TestCase
         /** @var array{path?: string, defaults?: array{auth_required?: bool, _acl?: array<mixed>}, name?: string} $arguments */
         $arguments = $attributes[0]->getArguments();
 
-        static::assertSame('/api/external-orders/topm-export/{token}', $arguments['path'] ?? null);
+        static::assertSame('/topm-export/{token}', $arguments['path'] ?? null);
         static::assertSame('api.external-orders.export.file-transfer', $arguments['name'] ?? null);
         static::assertFalse($arguments['defaults']['auth_required'] ?? true);
         static::assertSame([], $arguments['defaults']['_acl'] ?? ['unexpected']);
