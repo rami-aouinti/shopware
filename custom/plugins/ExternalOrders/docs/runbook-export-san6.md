@@ -328,3 +328,10 @@ Le runbook est publié dans :
 - `custom/plugins/ExternalOrders/docs/runbook-export-san6.md`
 
 À chaque évolution de la logique d’export (statuts, retries, config SAN6, scheduler), mettre à jour ce document dans la même PR.
+
+---
+
+## 6) Référence bascule/rollback (checklist finale)
+
+Pour les mises en production, utiliser la checklist dédiée :
+- `custom/plugins/ExternalOrders/docs/checklist-bascule-san6.md`
