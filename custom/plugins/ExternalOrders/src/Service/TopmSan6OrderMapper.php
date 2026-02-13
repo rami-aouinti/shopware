@@ -110,7 +110,7 @@ class TopmSan6OrderMapper
                 continue;
             }
 
-            $skuRaw = $this->pickFirstString($position, ['Artikel', 'Artikelnummer', 'article', 'sku']) ?? '';
+            $skuRaw = $this->pickFirstString($position, ['Artikel', 'Artikelnummer', 'Referenz', 'article', 'sku']) ?? '';
             $normalizedReference = $this->normalizeArticleReference($skuRaw);
             $quantity = (int) ($this->pickFirstString($position, ['Menge', 'menge', 'Anzahl']) ?? 1);
             $price = (float) str_replace(',', '.', (string) ($this->pickFirstString($position, ['Preis', 'Einzelpreis']) ?? '0'));
@@ -146,7 +146,26 @@ class TopmSan6OrderMapper
             }
 
             if (array_is_list($value)) {
-                return $value;
+                $positions = [];
+
+                foreach ($value as $entry) {
+                    if (!is_array($entry)) {
+                        continue;
+                    }
+
+                    if (isset($entry['Position']) && is_array($entry['Position'])) {
+                        $nested = $entry['Position'];
+                        $positions = [...$positions, ...(array_is_list($nested) ? $nested : [$nested])];
+
+                        continue;
+                    }
+
+                    $positions[] = $entry;
+                }
+
+                if ($positions !== []) {
+                    return $positions;
+                }
             }
 
             if (isset($value['Position']) && is_array($value['Position'])) {
@@ -197,7 +216,7 @@ class TopmSan6OrderMapper
                 continue;
             }
 
-            $content = $this->pickFirstString($attachment, ['InhaltBase64', 'base64', 'content']);
+            $content = $this->pickFirstString($attachment, ['InhaltBase64', 'Datei', 'base64', 'content']);
             if ($content === null) {
                 continue;
             }

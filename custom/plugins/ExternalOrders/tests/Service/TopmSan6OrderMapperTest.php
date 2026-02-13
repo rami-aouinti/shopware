@@ -32,6 +32,39 @@ class TopmSan6OrderMapperTest extends TestCase
         static::assertSame('01', $mapped['detail']['items'][0]['variant']);
     }
 
+
+    public function testMapsPositionenPositionWithReferenzAndDateiAttachment(): void
+    {
+        $mapper = new TopmSan6OrderMapper();
+
+        $mapped = $mapper->mapOrder([
+            'Auftragsnummer' => 'A-456',
+            'Kundenname' => 'Claire Beispiel',
+            'Positionen' => [
+                'Position' => [
+                    [
+                        'Referenz' => 'ABC 123   1',
+                        'Menge' => '3',
+                        'Preis' => '2.50',
+                    ],
+                ],
+            ],
+            'Anlagen' => [
+                [
+                    'Dateiname' => 'auftrag.txt',
+                    'Datei' => base64_encode('payload'),
+                ],
+            ],
+        ]);
+
+        static::assertSame('ABC 123.01', $mapped['detail']['items'][0]['productNumber']);
+        static::assertSame('ABC 123', $mapped['detail']['items'][0]['sku']);
+        static::assertSame('01', $mapped['detail']['items'][0]['variant']);
+        static::assertCount(1, $mapped['detail']['additional']['attachments']);
+        static::assertSame('auftrag.txt', $mapped['detail']['additional']['attachments'][0]['name']);
+        static::assertSame(base64_encode('payload'), $mapped['detail']['additional']['attachments'][0]['content']);
+    }
+
     public function testTrimsAndNormalizesDirtyData(): void
     {
         $mapper = new TopmSan6OrderMapper();
