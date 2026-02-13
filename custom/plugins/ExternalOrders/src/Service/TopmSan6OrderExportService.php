@@ -272,8 +272,8 @@ class TopmSan6OrderExportService
             return [null, null];
         }
 
-        $code = $this->extractFirstScalar($array, ['returnCode', 'code', 'statusCode', 'ret']);
-        $message = $this->extractFirstScalar($array, ['message', 'returnMessage', 'statusMessage', 'msg']);
+        $code = $this->extractFirstScalar($array, ['response_code', 'returnCode', 'code', 'statusCode', 'ret']);
+        $message = $this->extractFirstScalar($array, ['response_message', 'message', 'returnMessage', 'statusMessage', 'msg']);
 
         return [$code !== null ? (int) $code : null, $message !== null ? (string) $message : null];
     }
