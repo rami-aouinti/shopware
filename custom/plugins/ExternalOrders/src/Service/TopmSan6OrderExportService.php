@@ -50,6 +50,13 @@ class TopmSan6OrderExportService
         $correlationId = Uuid::randomHex();
 
         $this->createState($exportId, $orderId, $xml, $strategy, $correlationId, $isRetry);
+        $this->logger->info('TopM order export queued.', [
+            'orderId' => $orderId,
+            'exportId' => $exportId,
+            'correlationId' => $correlationId,
+            'isRetry' => $isRetry,
+            'strategy' => $strategy,
+        ]);
 
         try {
             if ($strategy === 'filetransferurl') {
@@ -181,25 +188,49 @@ class TopmSan6OrderExportService
     public function processRetries(Context $context): int
     {
         $rows = $this->connection->fetchAllAssociative(
-            'SELECT HEX(id) as id, HEX(order_id) as order_id FROM external_order_export
+            'SELECT HEX(id) as id, HEX(order_id) as order_id, correlation_id FROM external_order_export
              WHERE status = :status AND next_retry_at IS NOT NULL AND next_retry_at <= NOW(3) AND attempts < :max
              ORDER BY next_retry_at ASC LIMIT 20',
             ['status' => 'retry_scheduled', 'max' => self::MAX_RETRIES]
         );
 
+        $this->logger->info('TopM export retry batch started.', [
+            'scheduledRetries' => count($rows),
+        ]);
+
         $processed = 0;
         foreach ($rows as $row) {
+            $exportId = strtolower((string) ($row['id'] ?? ''));
             $orderId = strtolower((string) ($row['order_id'] ?? ''));
+            $correlationId = (string) ($row['correlation_id'] ?? '');
+
             if ($orderId === '') {
+                $this->logger->warning('TopM export retry skipped: missing order ID.', [
+                    'orderId' => $orderId,
+                    'exportId' => $exportId,
+                    'correlationId' => $correlationId,
+                ]);
+
                 continue;
             }
 
             try {
+                $this->logger->info('TopM export retry dispatching export.', [
+                    'orderId' => $orderId,
+                    'exportId' => $exportId,
+                    'correlationId' => $correlationId,
+                ]);
+
                 $this->exportOrder($orderId, $context, true);
                 $processed++;
             } catch (\Throwable) {
             }
         }
+
+        $this->logger->info('TopM export retry batch finished.', [
+            'scheduledRetries' => count($rows),
+            'processedRetries' => $processed,
+        ]);
 
         return $processed;
     }
@@ -220,10 +251,14 @@ class TopmSan6OrderExportService
 
     private function scheduleRetry(string $exportId, string $error): void
     {
-        $attempts = (int) $this->connection->fetchOne(
-            'SELECT attempts FROM external_order_export WHERE id = :id',
+        $row = $this->connection->fetchAssociative(
+            'SELECT attempts, HEX(order_id) as order_id, correlation_id FROM external_order_export WHERE id = :id',
             ['id' => Uuid::fromHexToBytes($exportId)]
         );
+
+        $attempts = (int) ($row['attempts'] ?? 0);
+        $orderId = strtolower((string) ($row['order_id'] ?? ''));
+        $correlationId = (string) ($row['correlation_id'] ?? '');
 
         $nextStatus = $attempts + 1 >= self::MAX_RETRIES ? 'failed_permanent' : 'retry_scheduled';
         $nextRetryAt = $nextStatus === 'retry_scheduled'
@@ -237,6 +272,16 @@ class TopmSan6OrderExportService
             'next_retry_at' => $nextRetryAt,
             'updated_at' => (new \DateTimeImmutable())->format('Y-m-d H:i:s.v'),
         ], ['id' => Uuid::fromHexToBytes($exportId)]);
+
+        $this->logger->warning('TopM order export retry status updated.', [
+            'orderId' => $orderId,
+            'exportId' => $exportId,
+            'correlationId' => $correlationId,
+            'attempts' => $attempts + 1,
+            'status' => $nextStatus,
+            'nextRetryAt' => $nextRetryAt,
+            'error' => mb_substr($this->maskSecrets($error), 0, 300),
+        ]);
     }
 
     public function generateSignedFileTransferUrl(string $exportId, ?int $expiresAt = null): string
