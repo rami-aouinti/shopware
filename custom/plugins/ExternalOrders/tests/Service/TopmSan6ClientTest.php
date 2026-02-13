@@ -60,6 +60,78 @@ class TopmSan6ClientTest extends TestCase
         static::assertTrue($logger->hasRecord('error', 'TopM san6 XML parsing failed.'));
     }
 
+
+    public function testFetchOrdersUsesCustomReadFunctionWhenProvided(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->expects($this->once())
+            ->method('getContent')
+            ->with(false)
+            ->willReturn('<response><orders><order><auftragsnummer>A-200</auftragsnummer></order></orders></response>');
+
+        $httpClient = $this->createMock(HttpClientInterface::class);
+        $httpClient->expects($this->once())
+            ->method('request')
+            ->with(
+                'GET',
+                $this->callback(static function (string $url): bool {
+                    parse_str((string) parse_url($url, PHP_URL_QUERY), $params);
+
+                    return ($params['funktion'] ?? null) === 'API-CUSTOM-READ';
+                }),
+                []
+            )
+            ->willReturn($response);
+
+        $logger = new TopmInMemoryLogger();
+        $client = new TopmSan6Client($httpClient, $logger, new TopmSan6OrderMapper());
+
+        $result = $client->fetchOrders(
+            'https://example.test/api?ssid=abc&company=fms&product=sw&mandant=1&sys=live',
+            'secret',
+            0,
+            'API-CUSTOM-READ'
+        );
+
+        static::assertSame('A-200', $result['orders'][0]['externalId'] ?? null);
+    }
+
+    public function testSendByPostXmlUsesCustomWriteFunctionWhenProvided(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getContent')->with(false)->willReturn('ok');
+
+        $httpClient = $this->createMock(HttpClientInterface::class);
+        $httpClient->expects($this->once())
+            ->method('request')
+            ->with(
+                'POST',
+                $this->callback(static function (string $url): bool {
+                    parse_str((string) parse_url($url, PHP_URL_QUERY), $params);
+
+                    return ($params['funktion'] ?? null) === 'API-CUSTOM-WRITE';
+                }),
+                [
+                    'headers' => ['Content-Type' => 'application/xml'],
+                    'body' => '<xml />',
+                ]
+            )
+            ->willReturn($response);
+
+        $logger = new TopmInMemoryLogger();
+        $client = new TopmSan6Client($httpClient, $logger, new TopmSan6OrderMapper());
+
+        $result = $client->sendByPostXml(
+            'https://example.test/api?ssid=abc&company=fms&product=sw&mandant=1&sys=live',
+            'secret',
+            '<xml />',
+            0,
+            'API-CUSTOM-WRITE'
+        );
+
+        static::assertSame('ok', $result);
+    }
+
     public function testSendByPostXmlUsesXmlContentType(): void
     {
         $response = $this->createMock(ResponseInterface::class);

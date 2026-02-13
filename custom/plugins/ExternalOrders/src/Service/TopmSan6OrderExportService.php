@@ -42,6 +42,10 @@ class TopmSan6OrderExportService
         $apiUrl = $this->buildSan6ApiUrl((string) $this->systemConfigService->get('ExternalOrders.config.externalOrdersSan6BaseUrl'));
         $apiToken = (string) $this->systemConfigService->get('ExternalOrders.config.externalOrdersSan6Authentifizierung');
         $timeout = (float) ($this->systemConfigService->get('ExternalOrders.config.externalOrdersTimeout') ?? 2.5);
+        $writeFunction = trim((string) ($this->systemConfigService->get('ExternalOrders.config.externalOrdersSan6WriteFunction') ?? ''));
+        if ($writeFunction === '') {
+            $writeFunction = TopmSan6Client::DEFAULT_WRITE_FUNCTION;
+        }
         $correlationId = Uuid::randomHex();
 
         $this->createState($exportId, $orderId, $xml, $strategy, $correlationId, $isRetry);
@@ -49,9 +53,9 @@ class TopmSan6OrderExportService
         try {
             if ($strategy === 'filetransferurl') {
                 $signedUrl = $this->generateSignedFileTransferUrl($exportId);
-                $responseXml = $this->topmSan6Client->sendByFileTransferUrl($apiUrl, $apiToken, $signedUrl, $timeout);
+                $responseXml = $this->topmSan6Client->sendByFileTransferUrl($apiUrl, $apiToken, $signedUrl, $timeout, $writeFunction);
             } else {
-                $responseXml = $this->topmSan6Client->sendByPostXml($apiUrl, $apiToken, $xml, $timeout);
+                $responseXml = $this->topmSan6Client->sendByPostXml($apiUrl, $apiToken, $xml, $timeout, $writeFunction);
             }
 
             [$code, $message] = $this->extractTopmResponse($responseXml);

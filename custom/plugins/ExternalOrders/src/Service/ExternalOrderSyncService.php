@@ -32,9 +32,14 @@ class ExternalOrderSyncService
 
         foreach ($configs as $config) {
             $apiUrl = (string) $this->systemConfigService->get($config['urlKey']);
+            $san6ReadFunction = TopmSan6Client::DEFAULT_READ_FUNCTION;
             $apiToken = (string) $this->systemConfigService->get($config['tokenKey']);
 
             if ($config['channel'] === 'san6') {
+                $san6ReadFunction = trim((string) ($this->systemConfigService->get('ExternalOrders.config.externalOrdersSan6ReadFunction') ?? ''));
+                if ($san6ReadFunction === '') {
+                    $san6ReadFunction = TopmSan6Client::DEFAULT_READ_FUNCTION;
+                }
                 $san6Url = (string) $this->systemConfigService->get('ExternalOrders.config.externalOrdersSan6BaseUrl');
                 if ($san6Url !== '') {
                     $apiUrl = $this->buildSan6ApiUrl($san6Url);
@@ -53,7 +58,7 @@ class ExternalOrderSyncService
                 continue;
             }
 
-            $this->syncChannelOrders($config['channel'], $apiUrl, $apiToken, $timeout, $context);
+            $this->syncChannelOrders($config['channel'], $apiUrl, $apiToken, $timeout, $context, $san6ReadFunction);
         }
     }
 
@@ -155,7 +160,8 @@ class ExternalOrderSyncService
         string $apiUrl,
         string $apiToken,
         float $timeout,
-        Context $context
+        Context $context,
+        ?string $san6ReadFunction = null
     ): void {
         $options = [];
         if ($apiToken !== '') {
@@ -172,7 +178,7 @@ class ExternalOrderSyncService
         $startTime = microtime(true);
         try {
             if ($channel === 'san6') {
-                $payload = $this->topmSan6Client->fetchOrders($apiUrl, $apiToken, $timeout);
+                $payload = $this->topmSan6Client->fetchOrders($apiUrl, $apiToken, $timeout, $san6ReadFunction ?? TopmSan6Client::DEFAULT_READ_FUNCTION);
             } else {
                 $response = $this->httpClient->request('GET', $apiUrl, $options);
                 $payload = $response->toArray(false);
