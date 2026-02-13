@@ -43,7 +43,7 @@ Module.register('lieferzeiten-settings', {
             color: '#009ee3',
             path: 'lieferzeiten.settings.channelSettings',
             icon: 'regular-cog',
-            parent: 'sw-settings',
+            parent: 'sw-order',
             position: 90,
         },
         {
