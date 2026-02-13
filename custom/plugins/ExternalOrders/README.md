@@ -62,6 +62,18 @@ Cette procédure permet de valider le comportement de l’URL signée en dehors 
 3. Récupérer l’URL signée depuis la trace de la requête sortante vers SAN6 (proxy sortant/WAF/log applicatif SAN6).
    - Le format attendu est : `https://<shop-domain>/api/external-orders/topm-export/<token>`.
 
+Alternative CLI (génération directe par `exportId`) :
+
+```bash
+bin/console external-orders:export:generate-signed-url <exportId> --validate-exists
+```
+
+Optionnel, TTL personnalisé pour test d’expiration :
+
+```bash
+bin/console external-orders:export:generate-signed-url <exportId> --expires-in=30 --validate-exists
+```
+
 ### 2) Tester l’URL depuis l’extérieur (hors réseau interne Shopware)
 
 Depuis une machine externe (ex: poste hors VPN, runner public, etc.) :
@@ -111,6 +123,12 @@ Critères de conformité infra :
 - routage vers Shopware pour `GET /api/external-orders/topm-export/{token}` ;
 - conservation du host/proto (`X-Forwarded-Host`, `X-Forwarded-Proto`) cohérente avec l’URL publique ;
 - pas de blocage WAF/CDN sur cette route de type machine-to-machine.
+
+Vérification TLS depuis un hôte externe :
+
+```bash
+openssl s_client -connect <shop-domain>:443 -servername <shop-domain> </dev/null 2>/dev/null | openssl x509 -noout -subject -issuer -dates
+```
 
 ### 5) Prérequis d’infrastructure (checklist)
 

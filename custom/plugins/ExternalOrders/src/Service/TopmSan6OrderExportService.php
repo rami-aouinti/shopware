@@ -239,9 +239,9 @@ class TopmSan6OrderExportService
         ], ['id' => Uuid::fromHexToBytes($exportId)]);
     }
 
-    private function generateSignedFileTransferUrl(string $exportId): string
+    public function generateSignedFileTransferUrl(string $exportId, ?int $expiresAt = null): string
     {
-        $expiresAt = time() + 600;
+        $expiresAt = $expiresAt ?? (time() + 600);
         $secret = (string) ($_ENV['APP_SECRET'] ?? 'external-orders-secret');
         $signature = hash_hmac('sha256', $exportId . '|' . $expiresAt, $secret);
         $token = rtrim(strtr(base64_encode($exportId . '|' . $expiresAt . '|' . $signature), '+/', '-_'), '=');

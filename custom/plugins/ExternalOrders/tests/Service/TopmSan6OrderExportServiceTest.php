@@ -406,6 +406,43 @@ class TopmSan6OrderExportServiceTest extends TestCase
         static::assertNull($service->getLatestExportStatus(Uuid::randomHex()));
     }
 
+    public function testGenerateSignedFileTransferUrlSupportsCustomExpiration(): void
+    {
+        $_ENV['APP_SECRET'] = 'test-secret';
+        $exportId = Uuid::randomHex();
+        $expiresAt = time() + 1234;
+
+        $service = $this->createService(
+            $this->createMock(EntityRepository::class),
+            $this->createMock(TopmSan6Client::class),
+            $this->createConfig([
+                'core.basicInformation.shopwareUrl' => 'https://shop.example',
+            ]),
+            $this->createConnection(),
+            $this->createMock(LoggerInterface::class),
+            $this->createUrlGenerator('/api/external-orders/topm-export/')
+        );
+
+        $url = $service->generateSignedFileTransferUrl($exportId, $expiresAt);
+        static::assertStringStartsWith('https://shop.example/api/external-orders/topm-export/', $url);
+
+        $token = (string) parse_url($url, PHP_URL_PATH);
+        $token = substr($token, (int) strrpos($token, '/') + 1);
+
+        $normalized = strtr($token, '-_', '+/');
+        $padding = strlen($normalized) % 4;
+        if ($padding > 0) {
+            $normalized .= str_repeat('=', 4 - $padding);
+        }
+
+        $decoded = base64_decode($normalized, true);
+        static::assertIsString($decoded);
+
+        [$decodedExportId, $decodedExpiresAt] = explode('|', $decoded);
+        static::assertSame($exportId, $decodedExportId);
+        static::assertSame($expiresAt, (int) $decodedExpiresAt);
+    }
+
     public function testRetryTaskHandlerCallsProcessRetries(): void
     {
         $service = $this->createMock(TopmSan6OrderExportService::class);
