@@ -1,42 +1,44 @@
 # Runbook d’exploitation — Export SAN6 (`ExternalOrders`)
 
-## 1) Statuts d’export et actions opérateur
+## 1) Statuts d’export et leur signification
 
-Les exports sont tracés dans la table `external_order_export` avec un cycle d’état orienté reprise automatique.
+Les exports sont historisés dans `external_order_export` (une ligne par tentative). Le statut final d’une tentative dépend de la réponse SAN6 ou d’une erreur technique/configuration.
 
-| Statut | Signification | Action automatique | Action opérateur |
+| Statut | Signification opérationnelle | Déclencheur | Suite automatique |
 |---|---|---|---|
-| `processing` | Export en cours de traitement (ligne créée avant l’appel SAN6). | Aucune, état transitoire. | Surveiller si l’état reste bloqué (incident applicatif probable). |
-| `sent` | SAN6 a répondu avec un code de succès (`response_code = 0`). | Fin du flux. | Aucun traitement, monitoring standard. |
-| `failed` | SAN6 a répondu, mais le code retour indique un échec. | Planification d’un retry immédiate via `retry_scheduled`. | Vérifier `response_code`/`response_message` et la cause métier. |
-| `retry_scheduled` | Retry planifié avec `next_retry_at` (backoff progressif). | Pris en charge par la tâche planifiée `external_orders.export_retry`. | Vérifier le backlog et la progression des retries. |
-| `failed_permanent` | Plus de retry possible (max atteint) **ou** configuration SAN6 invalide. | Aucune reprise automatique. | Reprise manuelle après correction de la cause racine. |
+| `processing` | Tentative en cours (ligne créée, appel SAN6 non finalisé). | Création d’un export via API/controller ou retry. | Aucun (état transitoire). |
+| `sent` | Export accepté par SAN6 (`response_code = 0`). | Réponse SAN6 valide avec code succès. | Fin du flux (pas de retry). |
+| `failed` | SAN6 a répondu mais le résultat métier est en échec (`response_code != 0`). | Réponse SAN6 explicite en erreur. | Replanification immédiate vers `retry_scheduled`. |
+| `retry_scheduled` | Échec temporaire, retry en attente (`next_retry_at`). | Échec transport/runtime ou réponse métier en erreur avec retries restants. | Pris en charge par la tâche `external_orders.export_retry`. |
+| `failed_permanent` | Échec définitif (retries épuisés) ou configuration SAN6 invalide. | `attempts` max atteints ou exception de config (`InvalidArgumentException`). | Aucune reprise automatique. Intervention manuelle requise. |
 
-### Détails retries
-- Limite de retries : **5 tentatives max**.
-- Backoff : `+5 min`, `+10 min`, `+15 min`, ... selon le compteur `attempts`.
-- Le retry automatique ne traite que les lignes `retry_scheduled` dont `next_retry_at <= NOW(3)`.
+### Politique de retry
+- Nombre maximal de tentatives : **5** (`MAX_RETRIES`).
+- Incrément du compteur : `attempts = attempts + 1` à chaque planification.
+- Backoff progressif : `+5 min`, `+10 min`, `+15 min`, ... (formule `(attempts+1)*5`).
+- Fenêtre d’exécution retry : uniquement `status = 'retry_scheduled'` et `next_retry_at <= NOW(3)`.
+- Limite de lot par exécution scheduler : **20 retries**.
 
 ---
 
-## 2) Diagnostic rapide (logs, DB, scheduled task)
+## 2) Contrôles opérationnels
 
 ## 2.1 Logs applicatifs
 
-Chercher les messages d’erreur/succès liés à l’export SAN6 :
+Filtrer les événements critiques de l’export SAN6 :
 
 ```bash
-rg "TopM order export|invalid SAN6 config|TopM san6" var/log -n
+rg "TopM order export response received|TopM order export failed|TopM order export skipped: invalid SAN6 config" var/log -n
 ```
 
-Signaux utiles dans les logs :
-- `TopM order export response received.` (réponse SAN6 reçue)
-- `TopM order export failed.` (exception transport/runtime)
-- `TopM order export skipped: invalid SAN6 config.` (erreur de configuration)
+Interprétation rapide :
+- `TopM order export response received.` : tentative terminée (succès/échec métier).
+- `TopM order export failed.` : erreur technique (transport/runtime), retry attendu.
+- `TopM order export skipped: invalid SAN6 config.` : erreur de configuration, export en `failed_permanent`.
 
-## 2.2 État global en base (`external_order_export`)
+## 2.2 Contrôles base de données (`external_order_export`)
 
-Vue synthétique par statut :
+Répartition par statut :
 
 ```sql
 SELECT status, COUNT(*) AS total
@@ -45,7 +47,7 @@ GROUP BY status
 ORDER BY total DESC;
 ```
 
-Derniers exports (ordre chronologique inverse) :
+Dernières tentatives :
 
 ```sql
 SELECT
@@ -57,6 +59,7 @@ SELECT
   response_message,
   last_error,
   next_retry_at,
+  correlation_id,
   updated_at,
   created_at
 FROM external_order_export
@@ -64,7 +67,7 @@ ORDER BY created_at DESC
 LIMIT 50;
 ```
 
-Backlog retry en retard (à traiter immédiatement) :
+Backlog retry à traiter (retard) :
 
 ```sql
 SELECT COUNT(*) AS overdue_retries
@@ -74,9 +77,9 @@ WHERE status = 'retry_scheduled'
   AND next_retry_at <= NOW(3);
 ```
 
-## 2.3 Tâche planifiée de retry
+## 2.3 Scheduled task retry
 
-Lister la tâche :
+Vérifier la tâche Shopware :
 
 ```sql
 SELECT name, status, run_interval, last_execution_time, next_execution_time
@@ -84,21 +87,22 @@ FROM scheduled_task
 WHERE name = 'external_orders.export_retry';
 ```
 
-Déclenchement manuel du scheduler (si nécessaire côté exploitation Shopware) :
+Exécution manuelle du scheduler (si absence de worker/cron actif) :
 
 ```bash
 bin/console scheduled-task:run --no-wait
 ```
 
-> Si l’infra exécute déjà le scheduler via worker/cron, ne pas lancer en parallèle sans coordination.
+> Ne pas multiplier les lancements parallèles sans coordination d’exploitation.
 
 ---
 
-## 3) Alertes minimales recommandées
+## 3) Seuils d’alerte recommandés
 
-## 3.1 Taux d’échec export
+## 3.1 Taux d’échec export (15 min glissantes)
 
-Alerte **warning** si taux d’échec > 5% sur 15 min, **critical** > 15%.
+- **Warning** : `failure_rate_pct > 5%`
+- **Critical** : `failure_rate_pct > 15%`
 
 ```sql
 SELECT
@@ -112,9 +116,10 @@ FROM external_order_export
 WHERE created_at >= (NOW() - INTERVAL 15 MINUTE);
 ```
 
-## 3.2 Backlog retry
+## 3.2 Backlog retries
 
-Alerte **warning** si backlog `retry_scheduled` > 20, **critical** > 100.
+- **Warning** : `retry_backlog > 20`
+- **Critical** : `retry_backlog > 100`
 
 ```sql
 SELECT COUNT(*) AS retry_backlog
@@ -122,7 +127,8 @@ FROM external_order_export
 WHERE status = 'retry_scheduled';
 ```
 
-Alerte dédiée si backlog en retard (`next_retry_at` dépassé) > 0 sur 10 min :
+Alerte additionnelle sur retard de traitement retry :
+- **Warning** si `overdue_retry_backlog > 0` pendant 10 min.
 
 ```sql
 SELECT COUNT(*) AS overdue_retry_backlog
@@ -134,16 +140,16 @@ WHERE status = 'retry_scheduled'
 
 ## 3.3 Erreurs de configuration SAN6
 
-Déclencher une alerte immédiate si apparition des logs :
+Déclencher une alerte immédiate si le log suivant apparaît :
 - `TopM order export skipped: invalid SAN6 config.`
 
-Contrôles de config minimaux :
+Clés minimales à contrôler :
 - `ExternalOrders.config.externalOrdersSan6BaseUrl`
 - `ExternalOrders.config.externalOrdersSan6Authentifizierung`
 - `ExternalOrders.config.externalOrdersSan6WriteFunction`
 - `ExternalOrders.config.externalOrdersSan6SendStrategy`
 
-Vérification SQL (présence des clés) :
+Vérification SQL rapide :
 
 ```sql
 SELECT configuration_key
@@ -160,14 +166,38 @@ WHERE configuration_key IN (
 
 ## 4) Procédure de reprise manuelle d’un export en échec
 
-Pré-requis : disposer d’un token Admin API et de l’`order_id` concerné.
+Pré-requis :
+- accès Admin API,
+- `orderId` concerné,
+- cause racine identifiée/corrigée (config SAN6, réseau, timeout, etc.).
 
-1. **Identifier le dernier échec**
-   - Récupérer le dernier enregistrement `failed_permanent` ou `retry_scheduled` pour la commande.
+### Étapes
+
+1. **Identifier la dernière tentative en échec**
+
+```sql
+SELECT
+  LOWER(HEX(id)) AS export_id,
+  status,
+  attempts,
+  response_code,
+  response_message,
+  last_error,
+  next_retry_at,
+  correlation_id,
+  created_at
+FROM external_order_export
+WHERE order_id = UNHEX(REPLACE('<orderId>', '-', ''))
+ORDER BY created_at DESC
+LIMIT 5;
+```
+
 2. **Corriger la cause racine**
-   - Config SAN6, connectivité réseau, timeout, erreur métier SAN6.
-3. **Relancer l’export manuellement**
-   - Endpoint Admin :
+- configuration SAN6 invalide,
+- indisponibilité réseau/SAN6,
+- erreur fonctionnelle renvoyée par SAN6 (`response_code`, `response_message`).
+
+3. **Relancer manuellement l’export (méthode standard)**
 
 ```bash
 curl -sS -X POST "https://<shop-domain>/api/_action/external-orders/export/<orderId>" \
@@ -175,31 +205,48 @@ curl -sS -X POST "https://<shop-domain>/api/_action/external-orders/export/<orde
   -H "Content-Type: application/json"
 ```
 
-4. **Valider le résultat**
-   - Vérifier `status` retourné (`sent` attendu) et `responseCode`.
-   - Contrôler en base que le dernier enregistrement est `sent`.
+4. **Valider la reprise**
+- réponse HTTP 200 attendue (ou analyser message d’erreur),
+- dernier statut attendu : `sent`,
+- `response_code = 0` attendu.
 
 ```sql
-SELECT status, response_code, response_message, attempts, created_at
+SELECT status, response_code, response_message, attempts, correlation_id, created_at
 FROM external_order_export
 WHERE order_id = UNHEX(REPLACE('<orderId>', '-', ''))
 ORDER BY created_at DESC
 LIMIT 5;
 ```
 
-5. **Clôturer l’incident**
-   - Documenter `correlation_id`, cause racine, action corrective, durée d’indisponibilité.
+5. **Alternative (si retry automatique souhaité plutôt qu’un export immédiat)**
+
+Replacer la dernière ligne en file de retry (usage exceptionnel, DBA/ops confirmé) :
+
+```sql
+UPDATE external_order_export
+SET status = 'retry_scheduled',
+    next_retry_at = NOW(3),
+    updated_at = NOW(3)
+WHERE id = UNHEX(REPLACE('<exportId>', '-', ''));
+```
+
+Puis lancer le scheduler :
+
+```bash
+bin/console scheduled-task:run --no-wait
+```
+
+6. **Clôture d’incident**
+- consigner `correlation_id`,
+- cause racine,
+- action de remédiation,
+- délai de reprise.
 
 ---
 
-## 5) Règles d’escalade
+## 5) Publication du runbook
 
-- Escalade **N2/N3** si :
-  - `failed_permanent` en hausse continue,
-  - backlog retry non résorbé > 30 min,
-  - erreurs de config SAN6 récurrentes.
-- Escalade **infra** si :
-  - indisponibilité SAN6,
-  - erreurs TLS/DNS/proxy,
-  - saturation workers empêchant `scheduled-task:run`.
+Ce runbook est publié dans le plugin ici :
+- `custom/plugins/ExternalOrders/docs/runbook-export-san6.md`
 
+À chaque changement de logique d’export (statuts, retry, config SAN6, scheduler), mettre à jour ce document dans la même PR.
