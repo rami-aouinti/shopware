@@ -43,5 +43,7 @@
         <service id="ExternalOrders\Subscriber\ExternalOrdersConfigSubscriber">
             <tag name="kernel.event_subscriber" />
         </service>
+
+        <service id="ExternalOrders\Command\GenerateSignedExportUrlCommand" />
     </services>
 </container>
