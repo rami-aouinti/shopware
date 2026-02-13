@@ -4,6 +4,7 @@ namespace ExternalOrders\Service;
 
 use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -382,6 +383,7 @@ class TopmSan6OrderExportService
         $xml->addChild('Datum', $this->formatXmlDate($order->getOrderDateTime()));
 
         $kunde = $xml->addChild('Kunde');
+        $kunde->addChild('Nummer', $this->xmlValue((string) ($order->getOrderCustomer()?->getCustomerNumber() ?? '')));
         $kunde->addChild('Firma', $this->xmlValue((string) ($billing?->getCompany() ?? '')));
         $kunde->addChild('Vorname', $this->xmlValue((string) ($billing?->getFirstName() ?? '')));
         $kunde->addChild('Nachname', $this->xmlValue((string) ($billing?->getLastName() ?? '')));
@@ -405,7 +407,7 @@ class TopmSan6OrderExportService
             }
 
             $position = $positionen->addChild('Position');
-            $position->addChild('Referenz', $this->xmlValue((string) ($lineItem->getReferencedId() ?? $lineItem->getIdentifier())));
+            $position->addChild('Referenz', $this->resolvePositionReference($lineItem));
             $position->addChild('Bezeichnung', $this->xmlValue((string) $lineItem->getLabel()));
             $position->addChild('Gr', $this->normalizeVariantGr($lineItem->getPayload()));
             $position->addChild('Menge', (string) $lineItem->getQuantity());
@@ -415,14 +417,19 @@ class TopmSan6OrderExportService
         $attachmentsNode = $xml->addChild('Anlagen');
         $customFields = $order->getCustomFields() ?? [];
         $attachments = $customFields['externalOrderAttachments'] ?? [];
+        $attachmentNames = $customFields['externalOrderAttachmentNames'] ?? [];
         if (is_array($attachments)) {
             foreach ($attachments as $index => $attachment) {
                 if (!is_string($attachment) || trim($attachment) === '') {
                     continue;
                 }
 
+                $defaultName = sprintf('attachment-%d.txt', $index + 1);
+                $candidateName = is_array($attachmentNames) ? ($attachmentNames[$index] ?? null) : null;
+                $filename = is_string($candidateName) && trim($candidateName) !== '' ? trim($candidateName) : $defaultName;
+
                 $item = $attachmentsNode->addChild('Anlage');
-                $item->addChild('Dateiname', sprintf('attachment-%d.txt', $index + 1));
+                $item->addChild('Dateiname', $this->xmlValue($filename));
                 $item->addChild('Datei', base64_encode(trim($attachment)));
             }
         }
@@ -442,6 +449,21 @@ class TopmSan6OrderExportService
         return $date->format('Y-m-d\\TH:i:s');
     }
 
+    private function resolvePositionReference(OrderLineItemEntity $lineItem): string
+    {
+        $payload = $lineItem->getPayload() ?? [];
+        if ($payload !== []) {
+            foreach (['topmArticleNumber', 'TopmArticleNumber', 'articleNumber', 'Artikelnummer', 'artikelnummer', 'Referenz', 'referenz'] as $key) {
+                $value = $payload[$key] ?? null;
+                if (is_scalar($value) && trim((string) $value) !== '') {
+                    return $this->xmlValue((string) $value);
+                }
+            }
+        }
+
+        return $this->xmlValue((string) ($lineItem->getReferencedId() ?? $lineItem->getIdentifier()));
+    }
+
     /**
      * @param array<string, mixed>|null $payload
      */
@@ -449,7 +471,7 @@ class TopmSan6OrderExportService
     {
         $candidate = '';
         if ($payload !== null) {
-            foreach (['Gr', 'gr', 'size', 'variant', 'option'] as $key) {
+            foreach (['Gr', 'gr', 'topmExecution', 'TopmExecution', 'size', 'variant', 'option'] as $key) {
                 $value = $payload[$key] ?? null;
                 if (is_scalar($value) && trim((string) $value) !== '') {
                     $candidate = (string) $value;
