@@ -316,6 +316,44 @@ class TopmSan6OrderExportServiceTest extends TestCase
         static::assertSame(base64_encode('binary payload'), (string) $xml->Anlagen->Anlage[0]->Datei);
     }
 
+
+    public function testExportOrderKeepsBase64AttachmentWithWhitespaceFormatting(): void
+    {
+        $connection = $this->createConnection();
+        $orderId = Uuid::randomHex();
+
+        $capturedXml = null;
+        $topmClient = $this->createMock(TopmSan6Client::class);
+        $topmClient->expects(static::once())
+            ->method('sendByPostXml')
+            ->willReturnCallback(static function (string $url, string $token, string $xml) use (&$capturedXml): string {
+                $capturedXml = $xml;
+
+                return '<response><response_code>0</response_code><response_message>OK</response_message></response>';
+            });
+
+        $service = $this->createService(
+            $this->createOrderRepository($this->createOrderForWrappedBase64Attachment($orderId)),
+            $topmClient,
+            $this->createConfig([
+                'ExternalOrders.config.externalOrdersSan6SendStrategy' => 'post-xml',
+                'ExternalOrders.config.externalOrdersSan6BaseUrl' => 'https://topm.example/api',
+                'ExternalOrders.config.externalOrdersSan6Authentifizierung' => 'schule-token',
+            ]),
+            $connection,
+            $this->createMock(LoggerInterface::class),
+            $this->createUrlGenerator('/unused')
+        );
+
+        $result = $service->exportOrder($orderId, Context::createDefaultContext());
+
+        static::assertSame('sent', $result['status']);
+        $xml = simplexml_load_string($capturedXml ?: '');
+        static::assertInstanceOf(\SimpleXMLElement::class, $xml);
+
+        static::assertSame(base64_encode('schule payload'), (string) $xml->Anlagen->Anlage[0]->Datei);
+    }
+
     public function testServeSignedExportXmlValidTokenExpiredAndInvalidSignature(): void
     {
         $_ENV['APP_SECRET'] = 'test-secret';
@@ -612,6 +650,20 @@ class TopmSan6OrderExportServiceTest extends TestCase
         $order->method('getCustomFields')->willReturn([
             'externalOrderAttachments' => [base64_encode('binary payload')],
             'externalOrderAttachmentNames' => ['auftrag-base64.txt'],
+        ]);
+
+        return $order;
+    }
+
+
+    private function createOrderForWrappedBase64Attachment(string $orderId): OrderEntity
+    {
+        $order = $this->createOrderForReferenceVariantAndBase64($orderId);
+        $wrappedBase64 = " " . substr(base64_encode('schule payload'), 0, 8) . "\n" . substr(base64_encode('schule payload'), 8) . " ";
+
+        $order->method('getCustomFields')->willReturn([
+            'externalOrderAttachments' => [$wrappedBase64],
+            'externalOrderAttachmentNames' => ['auftrag-schule-wrapped.txt'],
         ]);
 
         return $order;

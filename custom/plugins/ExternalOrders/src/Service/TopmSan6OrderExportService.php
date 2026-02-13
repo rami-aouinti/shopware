@@ -503,9 +503,10 @@ class TopmSan6OrderExportService
 
     private function normalizeAttachmentBase64(string $attachment): string
     {
-        $decoded = base64_decode($attachment, true);
-        if ($decoded !== false && base64_encode($decoded) === $attachment) {
-            return $attachment;
+        $normalizedAttachment = preg_replace('/\s+/u', '', $attachment) ?? $attachment;
+        $decoded = base64_decode($normalizedAttachment, true);
+        if ($decoded !== false && base64_encode($decoded) === $normalizedAttachment) {
+            return $normalizedAttachment;
         }
 
         return base64_encode($attachment);
