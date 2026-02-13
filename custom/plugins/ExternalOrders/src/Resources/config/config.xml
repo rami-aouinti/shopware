@@ -73,7 +73,7 @@
             <label lang="de-DE">SAN6 Product</label>
         </input-field>
 
-        <single-select>
+        <input-field type="single-select">
             <name>externalOrdersSan6Mandant</name>
             <label lang="en-GB">SAN6 mandant</label>
             <label lang="de-DE">SAN6 Mandant</label>
@@ -88,7 +88,7 @@
                 </option>
             </options>
             <defaultValue>Schule</defaultValue>
-        </single-select>
+        </input-field>
 
         <input-field type="text">
             <name>externalOrdersSan6Sys</name>
@@ -116,7 +116,7 @@
             <defaultValue>API-AUFTRAGNEU2</defaultValue>
         </input-field>
 
-        <single-select>
+        <input-field type="single-select">
             <name>externalOrdersSan6SendStrategy</name>
             <label lang="en-GB">SAN6 send strategy</label>
             <label lang="de-DE">SAN6 Versandstrategie</label>
@@ -131,7 +131,7 @@
                 </option>
             </options>
             <defaultValue>filetransferurl</defaultValue>
-        </single-select>
+        </input-field>
 
     </card>
 </config>
