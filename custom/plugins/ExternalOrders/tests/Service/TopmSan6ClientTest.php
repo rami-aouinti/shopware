@@ -43,6 +43,52 @@ class TopmSan6ClientTest extends TestCase
         static::assertSame('san6', $result['orders'][0]['channel'] ?? null);
     }
 
+
+    public function testFetchOrdersUsesNoSessionFallbackWhenSsidIsMissing(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->expects($this->once())
+            ->method('getContent')
+            ->with(false)
+            ->willReturn('<response><orders><order><auftragsnummer>A-101</auftragsnummer></order></orders></response>');
+
+        $httpClient = $this->createMock(HttpClientInterface::class);
+        $httpClient->expects($this->once())
+            ->method('request')
+            ->with(
+                'GET',
+                $this->callback(static function (string $url): bool {
+                    parse_str((string) parse_url($url, PHP_URL_QUERY), $params);
+
+                    return ($params['ssid'] ?? null) === 'nosession';
+                }),
+                []
+            )
+            ->willReturn($response);
+
+        $logger = new TopmInMemoryLogger();
+        $client = new TopmSan6Client($httpClient, $logger, new TopmSan6OrderMapper());
+
+        $result = $client->fetchOrders('https://example.test/api?company=fms&product=sw&mandant=1&sys=live', 'secret', 0);
+
+        static::assertSame('A-101', $result['orders'][0]['externalId'] ?? null);
+    }
+
+    public function testFetchOrdersSkipsRequestWhenRequiredSan6ParamsAreMissing(): void
+    {
+        $httpClient = $this->createMock(HttpClientInterface::class);
+        $httpClient->expects($this->never())
+            ->method('request');
+
+        $logger = new TopmInMemoryLogger();
+        $client = new TopmSan6Client($httpClient, $logger, new TopmSan6OrderMapper());
+
+        $result = $client->fetchOrders('https://example.test/api?company=fms&mandant=1&sys=live', 'secret', 0);
+
+        static::assertSame([], $result['orders']);
+        static::assertTrue($logger->hasRecord('error', 'TopM san6 request skipped: incomplete SAN6 config.'));
+    }
+
     public function testFetchOrdersLogsXmlErrorAndReturnsEmptyOrders(): void
     {
         $response = $this->createMock(ResponseInterface::class);
