@@ -406,10 +406,12 @@ class TopmSan6OrderExportService
                 continue;
             }
 
+            [$positionReference, $positionVariant] = $this->resolveReferenceAndVariant($lineItem);
+
             $position = $positionen->addChild('Position');
-            $position->addChild('Referenz', $this->resolvePositionReference($lineItem));
+            $position->addChild('Referenz', $positionReference);
             $position->addChild('Bezeichnung', $this->xmlValue((string) $lineItem->getLabel()));
-            $position->addChild('Gr', $this->normalizeVariantGr($lineItem->getPayload()));
+            $position->addChild('Gr', $positionVariant);
             $position->addChild('Menge', (string) $lineItem->getQuantity());
             $position->addChild('Preis', number_format((float) ($lineItem->getPrice()?->getUnitPrice() ?? 0.0), 2, '.', ''));
         }
@@ -430,7 +432,7 @@ class TopmSan6OrderExportService
 
                 $item = $attachmentsNode->addChild('Anlage');
                 $item->addChild('Dateiname', $this->xmlValue($filename));
-                $item->addChild('Datei', base64_encode(trim($attachment)));
+                $item->addChild('Datei', $this->normalizeAttachmentBase64(trim($attachment)));
             }
         }
 
@@ -451,23 +453,68 @@ class TopmSan6OrderExportService
 
     private function resolvePositionReference(OrderLineItemEntity $lineItem): string
     {
+        [$reference] = $this->resolveReferenceAndVariant($lineItem);
+
+        return $reference;
+    }
+
+    /**
+     * @return array{0:string,1:string}
+     */
+    private function resolveReferenceAndVariant(OrderLineItemEntity $lineItem): array
+    {
         $payload = $lineItem->getPayload() ?? [];
+        $reference = '';
+        $variantFromReference = null;
+
         if ($payload !== []) {
             foreach (['topmArticleNumber', 'TopmArticleNumber', 'articleNumber', 'Artikelnummer', 'artikelnummer', 'Referenz', 'referenz'] as $key) {
                 $value = $payload[$key] ?? null;
                 if (is_scalar($value) && trim((string) $value) !== '') {
-                    return $this->xmlValue((string) $value);
+                    [$reference, $variantFromReference] = $this->splitReferenceAndVariant((string) $value);
+
+                    break;
                 }
             }
         }
 
-        return $this->xmlValue((string) ($lineItem->getReferencedId() ?? $lineItem->getIdentifier()));
+        if ($reference === '') {
+            $reference = $this->xmlValue((string) ($lineItem->getReferencedId() ?? $lineItem->getIdentifier()));
+        }
+
+        return [$reference, $this->normalizeVariantGr($payload, $variantFromReference)];
+    }
+
+    /**
+     * @return array{0:string,1:string|null}
+     */
+    private function splitReferenceAndVariant(string $rawReference): array
+    {
+        $normalizedReference = trim(preg_replace('/\s+/u', ' ', $rawReference) ?? $rawReference);
+        if (preg_match('/^(.*?)[\.\s]+(\d{1,2})$/u', $normalizedReference, $matches) === 1) {
+            return [
+                $this->xmlValue((string) $matches[1]),
+                str_pad((string) $matches[2], 2, '0', STR_PAD_LEFT),
+            ];
+        }
+
+        return [$this->xmlValue($normalizedReference), null];
+    }
+
+    private function normalizeAttachmentBase64(string $attachment): string
+    {
+        $decoded = base64_decode($attachment, true);
+        if ($decoded !== false && base64_encode($decoded) === $attachment) {
+            return $attachment;
+        }
+
+        return base64_encode($attachment);
     }
 
     /**
      * @param array<string, mixed>|null $payload
      */
-    private function normalizeVariantGr(?array $payload): string
+    private function normalizeVariantGr(?array $payload, ?string $fallback = null): string
     {
         $candidate = '';
         if ($payload !== null) {
@@ -479,6 +526,10 @@ class TopmSan6OrderExportService
                     break;
                 }
             }
+        }
+
+        if ($candidate === '' && $fallback !== null) {
+            $candidate = $fallback;
         }
 
         $normalized = strtoupper(trim($candidate));

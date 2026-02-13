@@ -276,6 +276,46 @@ class TopmSan6OrderExportServiceTest extends TestCase
         static::assertSame(base64_encode('schule payload'), (string) $xml->Anlagen->Anlage[0]->Datei);
     }
 
+
+    public function testExportOrderNormalizesReferenceVariantAndKeepsBase64Attachment(): void
+    {
+        $connection = $this->createConnection();
+        $orderId = Uuid::randomHex();
+
+        $capturedXml = null;
+        $topmClient = $this->createMock(TopmSan6Client::class);
+        $topmClient->expects(static::once())
+            ->method('sendByPostXml')
+            ->willReturnCallback(static function (string $url, string $token, string $xml) use (&$capturedXml): string {
+                $capturedXml = $xml;
+
+                return '<response><response_code>0</response_code><response_message>OK</response_message></response>';
+            });
+
+        $service = $this->createService(
+            $this->createOrderRepository($this->createOrderForReferenceVariantAndBase64($orderId)),
+            $topmClient,
+            $this->createConfig([
+                'ExternalOrders.config.externalOrdersSan6SendStrategy' => 'post-xml',
+                'ExternalOrders.config.externalOrdersSan6BaseUrl' => 'https://topm.example/api',
+                'ExternalOrders.config.externalOrdersSan6Authentifizierung' => 'schule-token',
+            ]),
+            $connection,
+            $this->createMock(LoggerInterface::class),
+            $this->createUrlGenerator('/unused')
+        );
+
+        $result = $service->exportOrder($orderId, Context::createDefaultContext());
+
+        static::assertSame('sent', $result['status']);
+        $xml = simplexml_load_string($capturedXml ?: '');
+        static::assertInstanceOf(\SimpleXMLElement::class, $xml);
+
+        static::assertSame('ABC 123', (string) $xml->Positionen->Position[0]->Referenz);
+        static::assertSame('01', (string) $xml->Positionen->Position[0]->Gr);
+        static::assertSame(base64_encode('binary payload'), (string) $xml->Anlagen->Anlage[0]->Datei);
+    }
+
     public function testServeSignedExportXmlValidTokenExpiredAndInvalidSignature(): void
     {
         $_ENV['APP_SECRET'] = 'test-secret';
@@ -493,6 +533,48 @@ class TopmSan6OrderExportServiceTest extends TestCase
         $order->method('getCustomFields')->willReturn([
             'externalOrderAttachments' => ['  schule payload  '],
             'externalOrderAttachmentNames' => [' auftrag-schule.txt '],
+        ]);
+
+        return $order;
+    }
+
+
+    private function createOrderForReferenceVariantAndBase64(string $orderId): OrderEntity
+    {
+        $billing = new OrderAddressEntity();
+        $billing->setFirstName('Jean');
+        $billing->setLastName('Dupont');
+        $billing->setStreet('Main St 1');
+        $billing->setZipcode('75001');
+        $billing->setCity('Paris');
+
+        $price = $this->createMock(\Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice::class);
+        $price->method('getUnitPrice')->willReturn(12.5);
+
+        $lineItem = $this->createMock(OrderLineItemEntity::class);
+        $lineItem->method('getType')->willReturn('product');
+        $lineItem->method('getIdentifier')->willReturn('SKU-100');
+        $lineItem->method('getReferencedId')->willReturn(null);
+        $lineItem->method('getLabel')->willReturn('Product Label');
+        $lineItem->method('getQuantity')->willReturn(1);
+        $lineItem->method('getPrice')->willReturn($price);
+        $lineItem->method('getPayload')->willReturn(['topmArticleNumber' => 'ABC 123 1']);
+
+        $customer = new OrderCustomerEntity();
+        $customer->setEmail('buyer@example.test');
+        $customer->setCustomerNumber('CUST-7788');
+
+        $order = $this->createMock(OrderEntity::class);
+        $order->method('getId')->willReturn($orderId);
+        $order->method('getOrderNumber')->willReturn('ORDER-123');
+        $order->method('getOrderDateTime')->willReturn(new \DateTimeImmutable('2026-01-17 10:11:12'));
+        $order->method('getBillingAddress')->willReturn($billing);
+        $order->method('getDeliveries')->willReturn(new OrderDeliveryCollection([]));
+        $order->method('getLineItems')->willReturn(new OrderLineItemCollection([$lineItem]));
+        $order->method('getOrderCustomer')->willReturn($customer);
+        $order->method('getCustomFields')->willReturn([
+            'externalOrderAttachments' => [base64_encode('binary payload')],
+            'externalOrderAttachmentNames' => ['auftrag-base64.txt'],
         ]);
 
         return $order;
