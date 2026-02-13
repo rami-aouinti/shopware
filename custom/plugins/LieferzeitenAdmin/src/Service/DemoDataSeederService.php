@@ -18,12 +18,34 @@ class DemoDataSeederService
 
     public function hasDemoData(): bool
     {
-        $result = $this->connection->fetchOne(
-            'SELECT 1 FROM `lieferzeiten_paket` WHERE external_order_id LIKE :prefix LIMIT 1',
-            ['prefix' => self::ORDER_PREFIX . '%'],
-        );
+        $checks = [
+            [
+                'sql' => 'SELECT 1 FROM `lieferzeiten_paket` WHERE external_order_id LIKE :prefix LIMIT 1',
+                'params' => ['prefix' => self::ORDER_PREFIX . '%'],
+            ],
+            [
+                'sql' => 'SELECT 1 FROM `lieferzeiten_channel_settings` WHERE sales_channel_id LIKE :prefix OR last_changed_by = :changedBy LIMIT 1',
+                'params' => ['prefix' => 'demo_%', 'changedBy' => 'demo.seeder'],
+            ],
+            [
+                'sql' => 'SELECT 1 FROM `lieferzeiten_task_assignment_rule` WHERE name LIKE :prefix OR trigger_key LIKE :prefix LIMIT 1',
+                'params' => ['prefix' => 'demo_%'],
+            ],
+            [
+                'sql' => 'SELECT 1 FROM `lieferzeiten_notification_toggle` WHERE code LIKE :prefix OR trigger_key LIKE :prefix LIMIT 1',
+                'params' => ['prefix' => 'demo_%'],
+            ],
+        ];
 
-        return $result !== false;
+        foreach ($checks as $check) {
+            $result = $this->connection->fetchOne($check['sql'], $check['params']);
+
+            if ($result === false) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -83,6 +105,7 @@ class DemoDataSeederService
             'lieferterminLieferantHistory' => 0,
             'neuerLieferterminHistory' => 0,
             'sendenummerHistory' => 0,
+            'channelSettings' => 0,
             'notificationToggles' => 0,
             'notificationEvents' => 0,
             'taskAssignmentRules' => 0,
@@ -133,6 +156,10 @@ class DemoDataSeederService
             'DELETE FROM `lieferzeiten_notification_event` WHERE event_key LIKE :prefix',
             ['prefix' => 'demo:%'],
         );
+        $counts['channelSettings'] = $this->connection->executeStatement(
+            'DELETE FROM `lieferzeiten_channel_settings` WHERE sales_channel_id LIKE :prefix OR last_changed_by = :changedBy',
+            ['prefix' => 'demo_%', 'changedBy' => 'demo.seeder'],
+        );
         $counts['notificationToggles'] = $this->connection->executeStatement(
             'DELETE FROM `lieferzeiten_notification_toggle` WHERE code LIKE :prefix OR trigger_key LIKE :prefix',
             ['prefix' => 'demo_%'],
@@ -164,6 +191,7 @@ class DemoDataSeederService
             'lieferterminLieferantHistory' => 0,
             'neuerLieferterminHistory' => 0,
             'sendenummerHistory' => 0,
+            'channelSettings' => 0,
             'notificationToggles' => 0,
             'notificationEvents' => 0,
             'taskAssignmentRules' => 0,
@@ -289,6 +317,23 @@ class DemoDataSeederService
                 'created_at' => $now->format('Y-m-d H:i:s'),
             ]);
             ++$counts['auditLogs'];
+        }
+
+        foreach ([
+            ['sales_channel_id' => 'demo_main_storefront', 'default_status' => 'open', 'enable_notifications' => 1],
+            ['sales_channel_id' => 'demo_b2b_storefront', 'default_status' => 'closed', 'enable_notifications' => 0],
+            ['sales_channel_id' => 'demo_marketplace', 'default_status' => 'open', 'enable_notifications' => 1],
+        ] as $channelSetting) {
+            $this->connection->insert('lieferzeiten_channel_settings', [
+                'id' => $this->uuidBytes(),
+                'sales_channel_id' => $channelSetting['sales_channel_id'],
+                'default_status' => $channelSetting['default_status'],
+                'enable_notifications' => $channelSetting['enable_notifications'],
+                'last_changed_by' => 'demo.seeder',
+                'last_changed_at' => $now->format('Y-m-d H:i:s'),
+                'created_at' => $now->format('Y-m-d H:i:s'),
+            ]);
+            ++$counts['channelSettings'];
         }
 
         foreach ([
