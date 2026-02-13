@@ -236,7 +236,7 @@ class ExternalOrderController extends AbstractController
     }
 
     #[Route(
-        path: '/api/external-orders/topm-export/{token}',
+        path: '/topm-export/{token}',
         name: 'api.external-orders.export.file-transfer',
         defaults: [
             'auth_required' => false,

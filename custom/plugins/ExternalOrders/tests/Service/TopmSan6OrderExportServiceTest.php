@@ -458,11 +458,11 @@ class TopmSan6OrderExportServiceTest extends TestCase
             ]),
             $this->createConnection(),
             $this->createMock(LoggerInterface::class),
-            $this->createUrlGenerator('/api/external-orders/topm-export/')
+            $this->createUrlGenerator('/topm-export/')
         );
 
         $url = $service->generateSignedFileTransferUrl($exportId, $expiresAt);
-        static::assertStringStartsWith('https://shop.example/api/external-orders/topm-export/', $url);
+        static::assertStringStartsWith('https://shop.example/topm-export/', $url);
 
         $token = (string) parse_url($url, PHP_URL_PATH);
         $token = substr($token, (int) strrpos($token, '/') + 1);

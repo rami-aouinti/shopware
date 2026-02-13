@@ -60,7 +60,7 @@ Cette procédure permet de valider le comportement de l’URL signée en dehors 
      -H "Content-Type: application/json"
    ```
 3. Récupérer l’URL signée depuis la trace de la requête sortante vers SAN6 (proxy sortant/WAF/log applicatif SAN6).
-   - Le format attendu est : `https://<shop-domain>/api/external-orders/topm-export/<token>`.
+   - Le format attendu est : `https://<shop-domain>/topm-export/<token>`.
 
 Alternative CLI (génération directe par `exportId`) :
 
@@ -79,7 +79,7 @@ bin/console external-orders:export:generate-signed-url <exportId> --expires-in=3
 Depuis une machine externe (ex: poste hors VPN, runner public, etc.) :
 
 ```bash
-curl -i "https://<shop-domain>/api/external-orders/topm-export/<token>"
+curl -i "https://<shop-domain>/topm-export/<token>"
 ```
 
 Résultat attendu :
@@ -91,7 +91,7 @@ Résultat attendu :
 
 #### Token invalide
 ```bash
-curl -i "https://<shop-domain>/api/external-orders/topm-export/<token_invalide>"
+curl -i "https://<shop-domain>/topm-export/<token_invalide>"
 ```
 
 Attendu : HTTP `404 Not Found`.
@@ -100,7 +100,7 @@ Attendu : HTTP `404 Not Found`.
 Le token signé expire après ~10 minutes (TTL 600 s). Rejouer exactement la même URL après expiration :
 
 ```bash
-curl -i "https://<shop-domain>/api/external-orders/topm-export/<token_expire>"
+curl -i "https://<shop-domain>/topm-export/<token_expire>"
 ```
 
 Attendu : HTTP `404 Not Found`.
@@ -120,7 +120,7 @@ WHERE configuration_key = 'core.basicInformation.shopwareUrl';
 Critères de conformité infra :
 - domaine public résolvable (DNS externe) ;
 - terminaison TLS valide sur le reverse proxy (`https`) ;
-- routage vers Shopware pour `GET /api/external-orders/topm-export/{token}` ;
+- routage vers Shopware pour `GET /topm-export/{token}` ;
 - conservation du host/proto (`X-Forwarded-Host`, `X-Forwarded-Proto`) cohérente avec l’URL publique ;
 - pas de blocage WAF/CDN sur cette route de type machine-to-machine.
 
@@ -133,7 +133,7 @@ openssl s_client -connect <shop-domain>:443 -servername <shop-domain> </dev/null
 ### 5) Prérequis d’infrastructure (checklist)
 
 - `core.basicInformation.shopwareUrl` pointe sur l’URL publique finale.
-- Le reverse proxy publie `/api/external-orders/topm-export/*` sans authentification additionnelle.
+- Le reverse proxy publie `/topm-export/*` sans authentification additionnelle.
 - Les sorties réseau vers SAN6 sont autorisées (DNS/443).
 - Horloge serveur synchronisée (NTP), sinon faux positifs “token expiré”.
 - La valeur `APP_SECRET` est stable entre nœuds (si multi-instance), sinon validation HMAC incohérente.
