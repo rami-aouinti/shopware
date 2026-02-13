@@ -438,7 +438,9 @@ class TopmSan6OrderExportService
 
         $this->assertXmlHasMandatoryNodes($xml, ['Referenz', 'Datum', 'Kunde', 'Positionen', 'Anlagen']);
 
-        return $xml->asXML() ?: '';
+        $rawXml = $xml->asXML() ?: '';
+
+        return $this->normalizeXmlEncodingDeclaration($rawXml);
     }
 
     private function xmlValue(string $value): string
@@ -556,5 +558,12 @@ class TopmSan6OrderExportService
     private function maskSecrets(string $input): string
     {
         return (string) preg_replace('/(token|secret|authentifizierung|password)=([^&\s]+)/i', '$1=***', $input);
+    }
+
+    private function normalizeXmlEncodingDeclaration(string $xml): string
+    {
+        $normalized = preg_replace('/^<\?xml[^>]*\?>\s*/', '', $xml) ?? $xml;
+
+        return sprintf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n%s", $normalized);
     }
 }
