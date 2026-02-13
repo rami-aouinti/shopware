@@ -21,6 +21,7 @@ class ExternalOrderSyncService
         private readonly HttpClientInterface $httpClient,
         private readonly SystemConfigService $systemConfigService,
         private readonly LoggerInterface $logger,
+        private readonly TopmSan6Client $topmSan6Client,
     ) {
     }
 
@@ -109,6 +110,11 @@ class ExternalOrderSyncService
                 'urlKey' => 'ExternalOrders.config.externalOrdersApiUrlBezb',
                 'tokenKey' => 'ExternalOrders.config.externalOrdersApiTokenBezb',
             ],
+            [
+                'channel' => 'san6',
+                'urlKey' => 'ExternalOrders.config.externalOrdersApiUrlSan6',
+                'tokenKey' => 'ExternalOrders.config.externalOrdersApiTokenSan6',
+            ],
         ];
     }
 
@@ -133,8 +139,12 @@ class ExternalOrderSyncService
         $response = null;
         $startTime = microtime(true);
         try {
-            $response = $this->httpClient->request('GET', $apiUrl, $options);
-            $payload = $response->toArray(false);
+            if ($channel === 'san6') {
+                $payload = $this->topmSan6Client->fetchOrders($apiUrl, $apiToken, $timeout);
+            } else {
+                $response = $this->httpClient->request('GET', $apiUrl, $options);
+                $payload = $response->toArray(false);
+            }
         } catch (ExceptionInterface $exception) {
             $durationMs = (microtime(true) - $startTime) * 1000;
             $statusCode = null;
