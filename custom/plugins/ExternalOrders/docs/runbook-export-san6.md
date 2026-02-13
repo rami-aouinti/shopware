@@ -96,7 +96,32 @@ bin/console scheduled-task:run --no-wait
 
 ---
 
-## 3) Alertes minimales recommandées
+## 3) Métriques, seuils et alertes recommandées
+
+
+### 3.0 KPI prioritaires à instrumenter
+
+- `failed_exports_total` : nombre d'exports en statut `failed` sur 15 min glissantes.
+  - **Warning** : `>= 10`
+  - **Critical** : `>= 30`
+- `retry_pending_total` : nombre d'exports en attente (`status = retry_scheduled`).
+  - **Warning** : `> 20`
+  - **Critical** : `> 100`
+- `oldest_retry_age_minutes` : âge du plus ancien retry planifié.
+  - **Warning** : `> 15 min`
+  - **Critical** : `> 30 min`
+
+```sql
+SELECT
+  SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) AS failed_exports_total,
+  SUM(CASE WHEN status = 'retry_scheduled' THEN 1 ELSE 0 END) AS retry_pending_total,
+  ROUND(MAX(CASE
+    WHEN status = 'retry_scheduled' AND next_retry_at IS NOT NULL THEN TIMESTAMPDIFF(MINUTE, next_retry_at, NOW(3))
+    ELSE NULL
+  END), 2) AS oldest_retry_age_minutes
+FROM external_order_export
+WHERE created_at >= (NOW() - INTERVAL 15 MINUTE);
+```
 
 ### 3.1 Échecs répétés d’exports
 
@@ -156,6 +181,21 @@ WHERE configuration_key IN (
   'ExternalOrders.config.externalOrdersSan6SendStrategy'
 );
 ```
+
+
+### 3.4 Routage alertes mail/Slack
+
+Implémentation minimale recommandée :
+- Une alerte **mail** pour le support et l'astreinte Ops (Warning/Critical).
+- Une alerte **Slack** dans `#incident-topm` avec niveau, métrique, valeur, seuil, lien dashboard et runbook.
+
+Payload minimum d'alerte :
+- `service=ExternalOrders`,
+- `metric` (`failed_exports_total`, `retry_pending_total`, `oldest_retry_age_minutes`),
+- `severity` (`warning`/`critical`),
+- `value`, `threshold`,
+- `timeWindow=15m`,
+- `runbook=custom/plugins/ExternalOrders/docs/runbook-export-san6.md`.
 
 ---
 
@@ -233,7 +273,56 @@ bin/console scheduled-task:run --no-wait
 
 ---
 
-## 5) Publication du runbook
+## 5) Support — lecture rapide de `external_order_export`
+
+Checklist de lecture pour l'équipe support :
+- Identifier la dernière ligne par `order_id` (tri `created_at DESC`).
+- Vérifier `status` :
+  - `sent` => export OK,
+  - `retry_scheduled` => reprise automatique en attente,
+  - `failed_permanent` => intervention manuelle obligatoire.
+- Contrôler `attempts`, `last_error`, `response_code`, `response_message`.
+- Utiliser `correlation_id` pour corréler DB/logs applicatifs.
+
+Commande SQL support (vue synthétique) :
+
+```sql
+SELECT
+  LOWER(HEX(id)) AS export_id,
+  LOWER(HEX(order_id)) AS order_id,
+  status,
+  attempts,
+  response_code,
+  response_message,
+  last_error,
+  correlation_id,
+  next_retry_at,
+  updated_at
+FROM external_order_export
+ORDER BY updated_at DESC
+LIMIT 100;
+```
+
+---
+
+## 6) Escalade en cas de panne TopM prolongée
+
+Définition « panne prolongée » :
+- `retry_pending_total > 100` **ou** `oldest_retry_age_minutes > 30` pendant 15 min.
+
+Procédure d'escalade :
+1. **T+0 min (Support L1)** : qualifier l'incident, ouvrir ticket incident, notifier `#incident-topm`.
+2. **T+10 min (Ops)** : vérifier connectivité SAN6, scheduler `external_orders.export_retry`, disponibilité API TopM.
+3. **T+20 min (Dev on-call)** : activer mode dégradé (suspension des relances manuelles non critiques), confirmer stratégie de reprise.
+4. **T+30 min (Management/PO)** : communication métier (impact commandes), ETA et décisions de contournement.
+5. **Rétablissement** : relancer exports bloqués par lot, surveiller retour à `retry_pending_total < 20`.
+
+Post-incident (obligatoire) :
+- Rédiger un REX avec timeline, cause racine, actions correctives, et ajustement des seuils/alertes si nécessaire.
+
+---
+
+## 7) Publication du runbook
 
 Le runbook est publié dans :
 - `custom/plugins/ExternalOrders/docs/runbook-export-san6.md`
