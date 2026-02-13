@@ -8,7 +8,7 @@ Component.register('lieferzeiten-notification-toggle-list', {
 
     mixins: ['notification'],
 
-    inject: ['repositoryFactory'],
+    inject: ['repositoryFactory', 'acl'],
 
     data() {
         return {
@@ -35,6 +35,10 @@ Component.register('lieferzeiten-notification-toggle-list', {
 
     computed: {
         hasEditAccess() {
+            if (typeof this.acl?.can !== 'function') {
+                return false;
+            }
+
             return this.acl.can('lieferzeiten.editor') || this.acl.can('admin');
         },
 
