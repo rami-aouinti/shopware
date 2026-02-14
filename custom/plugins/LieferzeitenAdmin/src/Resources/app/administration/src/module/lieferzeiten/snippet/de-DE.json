@@ -160,6 +160,9 @@
       "overdueShipping": "Überfälliger Versand",
       "overdueDelivery": "Überfällige Lieferungen (abgeschlossen)",
       "activityDate": "Aktiv am",
+      "timelineTitle": "Aktivitäten über Zeit",
+      "timelineEmptyTitle": "Keine Aktivitäten im Zeitraum",
+      "timelineEmptyDescription": "Für die ausgewählten Filter sind keine zeitlichen Aktivitäten verfügbar."
       "actionsColumn": "Aktionen",
       "actionsUnavailable": "Keine Aktion verfügbar",
       "actionUnavailableReason": "Für diese Aktivität ist keine kontextuelle Aktion verfügbar.",

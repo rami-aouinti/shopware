@@ -160,6 +160,9 @@
       "overdueShipping": "Overdue shipping",
       "overdueDelivery": "Overdue deliveries (completed)",
       "activityDate": "Activity at",
+      "timelineTitle": "Activities over time",
+      "timelineEmptyTitle": "No activities in selected period",
+      "timelineEmptyDescription": "No timeline activity is available for the selected filters."
       "actionsColumn": "Actions",
       "actionsUnavailable": "No action available",
       "actionUnavailableReason": "No contextual action is available for this activity.",
