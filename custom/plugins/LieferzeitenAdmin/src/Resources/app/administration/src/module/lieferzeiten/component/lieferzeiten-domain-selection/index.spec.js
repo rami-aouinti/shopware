@@ -73,58 +73,63 @@ describe('lieferzeiten/component/lieferzeiten-domain-selection', () => {
 
         expect(global.localStorage.setItem).toHaveBeenCalledWith('lieferzeitenManagementBereich', 'first-medical-e-commerce');
         expect(global.localStorage.setItem).toHaveBeenCalledWith('lieferzeitenManagementChannel', 'ebay.de');
+        expect(global.localStorage.setItem).toHaveBeenCalledWith('lieferzeitenManagementDomain', 'ebay.de');
         expect(global.sessionStorage.removeItem).toHaveBeenCalledWith('lieferzeitenManagementBereich');
         expect(global.sessionStorage.removeItem).toHaveBeenCalledWith('lieferzeitenManagementChannel');
     });
 
-
-    it('loads persisted bereich + kanal from localStorage first', () => {
+    it('migrates legacy localStorage values to new keys', () => {
         global.localStorage.getItem = jest.fn((key) => ({
-            lieferzeitenManagementBereich: 'medical-solutions',
-            lieferzeitenManagementChannel: 'medical-solutions-germany.de',
+            lieferzeitenManagementGroup: 'medical-solutions',
+            lieferzeitenManagementDomain: 'medical-solutions-germany.de',
         }[key] ?? null));
 
-        const applySelection = jest.fn();
         const context = {
             value: null,
             persistSelection: false,
-            applySelection,
+            applySelection: jest.fn(),
+            persistDomainSelection: jest.fn(),
+            getStoredSelection: methods.getStoredSelection,
+            resolveInitialGroup: methods.resolveInitialGroup,
             $emit: jest.fn(),
         };
 
         methods.loadStoredSelection.call(context);
 
         expect(context.persistSelection).toBe(true);
-        expect(applySelection).toHaveBeenCalledWith('medical-solutions', 'medical-solutions-germany.de', true, false);
+        expect(context.applySelection).toHaveBeenCalledWith('medical-solutions', 'medical-solutions-germany.de', true, false);
+        expect(context.persistDomainSelection).toHaveBeenCalledWith('medical-solutions', 'medical-solutions-germany.de');
     });
 
-    it('confirms mandatory group step and emits bereich + kanal selection', () => {
-        const applySelection = jest.fn();
+    it('resolves bereich from channel when only legacy domain is present', () => {
+        const storage = {
+            getItem: jest.fn((key) => ({
+                lieferzeitenManagementDomain: 'medical-solutions-germany.de',
+            }[key] ?? null)),
+        };
 
         const context = {
-            draftBereich: 'medical-solutions',
+            resolveInitialGroup: methods.resolveInitialGroup,
+        };
+
+        const selection = methods.getStoredSelection.call(context, storage);
+
+        expect(selection.bereich).toBe('medical-solutions');
+        expect(selection.channel).toBe('medical-solutions-germany.de');
+    });
+
+    it('resets both bereich and kanal and emits null values', () => {
+        const context = {
+            selectedBereich: 'first-medical-e-commerce',
             selectedChannel: 'ebay.de',
-            canConfirmGroupSelection: true,
-            showDomainModal: true,
-            applySelection,
+            $emit: jest.fn(),
         };
 
-        methods.confirmGroupSelection.call(context);
+        methods.resetDomainSelection.call(context);
 
-        expect(applySelection).toHaveBeenCalledWith('medical-solutions', 'medical-solutions-germany.de', true);
-        expect(context.showDomainModal).toBe(false);
-    });
-
-    it('does not confirm when no bereich is selected', () => {
-        const applySelection = jest.fn();
-        const context = {
-            draftBereich: null,
-            canConfirmGroupSelection: false,
-            applySelection,
-        };
-
-        methods.confirmGroupSelection.call(context);
-
-        expect(applySelection).not.toHaveBeenCalled();
+        expect(context.selectedBereich).toBeNull();
+        expect(context.selectedChannel).toBeNull();
+        expect(context.$emit).toHaveBeenCalledWith('bereich-change', null);
+        expect(context.$emit).toHaveBeenCalledWith('input', null);
     });
 });

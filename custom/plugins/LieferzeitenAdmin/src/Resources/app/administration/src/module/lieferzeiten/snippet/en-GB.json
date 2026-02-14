@@ -45,7 +45,7 @@
         "channel": "Step 2 · Channel"
       },
       "accessPendingTitle": "Select area",
-      "accessPendingDescription": "Please select an area first to unlock the main views."
+      "accessPendingDescription": "Please select Area (step 1) and then Channel (step 2) to unlock the main views and filters."
     },
     "kpi": {
       "totalOrders": "Total orders",

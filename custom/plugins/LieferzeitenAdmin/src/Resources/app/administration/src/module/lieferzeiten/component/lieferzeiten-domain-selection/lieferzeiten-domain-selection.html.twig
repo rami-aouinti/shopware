@@ -1,6 +1,17 @@
 {% block lieferzeiten_domain_selection %}
     <div class="lieferzeiten-domain-selection">
         <sw-label>
+            {{ $t('lieferzeiten.domainSelection.steps.bereich') }}
+        </sw-label>
+
+        <sw-single-select
+            v-model="selectedBereich"
+            :options="groupOptions"
+            :placeholder="$t('lieferzeiten.domainSelection.bereichPlaceholder')"
+            :clearable="false"
+        />
+
+        <sw-label>
             {{ $t('lieferzeiten.domainSelection.steps.channel') }}
         </sw-label>
 
@@ -9,7 +20,12 @@
             :options="channelOptions"
             :placeholder="$t('lieferzeiten.domainSelection.channelPlaceholder')"
             :clearable="false"
-            :disabled="showDomainModal || !selectedBereich"
+            :disabled="!canSelectChannel"
+        />
+
+        <sw-switch-field
+            v-model="persistSelection"
+            :label="$t('lieferzeiten.domainSelection.persistLabel')"
         />
 
         <sw-button
@@ -20,40 +36,5 @@
         >
             {{ $t('lieferzeiten.domainSelection.reset') }}
         </sw-button>
-
-        <sw-modal
-            v-if="showDomainModal"
-            :title="$t('lieferzeiten.domainSelection.modalTitle')"
-            @modal-close="confirmGroupSelection"
-        >
-            <p>{{ $t('lieferzeiten.domainSelection.modalDescription') }}</p>
-
-            <sw-label>
-                {{ $t('lieferzeiten.domainSelection.steps.bereich') }}
-            </sw-label>
-            <sw-single-select
-                v-model="draftBereich"
-                :options="groupOptions"
-                :placeholder="$t('lieferzeiten.domainSelection.bereichPlaceholder')"
-                :clearable="false"
-                required
-            />
-
-            <sw-switch-field
-                v-model="persistSelection"
-                :label="$t('lieferzeiten.domainSelection.persistLabel')"
-            />
-
-            <template #modal-footer>
-                <sw-button
-                    size="small"
-                    variant="primary"
-                    :disabled="!canConfirmGroupSelection"
-                    @click="confirmGroupSelection"
-                >
-                    {{ $t('lieferzeiten.domainSelection.confirmBereich') }}
-                </sw-button>
-            </template>
-        </sw-modal>
     </div>
 {% endblock %}
