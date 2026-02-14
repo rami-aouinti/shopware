@@ -10,16 +10,20 @@ use LieferzeitenAdmin\Service\Status8TrackingMappingProvider;
 use LieferzeitenAdmin\Service\ChannelDateSettingsProvider;
 use LieferzeitenAdmin\Service\LieferzeitenImportService;
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Notification\SalesChannelResolver;
 use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
 use LieferzeitenAdmin\Service\Reliability\IntegrationReliabilityService;
 use LieferzeitenAdmin\Sync\Adapter\ChannelOrderAdapterRegistry;
 use LieferzeitenAdmin\Sync\San6\San6Client;
 use LieferzeitenAdmin\Sync\San6\San6MatchingService;
+use LieferzeitenAdmin\Entity\PositionEntity;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Framework\Context;
@@ -678,7 +682,8 @@ class LieferzeitenImportServiceTest extends TestCase
             null,
             null,
             2,
-            Context::createDefaultContext()
+            Context::createDefaultContext(),
+            null,
         );
 
         $assigned = array_values(array_filter($calls, static fn (array $call): bool => $call[1] === 'livraison.date.attribuee'));
@@ -711,12 +716,133 @@ class LieferzeitenImportServiceTest extends TestCase
             $existing,
             2,
             2,
-            Context::createDefaultContext()
+            Context::createDefaultContext(),
+            null,
         );
 
         $updated = array_values(array_filter($calls, static fn (array $call): bool => $call[1] === 'livraison.date.modifiee'));
         static::assertCount(3, $updated);
         static::assertSame('2026-02-20 09:00:00', $updated[0][3]['previousDeliveryDate'] ?? null);
+    }
+
+
+    public function testEmitNotificationEventsDispatchesOrderCreatedAndDeliveryDateChangedForNewOrder(): void
+    {
+        $calls = [];
+        $notificationEventService = $this->createMock(NotificationEventService::class);
+        $notificationEventService->method('dispatch')->willReturnCallback(static function (string $eventKey, string $triggerKey, string $channel, array $payload) use (&$calls): bool {
+            $calls[] = [$eventKey, $triggerKey, $channel, $payload];
+
+            return true;
+        });
+
+        $service = $this->createService(notificationEventService: $notificationEventService);
+        $method = new \ReflectionMethod($service, 'emitNotificationEvents');
+        $method->setAccessible(true);
+
+        $method->invoke(
+            $service,
+            'EXT-NEW',
+            'shopware',
+            ['deliveryDate' => '2026-03-10 08:30:00'],
+            [],
+            null,
+            null,
+            2,
+            Context::createDefaultContext()
+        );
+
+        $created = array_values(array_filter($calls, static fn (array $call): bool => $call[1] === NotificationTriggerCatalog::ORDER_CREATED));
+        $deliveryChanged = array_values(array_filter($calls, static fn (array $call): bool => $call[1] === NotificationTriggerCatalog::DELIVERY_DATE_CHANGED));
+
+        static::assertCount(3, $created);
+        static::assertCount(3, $deliveryChanged);
+        static::assertSame('2026-03-10 08:30:00', $deliveryChanged[0][3]['deliveryDate'] ?? null);
+        static::assertSame('EXT-NEW', $deliveryChanged[0][3]['externalOrderId'] ?? null);
+    }
+
+    public function testEmitNotificationEventsSkipsDeliveryDateChangedWhenDeliveryDateIsUnchanged(): void
+    {
+        $existing = new PaketEntity();
+        $existing->setDeliveryDate(new \DateTimeImmutable('2026-02-20 09:00:00'));
+
+        $calls = [];
+        $notificationEventService = $this->createMock(NotificationEventService::class);
+        $notificationEventService->method('dispatch')->willReturnCallback(static function (string $eventKey, string $triggerKey) use (&$calls): bool {
+            $calls[] = [$eventKey, $triggerKey];
+
+            return true;
+        });
+
+        $service = $this->createService(notificationEventService: $notificationEventService);
+        $method = new \ReflectionMethod($service, 'emitNotificationEvents');
+        $method->setAccessible(true);
+
+        $method->invoke(
+            $service,
+            'EXT-SAME-DATE',
+            'shopware',
+            ['deliveryDate' => '2026-02-20 09:00:00'],
+            [],
+            $existing,
+            2,
+            2,
+            Context::createDefaultContext()
+        );
+
+        $deliveryChanged = array_values(array_filter($calls, static fn (array $call): bool => $call[1] === NotificationTriggerCatalog::DELIVERY_DATE_CHANGED));
+        $deliveryUpdated = array_values(array_filter($calls, static fn (array $call): bool => $call[1] === NotificationTriggerCatalog::DELIVERY_DATE_UPDATED));
+
+        static::assertCount(0, $deliveryChanged);
+        static::assertCount(0, $deliveryUpdated);
+    }
+
+    public function testEmitNotificationEventsDispatchesPaymentReceivedVorkasseOnlyOnFirstPaymentDate(): void
+    {
+        $calls = [];
+        $notificationEventService = $this->createMock(NotificationEventService::class);
+        $notificationEventService->method('dispatch')->willReturnCallback(static function (string $eventKey, string $triggerKey, string $channel, array $payload) use (&$calls): bool {
+            $calls[] = [$eventKey, $triggerKey, $channel, $payload];
+
+            return true;
+        });
+
+        $service = $this->createService(notificationEventService: $notificationEventService);
+        $method = new \ReflectionMethod($service, 'emitNotificationEvents');
+        $method->setAccessible(true);
+
+        $method->invoke(
+            $service,
+            'EXT-PAYMENT-1',
+            'shopware',
+            ['paymentMethod' => 'Vorkasse', 'paymentDate' => '2026-03-12T09:15:00+00:00'],
+            [],
+            null,
+            1,
+            1,
+            Context::createDefaultContext()
+        );
+
+        $alreadyPaid = new PaketEntity();
+        $alreadyPaid->setPaymentDate(new \DateTimeImmutable('2026-03-12 09:15:00'));
+
+        $method->invoke(
+            $service,
+            'EXT-PAYMENT-2',
+            'shopware',
+            ['paymentMethod' => 'Vorkasse', 'paymentDate' => '2026-03-12T10:00:00+00:00'],
+            [],
+            $alreadyPaid,
+            1,
+            1,
+            Context::createDefaultContext()
+        );
+
+        $paymentReceived = array_values(array_filter($calls, static fn (array $call): bool => $call[1] === NotificationTriggerCatalog::PAYMENT_RECEIVED_VORKASSE));
+
+        static::assertCount(3, $paymentReceived);
+        static::assertSame('EXT-PAYMENT-1', $paymentReceived[0][3]['externalOrderId'] ?? null);
+        static::assertSame('2026-03-12 09:15:00', $paymentReceived[0][3]['paymentDate'] ?? null);
     }
 
     public function testEmitNotificationEventsDispatchesReviewReminderOnTransitionToStatus8Only(): void
@@ -742,7 +868,8 @@ class LieferzeitenImportServiceTest extends TestCase
             null,
             7,
             8,
-            Context::createDefaultContext()
+            Context::createDefaultContext(),
+            null,
         );
 
         $method->invoke(
@@ -859,6 +986,29 @@ class LieferzeitenImportServiceTest extends TestCase
         );
     }
 
+    private function createEntitySearchResultWithId(string $id): EntitySearchResult
+    {
+        $entity = new class ($id) extends \Shopware\Core\Framework\DataAbstractionLayer\Entity {
+            public function __construct(private readonly string $id)
+            {
+            }
+
+            public function getId(): string
+            {
+                return $this->id;
+            }
+        };
+
+        return new EntitySearchResult(
+            'lieferzeiten_position',
+            1,
+            new EntityCollection([$entity]),
+            null,
+            new \Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria(),
+            Context::createDefaultContext()
+        );
+    }
+
     private function createService(
         ?EntityRepository $paketRepository = null,
         ?AuditLogService $auditLogService = null,
@@ -890,6 +1040,7 @@ class LieferzeitenImportServiceTest extends TestCase
             $status8TrackingMappingProvider ?? new Status8TrackingMappingProvider($config),
             $this->createMock(LockFactory::class),
             $notificationEventService ?? $this->createMock(NotificationEventService::class),
+            $this->createMock(SalesChannelResolver::class),
             $this->createMock(IntegrationReliabilityService::class),
             $this->createMock(IntegrationContractValidator::class),
             $auditLogService ?? $this->createMock(AuditLogService::class),

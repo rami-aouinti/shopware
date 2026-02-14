@@ -39,6 +39,7 @@ class SendenummerHistoryDefinition extends EntityDefinition
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),
             (new FkField('position_id', 'positionId', PositionDefinition::class))->addFlags(new Required()),
             new StringField('sendenummer', 'sendenummer'),
+            new StringField('carrier', 'carrier'),
             new StringField('last_changed_by', 'lastChangedBy'),
             new DateTimeField('last_changed_at', 'lastChangedAt'),
             new ManyToOneAssociationField('position', 'position_id', PositionDefinition::class, 'id', false),

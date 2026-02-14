@@ -235,6 +235,7 @@ readonly class LieferzeitenOrderOverviewService
 
         $rows = $this->connection->fetchAllAssociative($dataSql, $dataParams, $paramTypes);
         $rows = array_map(fn (array $row): array => $this->appendBusinessStatus($row), $rows);
+        $rows = $this->enrichOrdersWithAdditionalDeliveryRequestTasks($rows);
 
         return [
             'total' => $total,
@@ -482,6 +483,31 @@ readonly class LieferzeitenOrderOverviewService
             $params[$toKey] = $toValue . ' 23:59:59';
         }
 
+        if ($historyTableSuffix === 'liefertermin_lieferant_history') {
+            $conditions[] = sprintf(
+                'EXISTS (
+                    SELECT 1
+                    FROM `lieferzeiten_position` pos_filter
+                    INNER JOIN `lieferzeiten_%1$s` %2$s ON %2$s.position_id = pos_filter.id
+                    WHERE pos_filter.paket_id = p.id
+                      AND %2$s.id = (
+                          SELECT latest.id
+                          FROM `lieferzeiten_%1$s` latest
+                          INNER JOIN `lieferzeiten_position` latest_pos ON latest_pos.id = latest.position_id
+                          WHERE latest_pos.paket_id = p.id
+                          ORDER BY latest.created_at DESC
+                          LIMIT 1
+                      )
+                      AND %3$s
+                )',
+                $historyTableSuffix,
+                $alias,
+                implode(' AND ', $historyConditions),
+            );
+
+            return;
+        }
+
         $conditions[] = sprintf(
             'EXISTS (
                 SELECT 1
@@ -650,6 +676,47 @@ readonly class LieferzeitenOrderOverviewService
         return $rows;
     }
 
+
+    /**
+     * @param list<array<string, mixed>> $rows
+     * @return list<array<string, mixed>>
+     */
+    private function enrichOrdersWithAdditionalDeliveryRequestTasks(array $rows): array
+    {
+        if ($rows === []) {
+            return [];
+        }
+
+        $positionIds = [];
+        foreach ($rows as $row) {
+            $positions = is_array($row['positions'] ?? null) ? $row['positions'] : [];
+            foreach ($positions as $position) {
+                $positionId = is_string($position['id'] ?? null) ? trim((string) $position['id']) : '';
+                if ($positionId !== '') {
+                    $positionIds[$positionId] = true;
+                }
+            }
+        }
+
+        $tasksByPosition = $this->fetchAdditionalDeliveryRequestTasksByPositionIds(array_keys($positionIds));
+
+        foreach ($rows as &$row) {
+            $positions = is_array($row['positions'] ?? null) ? $row['positions'] : [];
+            foreach ($positions as &$position) {
+                $positionId = is_string($position['id'] ?? null) ? trim((string) $position['id']) : '';
+                $position['additionalDeliveryRequestTask'] = $positionId !== ''
+                    ? ($tasksByPosition[$positionId] ?? null)
+                    : null;
+            }
+            unset($position);
+
+            $row['positions'] = $positions;
+        }
+        unset($row);
+
+        return $rows;
+    }
+
     /**
      * @param list<string> $paketIds
      * @return array<string, list<array<string, mixed>>>
@@ -683,13 +750,64 @@ readonly class LieferzeitenOrderOverviewService
             static fn (array $row): ?string => is_string($row['id'] ?? null) ? $row['id'] : null,
             $rows,
         ))));
+        $additionalRequestTasksByPosition = $this->fetchAdditionalDeliveryRequestTasksByPositionIds(array_values(array_filter(array_map(
+            static fn (array $row): ?string => is_string($row['id'] ?? null) ? $row['id'] : null,
+            $rows,
+        ))));
 
         $result = [];
         foreach ($rows as $row) {
             $positionId = (string) ($row['id'] ?? '');
             $paketId = (string) ($row['paketId'] ?? '');
             $row['trackingEntries'] = $trackingByPosition[$positionId] ?? [];
+            $row['additionalDeliveryRequestTask'] = $additionalRequestTasksByPosition[$positionId] ?? null;
             $result[$paketId][] = $row;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param list<string> $positionIds
+     * @return array<string, array<string, mixed>>
+     */
+    private function fetchAdditionalDeliveryRequestTasksByPositionIds(array $positionIds): array
+    {
+        if ($positionIds === []) {
+            return [];
+        }
+
+        $rows = $this->connection->fetchAllAssociative(
+            'SELECT
+                LOWER(HEX(t.id)) AS taskId,
+                LOWER(HEX(t.position_id)) AS positionId,
+                t.status AS status,
+                t.closed_at AS closedAt,
+                t.initiator AS initiator
+             FROM `lieferzeiten_task` t
+             WHERE LOWER(HEX(t.position_id)) IN (:positionIds)
+               AND t.trigger_key = :triggerKey
+             ORDER BY t.position_id ASC, t.created_at DESC, t.id DESC',
+            [
+                'positionIds' => $positionIds,
+                'triggerKey' => 'additional-delivery-request',
+            ],
+            ['positionIds' => ArrayParameterType::STRING],
+        );
+
+        $result = [];
+        foreach ($rows as $row) {
+            $positionId = (string) ($row['positionId'] ?? '');
+            if ($positionId === '' || array_key_exists($positionId, $result)) {
+                continue;
+            }
+
+            $result[$positionId] = [
+                'taskId' => $row['taskId'] ?? null,
+                'status' => $row['status'] ?? null,
+                'closedAt' => $row['closedAt'] ?? null,
+                'initiator' => $row['initiator'] ?? null,
+            ];
         }
 
         return $result;
@@ -709,6 +827,7 @@ readonly class LieferzeitenOrderOverviewService
             'SELECT
                 LOWER(HEX(sh.position_id)) AS positionId,
                 sh.sendenummer AS number,
+                sh.carrier AS carrier,
                 sh.last_changed_by AS lastChangedBy,
                 sh.last_changed_at AS lastChangedAt,
                 sh.created_at AS createdAt

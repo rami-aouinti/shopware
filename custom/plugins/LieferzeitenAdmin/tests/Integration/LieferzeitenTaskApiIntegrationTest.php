@@ -14,6 +14,11 @@ use LieferzeitenAdmin\Service\LieferzeitenTaskService;
 use LieferzeitenAdmin\Service\PdmsLieferzeitenMappingService;
 use LieferzeitenAdmin\Service\Tracking\TrackingDeliveryDateSyncService;
 use LieferzeitenAdmin\Service\Tracking\TrackingHistoryService;
+use LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver;
+use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use Doctrine\DBAL\DriverManager;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Symfony\Component\HttpFoundation\Request;
@@ -119,9 +124,81 @@ class LieferzeitenTaskApiIntegrationTest extends TestCase
         static::assertSame('{"status":"error","message":"Paket status does not allow editing the new delivery date"}', $response->getContent());
     }
 
+    public function testAdditionalDeliveryRequestEndpointUsesTechnicalFallbackAssigneeWhenRuleAndConfigAreMissing(): void
+    {
+        $positionId = 'd57dc94b0fcd4d748f1f89ff4ce4dc0f';
+
+        $positionWriteService = $this->createPositionWriteServiceWithMissingAssigneeFallback($positionId);
+        $auditLogService = $this->createMock(AuditLogService::class);
+        $auditLogService->expects($this->once())->method('log');
+
+        $controller = $this->buildController(
+            $this->createMock(LieferzeitenTaskService::class),
+            $positionWriteService,
+            $auditLogService,
+        );
+
+        $request = new Request(content: json_encode([
+            'initiator' => 'manual',
+        ], \JSON_THROW_ON_ERROR));
+
+        $response = $controller->createAdditionalDeliveryRequest($positionId, $request, Context::createDefaultContext());
+
+        static::assertSame(200, $response->getStatusCode());
+        static::assertSame('{"status":"ok"}', $response->getContent());
+    }
+
+
+
+    private function createPositionWriteServiceWithMissingAssigneeFallback(string $positionId): LieferzeitenPositionWriteService
+    {
+        $connection = DriverManager::getConnection(['url' => 'sqlite:///:memory:']);
+        $connection->executeStatement('CREATE TABLE lieferzeiten_paket (id BLOB PRIMARY KEY, external_order_id TEXT NULL, source_system TEXT NULL, customer_email TEXT NULL)');
+        $connection->executeStatement('CREATE TABLE lieferzeiten_position (id BLOB PRIMARY KEY, paket_id BLOB NULL, position_number TEXT NULL, updated_at TEXT NOT NULL)');
+        $connection->insert('lieferzeiten_position', [
+            'id' => hex2bin($positionId),
+            'updated_at' => '2026-02-10 09:00:00.000',
+        ]);
+
+        $positionRepository = $this->createMock(EntityRepository::class);
+        $positionRepository->method('upsert')->willReturn(null);
+
+        $taskService = $this->createMock(LieferzeitenTaskService::class);
+        $taskService->expects($this->once())
+            ->method('createTask')
+            ->with(
+                $this->isType('array'),
+                $this->isInstanceOf(Context::class),
+                'manual',
+                'system',
+                $this->isInstanceOf(\DateTimeInterface::class),
+            );
+
+        $ruleResolver = $this->createMock(TaskAssignmentRuleResolver::class);
+        $ruleResolver->method('resolve')->willReturn(['assigneeIdentifier' => '']);
+
+        $systemConfig = $this->createMock(SystemConfigService::class);
+        $systemConfig->method('get')->willReturn('  ');
+
+        return new LieferzeitenPositionWriteService(
+            $positionRepository,
+            $this->createMock(EntityRepository::class),
+            $connection,
+            $this->createMock(EntityRepository::class),
+            $this->createMock(EntityRepository::class),
+            $this->createMock(EntityRepository::class),
+            $this->createMock(EntityRepository::class),
+            $taskService,
+            $this->createMock(NotificationEventService::class),
+            $ruleResolver,
+            $systemConfig,
+        );
+    }
+
     private function buildController(
         LieferzeitenTaskService $taskService,
         ?LieferzeitenPositionWriteService $positionWriteService = null,
+        ?AuditLogService $auditLogService = null,
     ): LieferzeitenSyncController {
         return new LieferzeitenSyncController(
             $this->createMock(LieferzeitenImportService::class),
@@ -133,7 +210,7 @@ class LieferzeitenTaskApiIntegrationTest extends TestCase
             $this->createMock(LieferzeitenOrderStatusWriteService::class),
             $this->createMock(LieferzeitenStatisticsService::class),
             $this->createMock(DemoDataSeederService::class),
-            $this->createMock(AuditLogService::class),
+            $auditLogService ?? $this->createMock(AuditLogService::class),
             $this->createMock(PdmsLieferzeitenMappingService::class),
         );
     }

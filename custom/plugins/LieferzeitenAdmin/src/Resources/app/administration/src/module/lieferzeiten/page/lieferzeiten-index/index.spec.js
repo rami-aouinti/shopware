@@ -32,4 +32,19 @@ describe('lieferzeiten/page/lieferzeiten-index', () => {
 
         expect(component.computed.canAccessMainViews.call(context)).toBe(true);
     });
+
+
+    it('buildFilterParams returns values from default filters on first render', () => {
+        const context = {
+            filters: component.data().filters,
+        };
+
+        context.filters.bestellnummer = '  BN-1001  ';
+        context.filters.status = 'offen';
+
+        expect(component.methods.buildFilterParams.call(context)).toEqual({
+            bestellnummer: 'BN-1001',
+            status: 'offen',
+        });
+    });
 });

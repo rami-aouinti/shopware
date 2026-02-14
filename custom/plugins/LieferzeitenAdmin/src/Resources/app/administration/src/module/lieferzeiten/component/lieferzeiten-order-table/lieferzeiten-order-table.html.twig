@@ -55,7 +55,22 @@
                         <td>{{ displayOrDash(order.domain) }}</td>
                         <td>{{ displayOrDash(order.positionsCountDisplay) }}</td>
                         <td>{{ parcelSummary(order) }}</td>
-                        <td>{{ displayOrDash(order.trackingSummaryDisplay || order.trackingSummary) }}</td>
+                        <td>
+                            <template v-if="resolveOrderTrackingEntries(order).length">
+                                <button
+                                    v-for="entry in resolveOrderTrackingEntries(order)"
+                                    :key="`${order.id}-${entry.carrier}-${entry.number}`"
+                                    type="button"
+                                    class="lieferzeiten-order-table__tracking-link"
+                                    @click="openTrackingHistory(entry)"
+                                >
+                                    {{ entry.number }}
+                                </button>
+                            </template>
+                            <template v-else>
+                                -
+                            </template>
+                        </td>
                         <td>-</td>
                         <td>-</td>
                         <td>-</td>

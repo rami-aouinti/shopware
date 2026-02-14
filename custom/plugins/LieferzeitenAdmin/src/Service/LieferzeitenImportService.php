@@ -5,6 +5,7 @@ namespace LieferzeitenAdmin\Service;
 use LieferzeitenAdmin\Entity\PaketEntity;
 use LieferzeitenAdmin\Service\Audit\AuditLogService;
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Notification\SalesChannelResolver;
 use LieferzeitenAdmin\Service\Integration\IntegrationContractValidator;
 use LieferzeitenAdmin\Service\Reliability\IntegrationReliabilityService;
 use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
@@ -60,6 +61,7 @@ class LieferzeitenImportService
         private readonly Status8TrackingMappingProvider $status8TrackingMappingProvider,
         private readonly LockFactory $lockFactory,
         private readonly NotificationEventService $notificationEventService,
+        private readonly SalesChannelResolver $salesChannelResolver,
         private readonly IntegrationReliabilityService $reliabilityService,
         private readonly IntegrationContractValidator $contractValidator,
         private readonly AuditLogService $auditLogService,
@@ -171,6 +173,12 @@ class LieferzeitenImportService
 
                     $existingPaket = $this->findPaketByNumber((string) ($matched['paketNumber'] ?? $matched['packageNumber'] ?? $matched['orderNumber'] ?? $externalId), $context);
                     $existingStatus = $this->normalizeStatusInt($existingPaket?->getStatus());
+                    $matched['salesChannelId'] = $this->salesChannelResolver->resolve(
+                        is_string($matched['sourceSystem'] ?? null) ? $matched['sourceSystem'] : $channel,
+                        $externalId,
+                        is_string($matched['paketNumber'] ?? null) ? (string) $matched['paketNumber'] : null,
+                        is_string($matched['salesChannelId'] ?? null) ? (string) $matched['salesChannelId'] : $existingPaket?->getSalesChannelId(),
+                    );
 
                     $mappedStatus = $this->resolveMappedStatus($matched, $san6, $existingStatus);
 
@@ -212,7 +220,17 @@ class LieferzeitenImportService
                     }
 
                     $trackingNumbers = array_values(array_unique($allTrackingNumbers));
-                    $this->emitNotificationEvents($externalId, $channel, $matched, $trackingNumbers, $existingPaket, $existingStatus, $mappedStatus, $context);
+                    $this->emitNotificationEvents(
+                        $externalId,
+                        $channel,
+                        $matched,
+                        $trackingNumbers,
+                        $existingPaket,
+                        $existingStatus,
+                        $mappedStatus,
+                        $context,
+                        is_string($matched['salesChannelId'] ?? null) ? (string) $matched['salesChannelId'] : null,
+                    );
                 }
             }
         } finally {
@@ -290,6 +308,7 @@ class LieferzeitenImportService
             'deliveryDate' => $this->parseDate($payload['deliveryDate'] ?? null),
             'externalOrderId' => $externalId,
             'sourceSystem' => $payload['sourceSystem'] ?? null,
+            'salesChannelId' => $payload['salesChannelId'] ?? null,
             'customerEmail' => $payload['customerEmail'] ?? null,
             'customerFirstName' => $this->extractCustomerNamePart($payload, 'firstName'),
             'customerLastName' => $this->extractCustomerNamePart($payload, 'lastName'),
@@ -319,7 +338,12 @@ class LieferzeitenImportService
             return [];
         }
 
-        $positionId = $this->findPositionIdByNumber($positionNumber, $context) ?? Uuid::randomHex();
+        $positionId = $this->findPositionIdByScope(
+            $positionNumber,
+            $context,
+            $paketId,
+            $this->extractExternalOrderKey($payload)
+        ) ?? Uuid::randomHex();
         $this->positionRepository->upsert([[
             'id' => $positionId,
             'paketId' => $paketId,
@@ -332,6 +356,7 @@ class LieferzeitenImportService
         ]], $context);
 
         $trackingNumbers = $this->extractTrackingNumbers($payload);
+        $trackingCarrier = $this->resolveTrackingCarrier($payload);
         if ($trackingNumbers === [] && $this->isInternalShipment($payload)) {
             $trackingNumbers[] = self::INTERNAL_SHIPPING_LABEL;
         }
@@ -345,6 +370,7 @@ class LieferzeitenImportService
                 'id' => Uuid::randomHex(),
                 'positionId' => $positionId,
                 'sendenummer' => $trackingNumber,
+                'carrier' => $trackingCarrier,
             ]], $context);
         }
 
@@ -385,15 +411,34 @@ class LieferzeitenImportService
         return $entity;
     }
 
-    private function findPositionIdByNumber(string $positionNumber, Context $context): ?string
+    private function findPositionIdByScope(
+        string $positionNumber,
+        Context $context,
+        ?string $paketId = null,
+        ?string $externalOrderKey = null
+    ): ?string
     {
         $criteria = new Criteria();
         $criteria->setLimit(1);
         $criteria->addFilter(new EqualsFilter('positionNumber', $positionNumber));
 
+        if ($paketId !== null && $paketId !== '') {
+            $criteria->addFilter(new EqualsFilter('paketId', $paketId));
+        } elseif ($externalOrderKey !== null && $externalOrderKey !== '') {
+            $criteria->addFilter(new EqualsFilter('paket.externalOrderId', $externalOrderKey));
+        }
+
         $entity = $this->positionRepository->search($criteria, $context)->first();
 
         return $entity?->getId();
+    }
+
+    /** @param array<string,mixed> $payload */
+    private function extractExternalOrderKey(array $payload): ?string
+    {
+        $externalOrderKey = (string) ($payload['externalId'] ?? $payload['orderNumber'] ?? '');
+
+        return $externalOrderKey !== '' ? $externalOrderKey : null;
     }
 
 
@@ -679,6 +724,29 @@ class LieferzeitenImportService
             'intern',
             'eigenversand',
         ], true);
+    }
+
+    /** @param array<string,mixed> $payload */
+    private function resolveTrackingCarrier(array $payload): ?string
+    {
+        $candidates = [
+            $payload['carrier'] ?? null,
+            $payload['shippingProvider'] ?? null,
+            $payload['trackingProvider'] ?? null,
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (!is_string($candidate)) {
+                continue;
+            }
+
+            $carrier = trim($candidate);
+            if ($carrier !== '') {
+                return $carrier;
+            }
+        }
+
+        return null;
     }
 
     /** @param array<string,mixed> $payload */
@@ -1109,14 +1177,27 @@ class LieferzeitenImportService
      * @param array<string,mixed> $payload
      * @param array<int,string> $trackingNumbers
      */
-    private function emitNotificationEvents(string $externalOrderId, string $sourceSystem, array $payload, array $trackingNumbers, ?PaketEntity $existingPaket, ?int $existingStatus, int $mappedStatus, Context $context): void
+    private function emitNotificationEvents(string $externalOrderId, string $sourceSystem, array $payload, array $trackingNumbers, ?PaketEntity $existingPaket, ?int $existingStatus, int $mappedStatus, Context $context, ?string $salesChannelId): void
     {
         $existingDeliveryDate = $this->normalizeComparableDate($existingPaket?->getDeliveryDate());
         $existingCalculatedDeliveryDate = $this->normalizeComparableDate($existingPaket?->getCalculatedDeliveryDate());
+        $previousPaymentDate = $this->normalizeComparableDate($existingPaket?->getPaymentDate());
         $incomingDeliveryDate = $this->parseDate($payload['deliveryDate'] ?? null);
         $incomingCalculatedDeliveryDate = $this->parseDate($payload['calculatedDeliveryDate'] ?? null);
+        $incomingPaymentDate = $this->parseDate($payload['paymentDate'] ?? null);
         $hasIncomingDeliveryDate = $incomingDeliveryDate !== null || $incomingCalculatedDeliveryDate !== null;
         $hasExistingDeliveryDate = $existingDeliveryDate !== null || $existingCalculatedDeliveryDate !== null;
+        $deliveryDateChanged = $hasIncomingDeliveryDate
+            && (!$hasExistingDeliveryDate
+                || $existingDeliveryDate !== $incomingDeliveryDate
+                || $existingCalculatedDeliveryDate !== $incomingCalculatedDeliveryDate);
+        $deliveryDatePayload = [
+            'previousDeliveryDate' => $existingDeliveryDate,
+            'previousCalculatedDeliveryDate' => $existingCalculatedDeliveryDate,
+            'deliveryDate' => $incomingDeliveryDate,
+            'calculatedDeliveryDate' => $incomingCalculatedDeliveryDate,
+            'externalOrderId' => $externalOrderId,
+        ];
 
         foreach (NotificationTriggerCatalog::channels() as $channel) {
             if ($existingPaket === null) {
@@ -1128,6 +1209,7 @@ class LieferzeitenImportService
                     $context,
                     $externalOrderId,
                     $sourceSystem,
+                    $salesChannelId,
                 );
             }
 
@@ -1144,6 +1226,7 @@ class LieferzeitenImportService
                     $context,
                     $externalOrderId,
                     $sourceSystem,
+                    $salesChannelId,
                 );
             }
 
@@ -1161,6 +1244,7 @@ class LieferzeitenImportService
                     $context,
                     $externalOrderId,
                     $sourceSystem,
+                    $salesChannelId,
                 );
 
                 $this->notificationEventService->dispatch(
@@ -1171,10 +1255,11 @@ class LieferzeitenImportService
                     $context,
                     $externalOrderId,
                     $sourceSystem,
+                    $salesChannelId,
                 );
             }
 
-            if ($hasIncomingDeliveryDate) {
+            if ($deliveryDateChanged) {
                 $this->notificationEventService->dispatch(
                     sprintf('delivery-change:%s:%s', $externalOrderId, $channel),
                     NotificationTriggerCatalog::DELIVERY_DATE_CHANGED,
@@ -1183,6 +1268,7 @@ class LieferzeitenImportService
                     $context,
                     $externalOrderId,
                     $sourceSystem,
+                    $salesChannelId,
                 );
 
                 if (!$hasExistingDeliveryDate) {
@@ -1191,13 +1277,14 @@ class LieferzeitenImportService
                         NotificationTriggerCatalog::DELIVERY_DATE_ASSIGNED,
                         $channel,
                         [
-                            'deliveryDate' => $payload['deliveryDate'] ?? null,
-                            'calculatedDeliveryDate' => $payload['calculatedDeliveryDate'] ?? null,
+                            'deliveryDate' => $incomingDeliveryDate,
+                            'calculatedDeliveryDate' => $incomingCalculatedDeliveryDate,
                             'externalOrderId' => $externalOrderId,
                         ],
                         $context,
                         $externalOrderId,
                         $sourceSystem,
+                        $salesChannelId,
                     );
                 } elseif ($existingDeliveryDate !== $incomingDeliveryDate || $existingCalculatedDeliveryDate !== $incomingCalculatedDeliveryDate) {
                     $this->notificationEventService->dispatch(
@@ -1207,13 +1294,14 @@ class LieferzeitenImportService
                         [
                             'previousDeliveryDate' => $existingDeliveryDate,
                             'previousCalculatedDeliveryDate' => $existingCalculatedDeliveryDate,
-                            'deliveryDate' => $payload['deliveryDate'] ?? null,
-                            'calculatedDeliveryDate' => $payload['calculatedDeliveryDate'] ?? null,
+                            'deliveryDate' => $incomingDeliveryDate,
+                            'calculatedDeliveryDate' => $incomingCalculatedDeliveryDate,
                             'externalOrderId' => $externalOrderId,
                         ],
                         $context,
                         $externalOrderId,
                         $sourceSystem,
+                        $salesChannelId,
                     );
                 }
             }
@@ -1230,6 +1318,7 @@ class LieferzeitenImportService
                     $context,
                     $externalOrderId,
                     $sourceSystem,
+                    $salesChannelId,
                 );
             }
 
@@ -1242,6 +1331,7 @@ class LieferzeitenImportService
                     $context,
                     $externalOrderId,
                     $sourceSystem,
+                    $salesChannelId,
                 );
             }
 
@@ -1254,24 +1344,26 @@ class LieferzeitenImportService
                     $context,
                     $externalOrderId,
                     $sourceSystem,
+                    $salesChannelId,
                 );
             }
 
 
 
-            if ($this->isPrepaymentOrder($payload) && ($payload['paymentDate'] ?? null) !== null && $previousPaymentDate === null) {
+            if ($this->isPrepaymentOrder($payload) && $incomingPaymentDate !== null && $previousPaymentDate === null) {
                 $this->notificationEventService->dispatch(
                     sprintf('vorkasse-payment-received:%s:%s', $externalOrderId, $channel),
                     NotificationTriggerCatalog::PAYMENT_RECEIVED_VORKASSE,
                     $channel,
                     [
                         'externalOrderId' => $externalOrderId,
-                        'paymentDate' => $payload['paymentDate'],
+                        'paymentDate' => $incomingPaymentDate,
                         'paymentMethod' => $payload['paymentMethod'] ?? null,
                     ],
                     $context,
                     $externalOrderId,
                     $sourceSystem,
+                    $salesChannelId,
                 );
             }
 
@@ -1288,6 +1380,7 @@ class LieferzeitenImportService
                     $context,
                     $externalOrderId,
                     $sourceSystem,
+                    $salesChannelId,
                 );
             }
             if ($this->hasParcelState($payload, 'retoure')) {
@@ -1299,6 +1392,7 @@ class LieferzeitenImportService
                     $context,
                     $externalOrderId,
                     $sourceSystem,
+                    $salesChannelId,
                 );
             }
         }

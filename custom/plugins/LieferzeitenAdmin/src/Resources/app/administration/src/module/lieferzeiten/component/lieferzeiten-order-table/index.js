@@ -50,7 +50,19 @@ Shopware.Component.register('lieferzeiten-order-table', {
             activeTracking: null,
             statusUpdateLoadingByOrder: {},
             detailsLoadingByOrder: {},
+            additionalRequestTaskStatusByPosition: {},
+            additionalRequestTaskInitialized: false,
         };
+    },
+
+
+    watch: {
+        orders: {
+            handler(newOrders) {
+                this.handleAdditionalDeliveryRequestTaskTransitions(newOrders);
+            },
+            immediate: true,
+        },
     },
 
     computed: {
@@ -177,6 +189,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     comment: this.resolveInitialComment(order),
                     commentTargetPositionId,
                     additionalDeliveryRequest: order.additionalDeliveryRequest || null,
+                    additionalDeliveryRequestTasksByPosition: this.mapAdditionalDeliveryRequestTasksByPosition(positions),
                     latestShippingDeadline: this.resolveDeadlineValue(order, ['spaetester_versand', 'spaetesterVersand', 'latestShippingDeadline']),
                     latestDeliveryDeadline: this.resolveDeadlineValue(order, ['spaeteste_lieferung', 'spaetesteLieferung', 'latestDeliveryDeadline']),
                     selectedManualStatus: [7, 8].includes(Number(order?.status)) ? Number(order.status) : 7,
@@ -360,6 +373,8 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 commentHistory: details.commentHistory || [],
                 trackingSummaryDisplay: this.resolveTrackingSummaryDisplay(editable),
             });
+
+            this.handleAdditionalDeliveryRequestTaskTransitions(Object.values(this.editableOrders));
         },
 
         async loadOrderDetails(orderId) {
@@ -613,14 +628,16 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         resolveTrackingEntries(order, position) {
+            const fallbackCarrier = String(position.trackingCarrier || order.trackingCarrier || '').toLowerCase();
+
             if (Array.isArray(position?.trackingEntries) && position.trackingEntries.length > 0) {
                 return position.trackingEntries.map((entry) => ({
                     number: String(entry?.number || '').trim(),
-                    carrier: String(entry?.carrier || '').trim().toLowerCase(),
+                    carrier: String(entry?.carrier || fallbackCarrier).trim().toLowerCase(),
                 })).filter((entry) => entry.number !== '');
             }
 
-            const carrier = String(position.trackingCarrier || order.trackingCarrier || '').toLowerCase();
+            const carrier = fallbackCarrier;
             const packageEntries = Array.isArray(position.packages) ? position.packages : [];
             const fallbackPackages = packageEntries.length === 0
                 ? [position.sendenummer || order.sendenummer || '']
@@ -646,6 +663,40 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     carrier: String(pkg?.carrier || carrier).toLowerCase(),
                 };
             }).filter((entry) => entry.number !== '');
+        },
+
+
+        resolveOrderTrackingEntries(order) {
+            const positions = Array.isArray(order?.positions) ? order.positions : [];
+            const entries = positions.flatMap((position) => this.resolveTrackingEntries(order, position));
+
+            if (entries.length === 0) {
+                const fallbackEntry = this.resolveTrackingEntries(order, {
+                    packages: [order?.sendenummer || ''],
+                    trackingCarrier: order?.trackingCarrier,
+                });
+
+                if (fallbackEntry.length > 0) {
+                    entries.push(...fallbackEntry);
+                }
+            }
+
+            if (entries.length === 0 && this.isInternalShippingMode(order)) {
+                entries.push({ number: INTERNAL_SHIPPING_LABEL, carrier: 'internal', isInternal: true });
+            }
+
+            const seen = new Set();
+
+            return entries.filter((entry) => {
+                const key = `${entry.carrier}-${entry.number}`;
+
+                if (seen.has(key)) {
+                    return false;
+                }
+
+                seen.add(key);
+                return true;
+            });
         },
 
         resolveTrackingSummaryDisplay(order) {
@@ -1209,21 +1260,80 @@ Shopware.Component.register('lieferzeiten-order-table', {
             }
         },
 
-        notifyInitiatorIfClosed(order) {
-            const request = order.additionalDeliveryRequest;
-            if (!request || request.notifiedAt || this.isOrderOpen(order)) {
+        mapAdditionalDeliveryRequestTasksByPosition(positions) {
+            if (!Array.isArray(positions) || positions.length === 0) {
+                return {};
+            }
+
+            return positions.reduce((accumulator, position) => {
+                if (!position?.id) {
+                    return accumulator;
+                }
+
+                accumulator[position.id] = position.additionalDeliveryRequestTask || null;
+                return accumulator;
+            }, {});
+        },
+
+        extractAdditionalDeliveryRequestTaskStatusByPosition(orders) {
+            const result = {};
+            const normalizedOrders = Array.isArray(orders) ? orders : [];
+
+            normalizedOrders.forEach((order) => {
+                const positions = Array.isArray(order?.positions) ? order.positions : [];
+                positions.forEach((position) => {
+                    if (!position?.id) {
+                        return;
+                    }
+
+                    const task = position.additionalDeliveryRequestTask;
+                    if (!task || typeof task !== 'object') {
+                        return;
+                    }
+
+                    result[position.id] = {
+                        status: typeof task.status === 'string' ? task.status.trim().toLowerCase() : null,
+                        closedAt: task.closedAt || null,
+                        initiator: task.initiator || null,
+                    };
+                });
+            });
+
+            return result;
+        },
+
+        isAdditionalDeliveryRequestTaskClosed(status) {
+            return ['done', 'cancelled'].includes(String(status || '').trim().toLowerCase());
+        },
+
+        handleAdditionalDeliveryRequestTaskTransitions(orders) {
+            const currentStatusByPosition = this.extractAdditionalDeliveryRequestTaskStatusByPosition(orders);
+
+            if (!this.additionalRequestTaskInitialized) {
+                this.additionalRequestTaskStatusByPosition = currentStatusByPosition;
+                this.additionalRequestTaskInitialized = true;
                 return;
             }
 
-            request.notifiedAt = new Date().toISOString();
-            this.updateAudit(order, this.$t('lieferzeiten.additionalRequest.auditClosed'));
+            Object.entries(currentStatusByPosition).forEach(([positionId, currentTask]) => {
+                const previousTask = this.additionalRequestTaskStatusByPosition[positionId] || null;
+                const movedToClosed = previousTask
+                    && !this.isAdditionalDeliveryRequestTaskClosed(previousTask.status)
+                    && this.isAdditionalDeliveryRequestTaskClosed(currentTask.status);
 
-            this.createNotificationInfo({
-                title: this.$t('lieferzeiten.additionalRequest.notificationTitle'),
-                message: this.$t('lieferzeiten.additionalRequest.notificationClosed', {
-                    initiator: request.initiator || this.$t('lieferzeiten.additionalRequest.defaultInitiator'),
-                }),
+                if (!movedToClosed) {
+                    return;
+                }
+
+                this.createNotificationInfo({
+                    title: this.$t('lieferzeiten.additionalRequest.notificationTitle'),
+                    message: this.$t('lieferzeiten.additionalRequest.notificationClosed', {
+                        initiator: currentTask.initiator || this.$t('lieferzeiten.additionalRequest.defaultInitiator'),
+                    }),
+                });
             });
+
+            this.additionalRequestTaskStatusByPosition = currentStatusByPosition;
         },
 
         resolveAdditionalRequestInitiator() {
@@ -1246,11 +1356,6 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 userId: userId || null,
                 display: readableName || this.$t('lieferzeiten.additionalRequest.defaultInitiator'),
             };
-        },
-
-        updateAudit(order, action) {
-            const actor = String(order?.lastChangedBy || order?.user || 'system').trim() || 'system';
-            order.audit = `${action} · ${actor} · ${new Date().toLocaleString('de-DE')}`;
         },
 
         async reloadOrder(order) {

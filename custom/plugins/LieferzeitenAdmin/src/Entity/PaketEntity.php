@@ -21,6 +21,8 @@ class PaketEntity extends Entity
 
     protected ?string $sourceSystem = null;
 
+    protected ?string $salesChannelId = null;
+
     protected ?string $customerEmail = null;
 
     protected ?string $customerFirstName = null;
@@ -122,6 +124,16 @@ class PaketEntity extends Entity
     public function setSourceSystem(?string $sourceSystem): void
     {
         $this->sourceSystem = $sourceSystem;
+    }
+
+    public function getSalesChannelId(): ?string
+    {
+        return $this->salesChannelId;
+    }
+
+    public function setSalesChannelId(?string $salesChannelId): void
+    {
+        $this->salesChannelId = $salesChannelId;
     }
 
     public function getCustomerEmail(): ?string
@@ -328,4 +340,3 @@ class PaketEntity extends Entity
         $this->neuerLieferterminPaketHistory = $neuerLieferterminPaketHistory;
     }
 }
-

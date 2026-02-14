@@ -44,6 +44,7 @@ class PaketDefinition extends EntityDefinition
             new DateTimeField('delivery_date', 'deliveryDate'),
             new StringField('external_order_id', 'externalOrderId'),
             new StringField('source_system', 'sourceSystem'),
+            new StringField('sales_channel_id', 'salesChannelId'),
             new StringField('customer_email', 'customerEmail'),
             new StringField('customer_first_name', 'customerFirstName'),
             new StringField('customer_last_name', 'customerLastName'),
