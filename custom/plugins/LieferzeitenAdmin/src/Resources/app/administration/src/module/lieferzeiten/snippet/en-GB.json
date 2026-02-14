@@ -19,10 +19,10 @@
       "status": "Status"
     },
     "domainSelection": {
-      "placeholder": "Please select a channel",
+      "placeholder": "Select channel",
       "reset": "Reset selection",
-      "modalTitle": "Choose channel",
-      "modalDescription": "Choose a channel to load delivery-time views.",
+      "modalTitle": "Select area and channel",
+      "modalDescription": "Step 1: Select an area. Step 2: Select a channel to load delivery-time views.",
       "persistLabel": "Persist selection on this device",
       "confirm": "Apply selection",
       "groups": {
@@ -37,6 +37,14 @@
         "peg": "PEG",
         "zonami": "Zonami",
         "medicalSolutionsGermany": "medical-solutions-germany.de"
+      },
+      "groupPlaceholder": "Select area",
+      "channelPlaceholder": "Select channel",
+      "next": "Next",
+      "back": "Back",
+      "steps": {
+        "group": "Step 1 · Area",
+        "channel": "Step 2 · Channel"
       }
     },
     "kpi": {
