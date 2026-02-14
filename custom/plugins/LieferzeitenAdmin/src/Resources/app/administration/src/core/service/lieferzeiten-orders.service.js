@@ -64,12 +64,26 @@ class LieferzeitenOrdersService extends ApiService {
     }
 
     async getStatistics(params = {}) {
-        const response = await this.httpClient.get(`_action/${this.getApiBasePath()}/statistics`, {
-            params,
-            headers: this.getBasicHeaders(),
-        });
+        try {
+            const response = await this.httpClient.get(`_action/${this.getApiBasePath()}/v1/statistics`, {
+                params,
+                headers: this.getBasicHeaders(),
+            });
 
-        return ApiService.handleResponse(response) ?? response?.data ?? {};
+            return ApiService.handleResponse(response) ?? response?.data ?? {};
+        } catch (error) {
+            const statusCode = error?.response?.status;
+            if (statusCode !== 404) {
+                throw error;
+            }
+
+            const response = await this.httpClient.get(`_action/${this.getApiBasePath()}/statistics`, {
+                params,
+                headers: this.getBasicHeaders(),
+            });
+
+            return ApiService.handleResponse(response) ?? response?.data ?? {};
+        }
     }
 
 
