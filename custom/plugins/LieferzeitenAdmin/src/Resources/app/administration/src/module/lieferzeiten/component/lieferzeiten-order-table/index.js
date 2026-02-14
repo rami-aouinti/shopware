@@ -657,7 +657,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
             }
 
             if (this.isInternalShippingMode(order)) {
-                return 'Versand durch First Medical';
+                return INTERNAL_SHIPPING_LABEL;
             }
 
             return '-';
