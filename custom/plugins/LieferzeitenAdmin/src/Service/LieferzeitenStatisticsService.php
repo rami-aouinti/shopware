@@ -2,10 +2,29 @@
 
 namespace LieferzeitenAdmin\Service;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 
 readonly class LieferzeitenStatisticsService
 {
+    /**
+     * @var array<string, list<string>>
+     */
+    private const DOMAIN_SOURCE_MAPPING = [
+        'first-medical-e-commerce' => ['shopware', 'gambio', 'first medical', 'e-commerce', 'first-medical-e-commerce'],
+        'medical-solutions' => ['medical solutions', 'medical-solutions'],
+    ];
+
+    /**
+     * @var array<string, string>
+     */
+    private const DOMAIN_ALIASES = [
+        'First Medical' => 'first-medical-e-commerce',
+        'E-Commerce' => 'first-medical-e-commerce',
+        'First Medical - E-Commerce' => 'first-medical-e-commerce',
+        'Medical Solutions' => 'medical-solutions',
+    ];
+
     public function __construct(private Connection $connection)
     {
     }
@@ -44,7 +63,11 @@ readonly class LieferzeitenStatisticsService
             $scopeSql,
         );
 
-        $metrics = $this->connection->fetchAssociative($metricsSql, $params) ?: [];
+        $metricsParamTypes = isset($params['sourceSystems'])
+            ? ['sourceSystems' => ArrayParameterType::STRING]
+            : [];
+
+        $metrics = $this->connection->fetchAssociative($metricsSql, $params, $metricsParamTypes) ?: [];
 
         $channelSql = sprintf(
             'SELECT
@@ -59,7 +82,7 @@ readonly class LieferzeitenStatisticsService
             $scopeSql,
         );
 
-        $channels = $this->connection->fetchAllAssociative($channelSql, $params);
+        $channels = $this->connection->fetchAllAssociative($channelSql, $params, $metricsParamTypes);
 
         $timelineSql = sprintf(
             'SELECT
@@ -100,7 +123,7 @@ readonly class LieferzeitenStatisticsService
             $this->buildSourceScopeCondition('t.source_system', $params, $domain, $channel),
         );
 
-        $timeline = $this->connection->fetchAllAssociative($timelineSql, $params);
+        $timeline = $this->connection->fetchAllAssociative($timelineSql, $params, $metricsParamTypes);
 
         $activitiesSql = sprintf(
             'SELECT
@@ -178,7 +201,7 @@ readonly class LieferzeitenStatisticsService
             $this->buildSourceScopeCondition('t.domain', $params, $domain, $channel),
         );
 
-        $activities = $this->connection->fetchAllAssociative($activitiesSql, $params);
+        $activities = $this->connection->fetchAllAssociative($activitiesSql, $params, $metricsParamTypes);
 
         return [
             'periodDays' => $periodDays,
@@ -215,13 +238,13 @@ readonly class LieferzeitenStatisticsService
     private function buildScopeCondition(array &$params, ?string $domain, ?string $channel): string
     {
         $filter = $this->resolveSourceFilter($domain, $channel);
-        if ($filter === null) {
+        if ($filter === []) {
             return '';
         }
 
-        $params['sourceSystem'] = $filter;
+        $params['sourceSystems'] = $filter;
 
-        return ' AND p.source_system = :sourceSystem';
+        return ' AND p.source_system IN (:sourceSystems)';
     }
 
     /**
@@ -230,13 +253,13 @@ readonly class LieferzeitenStatisticsService
     private function buildSourceScopeCondition(string $column, array &$params, ?string $domain, ?string $channel): string
     {
         $filter = $this->resolveSourceFilter($domain, $channel);
-        if ($filter === null) {
+        if ($filter === []) {
             return '';
         }
 
-        $params['sourceSystem'] = $filter;
+        $params['sourceSystems'] = $filter;
 
-        return sprintf(' AND %s = :sourceSystem', $column);
+        return sprintf(' AND %s IN (:sourceSystems)', $column);
     }
 
     private function sanitizePeriod(int $periodDays): int
@@ -248,20 +271,33 @@ readonly class LieferzeitenStatisticsService
         return 30;
     }
 
-    private function resolveSourceFilter(?string $domain, ?string $channel): ?string
+    /**
+     * @return list<string>
+     */
+    private function resolveSourceFilter(?string $domain, ?string $channel): array
     {
         $domain = trim((string) $domain);
         $channel = trim((string) $channel);
 
         if ($channel !== '' && $channel !== 'all') {
-            return $channel;
+            return [$channel];
         }
 
-        if ($domain !== '') {
-            return $domain;
+        if ($domain === '') {
+            return [];
         }
 
-        return null;
+        return $this->resolveDomainSources($domain);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function resolveDomainSources(string $domain): array
+    {
+        $domainKey = self::DOMAIN_ALIASES[$domain] ?? strtolower($domain);
+
+        return self::DOMAIN_SOURCE_MAPPING[$domainKey] ?? [$domain];
     }
 }
 
