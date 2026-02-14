@@ -15,6 +15,14 @@ class ChannelSettingsEntity extends Entity
 
     protected bool $enableNotifications = false;
 
+    protected ?int $shippingWorkingDays = null;
+
+    protected ?string $shippingCutoff = null;
+
+    protected ?int $deliveryWorkingDays = null;
+
+    protected ?string $deliveryCutoff = null;
+
     protected ?string $lastChangedBy = null;
 
     protected ?\DateTimeInterface $lastChangedAt = null;
@@ -67,5 +75,45 @@ class ChannelSettingsEntity extends Entity
     public function setLastChangedAt(?\DateTimeInterface $lastChangedAt): void
     {
         $this->lastChangedAt = $lastChangedAt;
+    }
+
+    public function getShippingWorkingDays(): ?int
+    {
+        return $this->shippingWorkingDays;
+    }
+
+    public function setShippingWorkingDays(?int $shippingWorkingDays): void
+    {
+        $this->shippingWorkingDays = $shippingWorkingDays;
+    }
+
+    public function getShippingCutoff(): ?string
+    {
+        return $this->shippingCutoff;
+    }
+
+    public function setShippingCutoff(?string $shippingCutoff): void
+    {
+        $this->shippingCutoff = $shippingCutoff;
+    }
+
+    public function getDeliveryWorkingDays(): ?int
+    {
+        return $this->deliveryWorkingDays;
+    }
+
+    public function setDeliveryWorkingDays(?int $deliveryWorkingDays): void
+    {
+        $this->deliveryWorkingDays = $deliveryWorkingDays;
+    }
+
+    public function getDeliveryCutoff(): ?string
+    {
+        return $this->deliveryCutoff;
+    }
+
+    public function setDeliveryCutoff(?string $deliveryCutoff): void
+    {
+        $this->deliveryCutoff = $deliveryCutoff;
     }
 }
