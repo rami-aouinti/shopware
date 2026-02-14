@@ -49,7 +49,8 @@
       "article": "Artikel",
       "quantity": "Menge",
       "packageNumbers": "Pakete",
-      "status": "Status"
+      "status": "Status",
+      "businessStatus": "Geschäftsstatus"
     },
     "fields": {
       "supplierDate": "Liefertermin Lieferant (1-14 Tage)",
@@ -141,6 +142,17 @@
         "title": "LMS · Schwellenwerte je Verkaufskanal",
         "create": "Schwellenwert anlegen"
       }
+    },
+    "businessStatus": {
+      "new": "Neu",
+      "inClarification": "In Klärung",
+      "awaitingSupplier": "Warten auf Lieferanten",
+      "partiallyAvailable": "Teilweise verfügbar",
+      "readyForShipping": "Versandbereit",
+      "partiallyShipped": "Teilversendet",
+      "shipped": "Versendet",
+      "closed": "Abgeschlossen",
+      "unknown": "Unbekannt"
     }
   }
 }

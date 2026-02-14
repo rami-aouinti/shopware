@@ -49,7 +49,8 @@
       "article": "Article",
       "quantity": "Quantity",
       "packageNumbers": "Parcels",
-      "status": "Status"
+      "status": "Status",
+      "businessStatus": "Business status"
     },
     "fields": {
       "supplierDate": "Supplier delivery date (1-14 days)",
@@ -141,6 +142,17 @@
         "title": "LMS · Thresholds by sales channel",
         "create": "Create threshold"
       }
+    },
+    "businessStatus": {
+      "new": "New",
+      "inClarification": "In clarification",
+      "awaitingSupplier": "Awaiting supplier",
+      "partiallyAvailable": "Partially available",
+      "readyForShipping": "Ready for shipping",
+      "partiallyShipped": "Partially shipped",
+      "shipped": "Shipped",
+      "closed": "Closed",
+      "unknown": "Unknown"
     }
   }
 }

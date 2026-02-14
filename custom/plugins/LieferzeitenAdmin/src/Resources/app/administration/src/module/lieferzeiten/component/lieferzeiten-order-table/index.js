@@ -1,6 +1,17 @@
 import template from './lieferzeiten-order-table.html.twig';
 import './lieferzeiten-order-table.scss';
 
+const BUSINESS_STATUS_SNIPPETS = {
+    '1': 'lieferzeiten.businessStatus.new',
+    '2': 'lieferzeiten.businessStatus.inClarification',
+    '3': 'lieferzeiten.businessStatus.awaitingSupplier',
+    '4': 'lieferzeiten.businessStatus.partiallyAvailable',
+    '5': 'lieferzeiten.businessStatus.readyForShipping',
+    '6': 'lieferzeiten.businessStatus.partiallyShipped',
+    '7': 'lieferzeiten.businessStatus.shipped',
+    '8': 'lieferzeiten.businessStatus.closed',
+};
+
 Shopware.Component.register('lieferzeiten-order-table', {
     template,
 
@@ -238,6 +249,16 @@ Shopware.Component.register('lieferzeiten-order-table', {
             this.trackingError = '';
             this.trackingEvents = [];
             this.activeTracking = null;
+        },
+
+        businessStatusLabel(order) {
+            const statusCode = String(order?.businessStatus?.code || order?.status || '').trim();
+            const snippetKey = BUSINESS_STATUS_SNIPPETS[statusCode] || 'lieferzeiten.businessStatus.unknown';
+            const fallbackLabel = String(order?.businessStatus?.label || '').trim();
+            const translatedLabel = this.$t(snippetKey);
+            const resolvedLabel = translatedLabel === snippetKey ? (fallbackLabel || this.$t('lieferzeiten.businessStatus.unknown')) : translatedLabel;
+
+            return `${statusCode || '-'} · ${resolvedLabel}`;
         },
 
         shippingLabel(order) {
