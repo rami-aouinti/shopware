@@ -144,8 +144,8 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 this.$set(this.editableOrders, order.id, {
                     ...order,
                     san6OrderNumberDisplay: this.resolveSan6OrderNumber(order),
-                    san6PositionDisplay: this.resolveSan6Position(positions),
-                    quantityDisplay: this.resolveQuantity(positions),
+                    san6PositionDisplay: this.resolveSan6Position(order, positions),
+                    quantityDisplay: this.resolveQuantity(order, positions),
                     orderDateDisplay: this.resolveOrderDate(order),
                     paymentMethodDisplay: this.resolvePaymentMethod(order),
                     paymentDateDisplay: this.resolvePaymentDate(order),
@@ -275,7 +275,11 @@ Shopware.Component.register('lieferzeiten-order-table', {
             return this.pickFirstDefined(order, ['san6OrderNumber', 'san6', 'paketNumber', 'paket_number']);
         },
 
-        resolveSan6Position(positions) {
+        resolveSan6Position(order, positions) {
+            if (!positions.length) {
+                return this.displayOrDash(this.pickFirstDefined(order, ['san6Position', 'san6Pos']));
+            }
+
             const values = positions
                 .map((position) => this.pickFirstDefined(position, ['positionNumber', 'number', 'position_number']))
                 .filter((value) => value !== null && value !== undefined && String(value).trim() !== '');
@@ -283,7 +287,11 @@ Shopware.Component.register('lieferzeiten-order-table', {
             return values.length ? values.join(', ') : '-';
         },
 
-        resolveQuantity(positions) {
+        resolveQuantity(order, positions) {
+            if (!positions.length) {
+                return this.displayOrDash(this.pickFirstDefined(order, ['quantity']));
+            }
+
             const total = positions.reduce((acc, position) => {
                 const raw = this.pickFirstDefined(position, ['quantity', 'orderedQuantity', 'menge']);
                 const numeric = Number(raw);
