@@ -152,4 +152,60 @@ describe('lieferzeiten/component/lieferzeiten-order-table', () => {
         expect(methods.shippingLabelForPosition.call(context, { shippingAssignmentType: 'trennung' }, { orderedQuantity: 5, shippedQuantity: 2 })).toBe('Trennung Auftragsposition 2/5 Stück');
     });
 
+    it('does not notify on initial task snapshot to avoid false positives on reload', () => {
+        const createNotificationInfo = jest.fn();
+        const context = {
+            extractAdditionalDeliveryRequestTaskStatusByPosition: methods.extractAdditionalDeliveryRequestTaskStatusByPosition,
+            isAdditionalDeliveryRequestTaskClosed: methods.isAdditionalDeliveryRequestTaskClosed,
+            createNotificationInfo,
+            additionalRequestTaskStatusByPosition: {},
+            additionalRequestTaskInitialized: false,
+            $t: (key) => key,
+        };
+
+        methods.handleAdditionalDeliveryRequestTaskTransitions.call(context, [{
+            positions: [{
+                id: 'position-1',
+                additionalDeliveryRequestTask: { status: 'done', initiator: 'John Doe', closedAt: '2025-01-01 10:00:00' },
+            }],
+        }]);
+
+        expect(createNotificationInfo).not.toHaveBeenCalled();
+        expect(context.additionalRequestTaskInitialized).toBe(true);
+        expect(context.additionalRequestTaskStatusByPosition['position-1'].status).toBe('done');
+    });
+
+    it('notifies only when additional delivery request task really transitions to done/cancelled', () => {
+        const createNotificationInfo = jest.fn();
+        const context = {
+            extractAdditionalDeliveryRequestTaskStatusByPosition: methods.extractAdditionalDeliveryRequestTaskStatusByPosition,
+            isAdditionalDeliveryRequestTaskClosed: methods.isAdditionalDeliveryRequestTaskClosed,
+            createNotificationInfo,
+            additionalRequestTaskStatusByPosition: {
+                'position-1': { status: 'open', closedAt: null, initiator: 'Jane Doe' },
+            },
+            additionalRequestTaskInitialized: true,
+            $t: (key) => key,
+        };
+
+        methods.handleAdditionalDeliveryRequestTaskTransitions.call(context, [{
+            positions: [{
+                id: 'position-1',
+                additionalDeliveryRequestTask: { status: 'cancelled', initiator: 'Jane Doe', closedAt: '2025-01-02 10:00:00' },
+            }],
+        }]);
+
+        expect(createNotificationInfo).toHaveBeenCalledTimes(1);
+        expect(createNotificationInfo.mock.calls[0][0].message).toContain('lieferzeiten.additionalRequest.notificationClosed');
+
+        methods.handleAdditionalDeliveryRequestTaskTransitions.call(context, [{
+            positions: [{
+                id: 'position-1',
+                additionalDeliveryRequestTask: { status: 'cancelled', initiator: 'Jane Doe', closedAt: '2025-01-02 10:00:00' },
+            }],
+        }]);
+
+        expect(createNotificationInfo).toHaveBeenCalledTimes(1);
+    });
+
 });
