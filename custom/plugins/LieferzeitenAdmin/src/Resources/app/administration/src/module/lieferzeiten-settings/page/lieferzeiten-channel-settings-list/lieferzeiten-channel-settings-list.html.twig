@@ -44,7 +44,7 @@
                                 numberType="int"
                                 :min="0"
                                 :disabled="!hasEditAccess"
-                                :value="matrixValues[channel.id][item.key].shippingOverdueWorkingDays"
+                                :value="getMatrixValue(channel.id, item.key, 'shippingOverdueWorkingDays')"
                                 :error="getFieldError(channel.id, item.key, 'shippingOverdueWorkingDays')"
                                 @input="onChangeNumberField(channel.id, item.key, 'shippingOverdueWorkingDays', $event)"
                             />
@@ -55,7 +55,7 @@
                                 numberType="int"
                                 :min="0"
                                 :disabled="!hasEditAccess"
-                                :value="matrixValues[channel.id][item.key].deliveryOverdueWorkingDays"
+                                :value="getMatrixValue(channel.id, item.key, 'deliveryOverdueWorkingDays')"
                                 :error="getFieldError(channel.id, item.key, 'deliveryOverdueWorkingDays')"
                                 @input="onChangeNumberField(channel.id, item.key, 'deliveryOverdueWorkingDays', $event)"
                             />
