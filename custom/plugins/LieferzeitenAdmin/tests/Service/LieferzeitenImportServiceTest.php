@@ -10,6 +10,7 @@ use LieferzeitenAdmin\Service\Status8TrackingMappingProvider;
 use LieferzeitenAdmin\Service\ChannelDateSettingsProvider;
 use LieferzeitenAdmin\Service\LieferzeitenImportService;
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Notification\SalesChannelResolver;
 use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
 use LieferzeitenAdmin\Service\Reliability\IntegrationReliabilityService;
 use LieferzeitenAdmin\Sync\Adapter\ChannelOrderAdapterRegistry;
@@ -696,7 +697,8 @@ class LieferzeitenImportServiceTest extends TestCase
             null,
             null,
             2,
-            Context::createDefaultContext()
+            Context::createDefaultContext(),
+            null,
         );
 
         $assigned = array_values(array_filter($calls, static fn (array $call): bool => $call[1] === 'livraison.date.attribuee'));
@@ -729,7 +731,8 @@ class LieferzeitenImportServiceTest extends TestCase
             $existing,
             2,
             2,
-            Context::createDefaultContext()
+            Context::createDefaultContext(),
+            null,
         );
 
         $updated = array_values(array_filter($calls, static fn (array $call): bool => $call[1] === 'livraison.date.modifiee'));
@@ -880,7 +883,8 @@ class LieferzeitenImportServiceTest extends TestCase
             null,
             7,
             8,
-            Context::createDefaultContext()
+            Context::createDefaultContext(),
+            null,
         );
 
         $method->invoke(
@@ -1136,6 +1140,7 @@ class LieferzeitenImportServiceTest extends TestCase
             $status8TrackingMappingProvider ?? new Status8TrackingMappingProvider($config),
             $this->createMock(LockFactory::class),
             $notificationEventService ?? $this->createMock(NotificationEventService::class),
+            $this->createMock(SalesChannelResolver::class),
             $this->createMock(IntegrationReliabilityService::class),
             $this->createMock(IntegrationContractValidator::class),
             $auditLogService ?? $this->createMock(AuditLogService::class),

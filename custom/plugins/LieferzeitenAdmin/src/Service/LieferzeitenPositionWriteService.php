@@ -7,6 +7,7 @@ use LieferzeitenAdmin\Service\Notification\NotificationEventService;
 use LieferzeitenAdmin\Service\Notification\ShippingDateOverdueTaskService;
 use LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver;
 use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
+use LieferzeitenAdmin\Service\Notification\SalesChannelResolver;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -32,6 +33,7 @@ class LieferzeitenPositionWriteService
         private readonly NotificationEventService $notificationEventService,
         private readonly TaskAssignmentRuleResolver $taskAssignmentRuleResolver,
         private readonly SystemConfigService $systemConfigService,
+        private readonly SalesChannelResolver $salesChannelResolver,
     ) {
     }
 
@@ -300,6 +302,7 @@ class LieferzeitenPositionWriteService
             'customerEmail' => $notificationContext['customerEmail'],
             'externalOrderId' => $notificationContext['externalOrderId'],
             'sourceSystem' => $notificationContext['sourceSystem'],
+            'salesChannelId' => $notificationContext['salesChannelId'],
             'positionNumber' => $notificationContext['positionNumber'],
         ];
 
@@ -320,6 +323,7 @@ class LieferzeitenPositionWriteService
                 $context,
                 $notificationContext['externalOrderId'],
                 $notificationContext['sourceSystem'],
+                $notificationContext['salesChannelId'],
             );
         }
 
@@ -537,11 +541,11 @@ class LieferzeitenPositionWriteService
         return $username !== '' ? $username : 'system';
     }
 
-    /** @return array{externalOrderId:?string,sourceSystem:?string,customerEmail:?string,positionNumber:?string} */
+    /** @return array{externalOrderId:?string,sourceSystem:?string,salesChannelId:?string,customerEmail:?string,positionNumber:?string} */
     private function fetchNotificationContext(string $positionId): array
     {
         $row = $this->connection->fetchAssociative(
-            'SELECT p.position_number, paket.external_order_id, paket.source_system, paket.customer_email
+            'SELECT p.position_number, paket.external_order_id, paket.source_system, paket.sales_channel_id, paket.customer_email
              FROM lieferzeiten_position p
              LEFT JOIN lieferzeiten_paket paket ON paket.id = p.paket_id
              WHERE p.id = :positionId
@@ -553,14 +557,25 @@ class LieferzeitenPositionWriteService
             return [
                 'externalOrderId' => null,
                 'sourceSystem' => null,
+                'salesChannelId' => null,
                 'customerEmail' => null,
                 'positionNumber' => null,
             ];
         }
 
+        $sourceSystem = isset($row['source_system']) ? (string) $row['source_system'] : null;
+        $externalOrderId = isset($row['external_order_id']) ? (string) $row['external_order_id'] : null;
+        $salesChannelId = $this->salesChannelResolver->resolve(
+            $sourceSystem,
+            $externalOrderId,
+            isset($row['position_number']) ? (string) $row['position_number'] : null,
+            isset($row['sales_channel_id']) ? (string) $row['sales_channel_id'] : null,
+        );
+
         return [
-            'externalOrderId' => isset($row['external_order_id']) ? (string) $row['external_order_id'] : null,
-            'sourceSystem' => isset($row['source_system']) ? (string) $row['source_system'] : null,
+            'externalOrderId' => $externalOrderId,
+            'sourceSystem' => $sourceSystem,
+            'salesChannelId' => $salesChannelId,
             'customerEmail' => isset($row['customer_email']) ? (string) $row['customer_email'] : null,
             'positionNumber' => isset($row['position_number']) ? (string) $row['position_number'] : null,
         ];
