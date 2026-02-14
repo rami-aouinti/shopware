@@ -19,6 +19,7 @@
                     <th>{{ $t('lieferzeiten.table.domain') }}</th>
                     <th>{{ $t('lieferzeiten.table.positions') }}</th>
                     <th>{{ $t('lieferzeiten.table.parcels') }}</th>
+                    <th>Sendenummer</th>
                     <th>{{ $t('lieferzeiten.fields.supplierDate') }}</th>
                     <th>{{ $t('lieferzeiten.fields.supplierWeek') }}</th>
                     <th>{{ $t('lieferzeiten.fields.newDate') }}</th>
@@ -55,6 +56,7 @@
                         <td>{{ displayOrDash(order.domain) }}</td>
                         <td>{{ displayOrDash(order.positionsCountDisplay) }}</td>
                         <td>{{ parcelSummary(order) }}</td>
+                        <td>{{ displayOrDash(order.trackingSummaryDisplay) }}</td>
                         <td>-</td>
                         <td>-</td>
                         <td>-</td>
