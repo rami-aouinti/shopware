@@ -83,3 +83,13 @@
         }
     }
 }
+
+.lieferzeiten-statistics__actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+
+    .sw-button {
+        min-height: 24px;
+    }
+}

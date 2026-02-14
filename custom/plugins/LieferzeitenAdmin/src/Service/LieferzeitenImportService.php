@@ -325,6 +325,24 @@ class LieferzeitenImportService
             'articleNumber' => $payload['articleNumber'] ?? null,
             'status' => $payload['status'] ?? null,
             'orderedAt' => $this->parseDate($payload['orderDate'] ?? $payload['date'] ?? null),
+            'orderedQuantity' => $this->extractQuantity($payload, [
+                'orderedQuantity',
+                'ordered_quantity',
+                'quantityOrdered',
+                'orderQuantity',
+                'bestellmenge',
+                'menge',
+                'qtyOrdered',
+            ]),
+            'shippedQuantity' => $this->extractQuantity($payload, [
+                'shippedQuantity',
+                'shipped_quantity',
+                'quantityShipped',
+                'deliveryQuantity',
+                'versandmenge',
+                'geliefert',
+                'qtyShipped',
+            ]),
         ]], $context);
 
         $trackingNumbers = $this->extractTrackingNumbers($payload);
@@ -390,6 +408,56 @@ class LieferzeitenImportService
         $entity = $this->positionRepository->search($criteria, $context)->first();
 
         return $entity?->getId();
+    }
+
+
+
+    /**
+     * @param array<string,mixed> $payload
+     * @param list<string> $keys
+     */
+    private function extractQuantity(array $payload, array $keys): ?int
+    {
+        foreach ($keys as $key) {
+            if (!array_key_exists($key, $payload)) {
+                continue;
+            }
+
+            $normalizedQuantity = $this->normalizeQuantityValue($payload[$key]);
+            if ($normalizedQuantity !== null) {
+                return $normalizedQuantity;
+            }
+        }
+
+        return null;
+    }
+
+    private function normalizeQuantityValue(mixed $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (is_int($value)) {
+            return $value >= 0 ? $value : null;
+        }
+
+        if (is_float($value)) {
+            return $value >= 0 ? (int) round($value) : null;
+        }
+
+        if (!is_string($value)) {
+            return null;
+        }
+
+        $normalized = str_replace(',', '.', trim($value));
+        if ($normalized === '' || !is_numeric($normalized)) {
+            return null;
+        }
+
+        $quantity = (int) round((float) $normalized);
+
+        return $quantity >= 0 ? $quantity : null;
     }
 
     private function trackingNumberExists(string $positionId, string $trackingNumber, Context $context): bool

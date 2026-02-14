@@ -113,4 +113,24 @@ describe('lieferzeiten/component/lieferzeiten-order-table', () => {
         expect(updateComment).not.toHaveBeenCalled();
     });
 
+    it('returns expected shipping labels per position state', () => {
+        const context = {
+            $t: (key) => ({
+                'lieferzeiten.shipping.unclear': 'Unklar',
+                'lieferzeiten.shipping.completeShipment': 'Gesamt-Versand',
+                'lieferzeiten.shipping.partialShipment': 'Teillieferung',
+                'lieferzeiten.shipping.splitPosition': 'Trennung Auftragsposition',
+                'lieferzeiten.shipping.pieces': 'Stück',
+            }[key] || key),
+            normalizeShippingType: methods.normalizeShippingType,
+            parseQuantity: methods.parseQuantity,
+            positionQuantitySuffix: methods.positionQuantitySuffix,
+        };
+
+        expect(methods.shippingLabelForPosition.call(context, {}, null)).toBe('Unklar');
+        expect(methods.shippingLabelForPosition.call(context, { shippingAssignmentType: 'gesamt' }, {})).toBe('Gesamt-Versand');
+        expect(methods.shippingLabelForPosition.call(context, { shippingAssignmentType: 'teil' }, { orderedQuantity: 3, shippedQuantity: 3 })).toBe('Teillieferung');
+        expect(methods.shippingLabelForPosition.call(context, { shippingAssignmentType: 'trennung' }, { orderedQuantity: 5, shippedQuantity: 2 })).toBe('Trennung Auftragsposition 2/5 Stück');
+    });
+
 });
