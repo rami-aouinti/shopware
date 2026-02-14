@@ -735,14 +735,22 @@ Component.register('external-orders-list', {
                 }))
                 : [];
             const items = Array.isArray(base.items)
-                ? base.items.map((item) => ({
-                    name: item?.name ?? item?.productName ?? '',
-                    quantity: Number(item?.quantity ?? 0),
-                    netPrice: Number(item?.netPrice ?? item?.productPrice ?? 0),
-                    taxRate: Number(item?.taxRate ?? 19),
-                    grossPrice: Number(item?.grossPrice ?? item?.finalPrice ?? 0),
-                    totalPrice: Number(item?.totalPrice ?? item?.finalPrice ?? 0),
-                }))
+                ? base.items.map((item) => {
+                    const orderedQuantity = Number(item?.orderedQuantity ?? item?.quantity ?? 0);
+                    const shippedQuantity = Number(item?.shippedQuantity ?? orderedQuantity);
+
+                    return {
+                        name: item?.name ?? item?.productName ?? '',
+                        quantity: orderedQuantity,
+                        orderedQuantity,
+                        shippedQuantity,
+                        sku: item?.sku ?? item?.productNumber ?? '',
+                        netPrice: Number(item?.netPrice ?? item?.productPrice ?? 0),
+                        taxRate: Number(item?.taxRate ?? 19),
+                        grossPrice: Number(item?.grossPrice ?? item?.finalPrice ?? 0),
+                        totalPrice: Number(item?.totalPrice ?? item?.finalPrice ?? 0),
+                    };
+                })
                 : [];
 
             return {
@@ -902,6 +910,48 @@ Component.register('external-orders-list', {
                 style: 'currency',
                 currency: 'EUR',
             }).format(value);
+        },
+
+        getItemSplitKey(item) {
+            return `${item?.sku ?? ''}::${item?.name ?? ''}`;
+        },
+        hasSplitOrderPosition(item, items = this.selectedOrder?.items ?? []) {
+            const splitKey = this.getItemSplitKey(item);
+
+            return items.filter((candidate) => this.getItemSplitKey(candidate) === splitKey).length > 1;
+        },
+        itemDisplayStatus(item, items = this.selectedOrder?.items ?? []) {
+            const ordered = Number(item?.orderedQuantity ?? item?.quantity ?? 0);
+            const shipped = Number(item?.shippedQuantity ?? ordered);
+
+            if (ordered <= 0) {
+                return 'Nicht versendet';
+            }
+
+            if (shipped <= 0) {
+                return 'Nicht versendet';
+            }
+
+            if (shipped < ordered) {
+                return 'Teillieferung';
+            }
+
+            if (this.hasSplitOrderPosition(item, items)) {
+                return 'Trennung Auftragsposition';
+            }
+
+            return 'Komplett geliefert';
+        },
+        itemShipmentRatio(item) {
+            const ordered = Number(item?.orderedQuantity ?? item?.quantity ?? 0);
+            const shipped = Number(item?.shippedQuantity ?? ordered);
+            const status = this.itemDisplayStatus(item);
+
+            if (!['Teillieferung', 'Trennung Auftragsposition'].includes(status) || ordered <= 0) {
+                return '';
+            }
+
+            return `${shipped}/${ordered} Stück`;
         },
 
         statusClass(order) {

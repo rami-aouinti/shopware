@@ -143,6 +143,79 @@ class TopmSan6ClientTest extends TestCase
     }
 
 
+
+    public function testFetchOrdersMapsSan6QuantityVariantsForCompletePartialAndMultiParcel(): void
+    {
+        $xml = <<<'XML'
+<response>
+  <orders>
+    <order>
+      <Auftragsnummer>A-COMPLETE-XML</Auftragsnummer>
+      <Positionen>
+        <Position>
+          <Artikelnummer>COMPLETE.01</Artikelnummer>
+          <MengeBestellt>2</MengeBestellt>
+          <MengeGeliefert>2</MengeGeliefert>
+          <Preis>10.00</Preis>
+        </Position>
+      </Positionen>
+    </order>
+    <order>
+      <Auftragsnummer>A-PARTIAL-XML</Auftragsnummer>
+      <Positionen>
+        <Position>
+          <Artikelnummer>PARTIAL.01</Artikelnummer>
+          <Bestellmenge>5</Bestellmenge>
+          <GelieferteMenge>3</GelieferteMenge>
+          <Preis>10.00</Preis>
+        </Position>
+      </Positionen>
+    </order>
+    <order>
+      <Auftragsnummer>A-MULTI-XML</Auftragsnummer>
+      <Positionen>
+        <Position>
+          <Referenz>SPLIT 100 1</Referenz>
+          <Bestellmenge>4</Bestellmenge>
+          <Versandmenge>1</Versandmenge>
+          <Preis>10.00</Preis>
+        </Position>
+        <Position>
+          <Referenz>SPLIT 100 1</Referenz>
+          <Bestellmenge>4</Bestellmenge>
+          <Versandmenge>3</Versandmenge>
+          <Preis>10.00</Preis>
+        </Position>
+      </Positionen>
+    </order>
+  </orders>
+</response>
+XML;
+
+        $response = $this->createMock(ResponseInterface::class);
+        $response->expects($this->once())
+            ->method('getContent')
+            ->with(false)
+            ->willReturn($xml);
+
+        $httpClient = $this->createMock(HttpClientInterface::class);
+        $httpClient->expects($this->once())
+            ->method('request')
+            ->willReturn($response);
+
+        $client = new TopmSan6Client($httpClient, new TopmInMemoryLogger(), new TopmSan6OrderMapper());
+
+        $result = $client->fetchOrders('https://example.test/api?ssid=abc&company=fms&product=sw&mandant=1&sys=live', 'secret', 0);
+
+        static::assertSame(2, $result['orders'][0]['detail']['items'][0]['orderedQuantity']);
+        static::assertSame(2, $result['orders'][0]['detail']['items'][0]['shippedQuantity']);
+        static::assertSame(5, $result['orders'][1]['detail']['items'][0]['orderedQuantity']);
+        static::assertSame(3, $result['orders'][1]['detail']['items'][0]['shippedQuantity']);
+        static::assertCount(2, $result['orders'][2]['detail']['items']);
+        static::assertSame(1, $result['orders'][2]['detail']['items'][0]['shippedQuantity']);
+        static::assertSame(3, $result['orders'][2]['detail']['items'][1]['shippedQuantity']);
+    }
+
     public function testSendByFileTransferUrlUsesLowercaseTopmQueryParam(): void
     {
         $response = $this->createMock(ResponseInterface::class);
