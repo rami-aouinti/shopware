@@ -1,7 +1,7 @@
 # Integrationsvertrag — LieferzeitenAdmin
 
-Version: `1.0.0`  
-Letzte Aktualisierung: `2026-02-10`
+Version: `1.1.0`  
+Letzte Aktualisierung: `2026-02-14`
 
 ## 1) Ein-/Ausgabe-Verträge der APIs
 
@@ -18,6 +18,9 @@ Letzte Aktualisierung: `2026-02-10`
 - `status`
 - `orderDate`
 - `sourceSystem`
+- `customerFirstName` (optional)
+- `customerLastName` (optional)
+- `customerAdditionalName` (optional)
 
 ### Beispiel-Payload (anonymisiert)
 ```json
@@ -27,6 +30,9 @@ Letzte Aktualisierung: `2026-02-10`
   "status": "5",
   "date": "2026-02-08T09:12:00+00:00",
   "customerEmail": "kunde@example.com",
+  "customerFirstName": "Max",
+  "customerLastName": "Mustermann",
+  "customerAdditionalName": "c/o Praxis Nord",
   "paymentMethod": "prepayment"
 }
 ```
@@ -44,6 +50,9 @@ Letzte Aktualisierung: `2026-02-10`
 - `status`
 - `orderDate`
 - `sourceSystem`
+- `customerFirstName` (optional)
+- `customerLastName` (optional)
+- `customerAdditionalName` (optional)
 
 ### Beispiel-Payload (anonymisiert)
 ```json
@@ -53,6 +62,9 @@ Letzte Aktualisierung: `2026-02-10`
   "status": "processing",
   "orderDate": "2026-02-08T07:15:22+00:00",
   "customerEmail": "shopper@example.org",
+  "customerFirstName": "Erika",
+  "customerLastName": "Musterfrau",
+  "customerAdditionalName": "Station 3",
   "shippingDate": null
 }
 ```
@@ -68,6 +80,7 @@ Letzte Aktualisierung: `2026-02-10`
 - `deliveryDate`
 - `parcels`
 - `sourceSystem` (optional; hat Priorität, wenn vorhanden)
+- `customerFirstName` / `customerLastName` / `customerAdditionalName` (aus `customer.*`, optional)
 
 ### Beispiel-Payload (anonymisiert)
 ```json
@@ -77,7 +90,10 @@ Letzte Aktualisierung: `2026-02-10`
   "deliveryDate": "2026-02-11",
   "sourceSystem": "san6",
   "customer": {
-    "email": "kunde@example.com"
+    "email": "kunde@example.com",
+    "firstName": "Max",
+    "lastName": "Mustermann",
+    "additionalName": "c/o Praxis Nord"
   },
   "payment": {
     "method": "prepayment"
@@ -136,6 +152,7 @@ Aktuelle Anwendung:
 - `externalOrderId` **oder** `externalId` **oder** `orderNumber`
 - `paketNumber` **oder** `packageNumber` **oder** `orderNumber`
 - `sourceSystem`
+- optional: `customerFirstName`, `customerLastName`, `customerAdditionalName`
 
 ### 4.2 Datensatz `position`
 - `positionNumber` **oder** `orderNumber` **oder** `externalId`

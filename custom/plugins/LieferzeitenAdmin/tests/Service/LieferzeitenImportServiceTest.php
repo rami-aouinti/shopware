@@ -341,6 +341,26 @@ class LieferzeitenImportServiceTest extends TestCase
         static::assertFalse($method->invoke($service, ['san6Ready' => false], ['status' => 'in_progress']));
     }
 
+
+    public function testExtractCustomerNamePartResolvesAliasesFromChannels(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'extractCustomerNamePart');
+        $method->setAccessible(true);
+
+        static::assertSame('Max', $method->invoke($service, [
+            'orderCustomer' => ['firstName' => 'Max'],
+        ], 'firstName'));
+
+        static::assertSame('Mustermann', $method->invoke($service, [
+            'customer' => ['lastName' => 'Mustermann'],
+        ], 'lastName'));
+
+        static::assertSame('Station 3', $method->invoke($service, [
+            'billingAddress' => ['additionalAddressLine1' => 'Station 3'],
+        ], 'additionalName'));
+    }
+
     public function testExtractTrackingNumbersFiltersPlaceholdersAndNormalizesVariants(): void
     {
         $service = $this->createService();

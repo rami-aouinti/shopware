@@ -142,11 +142,13 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     };
                 });
 
+                const commentTargetPositionId = this.resolveCommentTargetPositionId(positions);
+
                 this.$set(this.editableOrders, order.id, {
                     ...order,
                     san6OrderNumberDisplay: this.resolveSan6OrderNumber(order),
-                    san6PositionDisplay: this.resolveSan6Position(positions),
-                    quantityDisplay: this.resolveQuantity(positions),
+                    san6PositionDisplay: this.resolveSan6Position(order, positions),
+                    quantityDisplay: this.resolveQuantity(order, positions),
                     orderDateDisplay: this.resolveOrderDate(order),
                     paymentMethodDisplay: this.resolvePaymentMethod(order),
                     paymentDateDisplay: this.resolvePaymentDate(order),
@@ -162,6 +164,8 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     neuerLieferterminRange: newRange,
                     originalLieferterminLieferantRange: { ...supplierRange },
                     originalNeuerLieferterminRange: { ...newRange },
+                    comment: this.resolveInitialComment(order),
+                    commentTargetPositionId,
                     additionalDeliveryRequest: order.additionalDeliveryRequest || null,
                     latestShippingDeadline: this.resolveDeadlineValue(order, ['spaetester_versand', 'spaetesterVersand', 'latestShippingDeadline']),
                     latestDeliveryDeadline: this.resolveDeadlineValue(order, ['spaeteste_lieferung', 'spaetesteLieferung', 'latestDeliveryDeadline']),
@@ -170,6 +174,43 @@ Shopware.Component.register('lieferzeiten-order-table', {
             }
 
             return this.editableOrders[order.id];
+        },
+
+        resolveInitialComment(order) {
+            const rawComment = this.pickFirstDefined(order, ['currentComment', 'comment']);
+
+            if (rawComment === null || rawComment === undefined) {
+                return '';
+            }
+
+            return String(rawComment);
+        },
+
+        isOpenPosition(position) {
+            const normalized = String(position?.status || '').trim().toLowerCase();
+
+            if (position?.closed === true) {
+                return false;
+            }
+
+            return !['closed', 'done', 'completed', 'shipped', 'delivered', '8'].includes(normalized);
+        },
+
+        resolveCommentTargetPositionId(positions) {
+            if (!Array.isArray(positions) || positions.length === 0) {
+                return null;
+            }
+
+            const firstOpenPosition = positions.find((position) => this.isOpenPosition(position) && position?.id);
+            if (firstOpenPosition?.id) {
+                return firstOpenPosition.id;
+            }
+
+            return positions.find((position) => !!position?.id)?.id || null;
+        },
+
+        canSaveComment(order) {
+            return this.hasEditAccess() && !!order?.commentTargetPositionId;
         },
 
 
@@ -338,7 +379,11 @@ Shopware.Component.register('lieferzeiten-order-table', {
             return this.pickFirstDefined(order, ['san6OrderNumber', 'san6', 'paketNumber', 'paket_number']);
         },
 
-        resolveSan6Position(positions) {
+        resolveSan6Position(order, positions) {
+            if (!positions.length) {
+                return this.displayOrDash(this.pickFirstDefined(order, ['san6Position', 'san6Pos']));
+            }
+
             const values = positions
                 .map((position) => this.pickFirstDefined(position, ['positionNumber', 'number', 'position_number']))
                 .filter((value) => value !== null && value !== undefined && String(value).trim() !== '');
@@ -346,7 +391,11 @@ Shopware.Component.register('lieferzeiten-order-table', {
             return values.length ? values.join(', ') : '-';
         },
 
-        resolveQuantity(positions) {
+        resolveQuantity(order, positions) {
+            if (!positions.length) {
+                return this.displayOrDash(this.pickFirstDefined(order, ['quantity']));
+            }
+
             const total = positions.reduce((acc, position) => {
                 const raw = this.pickFirstDefined(position, ['quantity', 'orderedQuantity', 'menge']);
                 const numeric = Number(raw);
@@ -369,6 +418,18 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         resolveCustomerNames(order) {
+            const nameParts = [
+                this.pickFirstDefined(order, ['customerFirstName', 'customer_first_name']),
+                this.pickFirstDefined(order, ['customerAdditionalName', 'customer_additional_name']),
+                this.pickFirstDefined(order, ['customerLastName', 'customer_last_name']),
+            ]
+                .map((value) => (value === null || value === undefined ? '' : String(value).trim()))
+                .filter((value) => value !== '');
+
+            if (nameParts.length > 0) {
+                return nameParts.join(' ');
+            }
+
             return this.pickFirstDefined(order, ['customerNames', 'customerEmail', 'customer_email']) || '-';
         },
 
@@ -971,7 +1032,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         async saveComment(order) {
-            if (!this.hasEditAccess()) {
+            if (!this.canSaveComment(order)) {
                 return;
             }
 

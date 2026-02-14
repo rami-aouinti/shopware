@@ -7,6 +7,7 @@ use Doctrine\DBAL\DriverManager;
 use LieferzeitenAdmin\Service\LieferzeitenPositionWriteService;
 use LieferzeitenAdmin\Service\LieferzeitenTaskService;
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver;
 use LieferzeitenAdmin\Service\WriteEndpointConflictException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -79,8 +80,10 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
             $this->createMock(EntityRepository::class),
             $this->createMock(EntityRepository::class),
             $this->createMock(EntityRepository::class),
+            $this->createMock(EntityRepository::class),
             $this->createMock(LieferzeitenTaskService::class),
             $this->createMock(NotificationEventService::class),
+            $this->createMock(TaskAssignmentRuleResolver::class),
         );
 
         $contextUserA = Context::createDefaultContext();

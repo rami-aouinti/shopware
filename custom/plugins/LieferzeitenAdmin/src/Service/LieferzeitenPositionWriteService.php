@@ -22,6 +22,7 @@ class LieferzeitenPositionWriteService
         private readonly Connection $connection,
         private readonly EntityRepository $lieferterminLieferantHistoryRepository,
         private readonly EntityRepository $neuerLieferterminHistoryRepository,
+        private readonly EntityRepository $neuerLieferterminPaketHistoryRepository,
         private readonly EntityRepository $userRepository,
         private readonly LieferzeitenTaskService $taskService,
         private readonly NotificationEventService $notificationEventService,
