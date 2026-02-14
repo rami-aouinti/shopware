@@ -25,17 +25,23 @@ Shopware.Component.register('lieferzeiten-index', {
             selectedDomain: null,
             orders: [],
             isLoading: false,
+            isStatisticsLoading: false,
             loadError: null,
+            statisticsMetrics: {
+                openOrders: 0,
+                overdueShipping: 0,
+                overdueDelivery: 0,
+            },
         };
     },
 
     created() {
-        this.loadOrders();
+        this.reloadData();
     },
 
     watch: {
         selectedDomain() {
-            this.loadOrders();
+            this.reloadData();
         },
     },
 
@@ -69,6 +75,14 @@ Shopware.Component.register('lieferzeiten-index', {
                 .map((source) => source.toLowerCase())
                 .includes(normalizedOrderDomain)) || null;
         },
+
+        async reloadData() {
+            await Promise.all([
+                this.loadOrders(),
+                this.loadStatistics(),
+            ]);
+        },
+
         async loadOrders() {
             this.isLoading = true;
             this.loadError = null;
@@ -87,6 +101,32 @@ Shopware.Component.register('lieferzeiten-index', {
                 this.loadError = error;
             } finally {
                 this.isLoading = false;
+            }
+        },
+
+        async loadStatistics() {
+            this.isStatisticsLoading = true;
+
+            try {
+                const payload = await this.lieferzeitenOrdersService.getStatistics({
+                    period: 30,
+                    domain: normalizeDomainKey(this.selectedDomain),
+                    channel: 'all',
+                });
+
+                this.statisticsMetrics = {
+                    openOrders: payload?.metrics?.openOrders ?? 0,
+                    overdueShipping: payload?.metrics?.overdueShipping ?? 0,
+                    overdueDelivery: payload?.metrics?.overdueDelivery ?? 0,
+                };
+            } catch (error) {
+                this.statisticsMetrics = {
+                    openOrders: 0,
+                    overdueShipping: 0,
+                    overdueDelivery: 0,
+                };
+            } finally {
+                this.isStatisticsLoading = false;
             }
         },
     },

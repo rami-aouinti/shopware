@@ -44,10 +44,13 @@ readonly class LieferzeitenStatisticsService
             'SELECT
                 SUM(CASE WHEN COALESCE(pos_stats.open_positions, 0) > 0 THEN 1 ELSE 0 END) AS open_orders,
                 SUM(CASE WHEN COALESCE(pos_stats.open_positions, 0) > 0 AND p.shipping_date IS NOT NULL AND p.shipping_date < :now THEN 1 ELSE 0 END) AS overdue_shipping,
-                SUM(CASE WHEN COALESCE(pos_stats.open_positions, 0) > 0 AND p.delivery_date IS NOT NULL AND p.delivery_date < :now THEN 1 ELSE 0 END) AS overdue_delivery
+                SUM(CASE WHEN COALESCE(pos_stats.open_positions, 0) = 0 AND COALESCE(pos_stats.closed_positions, 0) > 0 AND p.delivery_date IS NOT NULL AND p.delivery_date < :now THEN 1 ELSE 0 END) AS overdue_delivery
             FROM `lieferzeiten_paket` p
             LEFT JOIN (
-                SELECT paket_id, SUM(CASE WHEN LOWER(COALESCE(status, "")) IN ("done", "closed", "completed") THEN 0 ELSE 1 END) AS open_positions
+                SELECT
+                    paket_id,
+                    SUM(CASE WHEN LOWER(COALESCE(status, "")) IN ("done", "closed", "completed") THEN 0 ELSE 1 END) AS open_positions,
+                    SUM(CASE WHEN LOWER(COALESCE(status, "")) IN ("done", "closed", "completed") THEN 1 ELSE 0 END) AS closed_positions
                 FROM `lieferzeiten_position`
                 GROUP BY paket_id
             ) pos_stats ON pos_stats.paket_id = p.id
@@ -203,7 +206,6 @@ readonly class LieferzeitenStatisticsService
                 'openOrders' => (int) ($metrics['open_orders'] ?? 0),
                 'overdueShipping' => (int) ($metrics['overdue_shipping'] ?? 0),
                 'overdueDelivery' => (int) ($metrics['overdue_delivery'] ?? 0),
-                'activities' => array_sum(array_map(static fn (array $row): int => (int) ($row['count'] ?? 0), $timeline)),
             ],
             'channels' => array_map(static fn (array $row): array => [
                 'channel' => (string) ($row['channel'] ?? 'Unknown'),
