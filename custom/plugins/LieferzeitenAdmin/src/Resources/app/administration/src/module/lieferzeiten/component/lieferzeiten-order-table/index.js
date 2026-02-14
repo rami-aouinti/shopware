@@ -200,6 +200,53 @@ Shopware.Component.register('lieferzeiten-order-table', {
             return `${openParcels}/${order.parcels.length}`;
         },
 
+        displayOrDash(value) {
+            if (value === null || value === undefined) {
+                return '-';
+            }
+
+            const normalized = String(value).trim();
+            return normalized === '' ? '-' : normalized;
+        },
+
+        resolveSan6OrderNumber(order) {
+            return this.pickFirstDefined(order, ['san6OrderNumber', 'san6', 'paketNumber', 'paket_number']);
+        },
+
+        resolveSan6Position(positions) {
+            const values = positions
+                .map((position) => this.pickFirstDefined(position, ['positionNumber', 'number', 'position_number']))
+                .filter((value) => value !== null && value !== undefined && String(value).trim() !== '');
+
+            return values.length ? values.join(', ') : '-';
+        },
+
+        resolveQuantity(positions) {
+            const total = positions.reduce((acc, position) => {
+                const raw = this.pickFirstDefined(position, ['quantity', 'orderedQuantity', 'menge']);
+                const numeric = Number(raw);
+                return Number.isFinite(numeric) ? acc + numeric : acc;
+            }, 0);
+
+            return total > 0 ? String(total) : '-';
+        },
+
+        resolveOrderDate(order) {
+            return this.formatDate(this.pickFirstDefined(order, ['orderDate', 'bestelldatum', 'createdAt']));
+        },
+
+        resolvePaymentMethod(order) {
+            return this.pickFirstDefined(order, ['paymentMethod', 'zahlart', 'payment_method']) || '-';
+        },
+
+        resolvePaymentDate(order) {
+            return this.formatDate(this.pickFirstDefined(order, ['paymentDate', 'payment_date']));
+        },
+
+        resolveCustomerNames(order) {
+            return this.pickFirstDefined(order, ['customerNames', 'customerEmail', 'customer_email']) || '-';
+        },
+
         resolveDeadlineValue(order, keys) {
             const value = keys.map((key) => order[key]).find((candidate) => candidate);
 

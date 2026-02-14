@@ -24,6 +24,7 @@ readonly class LieferzeitenOrderOverviewService
     private const FILTERABLE_FIELDS = [
         'bestellnummer',
         'san6',
+        'san6Pos',
         'orderDateFrom',
         'orderDateTo',
         'shippingDateFrom',
@@ -33,6 +34,8 @@ readonly class LieferzeitenOrderOverviewService
         'user',
         'sendenummer',
         'status',
+        'positionStatus',
+        'paymentMethod',
         'shippingAssignmentType',
         'businessDateFrom',
         'businessDateTo',
@@ -138,19 +141,43 @@ readonly class LieferzeitenOrderOverviewService
             'SELECT
                 LOWER(HEX(p.id)) AS id,
                 p.external_order_id AS bestellnummer,
+                p.external_order_id AS orderNumber,
                 p.paket_number AS san6,
+                p.paket_number AS san6OrderNumber,
+                GROUP_CONCAT(DISTINCT pos.position_number ORDER BY pos.position_number SEPARATOR ", ") AS san6Pos,
+                GROUP_CONCAT(DISTINCT pos.position_number ORDER BY pos.position_number SEPARATOR ", ") AS san6Position,
+                COUNT(DISTINCT pos.id) AS positionsCount,
+                p.partial_shipment_quantity AS quantity,
                 p.order_date AS bestelldatum,
+                p.order_date AS orderDate,
                 p.shipping_date AS spaetester_versand,
+                p.shipping_date AS latestShippingDate,
                 p.delivery_date AS spaeteste_lieferung,
+                p.delivery_date AS latestDeliveryDate,
+                p.payment_method AS paymentMethod,
+                p.payment_date AS paymentDate,
+                p.business_date_from AS businessDateFrom,
+                p.business_date_to AS businessDateTo,
+                p.calculated_delivery_date AS calculatedDeliveryDate,
                 p.last_changed_by AS user,
+                p.last_changed_by AS changedBy,
+                p.last_changed_at AS changedAt,
                 p.status AS status,
+                GROUP_CONCAT(DISTINCT pos.status ORDER BY pos.status SEPARATOR ", ") AS positionStatus,
                 p.shipping_assignment_type AS shipping_assignment_type,
+                p.shipping_assignment_type AS shippingAssignmentType,
                 p.source_system AS sourceSystem,
-                MAX(sh.sendenummer) AS sendenummer
+                p.source_system AS domain,
+                GROUP_CONCAT(DISTINCT sh.sendenummer ORDER BY sh.sendenummer SEPARATOR ", ") AS sendenummer,
+                GROUP_CONCAT(DISTINCT sh.sendenummer ORDER BY sh.sendenummer SEPARATOR ", ") AS trackingSummary,
+                MAX(llh.liefertermin_to) AS lieferterminLieferantTo,
+                MIN(llh.liefertermin_from) AS lieferterminLieferantFrom,
+                MAX(nlh.liefertermin_to) AS neuerLieferterminTo,
+                MIN(nlh.liefertermin_from) AS neuerLieferterminFrom
              FROM `lieferzeiten_paket` p
              %s
              %s
-             GROUP BY p.id, p.external_order_id, p.paket_number, p.order_date, p.shipping_date, p.delivery_date, p.last_changed_by, p.status, p.shipping_assignment_type, p.source_system
+             GROUP BY p.id, p.external_order_id, p.paket_number, p.partial_shipment_quantity, p.order_date, p.shipping_date, p.delivery_date, p.payment_method, p.payment_date, p.business_date_from, p.business_date_to, p.calculated_delivery_date, p.last_changed_by, p.last_changed_at, p.status, p.shipping_assignment_type, p.source_system
              ORDER BY %s
              LIMIT :limit OFFSET :offset',
             $joinSql,
@@ -170,7 +197,7 @@ readonly class LieferzeitenOrderOverviewService
             'page' => $page,
             'limit' => $limit,
             'filterableFields' => self::FILTERABLE_FIELDS,
-            'nonFilterableFields' => ['san6Pos', 'comment'],
+            'nonFilterableFields' => ['comment'],
             'sortingFields' => array_keys(self::SORTABLE_FIELDS),
             'data' => $rows,
         ];
@@ -226,6 +253,11 @@ readonly class LieferzeitenOrderOverviewService
             $params['status'] = '%' . $value . '%';
         }
 
+        if (($value = trim((string) ($filters['paymentMethod'] ?? ''))) !== '') {
+            $conditions[] = 'p.payment_method LIKE :paymentMethod';
+            $params['paymentMethod'] = '%' . $value . '%';
+        }
+
         if (($value = trim((string) ($filters['shippingAssignmentType'] ?? ''))) !== '') {
             $conditions[] = 'p.shipping_assignment_type = :shippingAssignmentType';
             $params['shippingAssignmentType'] = $value;
@@ -237,14 +269,24 @@ readonly class LieferzeitenOrderOverviewService
             $params['sourceSystems'] = $domainSources;
         }
 
+        $joins[] = 'LEFT JOIN `lieferzeiten_position` pos ON pos.paket_id = p.id';
+        $joins[] = 'LEFT JOIN `lieferzeiten_sendenummer_history` sh ON sh.position_id = pos.id';
+        $joins[] = 'LEFT JOIN `lieferzeiten_liefertermin_lieferant_history` llh ON llh.position_id = pos.id';
+        $joins[] = 'LEFT JOIN `lieferzeiten_neuer_liefertermin_history` nlh ON nlh.position_id = pos.id';
+
         if (($value = trim((string) ($filters['sendenummer'] ?? ''))) !== '') {
-            $joins[] = 'LEFT JOIN `lieferzeiten_position` pos ON pos.paket_id = p.id';
-            $joins[] = 'LEFT JOIN `lieferzeiten_sendenummer_history` sh ON sh.position_id = pos.id';
             $conditions[] = 'sh.sendenummer LIKE :sendenummer';
             $params['sendenummer'] = '%' . $value . '%';
-        } else {
-            $joins[] = 'LEFT JOIN `lieferzeiten_position` pos ON pos.paket_id = p.id';
-            $joins[] = 'LEFT JOIN `lieferzeiten_sendenummer_history` sh ON sh.position_id = pos.id';
+        }
+
+        if (($value = trim((string) ($filters['san6Pos'] ?? ''))) !== '') {
+            $conditions[] = 'pos.position_number LIKE :san6Pos';
+            $params['san6Pos'] = '%' . $value . '%';
+        }
+
+        if (($value = trim((string) ($filters['positionStatus'] ?? ''))) !== '') {
+            $conditions[] = 'pos.status LIKE :positionStatus';
+            $params['positionStatus'] = '%' . $value . '%';
         }
 
         $this->addDateRangeCondition($conditions, $params, 'p.order_date', 'orderDateFrom', 'orderDateTo', $filters);
@@ -446,6 +488,12 @@ readonly class LieferzeitenOrderOverviewService
             'code' => $statusCodeString,
             'label' => $statusLabel,
         ];
+
+        $row['positionsCount'] = (int) ($row['positionsCount'] ?? 0);
+
+        if (($row['quantity'] ?? null) === null || trim((string) $row['quantity']) === '') {
+            $row['quantity'] = (string) $row['positionsCount'];
+        }
 
         return $row;
     }

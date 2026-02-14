@@ -19,6 +19,7 @@
                     <th>{{ $t('lieferzeiten.table.domain') }}</th>
                     <th>{{ $t('lieferzeiten.table.positions') }}</th>
                     <th>{{ $t('lieferzeiten.table.parcels') }}</th>
+                    <th>Tracking</th>
                     <th>{{ $t('lieferzeiten.fields.supplierDate') }}</th>
                     <th>{{ $t('lieferzeiten.fields.supplierWeek') }}</th>
                     <th>{{ $t('lieferzeiten.fields.newDate') }}</th>
@@ -56,6 +57,7 @@
                         <td>{{ displayOrDash(order.domain) }}</td>
                         <td>{{ displayOrDash(order.positionsCountDisplay) }}</td>
                         <td>{{ parcelSummary(order) }}</td>
+                        <td>{{ displayOrDash(order.trackingSummary) }}</td>
                         <td>-</td>
                         <td>-</td>
                         <td>-</td>
@@ -90,7 +92,7 @@
                         <td>{{ order.audit || '-' }}</td>
                     </tr>
                     <tr v-if="isExpanded(order.id)" :key="`${order.id}-positions`">
-                        <td colspan="24">
+                        <td colspan="25">
                             <table class="sw-data-grid__table">
                                 <thead>
                                     <tr>

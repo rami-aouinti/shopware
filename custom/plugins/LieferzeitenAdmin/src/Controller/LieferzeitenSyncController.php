@@ -147,6 +147,7 @@ class LieferzeitenSyncController extends AbstractController
             [
                 'bestellnummer' => $request->query->get('bestellnummer'),
                 'san6' => $request->query->get('san6'),
+                'san6Pos' => $request->query->get('san6Pos'),
                 'orderDateFrom' => $request->query->get('orderDateFrom'),
                 'orderDateTo' => $request->query->get('orderDateTo'),
                 'shippingDateFrom' => $request->query->get('shippingDateFrom'),
@@ -156,6 +157,8 @@ class LieferzeitenSyncController extends AbstractController
                 'user' => $request->query->get('user'),
                 'sendenummer' => $request->query->get('sendenummer'),
                 'status' => $request->query->get('status'),
+                'positionStatus' => $request->query->get('positionStatus'),
+                'paymentMethod' => $request->query->get('paymentMethod'),
                 'shippingAssignmentType' => $request->query->get('shippingAssignmentType'),
                 'businessDateFrom' => $request->query->get('businessDateFrom'),
                 'businessDateTo' => $request->query->get('businessDateTo'),
