@@ -232,8 +232,13 @@ Component.register('lieferzeiten-channel-settings-list', {
         },
 
         onChangeNumberField(channelId, pdmsKey, fieldName, rawValue) {
+            this.ensureChannelMatrix(channelId);
             this.matrixValues[channelId][pdmsKey][fieldName] = this.normalizeNonNegativeInteger(rawValue);
             this.validateValue(channelId, pdmsKey, fieldName);
+        },
+
+        getMatrixValue(channelId, pdmsKey, fieldName) {
+            return this.matrixValues[channelId]?.[pdmsKey]?.[fieldName] ?? 0;
         },
 
         getFieldError(channelId, pdmsKey, fieldName) {
@@ -312,6 +317,8 @@ Component.register('lieferzeiten-channel-settings-list', {
 
             try {
                 for (const channel of this.channels) {
+                    this.ensureChannelMatrix(channel.id);
+
                     for (const { key } of this.getChannelPdmsLieferzeiten(channel.id)) {
                         const entity = this.thresholdRepository.create(Shopware.Context.api);
                         entity.id = this.existingEntryIds[this.getEntryKey(channel.id, key)] || entity.id;
