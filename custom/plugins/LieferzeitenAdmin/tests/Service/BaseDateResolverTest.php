@@ -52,6 +52,22 @@ class BaseDateResolverTest extends TestCase
         static::assertSame('2026-02-04 08:00:00', $result['baseDate']?->format('Y-m-d H:i:s'));
     }
 
+
+    public function testResolveTreatsEmptyPaymentDateAsMissingForPrepayment(): void
+    {
+        $resolver = new BaseDateResolver();
+
+        $result = $resolver->resolve([
+            'paymentMethod' => 'Vorkasse',
+            'orderDate' => '2026-02-07 12:00:00',
+            'paymentDate' => ' ',
+        ]);
+
+        static::assertSame('order_date_fallback', $result['baseDateType']);
+        static::assertTrue($result['missingPaymentDate']);
+        static::assertSame('2026-02-07 12:00:00', $result['baseDate']?->format('Y-m-d H:i:s'));
+    }
+
     public function testResolveReturnsNullWhenDatesAreInvalid(): void
     {
         $resolver = new BaseDateResolver();
