@@ -452,11 +452,17 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         resolveCustomerNames(order) {
-            const nameParts = [
-                this.pickFirstDefined(order, ['customerFirstName']),
-                this.pickFirstDefined(order, ['customerAdditionalName']),
-                this.pickFirstDefined(order, ['customerLastName']),
-            ]
+            const primaryParts = [
+                this.pickFirstDefined(order, ['customerFirstName', 'customer_first_name']),
+                this.pickFirstDefined(order, ['customerLastName', 'customer_last_name']),
+            ];
+
+            const additionalParts = [
+                this.pickFirstDefined(order, ['customerAdditionalName', 'customer_additional_name']),
+                this.pickFirstDefined(order, ['customerNames', 'customer_names']),
+            ];
+
+            const nameParts = [...primaryParts, ...additionalParts]
                 .map((value) => (value === null || value === undefined ? '' : String(value).trim()))
                 .filter((value) => value !== '');
 
@@ -464,7 +470,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 return nameParts.join(' ');
             }
 
-            return this.pickFirstDefined(order, ['customerNames']) || '-';
+            return this.pickFirstDefined(order, ['customerEmail', 'customer_email']) || '-';
         },
 
         resolveDeadlineValue(order, keys) {

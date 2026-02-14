@@ -13,6 +13,12 @@ class ShopwareOrderAdapter implements ChannelOrderAdapterInterface
     {
         $payload['sourceSystem'] = 'shopware';
         $payload['customerEmail'] = $payload['customerEmail'] ?? ($payload['orderCustomer']['email'] ?? null);
+        $payload['customerFirstName'] = $payload['customerFirstName']
+            ?? ($payload['orderCustomer']['firstName'] ?? $payload['billingAddress']['firstName'] ?? null);
+        $payload['customerLastName'] = $payload['customerLastName']
+            ?? ($payload['orderCustomer']['lastName'] ?? $payload['billingAddress']['lastName'] ?? null);
+        $payload['customerAdditionalName'] = $payload['customerAdditionalName']
+            ?? ($payload['orderCustomer']['additionalName'] ?? $payload['billingAddress']['additionalAddressLine1'] ?? null);
         $payload['paymentMethod'] = $payload['paymentMethod'] ?? ($payload['transactions'][0]['paymentMethod']['name'] ?? null);
         $payload['paymentDate'] = $payload['paymentDate']
             ?? ($payload['transactions'][0]['createdAt'] ?? null);

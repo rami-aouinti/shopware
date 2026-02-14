@@ -36,6 +36,14 @@ class San6MatchingService
 
         $normalizedParcels = $this->normalizeParcels($san6, $order);
 
+
+        $order['customerFirstName'] = $order['customerFirstName']
+            ?? ($san6['customer']['firstName'] ?? $san6['customer']['firstname'] ?? null);
+        $order['customerLastName'] = $order['customerLastName']
+            ?? ($san6['customer']['lastName'] ?? $san6['customer']['lastname'] ?? null);
+        $order['customerAdditionalName'] = $order['customerAdditionalName']
+            ?? ($san6['customer']['additionalName'] ?? $san6['customer']['company'] ?? null);
+
         $order['shippingDate'] = $san6['shippingDate'] ?? ($order['shippingDate'] ?? null);
         $order['deliveryDate'] = $san6['deliveryDate'] ?? ($order['deliveryDate'] ?? null);
         $order['parcels'] = $normalizedParcels;

@@ -13,6 +13,12 @@ class GambioOrderAdapter implements ChannelOrderAdapterInterface
     {
         $payload['sourceSystem'] = 'gambio';
         $payload['customerEmail'] = $payload['customerEmail'] ?? ($payload['customer']['email'] ?? null);
+        $payload['customerFirstName'] = $payload['customerFirstName']
+            ?? ($payload['customer']['firstName'] ?? $payload['customer']['firstname'] ?? $payload['billingAddress']['firstName'] ?? null);
+        $payload['customerLastName'] = $payload['customerLastName']
+            ?? ($payload['customer']['lastName'] ?? $payload['customer']['lastname'] ?? $payload['billingAddress']['lastName'] ?? null);
+        $payload['customerAdditionalName'] = $payload['customerAdditionalName']
+            ?? ($payload['customer']['additionalName'] ?? $payload['customer']['company'] ?? $payload['billingAddress']['additionalAddressLine1'] ?? null);
         $payload['paymentMethod'] = $payload['paymentMethod'] ?? ($payload['payment']['title'] ?? null);
         $payload['paymentDate'] = $payload['paymentDate'] ?? ($payload['payment']['date'] ?? null);
 
