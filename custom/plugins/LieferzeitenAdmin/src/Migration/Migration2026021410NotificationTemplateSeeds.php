@@ -26,6 +26,16 @@ class Migration2026021410NotificationTemplateSeeds extends MigrationStep
                 'contentHtml' => '<p>La commande <strong>{{ externalOrderId }}</strong> est terminée.</p><p>Vous pouvez demander un avis client.</p>',
                 'contentPlain' => "La commande {{ externalOrderId }} est terminée.\nVous pouvez demander un avis client.",
             ],
+            NotificationTriggerCatalog::DELIVERY_DATE_ASSIGNED => [
+                'subject' => '[{{ sourceSystem }}] Date de livraison attribuée - {{ externalOrderId }}',
+                'contentHtml' => '<p>Une date de livraison a été attribuée pour la commande <strong>{{ externalOrderId }}</strong>.</p><p>Date: {{ deliveryDate }}</p>',
+                'contentPlain' => "Une date de livraison a été attribuée pour la commande {{ externalOrderId }}.\nDate: {{ deliveryDate }}",
+            ],
+            NotificationTriggerCatalog::DELIVERY_DATE_UPDATED => [
+                'subject' => '[{{ sourceSystem }}] Date de livraison modifiée - {{ externalOrderId }}',
+                'contentHtml' => '<p>La date de livraison a été modifiée pour la commande <strong>{{ externalOrderId }}</strong>.</p><p>Ancienne date: {{ previousDeliveryDate }}</p><p>Nouvelle date: {{ deliveryDate }}</p>',
+                'contentPlain' => "La date de livraison a été modifiée pour la commande {{ externalOrderId }}.\nAncienne date: {{ previousDeliveryDate }}\nNouvelle date: {{ deliveryDate }}",
+            ],
             NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED => [
                 'subject' => '[{{ sourceSystem }}] Demande de date de livraison supplémentaire - {{ externalOrderId }}',
                 'contentHtml' => '<p>Une demande de date supplémentaire a été créée pour la commande <strong>{{ externalOrderId }}</strong>.</p><p>Initiateur: {{ initiator }}</p>',

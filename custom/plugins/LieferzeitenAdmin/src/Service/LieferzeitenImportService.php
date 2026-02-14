@@ -779,6 +779,13 @@ class LieferzeitenImportService
      */
     private function emitNotificationEvents(string $externalOrderId, string $sourceSystem, array $payload, array $trackingNumbers, ?PaketEntity $existingPaket, ?int $existingStatus, int $mappedStatus, Context $context): void
     {
+        $existingDeliveryDate = $this->normalizeComparableDate($existingPaket?->getDeliveryDate());
+        $existingCalculatedDeliveryDate = $this->normalizeComparableDate($existingPaket?->getCalculatedDeliveryDate());
+        $incomingDeliveryDate = $this->parseDate($payload['deliveryDate'] ?? null);
+        $incomingCalculatedDeliveryDate = $this->parseDate($payload['calculatedDeliveryDate'] ?? null);
+        $hasIncomingDeliveryDate = $incomingDeliveryDate !== null || $incomingCalculatedDeliveryDate !== null;
+        $hasExistingDeliveryDate = $existingDeliveryDate !== null || $existingCalculatedDeliveryDate !== null;
+
         foreach (NotificationTriggerCatalog::channels() as $channel) {
             $this->notificationEventService->dispatch(
                 sprintf('order-created:%s:%s', $externalOrderId, $channel),
@@ -833,7 +840,7 @@ class LieferzeitenImportService
                 );
             }
 
-            if (($payload['deliveryDate'] ?? null) !== null || ($payload['calculatedDeliveryDate'] ?? null) !== null) {
+            if ($hasIncomingDeliveryDate) {
                 $this->notificationEventService->dispatch(
                     sprintf('delivery-change:%s:%s', $externalOrderId, $channel),
                     NotificationTriggerCatalog::DELIVERY_DATE_CHANGED,
@@ -847,6 +854,38 @@ class LieferzeitenImportService
                     $externalOrderId,
                     $sourceSystem,
                 );
+
+                if (!$hasExistingDeliveryDate) {
+                    $this->notificationEventService->dispatch(
+                        sprintf('delivery-date-assigned:%s:%s', $externalOrderId, $channel),
+                        NotificationTriggerCatalog::DELIVERY_DATE_ASSIGNED,
+                        $channel,
+                        [
+                            'deliveryDate' => $payload['deliveryDate'] ?? null,
+                            'calculatedDeliveryDate' => $payload['calculatedDeliveryDate'] ?? null,
+                            'externalOrderId' => $externalOrderId,
+                        ],
+                        $context,
+                        $externalOrderId,
+                        $sourceSystem,
+                    );
+                } elseif ($existingDeliveryDate !== $incomingDeliveryDate || $existingCalculatedDeliveryDate !== $incomingCalculatedDeliveryDate) {
+                    $this->notificationEventService->dispatch(
+                        sprintf('delivery-date-updated:%s:%s', $externalOrderId, $channel),
+                        NotificationTriggerCatalog::DELIVERY_DATE_UPDATED,
+                        $channel,
+                        [
+                            'previousDeliveryDate' => $existingDeliveryDate,
+                            'previousCalculatedDeliveryDate' => $existingCalculatedDeliveryDate,
+                            'deliveryDate' => $payload['deliveryDate'] ?? null,
+                            'calculatedDeliveryDate' => $payload['calculatedDeliveryDate'] ?? null,
+                            'externalOrderId' => $externalOrderId,
+                        ],
+                        $context,
+                        $externalOrderId,
+                        $sourceSystem,
+                    );
+                }
             }
 
             if (($payload['customsRequired'] ?? false) === true) {
@@ -977,5 +1016,10 @@ class LieferzeitenImportService
         }
 
         return null;
+    }
+
+    private function normalizeComparableDate(?\DateTimeInterface $value): ?string
+    {
+        return $value?->format('Y-m-d H:i:s');
     }
 }
