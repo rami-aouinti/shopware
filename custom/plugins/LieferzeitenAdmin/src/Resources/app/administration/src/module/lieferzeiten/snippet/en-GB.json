@@ -34,6 +34,13 @@
     },
     "table": {
       "orderNumber": "Order number",
+      "san6OrderNumber": "SAN6 order number",
+      "san6Position": "SAN6 position",
+      "totalQuantity": "Quantity",
+      "orderDate": "Order date",
+      "paymentMethod": "Payment method",
+      "paymentDate": "Payment date",
+      "customerNames": "Customer name",
       "domain": "Domain",
       "parcels": "Open/total parcels",
       "openParcels": "Open parcels",
@@ -119,6 +126,21 @@
       "errorTitle": "Unable to load orders",
       "errorDescription": "An error occurred while loading orders.",
       "retry": "Retry"
+    },
+    "lms": {
+      "general": {
+        "mainMenuItem": "Delivery Time Management System",
+        "description": "Manage delivery-time thresholds per sales channel"
+      },
+      "navigation": {
+        "thresholdsByChannel": "Thresholds by sales channel",
+        "taskAssignmentRules": "Task assignment rules",
+        "notificationToggles": "Notification toggles"
+      },
+      "channelSettings": {
+        "title": "LMS · Thresholds by sales channel",
+        "create": "Create threshold"
+      }
     }
   }
 }

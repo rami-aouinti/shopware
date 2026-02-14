@@ -34,6 +34,13 @@
     },
     "table": {
       "orderNumber": "Bestellnummer",
+      "san6OrderNumber": "SAN6 Auftragsnummer",
+      "san6Position": "SAN6 Position",
+      "totalQuantity": "Menge",
+      "orderDate": "Bestelldatum",
+      "paymentMethod": "Zahlungsart",
+      "paymentDate": "Zahlungsdatum",
+      "customerNames": "Kundenname",
       "domain": "Bereich",
       "parcels": "Pakete offen/gesamt",
       "openParcels": "Offene Pakete",
@@ -119,6 +126,21 @@
       "errorTitle": "Bestellungen konnten nicht geladen werden",
       "errorDescription": "Beim Laden der Bestellungen ist ein Fehler aufgetreten.",
       "retry": "Erneut versuchen"
+    },
+    "lms": {
+      "general": {
+        "mainMenuItem": "Lieferzeiten-Management-System",
+        "description": "Steuerung der Lieferzeiten-Schwellenwerte je Verkaufskanal"
+      },
+      "navigation": {
+        "thresholdsByChannel": "Schwellenwerte je Verkaufskanal",
+        "taskAssignmentRules": "Regeln zur Aufgaben-Zuweisung",
+        "notificationToggles": "Benachrichtigungs-Toggles"
+      },
+      "channelSettings": {
+        "title": "LMS · Schwellenwerte je Verkaufskanal",
+        "create": "Schwellenwert anlegen"
+      }
     }
   }
 }

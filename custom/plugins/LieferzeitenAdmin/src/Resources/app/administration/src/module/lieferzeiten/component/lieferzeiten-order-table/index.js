@@ -72,8 +72,18 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 const supplierRange = this.resolveInitialRange(order, 'lieferterminLieferant', 14);
                 const newRange = this.resolveInitialRange(order, 'neuerLiefertermin', 4);
 
+                const positions = Array.isArray(order.positions) ? order.positions : [];
+
                 this.$set(this.editableOrders, order.id, {
                     ...order,
+                    san6OrderNumberDisplay: this.resolveSan6OrderNumber(order),
+                    san6PositionDisplay: this.resolveSan6Position(positions),
+                    quantityDisplay: this.resolveQuantity(positions),
+                    orderDateDisplay: this.resolveOrderDate(order),
+                    paymentMethodDisplay: this.resolvePaymentMethod(order),
+                    paymentDateDisplay: this.resolvePaymentDate(order),
+                    customerNamesDisplay: this.resolveCustomerNames(order),
+                    positionsCountDisplay: positions.length,
                     lieferterminLieferantRange: supplierRange,
                     neuerLieferterminRange: newRange,
                     originalLieferterminLieferantRange: { ...supplierRange },
