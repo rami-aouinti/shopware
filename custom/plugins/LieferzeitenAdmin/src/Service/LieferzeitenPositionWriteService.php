@@ -4,6 +4,8 @@ namespace LieferzeitenAdmin\Service;
 
 use Doctrine\DBAL\Connection;
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Notification\ShippingDateOverdueTaskService;
+use LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver;
 use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
@@ -23,6 +25,7 @@ class LieferzeitenPositionWriteService
         private readonly EntityRepository $userRepository,
         private readonly LieferzeitenTaskService $taskService,
         private readonly NotificationEventService $notificationEventService,
+        private readonly TaskAssignmentRuleResolver $taskAssignmentRuleResolver,
     ) {
     }
 
@@ -45,6 +48,12 @@ class LieferzeitenPositionWriteService
                 'lastChangedAt' => $changedAt,
             ],
         ], $context);
+
+        $this->taskService->closeLatestOpenTaskByPositionAndTrigger(
+            $positionId,
+            NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED,
+            $context,
+        );
     }
 
     public function updateNeuerLiefertermin(string $positionId, \DateTimeImmutable $from, \DateTimeImmutable $to, string $expectedUpdatedAt, Context $context): void
@@ -83,22 +92,22 @@ class LieferzeitenPositionWriteService
             ], 'The paket has no positions. Refresh the row.');
         }
 
-        $payload = [];
         foreach ($positionIds as $positionId) {
             $this->touchPosition($positionId, $actor, $changedAt, $context);
-            $payload[] = [
+        }
+
+        $this->touchPaket($paketId, $actor, $changedAt, $context);
+        $this->neuerLieferterminPaketHistoryRepository->create([
+            [
                 'id' => Uuid::randomHex(),
-                'positionId' => $positionId,
+                'paketId' => $paketId,
                 'lieferterminFrom' => $from,
                 'lieferterminTo' => $to,
                 'liefertermin' => $to,
                 'lastChangedBy' => $actor,
                 'lastChangedAt' => $changedAt,
-            ];
-        }
-
-        $this->touchPaket($paketId, $actor, $changedAt, $context);
-        $this->neuerLieferterminHistoryRepository->create($payload, $context);
+            ],
+        ], $context);
     }
 
     /** @return list<string> */
@@ -153,8 +162,9 @@ class LieferzeitenPositionWriteService
     {
         $count = $this->connection->fetchOne(
             'SELECT COUNT(*)
-             FROM lieferzeiten_neuer_liefertermin_history
-             WHERE position_id = :positionId',
+             FROM lieferzeiten_neuer_liefertermin_paket_history nph
+             INNER JOIN lieferzeiten_position p ON p.paket_id = nph.paket_id
+             WHERE p.id = :positionId',
             ['positionId' => hex2bin($positionId)],
         );
 
@@ -194,6 +204,23 @@ class LieferzeitenPositionWriteService
         return ['from' => $maxFrom, 'to' => $minTo];
     }
 
+
+    public function canUpdateNeuerLieferterminForPaket(string $paketId): bool
+    {
+        $status = $this->connection->fetchOne(
+            'SELECT status FROM lieferzeiten_paket WHERE id = :id LIMIT 1',
+            ['id' => hex2bin($paketId)],
+        );
+
+        if ($status === false || $status === null) {
+            return false;
+        }
+
+        $normalized = strtolower(trim((string) $status));
+
+        return !in_array($normalized, ['closed', 'done', 'completed', 'shipped', 'delivered', '8'], true);
+    }
+
     public function updateComment(string $positionId, string $comment, string $expectedUpdatedAt, Context $context): void
     {
         $actor = $this->resolveActor($context);
@@ -228,13 +255,18 @@ class LieferzeitenPositionWriteService
             ],
         ], $context);
 
+        $triggerKey = NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED;
+        $rule = $this->taskAssignmentRuleResolver->resolve($triggerKey, $context);
+        $dueDate = ShippingDateOverdueTaskService::nextBusinessDay($changedAt);
+
         $taskPayload = [
             'taskType' => 'additional-delivery-request',
-            'triggerKey' => NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED,
+            'triggerKey' => $triggerKey,
             'positionId' => $positionId,
             'createdBy' => $actor,
             'createdAt' => $changedAt->format(DATE_ATOM),
             'initiator' => $initiator,
+            'initiatorUserId' => Uuid::isValid($actor) ? $actor : null,
             'customerEmail' => $notificationContext['customerEmail'],
             'externalOrderId' => $notificationContext['externalOrderId'],
             'sourceSystem' => $notificationContext['sourceSystem'],
@@ -243,7 +275,7 @@ class LieferzeitenPositionWriteService
 
         $this->taskService->createTask(
             $taskPayload,
-            $initiator,
+            Uuid::isValid($actor) ? $actor : $initiator,
             null,
             null,
             $context,
@@ -336,8 +368,10 @@ class LieferzeitenPositionWriteService
 
         $newRange = $this->connection->fetchAssociative(
             'SELECT liefertermin_from, liefertermin_to, liefertermin
-             FROM lieferzeiten_neuer_liefertermin_history
-             WHERE position_id = :positionId
+             FROM lieferzeiten_neuer_liefertermin_paket_history
+             WHERE paket_id = (
+                SELECT paket_id FROM lieferzeiten_position WHERE id = :positionId LIMIT 1
+             )
              ORDER BY created_at DESC
              LIMIT 1',
             ['positionId' => hex2bin($positionId)],

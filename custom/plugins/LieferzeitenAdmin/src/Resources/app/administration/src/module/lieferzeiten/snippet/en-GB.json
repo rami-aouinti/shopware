@@ -1,16 +1,17 @@
 {
   "lieferzeiten": {
     "general": {
-      "mainMenuItemGeneral": "Delivery times",
+      "mainMenuItemGeneral": "Delivery Time Management",
       "description": "Delivery time monitoring in admin",
       "infoTitle": "Notice",
       "timezoneInfo": "Time calculations are based on timezone Europe/Berlin.",
-      "openDefinition": "\"Open\" means at least one parcel is still not closed."
+      "openDefinition": "\"Open\" means at least one parcel is still not closed.",
+      "mainMenuItemStatistics": "Delivery Time Management Statistics"
     },
     "tabs": {
       "all": "All orders",
       "open": "Open orders",
-      "statistics": "Statistics"
+      "statistics": "Delivery Time Management Statistics"
     },
     "zones": {
       "order": "Order",
@@ -97,18 +98,19 @@
       "loading": "Loading tracking history …",
       "empty": "No tracking events found.",
       "loadError": "Unable to load tracking history.",
-      "missingCarrier": "Tracking unavailable: carrier is missing."
+      "missingCarrier": "Tracking unavailable: carrier is missing.",
+      "internalShipmentInfo": "Shipped by First Medical (internal dispatch, no external carrier tracking available)."
     },
     "statistics": {
       "periodLabel": "Period",
       "channelLabel": "Channel",
       "allChannels": "All channels",
       "open": "Open",
-      "activities": "Activities",
-      "chartTitle": "Activities by channel",
-      "tableTitle": "Activities",
+      "activities": "Delivery-time activities",
+      "chartTitle": "Visual delivery-time activity overview",
+      "tableTitle": "Delivery-time activity table",
       "drilldown": "Drilldown",
-      "drilldownTitle": "Activity details",
+      "drilldownTitle": "Delivery-time activity details",
       "exportCsv": "Export CSV",
       "promisedDate": "Delivery date",
       "period": {
@@ -120,7 +122,7 @@
         "overdue": "Overdue"
       },
       "overdueShipping": "Overdue shipping",
-      "overdueDelivery": "Overdue delivery",
+      "overdueDelivery": "Overdue deliveries (completed)",
       "activityDate": "Activity at"
     },
     "loading": {
@@ -153,6 +155,12 @@
       "shipped": "Shipped",
       "closed": "Closed",
       "unknown": "Unknown"
+    },
+    "statusChange": {
+      "placeholder": "Select status 7/8",
+      "save": "Save status",
+      "saved": "Status updated and queued for push.",
+      "invalidSelection": "Please select status 7 or 8."
     }
   }
 }

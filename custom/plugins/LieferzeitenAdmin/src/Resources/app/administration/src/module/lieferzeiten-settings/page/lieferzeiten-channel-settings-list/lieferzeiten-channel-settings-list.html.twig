@@ -5,31 +5,60 @@
 
     <template #smart-bar-actions>
         <sw-button v-if="hasEditAccess" :isLoading="isSeedingDemoData" :variant="hasDemoData ? 'danger' : 'default'" @click="onToggleDemoData">{{ hasDemoData ? 'DemoDaten entfernen' : 'DemoDaten speichern' }}</sw-button>
-        <sw-button v-if="hasEditAccess" variant="primary" @click="onCreate">{{ $tc('lieferzeiten.lms.channelSettings.create') }}</sw-button>
+        <sw-button-process v-if="hasEditAccess" variant="primary" :isLoading="isSaving" @click="onSave">{{ $tc('global.default.save') }}</sw-button-process>
     </template>
 
     <template #content>
-        <sw-card>
+        <sw-card :isLoading="isLoading">
             <sw-alert variant="info" appearance="default" :showIcon="true">
-                Ce booléen reste un paramètre global par canal de vente et ne remplace pas la granularité de la matrice des Notification toggles.
+                Configuration par canal et Lieferzeit PDMS : 4 Lieferzeiten × 2 seuils (jours ouvrés).
             </sw-alert>
-            <sw-entity-listing
-                v-if="items"
-                :items="items"
-                :repository="repository"
-                :columns="columns"
-                :isLoading="isLoading"
-                :showSelection="false"
-                :allowInlineEdit="hasEditAccess"
-                :allowDelete="hasEditAccess"
-                :total="total"
-                :page="page"
-                :limit="limit"
-                @page-change="onPageChange"
-                @inline-edit-save="onInlineEditSave"
-                @inline-edit-cancel="getList"
-                @delete="onDelete"
-            />
+
+            <sw-alert v-if="hasValidationErrors" variant="error" appearance="default" :showIcon="true" class="sw-mt-16">
+                Veuillez corriger les valeurs invalides. Seules les valeurs entières ≥ 0 sont autorisées.
+            </sw-alert>
+
+            <div v-for="channel in channels" :key="channel.id" class="sw-mt-24">
+                <h3>{{ channel.name || channel.id }}</h3>
+
+                <sw-data-grid
+                    :dataSource="pdmsLieferzeiten"
+                    :columns="[
+                        { property: 'label', label: 'Lieferzeit PDMS', width: '160px' },
+                        { property: 'shippingOverdueWorkingDays', label: 'shippingOverdueWorkingDays' },
+                        { property: 'deliveryOverdueWorkingDays', label: 'deliveryOverdueWorkingDays' }
+                    ]"
+                    :showSelection="false"
+                    :showActions="false"
+                    :allowColumnEdit="false"
+                >
+                    <template #column-label="{ item }">
+                        {{ item.label }}
+                    </template>
+
+                    <template #column-shippingOverdueWorkingDays="{ item }">
+                        <sw-number-field
+                            numberType="int"
+                            :min="0"
+                            :disabled="!hasEditAccess"
+                            :value="matrixValues[channel.id][item.key].shippingOverdueWorkingDays"
+                            :error="getFieldError(channel.id, item.key, 'shippingOverdueWorkingDays')"
+                            @input="onChangeNumberField(channel.id, item.key, 'shippingOverdueWorkingDays', $event)"
+                        />
+                    </template>
+
+                    <template #column-deliveryOverdueWorkingDays="{ item }">
+                        <sw-number-field
+                            numberType="int"
+                            :min="0"
+                            :disabled="!hasEditAccess"
+                            :value="matrixValues[channel.id][item.key].deliveryOverdueWorkingDays"
+                            :error="getFieldError(channel.id, item.key, 'deliveryOverdueWorkingDays')"
+                            @input="onChangeNumberField(channel.id, item.key, 'deliveryOverdueWorkingDays', $event)"
+                        />
+                    </template>
+                </sw-data-grid>
+            </div>
         </sw-card>
     </template>
 </sw-page>
