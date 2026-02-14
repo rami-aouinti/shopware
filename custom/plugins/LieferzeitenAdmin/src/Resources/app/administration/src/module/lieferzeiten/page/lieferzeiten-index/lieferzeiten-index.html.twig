@@ -92,7 +92,8 @@
                         <router-view
                             :orders="filteredOrders"
                             :selected-domain="selectedDomain"
-                            :on-reload-order="reloadData"
+                            :on-reload-order="loadOrders"
+                            :statistics-metrics="statisticsMetrics"
                         />
                     </template>
                 </sw-card>

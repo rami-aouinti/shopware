@@ -27,35 +27,23 @@ Shopware.Component.register('lieferzeiten-index', {
             isLoading: false,
             isStatisticsLoading: false,
             loadError: null,
-            filters: {
-                bestellnummer: '',
-                san6: '',
-                shippingDateFrom: null,
-                shippingDateTo: null,
-                businessDateFrom: null,
-                businessDateTo: null,
-                deliveryDateFrom: null,
-                deliveryDateTo: null,
-                businessDateEndFrom: null,
-                businessDateEndTo: null,
-                lieferterminLieferantFrom: null,
-                lieferterminLieferantTo: null,
-                neuerLieferterminFrom: null,
-                neuerLieferterminTo: null,
-                user: '',
-                sendenummer: '',
-                status: '',
+            statisticsMetrics: {
+                openOrders: 0,
+                overdueShipping: 0,
+                overdueDelivery: 0,
             },
         };
     },
 
     created() {
-        this.reloadData();
+        this.loadOrders();
+        this.loadStatistics();
     },
 
     watch: {
         selectedDomain() {
-            this.reloadData();
+            this.loadOrders();
+            this.loadStatistics();
         },
     },
 
@@ -71,6 +59,28 @@ Shopware.Component.register('lieferzeiten-index', {
     },
 
     methods: {
+
+        async loadStatistics() {
+            try {
+                const payload = await this.lieferzeitenOrdersService.getStatistics({
+                    period: 30,
+                    domain: normalizeDomainKey(this.selectedDomain),
+                    channel: 'all',
+                });
+
+                this.statisticsMetrics = {
+                    openOrders: payload?.metrics?.openOrders ?? 0,
+                    overdueShipping: payload?.metrics?.overdueShipping ?? 0,
+                    overdueDelivery: payload?.metrics?.overdueDelivery ?? 0,
+                };
+            } catch (error) {
+                this.statisticsMetrics = {
+                    openOrders: 0,
+                    overdueShipping: 0,
+                    overdueDelivery: 0,
+                };
+            }
+        },
 
         resolveOrderDomainKey(order) {
             const orderDomain = String(order?.domain || order?.sourceSystem || '').trim();
