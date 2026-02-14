@@ -10,7 +10,8 @@ import {
 } from '../../utils/domain-source-mapping';
 
 const STORAGE_CHANNEL_KEY = 'lieferzeitenManagementChannel';
-const STORAGE_GROUP_KEY = 'lieferzeitenManagementGroup';
+const STORAGE_BEREICH_KEY = 'lieferzeitenManagementBereich';
+const LEGACY_STORAGE_GROUP_KEY = 'lieferzeitenManagementGroup';
 const LEGACY_STORAGE_DOMAIN_KEY = 'lieferzeitenManagementDomain';
 
 Shopware.Component.register('lieferzeiten-domain-selection', {
@@ -26,9 +27,9 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
 
     data() {
         return {
-            selectedGroup: null,
+            selectedBereich: null,
             selectedChannel: normalizeDomainKey(this.value),
-            draftGroup: null,
+            draftBereich: null,
             persistSelection: false,
             showDomainModal: false,
             isInternalUpdate: false,
@@ -46,16 +47,16 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
                 return;
             }
 
-            this.applySelection(this.resolveInitialGroup(normalizedChannel, this.selectedGroup), normalizedChannel, false, false);
+            this.applySelection(this.resolveInitialGroup(normalizedChannel, this.selectedBereich), normalizedChannel, false, false);
         },
 
         selectedChannel(newValue, oldValue) {
-            if (this.isInternalUpdate || !this.selectedGroup || !newValue || newValue === oldValue) {
+            if (this.isInternalUpdate || !this.selectedBereich || !newValue || newValue === oldValue) {
                 return;
             }
 
             this.$emit('input', newValue);
-            this.persistDomainSelection(this.selectedGroup, newValue);
+            this.persistDomainSelection(this.selectedBereich, newValue);
         },
     },
 
@@ -68,14 +69,14 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
         },
 
         channelOptions() {
-            return getChannelsForGroup(this.selectedGroup).map((channel) => ({
+            return getChannelsForGroup(this.selectedBereich).map((channel) => ({
                 value: channel.value,
                 label: this.$t(channel.labelSnippet),
             }));
         },
 
         canConfirmGroupSelection() {
-            return Boolean(this.draftGroup);
+            return Boolean(this.draftBereich);
         },
     },
 
@@ -87,7 +88,7 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
         },
 
         loadStoredSelection() {
-            const localGroup = normalizeGroupKey(localStorage.getItem(STORAGE_GROUP_KEY));
+            const localGroup = normalizeGroupKey(localStorage.getItem(STORAGE_BEREICH_KEY) || localStorage.getItem(LEGACY_STORAGE_GROUP_KEY));
             const localChannel = normalizeDomainKey(localStorage.getItem(STORAGE_CHANNEL_KEY) || localStorage.getItem(LEGACY_STORAGE_DOMAIN_KEY));
             if (localGroup || localChannel) {
                 this.persistSelection = true;
@@ -95,7 +96,7 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
                 return;
             }
 
-            const sessionGroup = normalizeGroupKey(sessionStorage.getItem(STORAGE_GROUP_KEY));
+            const sessionGroup = normalizeGroupKey(sessionStorage.getItem(STORAGE_BEREICH_KEY) || sessionStorage.getItem(LEGACY_STORAGE_GROUP_KEY));
             const sessionChannel = normalizeDomainKey(sessionStorage.getItem(STORAGE_CHANNEL_KEY) || sessionStorage.getItem(LEGACY_STORAGE_DOMAIN_KEY));
             if (sessionGroup || sessionChannel) {
                 this.persistSelection = false;
@@ -110,7 +111,8 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
             }
 
             this.showDomainModal = true;
-            this.draftGroup = null;
+            this.draftBereich = null;
+            this.$emit('bereich-change', null);
             this.$emit('group-change', null);
             this.$emit('input', null);
         },
@@ -123,11 +125,12 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
                 : getDefaultDomainForGroup(resolvedGroup);
 
             this.isInternalUpdate = true;
-            this.selectedGroup = resolvedGroup;
+            this.selectedBereich = resolvedGroup;
             this.selectedChannel = resolvedChannel;
             this.isInternalUpdate = false;
 
             if (emit) {
+                this.$emit('bereich-change', resolvedGroup);
                 this.$emit('group-change', resolvedGroup);
                 this.$emit('input', resolvedChannel);
             }
@@ -145,10 +148,12 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
             const targetStorage = this.persistSelection ? localStorage : sessionStorage;
             const secondaryStorage = this.persistSelection ? sessionStorage : localStorage;
 
-            targetStorage.setItem(STORAGE_GROUP_KEY, group);
+            targetStorage.setItem(STORAGE_BEREICH_KEY, group);
+            targetStorage.setItem(LEGACY_STORAGE_GROUP_KEY, group);
             targetStorage.setItem(STORAGE_CHANNEL_KEY, channel);
 
-            secondaryStorage.removeItem(STORAGE_GROUP_KEY);
+            secondaryStorage.removeItem(STORAGE_BEREICH_KEY);
+            secondaryStorage.removeItem(LEGACY_STORAGE_GROUP_KEY);
             secondaryStorage.removeItem(STORAGE_CHANNEL_KEY);
             secondaryStorage.removeItem(LEGACY_STORAGE_DOMAIN_KEY);
         },
@@ -158,28 +163,31 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
                 return;
             }
 
-            const nextChannel = getChannelsForGroup(this.draftGroup)
+            const nextChannel = getChannelsForGroup(this.draftBereich)
                 .some((channel) => channel.value === this.selectedChannel)
                 ? this.selectedChannel
-                : getDefaultDomainForGroup(this.draftGroup);
+                : getDefaultDomainForGroup(this.draftBereich);
 
-            this.applySelection(this.draftGroup, nextChannel, true);
+            this.applySelection(this.draftBereich, nextChannel, true);
             this.showDomainModal = false;
         },
 
         resetDomainSelection() {
-            localStorage.removeItem(STORAGE_GROUP_KEY);
+            localStorage.removeItem(STORAGE_BEREICH_KEY);
+            localStorage.removeItem(LEGACY_STORAGE_GROUP_KEY);
             localStorage.removeItem(STORAGE_CHANNEL_KEY);
             localStorage.removeItem(LEGACY_STORAGE_DOMAIN_KEY);
-            sessionStorage.removeItem(STORAGE_GROUP_KEY);
+            sessionStorage.removeItem(STORAGE_BEREICH_KEY);
+            sessionStorage.removeItem(LEGACY_STORAGE_GROUP_KEY);
             sessionStorage.removeItem(STORAGE_CHANNEL_KEY);
             sessionStorage.removeItem(LEGACY_STORAGE_DOMAIN_KEY);
 
-            this.selectedGroup = null;
+            this.selectedBereich = null;
             this.selectedChannel = null;
             this.showDomainModal = true;
-            this.draftGroup = null;
+            this.draftBereich = null;
 
+            this.$emit('bereich-change', null);
             this.$emit('group-change', null);
             this.$emit('input', null);
         },

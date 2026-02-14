@@ -28,7 +28,7 @@ Shopware.Component.register('lieferzeiten-index', {
     data() {
         return {
             selectedDomain: null,
-            selectedGroup: null,
+            selectedBereich: null,
             orders: [],
             isLoading: false,
             isStatisticsLoading: false,
@@ -59,7 +59,7 @@ Shopware.Component.register('lieferzeiten-index', {
 
     computed: {
         canAccessMainViews() {
-            return Boolean(this.selectedGroup);
+            return Boolean(this.selectedBereich);
         },
 
         filteredOrders() {
@@ -74,8 +74,8 @@ Shopware.Component.register('lieferzeiten-index', {
 
     methods: {
 
-        onGroupChange(group) {
-            this.selectedGroup = group;
+        onBereichChange(bereich) {
+            this.selectedBereich = bereich;
 
             if (!this.canAccessMainViews) {
                 this.orders = [];
