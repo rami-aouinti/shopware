@@ -119,6 +119,10 @@ class LieferzeitenOrdersService extends ApiService {
     }
 
     async updateComment(positionId, payload) {
+        if (!positionId) {
+            throw new Error('Missing position id');
+        }
+
         return this.post(`position/${positionId}/comment`, payload);
     }
 

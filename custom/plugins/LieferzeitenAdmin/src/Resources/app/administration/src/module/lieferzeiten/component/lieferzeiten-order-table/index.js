@@ -156,9 +156,19 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     positionsCountDisplay: positions.length,
                     packageStatusDisplay: this.resolvePackageStatus(order),
                     trackingSummaryDisplay: this.resolveTrackingSummaryDisplay(order),
-                    latestShippingAtDisplay: this.resolveLatestShippingAt(order),
+                    latestShippingDeadlineDisplay: this.formatDateTime(this.resolveDeadlineValue(order, [
+                        'latestShippingDeadline',
+                        'spaetester_versand',
+                        'spaetesterVersand',
+                        'latestShippingDate',
+                    ])),
                     shippingDateDisplay: this.resolveShippingDate(order),
-                    latestDeliveryAtDisplay: this.resolveLatestDeliveryAt(order),
+                    latestDeliveryDeadlineDisplay: this.formatDateTime(this.resolveDeadlineValue(order, [
+                        'latestDeliveryDeadline',
+                        'spaeteste_lieferung',
+                        'spaetesteLieferung',
+                        'latestDeliveryDate',
+                    ])),
                     deliveryDateDisplay: this.resolveDeliveryDate(order),
                     lieferterminLieferantRange: supplierRange,
                     neuerLieferterminRange: newRange,
@@ -210,7 +220,31 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         canSaveComment(order) {
-            return this.hasEditAccess() && !!order?.commentTargetPositionId;
+            return this.hasEditAccess() && !!this.getValidCommentTargetPositionId(order);
+        },
+
+        getValidCommentTargetPositionId(order) {
+            if (!order || !Array.isArray(order.positions)) {
+                return null;
+            }
+
+            const currentTargetPositionId = order.commentTargetPositionId;
+            if (currentTargetPositionId
+                && order.positions.some((position) => position?.id === currentTargetPositionId)) {
+                return currentTargetPositionId;
+            }
+
+            return this.resolveCommentTargetPositionId(order.positions);
+        },
+
+        ensureCommentTargetPositionId(order) {
+            const validPositionId = this.getValidCommentTargetPositionId(order);
+
+            if (order && order.commentTargetPositionId !== validPositionId) {
+                this.$set(order, 'commentTargetPositionId', validPositionId);
+            }
+
+            return validPositionId;
         },
 
 
@@ -393,7 +427,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
 
         resolveQuantity(order, positions) {
             if (!positions.length) {
-                return this.displayOrDash(this.pickFirstDefined(order, ['quantity']));
+                return this.displayOrDash(this.pickFirstDefined(order, ['quantity', 'positionsCount']));
             }
 
             const total = positions.reduce((acc, position) => {
@@ -1001,7 +1035,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 return;
             }
 
-            const positionId = order.commentTargetPositionId;
+            const positionId = this.ensureCommentTargetPositionId(order);
 
             if (!positionId) {
                 this.createNotificationError({ title: this.$t('global.default.error'), message: 'Missing position id' });

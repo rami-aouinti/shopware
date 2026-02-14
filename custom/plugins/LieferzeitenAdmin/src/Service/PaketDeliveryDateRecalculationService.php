@@ -36,17 +36,23 @@ class PaketDeliveryDateRecalculationService
             ];
 
             $resolution = $this->baseDateResolver->resolve($payload);
-            $settings = $this->settingsProvider->getForChannel((string) ($paket->get('sourceSystem') ?? 'shopware'));
-            $calculatedShippingDate = $this->calculator->calculate($resolution['baseDate'], $settings['shipping']);
-            $calculatedDeliveryDate = $this->calculator->calculate($resolution['baseDate'], $settings['delivery']);
-
-            $updates[] = [
+            $update = [
                 'id' => $paket->getId(),
                 'baseDateType' => $resolution['baseDateType'],
-                'shippingDate' => $calculatedShippingDate?->format('Y-m-d H:i:s'),
-                'deliveryDate' => $calculatedDeliveryDate?->format('Y-m-d H:i:s'),
-                'calculatedDeliveryDate' => $calculatedDeliveryDate?->format('Y-m-d H:i:s'),
+                'calculatedDeliveryDate' => null,
             ];
+
+            if ($resolution['baseDate'] !== null) {
+                $settings = $this->settingsProvider->getForChannel((string) ($paket->get('sourceSystem') ?? 'shopware'));
+                $calculatedShippingDate = $this->calculator->calculate($resolution['baseDate'], $settings['shipping']);
+                $calculatedDeliveryDate = $this->calculator->calculate($resolution['baseDate'], $settings['delivery']);
+
+                $update['shippingDate'] = $calculatedShippingDate?->format('Y-m-d H:i:s');
+                $update['deliveryDate'] = $calculatedDeliveryDate?->format('Y-m-d H:i:s');
+                $update['calculatedDeliveryDate'] = $calculatedDeliveryDate?->format('Y-m-d H:i:s');
+            }
+
+            $updates[] = $update;
         }
 
         if ($updates !== []) {
