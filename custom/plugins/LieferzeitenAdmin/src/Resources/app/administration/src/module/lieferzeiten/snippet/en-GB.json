@@ -176,8 +176,8 @@
         "demoDataSaved": "Demo data saved.",
         "columns": {
           "pdmsLieferzeit": "PDMS delivery time",
-          "shippingOverdueWorkingDays": "Latest shipping-time threshold (working days)",
-          "deliveryOverdueWorkingDays": "Latest delivery-time threshold (working days)"
+          "shippingOverdueWorkingDays": "Latest shipping timestamp - overdue after specified working days",
+          "deliveryOverdueWorkingDays": "Latest delivery timestamp - overdue after specified working days"
         },
         "incompleteMappingBadge": "Incomplete PDMS mapping",
         "incompleteMappingWarning": "PDMS mapping for channel \"{channelName}\" is incomplete. Missing slots are marked below so you can complete the mapping.",

@@ -176,8 +176,8 @@
         "demoDataSaved": "Demo-Daten gespeichert.",
         "columns": {
           "pdmsLieferzeit": "PDMS-Lieferzeit",
-          "shippingOverdueWorkingDays": "Schwelle spätester Versandzeitpunkt (Werktage)",
-          "deliveryOverdueWorkingDays": "Schwelle spätester Lieferzeitpunkt (Werktage)"
+          "shippingOverdueWorkingDays": "Spätester Versandzeitpunkt - nach angegebenen Werktagen überschritten",
+          "deliveryOverdueWorkingDays": "Spätester Lieferzeitpunkt - nach angegebenen Werktagen überschritten"
         },
         "incompleteMappingBadge": "Unvollständige PDMS-Zuordnung",
         "incompleteMappingWarning": "Die PDMS-Zuordnung für den Kanal \"{channelName}\" ist unvollständig. Fehlende Slots sind unten markiert, damit Sie die Zuordnung vervollständigen können.",
