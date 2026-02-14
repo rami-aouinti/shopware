@@ -12,6 +12,8 @@ const BUSINESS_STATUS_SNIPPETS = {
     '8': 'lieferzeiten.businessStatus.closed',
 };
 
+const INTERNAL_SHIPPING_LABEL = 'Versand durch First Medical';
+
 Shopware.Component.register('lieferzeiten-order-table', {
     template,
 
@@ -423,47 +425,30 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         resolveTrackingEntries(order, position) {
-            const carrier = String(position?.trackingCarrier || order?.trackingCarrier || '').toLowerCase();
-            return this.normalizeTrackingEntries(position?.packages, carrier);
-        },
+            const carrier = String(position.trackingCarrier || order.trackingCarrier || '').toLowerCase();
+            const packageEntries = Array.isArray(position.packages) ? position.packages : [];
+            const fallbackPackages = packageEntries.length === 0
+                ? [position.sendenummer || order.sendenummer || '']
+                : packageEntries;
 
-        resolveOrderTrackingEntries(order) {
-            const positions = Array.isArray(order?.positions) ? order.positions : [];
-            const parcels = Array.isArray(order?.parcels) ? order.parcels : [];
-            const entries = [];
-
-            positions.forEach((position) => {
-                const carrier = String(position?.trackingCarrier || order?.trackingCarrier || '').toLowerCase();
-                entries.push(...this.normalizeTrackingEntries(position?.packages, carrier));
-            });
-
-            parcels.forEach((parcel) => {
-                const carrier = String(parcel?.trackingCarrier || order?.trackingCarrier || '').toLowerCase();
-                entries.push(...this.normalizeTrackingEntries(parcel?.packages, carrier));
-            });
-
-            const seen = new Set();
-            return entries.filter((entry) => {
-                const dedupeKey = `${entry.carrier}:${entry.number}`;
-                if (seen.has(dedupeKey)) {
-                    return false;
-                }
-                seen.add(dedupeKey);
-                return true;
-            });
-        },
-
-        normalizeTrackingEntries(packages, fallbackCarrier = '') {
-            const normalizedPackages = Array.isArray(packages) ? packages : [];
-
-            return normalizedPackages.map((pkg) => {
+            return fallbackPackages.map((pkg) => {
                 if (typeof pkg === 'string') {
-                    return { number: pkg.trim(), carrier: fallbackCarrier };
+                    const number = String(pkg || '').trim();
+                    if (number.toLowerCase() === INTERNAL_SHIPPING_LABEL.toLowerCase()) {
+                        return { number, carrier: 'internal', isInternal: true };
+                    }
+
+                    return { number, carrier };
+                }
+
+                const number = String(pkg?.number || '').trim();
+                if (number.toLowerCase() === INTERNAL_SHIPPING_LABEL.toLowerCase()) {
+                    return { number, carrier: 'internal', isInternal: true };
                 }
 
                 return {
-                    number: String(pkg?.number || '').trim(),
-                    carrier: String(pkg?.carrier || fallbackCarrier || '').toLowerCase().trim(),
+                    number,
+                    carrier: String(pkg?.carrier || carrier).toLowerCase(),
                 };
             }).filter((entry) => entry.number !== '');
         },
@@ -510,6 +495,16 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         async openTrackingHistory(entry) {
+            if (entry?.isInternal) {
+                this.activeTracking = entry;
+                this.trackingError = this.$t('lieferzeiten.tracking.internalShipmentInfo');
+                this.trackingEvents = [];
+                this.isTrackingLoading = false;
+                this.showTrackingModal = true;
+
+                return;
+            }
+
             if (!entry?.number || !entry?.carrier) {
                 this.trackingError = this.$t('lieferzeiten.tracking.missingCarrier');
                 this.showTrackingModal = true;

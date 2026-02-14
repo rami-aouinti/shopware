@@ -97,7 +97,8 @@
       "loading": "Loading tracking history …",
       "empty": "No tracking events found.",
       "loadError": "Unable to load tracking history.",
-      "missingCarrier": "Tracking unavailable: carrier is missing."
+      "missingCarrier": "Tracking unavailable: carrier is missing.",
+      "internalShipmentInfo": "Shipped by First Medical (internal dispatch, no external carrier tracking available)."
     },
     "statistics": {
       "periodLabel": "Period",

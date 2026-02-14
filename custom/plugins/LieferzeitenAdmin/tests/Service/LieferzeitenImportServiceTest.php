@@ -342,6 +342,53 @@ class LieferzeitenImportServiceTest extends TestCase
         static::assertFalse($method->invoke($service, ['san6Ready' => false], ['status' => 'in_progress']));
     }
 
+    public function testExtractTrackingNumbersFiltersPlaceholdersAndNormalizesVariants(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'extractTrackingNumbers');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($service, [
+            'tracking_numbers' => ['  ', 'N/A', 'ABC-123'],
+            'trackingNumber' => 'XYZ-987',
+            'parcels' => [
+                ['trackingNumber' => 'ohne tracking'],
+                ['trackingNumber' => 'ABC-123'],
+            ],
+        ]);
+
+        static::assertSame(['ABC-123', 'XYZ-987'], $result);
+    }
+
+    public function testIsInternalShipmentRecognizesDedicatedBusinessIndicators(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'isInternalShipment');
+        $method->setAccessible(true);
+
+        static::assertTrue($method->invoke($service, ['internalShipment' => true]));
+        static::assertTrue($method->invoke($service, ['shippingAssignmentType' => 'eigenversand']));
+        static::assertTrue($method->invoke($service, ['carrier' => 'first medical']));
+    }
+
+    public function testIsInternalShipmentFallsBackWhenNoExternalTrackingExists(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'isInternalShipment');
+        $method->setAccessible(true);
+
+        static::assertTrue($method->invoke($service, [
+            'trackingNumbers' => ['', 'N/A'],
+            'parcels' => [
+                ['trackingNumber' => 'ohne tracking'],
+            ],
+        ]));
+
+        static::assertFalse($method->invoke($service, [
+            'trackingNumbers' => ['DHL-12345'],
+        ]));
+    }
+
     public function testEnqueueStatusPushIsIdempotentForSamePendingStatus(): void
     {
         $service = $this->createService();
