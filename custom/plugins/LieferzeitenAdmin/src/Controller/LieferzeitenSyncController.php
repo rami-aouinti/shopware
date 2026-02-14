@@ -145,8 +145,6 @@ class LieferzeitenSyncController extends AbstractController
     )]
     public function orders(Request $request, Context $context): JsonResponse
     {
-        $includeDetails = filter_var($request->query->get('includeDetails', 'false'), FILTER_VALIDATE_BOOL);
-
         $payload = $this->orderOverviewService->listOrders(
             (int) $request->query->get('page', 1),
             (int) $request->query->get('limit', 25),
@@ -182,8 +180,7 @@ class LieferzeitenSyncController extends AbstractController
                 'neuerLieferterminTo' => $request->query->get('neuerLieferterminTo'),
                 'domain' => $request->query->get('domain'),
                 'rowMode' => $request->query->get('rowMode'),
-            ],
-            $includeDetails,
+            ]
         );
 
         $this->auditLogService->log('orders_viewed', 'lieferzeiten_orders', null, $context, [

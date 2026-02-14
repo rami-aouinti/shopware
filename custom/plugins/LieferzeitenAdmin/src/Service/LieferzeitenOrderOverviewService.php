@@ -108,7 +108,6 @@ readonly class LieferzeitenOrderOverviewService
         ?string $sort = null,
         ?string $order = null,
         array $filters = [],
-        bool $includeDetails = false,
     ): array {
         $page = max(1, (int) $page);
         $limit = max(1, min(200, (int) $limit));
@@ -232,9 +231,6 @@ readonly class LieferzeitenOrderOverviewService
 
         $rows = $this->connection->fetchAllAssociative($dataSql, $dataParams, $paramTypes);
         $rows = array_map(fn (array $row): array => $this->appendBusinessStatus($row), $rows);
-        if ($includeDetails) {
-            $rows = $this->enrichOrdersWithDetails($rows);
-        }
 
         return [
             'total' => $total,

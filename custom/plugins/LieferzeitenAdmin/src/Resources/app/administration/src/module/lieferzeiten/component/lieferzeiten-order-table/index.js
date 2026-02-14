@@ -410,7 +410,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         resolveSan6OrderNumber(order) {
-            return this.pickFirstDefined(order, ['san6OrderNumber', 'san6', 'paketNumber', 'paket_number']);
+            return this.pickFirstDefined(order, ['san6OrderNumber']);
         },
 
         resolveSan6Position(order, positions) {
@@ -419,7 +419,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
             }
 
             const values = positions
-                .map((position) => this.pickFirstDefined(position, ['positionNumber', 'number', 'position_number']))
+                .map((position) => this.pickFirstDefined(position, ['number']))
                 .filter((value) => value !== null && value !== undefined && String(value).trim() !== '');
 
             return values.length ? values.join(', ') : '-';
@@ -440,22 +440,22 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         resolveOrderDate(order) {
-            return this.formatDate(this.pickFirstDefined(order, ['orderDate', 'bestelldatum', 'createdAt']));
+            return this.formatDate(this.pickFirstDefined(order, ['orderDate']));
         },
 
         resolvePaymentMethod(order) {
-            return this.pickFirstDefined(order, ['paymentMethod', 'zahlart', 'payment_method']) || '-';
+            return this.pickFirstDefined(order, ['paymentMethod']) || '-';
         },
 
         resolvePaymentDate(order) {
-            return this.formatDate(this.pickFirstDefined(order, ['paymentDate', 'payment_date']));
+            return this.formatDate(this.pickFirstDefined(order, ['paymentDate']));
         },
 
         resolveCustomerNames(order) {
             const nameParts = [
-                this.pickFirstDefined(order, ['customerFirstName', 'customer_first_name']),
-                this.pickFirstDefined(order, ['customerAdditionalName', 'customer_additional_name']),
-                this.pickFirstDefined(order, ['customerLastName', 'customer_last_name']),
+                this.pickFirstDefined(order, ['customerFirstName']),
+                this.pickFirstDefined(order, ['customerAdditionalName']),
+                this.pickFirstDefined(order, ['customerLastName']),
             ]
                 .map((value) => (value === null || value === undefined ? '' : String(value).trim()))
                 .filter((value) => value !== '');
@@ -464,7 +464,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 return nameParts.join(' ');
             }
 
-            return this.pickFirstDefined(order, ['customerNames', 'customerEmail', 'customer_email']) || '-';
+            return this.pickFirstDefined(order, ['customerNames']) || '-';
         },
 
         resolveDeadlineValue(order, keys) {
@@ -483,12 +483,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         resolvePackageStatus(order) {
-            const rawStatus = this.pickFirstDefined(order, [
-                'packageStatus',
-                'paketStatus',
-                'paket_status',
-                'status',
-            ]);
+            const rawStatus = this.pickFirstDefined(order, ['packageStatus', 'status']);
 
             if (!rawStatus || String(rawStatus).trim() === '') {
                 return null;
@@ -506,30 +501,20 @@ Shopware.Component.register('lieferzeiten-order-table', {
             return labels[normalized.toLowerCase()] || normalized;
         },
 
+        resolveLatestShippingAt(order) {
+            return this.formatDateTime(this.pickFirstDefined(order, ['latestShippingDate']));
+        },
+
         resolveShippingDate(order) {
-            return this.formatDate(this.pickFirstDefined(order, [
-                'shippingDate',
-                'shipping_date',
-                'versandDatum',
-                'versand_datum',
-                'businessDateFrom',
-                'business_date_from',
-                'shippedAt',
-            ]));
+            return this.formatDate(this.pickFirstDefined(order, ['shippingDate', 'businessDateFrom']));
+        },
+
+        resolveLatestDeliveryAt(order) {
+            return this.formatDateTime(this.pickFirstDefined(order, ['latestDeliveryDate']));
         },
 
         resolveDeliveryDate(order) {
-            return this.formatDate(this.pickFirstDefined(order, [
-                'deliveryDate',
-                'delivery_date',
-                'lieferDatum',
-                'liefer_datum',
-                'businessDateTo',
-                'business_date_to',
-                'deliveredAt',
-                'calculatedDeliveryDate',
-                'calculated_delivery_date',
-            ]));
+            return this.formatDate(this.pickFirstDefined(order, ['deliveryDate', 'businessDateTo', 'calculatedDeliveryDate']));
         },
 
         pickFirstDefined(source, keys) {
@@ -745,7 +730,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
 
 
         resolveLastChangedBy(order) {
-            const changedBy = this.pickFirstDefined(order, ['last_changed_by', 'lastChangedBy', 'user']);
+            const changedBy = this.pickFirstDefined(order, ['lastChangedBy', 'user']);
 
             return changedBy ? String(changedBy).trim() : null;
         },
