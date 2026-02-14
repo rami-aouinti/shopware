@@ -9,7 +9,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 class ChannelDateSettingsProvider
 {
     private const DEFAULT_WORKING_DAYS = 2;
-    private const DEFAULT_CUTOFF = '14:00';
+    private const DEFAULT_CUTOFF = '12:00';
     private const DEFAULT_SHIPPING_WORKING_DAYS = 0;
 
     public function __construct(

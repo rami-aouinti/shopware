@@ -13,6 +13,8 @@ class SendenummerHistoryEntity extends Entity
 
     protected ?string $sendenummer = null;
 
+    protected ?string $carrier = null;
+
     protected ?string $lastChangedBy = null;
 
     protected ?\DateTimeInterface $lastChangedAt = null;
@@ -37,6 +39,16 @@ class SendenummerHistoryEntity extends Entity
     public function setSendenummer(?string $sendenummer): void
     {
         $this->sendenummer = $sendenummer;
+    }
+
+    public function getCarrier(): ?string
+    {
+        return $this->carrier;
+    }
+
+    public function setCarrier(?string $carrier): void
+    {
+        $this->carrier = $carrier;
     }
 
     public function getLastChangedBy(): ?string

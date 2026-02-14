@@ -9,6 +9,11 @@
 
     <template #content>
         <sw-card>
+            <p>
+                Pflichtfelder: <strong>Trigger</strong>, <strong>Assignee type</strong>, <strong>Assignee</strong>.
+                Für <strong>aktive</strong> Regeln muss zusätzlich mindestens eine Bedingung gesetzt sein:
+                <strong>Rule (Rules Engine)</strong> oder <strong>conditions</strong> JSON.
+            </p>
             <sw-entity-listing
                 v-if="items"
                 :items="items"

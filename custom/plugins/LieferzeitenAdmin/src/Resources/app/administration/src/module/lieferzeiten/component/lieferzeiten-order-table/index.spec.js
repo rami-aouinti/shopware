@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 jest.mock('./lieferzeiten-order-table.html.twig', () => '', { virtual: true });
 jest.mock('./lieferzeiten-order-table.scss', () => '', { virtual: true });
 
