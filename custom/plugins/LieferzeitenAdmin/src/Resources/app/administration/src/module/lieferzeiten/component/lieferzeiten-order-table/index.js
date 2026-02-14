@@ -37,6 +37,11 @@ Shopware.Component.register('lieferzeiten-order-table', {
             required: false,
             default: null,
         },
+        rowMode: {
+            type: String,
+            required: false,
+            default: 'position',
+        },
     },
 
     data() {
@@ -70,6 +75,48 @@ Shopware.Component.register('lieferzeiten-order-table', {
             return this.orders
                 .filter((order) => (this.onlyOpen ? this.isOrderOpen(order) : true))
                 .map((order) => this.getEditableOrder(order));
+        },
+        displayedRows() {
+            const aggregatedMode = this.rowMode === 'aggregated';
+
+            return this.displayedOrders.flatMap((order) => {
+                const positions = Array.isArray(order?.positions) ? order.positions : [];
+                const baseRows = aggregatedMode || positions.length === 0
+                    ? [{ position: null, positionIndex: 0 }]
+                    : positions.map((position, positionIndex) => ({ position, positionIndex }));
+
+                return baseRows.map(({ position, positionIndex }) => {
+                    const trackingEntries = position
+                        ? this.resolveTrackingEntries(order, position)
+                        : this.resolveOrderTrackingEntries(order);
+                    const supplierRange = position?.lieferterminLieferantRange || order?.lieferterminLieferantRange || {};
+
+                    return {
+                        key: `${order.id}-${position?.id || `row-${positionIndex}`}`,
+                        order,
+                        position,
+                        showDetailsRow: positionIndex === 0,
+                        san6PositionDisplay: position
+                            ? this.displayOrDash(this.pickFirstDefined(position, ['number', 'positionNumber', 'san6Position', 'san6Pos']))
+                            : order.san6PositionDisplay,
+                        quantityDisplay: position ? this.positionQuantityDisplay(position) : order.quantityDisplay,
+                        positionsDisplay: position ? '1' : order.positionsCountDisplay,
+                        parcelsDisplay: position
+                            ? String((Array.isArray(position?.packages) ? position.packages : []).length)
+                            : this.parcelSummary(order),
+                        trackingEntries,
+                        supplierDateDisplay: supplierRange?.from || supplierRange?.to || '-',
+                        supplierWeekDisplay: this.weekLabelFromDate(supplierRange?.to),
+                        newDateDisplay: position
+                            ? this.formatDate(this.pickFirstDefined(position, ['newDeliveryDate', 'neuerLiefertermin']))
+                            : this.formatDate(this.pickFirstDefined(order, ['newDeliveryDate', 'neuerLiefertermin'])),
+                        packageStatusDisplay: position
+                            ? this.displayOrDash(position?.status || position?.packageStatus || order.packageStatusDisplay)
+                            : order.packageStatusDisplay,
+                        shippingLabelDisplay: position ? this.shippingLabelForPosition(order, position) : this.shippingLabel(order),
+                    };
+                });
+            });
         },
         editableBusinessStatuses() {
             return [7, 8].map((status) => ({
