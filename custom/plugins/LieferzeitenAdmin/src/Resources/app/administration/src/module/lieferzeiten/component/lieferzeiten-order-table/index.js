@@ -332,6 +332,48 @@ Shopware.Component.register('lieferzeiten-order-table', {
             });
         },
 
+        formatHistoryEntry(entry) {
+            if (typeof entry === 'string') {
+                return entry;
+            }
+
+            if (!entry || typeof entry !== 'object') {
+                return '-';
+            }
+
+            const actor = String(entry.lastChangedBy || entry.user || entry.actor || 'system').trim() || 'system';
+            const changedAt = this.formatDateTime(entry.lastChangedAt || entry.createdAt || entry.timestamp || null);
+
+            if (entry.label) {
+                return changedAt ? `${entry.label}: ${actor} · ${changedAt}` : `${entry.label}: ${actor}`;
+            }
+
+            return changedAt ? `${actor} · ${changedAt}` : actor;
+        },
+
+        resolveAuditDisplay(order) {
+            if (!order || typeof order !== 'object') {
+                return '-';
+            }
+
+            const actor = String(order.lastChangedBy || order.user || '').trim();
+            const changedAt = this.formatDateTime(order.lastChangedAt || order.updatedAt || order.currentUpdatedAt || null);
+
+            if (actor && changedAt) {
+                return `${actor} · ${changedAt}`;
+            }
+
+            if (actor) {
+                return actor;
+            }
+
+            if (changedAt) {
+                return changedAt;
+            }
+
+            return order.audit || '-';
+        },
+
         resolveTrackingEntries(order, position) {
             const carrier = String(position.trackingCarrier || order.trackingCarrier || '').toLowerCase();
             return (position.packages || []).map((pkg) => {
@@ -672,7 +714,8 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         updateAudit(order, action) {
-            order.audit = `${action} • ${new Date().toLocaleString('de-DE')}`;
+            const actor = String(order?.lastChangedBy || order?.user || 'system').trim() || 'system';
+            order.audit = `${action} · ${actor} · ${new Date().toLocaleString('de-DE')}`;
         },
 
         async reloadOrder(order) {
