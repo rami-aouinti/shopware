@@ -1,4 +1,23 @@
 .lieferzeiten-order-table {
+    .sw-data-grid__table {
+        .lieferzeiten-order-table__zone-row th {
+            position: sticky;
+            top: 0;
+            z-index: 3;
+            background: #eef2f7;
+            border-bottom: 1px solid #d6dde6;
+            font-weight: 600;
+        }
+
+        .lieferzeiten-order-table__column-row th {
+            position: sticky;
+            top: 36px;
+            z-index: 2;
+            background: #fff;
+            border-bottom: 1px solid #d6dde6;
+        }
+    }
+
     &__business-status-current {
         margin-top: 6px;
         color: #52667a;

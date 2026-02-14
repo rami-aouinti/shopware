@@ -2,12 +2,12 @@
     <div class="lieferzeiten-order-table">
         <table class="sw-data-grid__table">
             <thead>
-                <tr>
-                    <th colspan="4">{{ $t('lieferzeiten.zones.order') }}</th>
-                    <th colspan="7">{{ $t('lieferzeiten.zones.delivery') }}</th>
-                    <th colspan="4">{{ $t('lieferzeiten.zones.status') }}</th>
+                <tr class="lieferzeiten-order-table__zone-row">
+                    <th colspan="10" title="Bestellung: Auftrags-, Kunden- und Positionsdaten">{{ $t('lieferzeiten.zones.order') }}</th>
+                    <th colspan="11" title="Lieferung: Paket-, Tracking- und Termininformationen">{{ $t('lieferzeiten.zones.delivery') }}</th>
+                    <th colspan="5" title="Status: interne Hinweise, Statuspflege und Protokoll">{{ $t('lieferzeiten.zones.status') }}</th>
                 </tr>
-                <tr>
+                <tr class="lieferzeiten-order-table__column-row">
                     <th>{{ $t('lieferzeiten.table.orderNumber') }}</th>
                     <th>{{ $t('lieferzeiten.table.san6OrderNumber') }}</th>
                     <th>{{ $t('lieferzeiten.table.san6Position') }}</th>
@@ -25,16 +25,17 @@
                     <th>{{ $t('lieferzeiten.fields.newDate') }}</th>
                     <th>{{ $t('lieferzeiten.fields.latestShipping') }}</th>
                     <th>{{ $t('lieferzeiten.fields.latestDelivery') }}</th>
-                    <th>{{ $t('lieferzeiten.fields.comment') }}</th>
-                    <th>{{ $t('lieferzeiten.fields.history') }}</th>
                     <th>Paket-Status</th>
                     <th>spätester Versandzeitpunkt</th>
                     <th>Versand-Datum</th>
                     <th>spätester Lieferzeitpunkt</th>
                     <th>Liefer-Datum</th>
                     <th>{{ $t('lieferzeiten.fields.shippingType') }}</th>
-                    <th>Änderung durch User</th>
+                    <th>{{ $t('lieferzeiten.fields.comment') }}</th>
+                    <th>{{ $t('lieferzeiten.fields.history') }}</th>
+                    <th>Business-Status</th>
                     <th>Status</th>
+                    <th>Änderung durch User</th>
                 </tr>
             </thead>
             <tbody>
@@ -60,6 +61,12 @@
                         <td>-</td>
                         <td>-</td>
                         <td>-</td>
+                        <td>{{ displayOrDash(order.packageStatusDisplay) }}</td>
+                        <td>{{ displayOrDash(order.latestShippingAtDisplay) }}</td>
+                        <td>{{ displayOrDash(order.shippingDateDisplay) }}</td>
+                        <td>{{ displayOrDash(order.latestDeliveryAtDisplay) }}</td>
+                        <td>{{ displayOrDash(order.deliveryDateDisplay) }}</td>
+                        <td>{{ shippingLabel(order) }}</td>
                         <td>
                             <sw-text-field v-model:value="order.comment" :disabled="!hasEditAccess()" size="small" />
                             <sw-button v-if="hasEditAccess()" size="small" @click="saveComment(order)">
@@ -114,16 +121,10 @@
                                 </sw-button>
                             </div>
                         </td>
-                        <td>{{ displayOrDash(order.packageStatusDisplay) }}</td>
-                        <td>{{ displayOrDash(order.latestShippingAtDisplay) }}</td>
-                        <td>{{ displayOrDash(order.shippingDateDisplay) }}</td>
-                        <td>{{ displayOrDash(order.latestDeliveryAtDisplay) }}</td>
-                        <td>{{ displayOrDash(order.deliveryDateDisplay) }}</td>
-                        <td>{{ shippingLabel(order) }}</td>
                         <td>{{ resolveAuditDisplay(order) }}</td>
                     </tr>
                     <tr v-if="isExpanded(order.id)" :key="`${order.id}-positions`">
-                        <td colspan="25">
+                        <td colspan="26">
                             <table class="sw-data-grid__table">
                                 <thead>
                                     <tr>
