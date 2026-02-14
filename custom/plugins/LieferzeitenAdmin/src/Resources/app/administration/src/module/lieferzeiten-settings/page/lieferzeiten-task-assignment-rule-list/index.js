@@ -82,7 +82,7 @@ Component.register('lieferzeiten-task-assignment-rule-list', {
                 this.items = result;
                 this.total = result.total;
             } catch (error) {
-                this.notifyRequestError(error, 'Task Assignment Rules');
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.navigation.taskAssignmentRules'));
             } finally {
                 this.isLoading = false;
             }
@@ -102,7 +102,7 @@ Component.register('lieferzeiten-task-assignment-rule-list', {
                 await this.repository.save(item, Shopware.Context.api);
                 await this.getList();
             } catch (error) {
-                this.notifyRequestError(error, 'Task Assignment Rules');
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.navigation.taskAssignmentRules'));
             }
         },
         async onDelete(item) {
@@ -115,7 +115,7 @@ Component.register('lieferzeiten-task-assignment-rule-list', {
                 await this.repository.delete(item.id, Shopware.Context.api);
                 await this.getList();
             } catch (error) {
-                this.notifyRequestError(error, 'Task Assignment Rules');
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.navigation.taskAssignmentRules'));
             }
         },
         async onCreate() {
@@ -132,7 +132,7 @@ Component.register('lieferzeiten-task-assignment-rule-list', {
                 await this.repository.save(entity, Shopware.Context.api);
                 await this.getList();
             } catch (error) {
-                this.notifyRequestError(error, 'Task Assignment Rules');
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.navigation.taskAssignmentRules'));
             }
         },
     },

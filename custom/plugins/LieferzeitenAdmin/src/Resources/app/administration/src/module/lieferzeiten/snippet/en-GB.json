@@ -117,6 +117,21 @@
       "errorTitle": "Unable to load orders",
       "errorDescription": "An error occurred while loading orders.",
       "retry": "Retry"
+    },
+    "lms": {
+      "general": {
+        "mainMenuItem": "Delivery Time Management System",
+        "description": "Manage delivery-time thresholds per sales channel"
+      },
+      "navigation": {
+        "thresholdsByChannel": "Thresholds by sales channel",
+        "taskAssignmentRules": "Task assignment rules",
+        "notificationToggles": "Notification toggles"
+      },
+      "channelSettings": {
+        "title": "LMS · Thresholds by sales channel",
+        "create": "Create threshold"
+      }
     }
   }
 }
