@@ -18,7 +18,7 @@ class Migration2026021416PaketSalesChannel extends MigrationStep
             $connection->executeStatement('ALTER TABLE `lieferzeiten_paket` ADD COLUMN `sales_channel_id` VARCHAR(64) NULL AFTER `source_system`');
         }
 
-        if (!$this->indexExists($connection, 'lieferzeiten_paket', 'idx.lieferzeiten_paket.sales_channel_id')) {
+        if (!$this->hasIndex($connection, 'lieferzeiten_paket', 'idx.lieferzeiten_paket.sales_channel_id')) {
             $connection->executeStatement('CREATE INDEX `idx.lieferzeiten_paket.sales_channel_id` ON `lieferzeiten_paket` (`sales_channel_id`)');
         }
     }
@@ -34,7 +34,7 @@ class Migration2026021416PaketSalesChannel extends MigrationStep
         return isset($columns[$columnName]);
     }
 
-    private function indexExists(Connection $connection, string $tableName, string $indexName): bool
+    private function hasIndex(Connection $connection, string $tableName, string $indexName): bool
     {
         $indexes = $connection->createSchemaManager()->listTableIndexes($tableName);
 
