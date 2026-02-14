@@ -242,14 +242,14 @@
       }
     },
     "businessStatus": {
-      "new": "New",
-      "inClarification": "In clarification",
-      "awaitingSupplier": "Awaiting supplier",
-      "partiallyAvailable": "Partially available",
-      "readyForShipping": "Ready for shipping",
-      "partiallyShipped": "Partially shipped",
-      "shipped": "Shipped",
-      "closed": "Closed",
+      "1": "New",
+      "2": "In clarification",
+      "3": "Awaiting supplier",
+      "4": "Partially available",
+      "5": "Ready for shipping",
+      "6": "Partially shipped",
+      "7": "Shipped",
+      "8": "Closed",
       "unknown": "Unknown"
     },
     "statusChange": {

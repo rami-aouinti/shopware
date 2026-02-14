@@ -21,6 +21,21 @@ readonly class LieferzeitenOrderOverviewService
         8 => 'Closed',
     ];
 
+
+    /**
+     * @var array<int, string>
+     */
+    private const BUSINESS_STATUS_LABEL_KEYS = [
+        1 => 'lieferzeiten.businessStatus.1',
+        2 => 'lieferzeiten.businessStatus.2',
+        3 => 'lieferzeiten.businessStatus.3',
+        4 => 'lieferzeiten.businessStatus.4',
+        5 => 'lieferzeiten.businessStatus.5',
+        6 => 'lieferzeiten.businessStatus.6',
+        7 => 'lieferzeiten.businessStatus.7',
+        8 => 'lieferzeiten.businessStatus.8',
+    ];
+
     private const FILTERABLE_FIELDS = [
         'bestellnummer',
         'san6',

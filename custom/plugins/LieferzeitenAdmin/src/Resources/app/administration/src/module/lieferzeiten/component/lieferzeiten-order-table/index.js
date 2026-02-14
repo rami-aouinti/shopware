@@ -2,14 +2,14 @@ import template from './lieferzeiten-order-table.html.twig';
 import './lieferzeiten-order-table.scss';
 
 const BUSINESS_STATUS_SNIPPETS = {
-    '1': 'lieferzeiten.businessStatus.new',
-    '2': 'lieferzeiten.businessStatus.inClarification',
-    '3': 'lieferzeiten.businessStatus.awaitingSupplier',
-    '4': 'lieferzeiten.businessStatus.partiallyAvailable',
-    '5': 'lieferzeiten.businessStatus.readyForShipping',
-    '6': 'lieferzeiten.businessStatus.partiallyShipped',
-    '7': 'lieferzeiten.businessStatus.shipped',
-    '8': 'lieferzeiten.businessStatus.closed',
+    '1': 'lieferzeiten.businessStatus.1',
+    '2': 'lieferzeiten.businessStatus.2',
+    '3': 'lieferzeiten.businessStatus.3',
+    '4': 'lieferzeiten.businessStatus.4',
+    '5': 'lieferzeiten.businessStatus.5',
+    '6': 'lieferzeiten.businessStatus.6',
+    '7': 'lieferzeiten.businessStatus.7',
+    '8': 'lieferzeiten.businessStatus.8',
 };
 
 const INTERNAL_SHIPPING_LABEL = 'Versand durch First Medical';
