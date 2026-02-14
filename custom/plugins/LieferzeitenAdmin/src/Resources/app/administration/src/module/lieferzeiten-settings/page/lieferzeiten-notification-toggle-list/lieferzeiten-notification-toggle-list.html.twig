@@ -4,21 +4,25 @@
     </template>
 
     <template #content>
-        <sw-card :isLoading="isLoading" title="Matrice des notifications">
+        <sw-card :isLoading="isLoading" :title="$tc('lieferzeiten.lms.notificationMatrix.title')">
             <sw-alert variant="info" appearance="default" :showIcon="true">
-                Source: <code>lieferzeiten_notification_toggle</code> avec clé logique
+                {{ $tc('lieferzeiten.lms.notificationMatrix.source') }}
                 <code>(triggerKey, channel, salesChannelId)</code>.
             </sw-alert>
 
+            <sw-alert variant="info" appearance="default" :showIcon="true">
+                {{ $tc('lieferzeiten.lms.notificationMatrix.emailOnlyHint') }}
+            </sw-alert>
+
             <sw-alert v-if="invalidEntries.length" variant="warning" appearance="default" :showIcon="true">
-                {{ invalidEntries.length }} entrée(s) incohérente(s) détectée(s) (triggerKey/channel/code). Elles sont verrouillées dans la matrice.
+                {{ $tc('lieferzeiten.lms.notificationMatrix.invalidEntries', invalidEntries.length, { count: invalidEntries.length }) }}
             </sw-alert>
 
             <div class="sw-data-grid sw-data-grid--compact">
                 <table class="sw-data-grid__table">
                     <thead class="sw-data-grid__header">
                         <tr class="sw-data-grid__row">
-                            <th class="sw-data-grid__cell">Type de notification</th>
+                            <th class="sw-data-grid__cell">{{ $tc('lieferzeiten.lms.notificationMatrix.notificationType') }}</th>
                             <th
                                 v-for="scope in salesChannelColumns"
                                 :key="scope.id"
