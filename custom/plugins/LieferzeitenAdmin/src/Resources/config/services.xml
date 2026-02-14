@@ -68,6 +68,7 @@
         <service id="LieferzeitenAdmin\Sync\San6\San6MatchingService" />
         <service id="LieferzeitenAdmin\Service\BaseDateResolver" />
         <service id="LieferzeitenAdmin\Service\ChannelDateSettingsProvider" />
+        <service id="LieferzeitenAdmin\Service\ChannelPdmsThresholdResolver" />
         <service id="LieferzeitenAdmin\Service\BusinessDayDeliveryDateCalculator" />
         <service id="LieferzeitenAdmin\Service\Status8TrackingMappingProvider" />
         <service id="LieferzeitenAdmin\Service\PdmsLieferzeitenClient" />
@@ -132,7 +133,7 @@
 
         <service id="LieferzeitenAdmin\Service\LieferzeitenStatisticsService">
             <argument type="service" id="Doctrine\DBAL\Connection" />
-            <argument type="service" id="LieferzeitenAdmin\Service\ChannelDateSettingsProvider" />
+            <argument type="service" id="LieferzeitenAdmin\Service\ChannelPdmsThresholdResolver" />
         </service>
 
         <service id="LieferzeitenAdmin\Service\DemoDataSeederService">
@@ -177,7 +178,7 @@
             <argument type="service" id="lieferzeiten_position.repository" />
             <argument type="service" id="LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver" />
             <argument type="service" id="lieferzeiten_task.repository" />
-            <argument type="service" id="LieferzeitenAdmin\Service\ChannelDateSettingsProvider" />
+            <argument type="service" id="LieferzeitenAdmin\Service\ChannelPdmsThresholdResolver" />
         </service>
         <service id="LieferzeitenAdmin\Controller\LieferzeitenSyncController" public="true" />
         <service id="LieferzeitenAdmin\Controller\LieferzeitenOrderStatusController" public="true" />

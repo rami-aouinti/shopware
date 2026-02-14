@@ -3,6 +3,7 @@
 namespace LieferzeitenAdmin\Service\Notification;
 
 use LieferzeitenAdmin\Entity\PositionEntity;
+use LieferzeitenAdmin\Service\ChannelPdmsThresholdResolver;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -15,7 +16,7 @@ class ShippingDateOverdueTaskService
         private readonly EntityRepository $positionRepository,
         private readonly TaskAssignmentRuleResolver $taskAssignmentRuleResolver,
         private readonly EntityRepository $taskRepository,
-        private readonly ChannelDateSettingsProvider $channelDateSettingsProvider,
+        private readonly ChannelPdmsThresholdResolver $channelPdmsThresholdResolver,
     ) {
     }
 
@@ -45,7 +46,11 @@ class ShippingDateOverdueTaskService
                 continue;
             }
 
-            $settings = $this->channelDateSettingsProvider->getForChannel((string) ($paket->getSourceSystem() ?? 'shopware'));
+            $settings = $this->channelPdmsThresholdResolver->resolveForOrder(
+                (string) ($paket->getSourceSystem() ?? 'shopware'),
+                $paket->getExternalOrderId(),
+                $position->getPositionNumber(),
+            );
             $thresholdDate = $this->buildThresholdDate($now, $settings['shipping']);
             if (\DateTimeImmutable::createFromInterface($businessDateTo) >= $thresholdDate) {
                 continue;
