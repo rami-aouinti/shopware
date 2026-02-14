@@ -235,9 +235,12 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
         $systemConfig = $this->createMock(SystemConfigService::class);
         $systemConfig->method('get')->willReturn('  ');
 
+        $taskService = $this->createMock(LieferzeitenTaskService::class);
+        $taskService->expects(static::never())->method('createTask');
+
         $service = $this->createService(
             positionRepository: $this->createNoOpPositionRepository(),
-            taskService: $this->createMock(LieferzeitenTaskService::class),
+            taskService: $taskService,
             ruleResolver: $ruleResolver,
             systemConfigService: $systemConfig,
         );
