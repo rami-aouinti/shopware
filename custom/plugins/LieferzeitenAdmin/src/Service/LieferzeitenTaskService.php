@@ -9,6 +9,7 @@ use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -150,22 +151,36 @@ class LieferzeitenTaskService
 
     public function closeLatestOpenTaskByPositionAndTrigger(string $positionId, string $triggerKey, Context $context): void
     {
-        $task = $this->findLatestByPositionAndTrigger($positionId, $triggerKey, $context);
-        if ($task === null && $triggerKey !== 'additional-delivery-request') {
-            $task = $this->findLatestByPositionAndTrigger($positionId, 'additional-delivery-request', $context);
+        $task = $this->findLatestOpenTaskByPositionAndTrigger($positionId, $triggerKey, $context);
+        if ($task !== null) {
+            $this->closeTask((string) $task->getUniqueIdentifier(), $context);
         }
+    }
 
+    /**
+     * Closes only when the current actor matches the task assignee.
+     *
+     * Comparison rule:
+     * - UUID assignee: strict equality against AdminApiSource userId.
+     * - free-form assignee string: normalized (trim + lowercase) equality against the resolved actor identifier.
+     */
+    public function closeLatestOpenTaskByPositionAndTriggerIfAssigneeMatches(string $positionId, string $triggerKey, Context $context): void
+    {
+        $task = $this->findLatestOpenTaskByPositionAndTrigger($positionId, $triggerKey, $context);
         if ($task === null) {
             return;
         }
 
-        $taskId = (string) $task->getUniqueIdentifier();
-        $status = (string) ($task->get('status') ?? self::STATUS_OPEN);
-        if ($status === self::STATUS_DONE || $status === self::STATUS_CANCELLED) {
+        $assignee = $task->get('assignee');
+        if (!is_string($assignee) || trim($assignee) === '') {
             return;
         }
 
-        $this->closeTask($taskId, $context);
+        if (!$this->actorMatchesAssignee($assignee, $context)) {
+            return;
+        }
+
+        $this->closeTask((string) $task->getUniqueIdentifier(), $context);
     }
 
     public function cancelTask(string $taskId, Context $context): void
@@ -318,6 +333,68 @@ class LieferzeitenTaskService
         }
 
         return null;
+    }
+
+    private function actorMatchesAssignee(string $assignee, Context $context): bool
+    {
+        $normalizedAssignee = trim($assignee);
+        if ($normalizedAssignee === '') {
+            return false;
+        }
+
+        $actorUserId = $this->resolveActorUserId($context);
+        if (Uuid::isValid($normalizedAssignee)) {
+            return $actorUserId !== null && $actorUserId === $normalizedAssignee;
+        }
+
+        $resolvedActorIdentifier = trim($this->resolveActor($context));
+        if ($resolvedActorIdentifier === '') {
+            return false;
+        }
+
+        return mb_strtolower($normalizedAssignee) === mb_strtolower($resolvedActorIdentifier);
+    }
+
+    private function findLatestOpenTaskByPositionAndTrigger(string $positionId, string $triggerKey, Context $context): mixed
+    {
+        $queries = [
+            ['positionId', 'triggerKey'],
+            ['payload.positionId', 'payload.triggerKey'],
+            ['payload.positionId', 'payload.trigger'],
+        ];
+
+        $latestTask = null;
+        $latestCreatedAt = null;
+
+        foreach ($queries as [$positionField, $triggerField]) {
+            $criteria = new Criteria();
+            $criteria->setLimit(1);
+            $criteria->addFilter(new EqualsFilter($positionField, $positionId));
+            $criteria->addFilter(new EqualsFilter($triggerField, $triggerKey));
+            $criteria->addFilter(new EqualsAnyFilter('status', [
+                self::STATUS_OPEN,
+                self::STATUS_IN_PROGRESS,
+                self::STATUS_REOPENED,
+            ]));
+            $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::DESCENDING));
+
+            $task = $this->taskRepository->search($criteria, $context)->first();
+            if ($task === null) {
+                continue;
+            }
+
+            $taskCreatedAt = $task->getCreatedAt();
+            if ($latestTask === null || ($taskCreatedAt !== null && $latestCreatedAt !== null && $taskCreatedAt > $latestCreatedAt)) {
+                $latestTask = $task;
+                $latestCreatedAt = $taskCreatedAt;
+            }
+        }
+
+        if ($latestTask === null && $triggerKey !== 'additional-delivery-request') {
+            return $this->findLatestOpenTaskByPositionAndTrigger($positionId, 'additional-delivery-request', $context);
+        }
+
+        return $latestTask;
     }
 
     private function findLatestByPositionAndTrigger(string $positionId, string $triggerKey, Context $context): mixed

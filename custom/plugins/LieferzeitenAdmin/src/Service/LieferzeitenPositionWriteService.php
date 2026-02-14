@@ -57,9 +57,9 @@ class LieferzeitenPositionWriteService
             ],
         ], $context);
 
-        $this->taskService->closeLatestOpenTaskByPositionAndTrigger(
+        $this->taskService->closeLatestOpenTaskByPositionAndTriggerIfAssigneeMatches(
             $positionId,
-            NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED,
+            NotificationTriggerCatalog::SHIPPING_DATE_OVERDUE,
             $context,
         );
     }
