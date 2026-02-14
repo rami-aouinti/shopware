@@ -7,7 +7,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class AdditionalDeliveryAssigneeConfigValidationSubscriber implements EventSubscriberInterface
 {
-    private const CONFIG_KEY = 'LieferzeitenAdmin.config.defaultAdditionalDeliveryAssignee';
+    private const CONFIG_KEYS = [
+        'LieferzeitenAdmin.config.defaultAssigneeLieferterminAnfrageZusaetzlich',
+        'LieferzeitenAdmin.config.defaultAdditionalDeliveryAssignee',
+    ];
 
     public static function getSubscribedEvents(): array
     {
@@ -25,7 +28,7 @@ class AdditionalDeliveryAssigneeConfigValidationSubscriber implements EventSubsc
 
             $payload = $command->getPayload();
             $configurationKey = $payload['configurationKey'] ?? $payload['configuration_key'] ?? null;
-            if (!is_string($configurationKey) || $configurationKey !== self::CONFIG_KEY) {
+            if (!is_string($configurationKey) || !in_array($configurationKey, self::CONFIG_KEYS, true)) {
                 continue;
             }
 

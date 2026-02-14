@@ -127,11 +127,14 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
         $ruleResolver->method('resolve')->with(NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED, static::isInstanceOf(Context::class))
             ->willReturn(['assigneeIdentifier' => 'rule-assignee']);
 
+        $systemConfig = $this->createMock(SystemConfigService::class);
+        $systemConfig->expects(static::never())->method('get');
+
         $service = $this->createService(
             positionRepository: $this->createNoOpPositionRepository(),
             taskService: $taskService,
             ruleResolver: $ruleResolver,
-            systemConfigService: $this->createMock(SystemConfigService::class),
+            systemConfigService: $systemConfig,
         );
 
         $service->createAdditionalDeliveryRequest($positionId, 'manual', Context::createDefaultContext());
@@ -161,7 +164,7 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
         $ruleResolver->method('resolve')->willReturn(null);
 
         $systemConfig = $this->createMock(SystemConfigService::class);
-        $systemConfig->method('get')->with('LieferzeitenAdmin.config.defaultAdditionalDeliveryAssignee')->willReturn(' fallback-assignee ');
+        $systemConfig->method('get')->with('LieferzeitenAdmin.config.defaultAssigneeLieferterminAnfrageZusaetzlich')->willReturn(' fallback-assignee ');
 
         $service = $this->createService(
             positionRepository: $this->createNoOpPositionRepository(),
@@ -195,6 +198,7 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
         );
 
         $this->expectException(AdditionalDeliveryAssigneeMissingException::class);
+        $this->expectExceptionMessage('No assignee available for additional delivery request task. Configure an active assignment rule or set LieferzeitenAdmin.config.defaultAssigneeLieferterminAnfrageZusaetzlich.');
         $service->createAdditionalDeliveryRequest($positionId, 'manual', Context::createDefaultContext());
     }
 
