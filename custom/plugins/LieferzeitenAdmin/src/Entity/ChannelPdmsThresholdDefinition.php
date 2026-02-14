@@ -3,20 +3,18 @@
 namespace LieferzeitenAdmin\Entity;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\CreatedAtField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
-use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\UpdatedAtField;
 
-class ChannelSettingsDefinition extends EntityDefinition
+class ChannelPdmsThresholdDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'lieferzeiten_channel_settings';
+    public const ENTITY_NAME = 'lieferzeiten_channel_pdms_threshold';
 
     public function getEntityName(): string
     {
@@ -25,12 +23,12 @@ class ChannelSettingsDefinition extends EntityDefinition
 
     public function getEntityClass(): string
     {
-        return ChannelSettingsEntity::class;
+        return ChannelPdmsThresholdEntity::class;
     }
 
     public function getCollectionClass(): string
     {
-        return ChannelSettingsCollection::class;
+        return ChannelPdmsThresholdCollection::class;
     }
 
     protected function defineFields(): FieldCollection
@@ -38,14 +36,9 @@ class ChannelSettingsDefinition extends EntityDefinition
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),
             (new StringField('sales_channel_id', 'salesChannelId'))->addFlags(new Required()),
-            new StringField('default_status', 'defaultStatus'),
-            (new BoolField('enable_notifications', 'enableNotifications'))->addFlags(new Required()),
-            new IntField('shipping_working_days', 'shippingWorkingDays'),
-            new StringField('shipping_cutoff', 'shippingCutoff'),
-            new IntField('delivery_working_days', 'deliveryWorkingDays'),
-            new StringField('delivery_cutoff', 'deliveryCutoff'),
-            new StringField('last_changed_by', 'lastChangedBy'),
-            new DateTimeField('last_changed_at', 'lastChangedAt'),
+            (new StringField('pdms_lieferzeit', 'pdmsLieferzeit'))->addFlags(new Required()),
+            (new IntField('shipping_overdue_working_days', 'shippingOverdueWorkingDays'))->addFlags(new Required()),
+            (new IntField('delivery_overdue_working_days', 'deliveryOverdueWorkingDays'))->addFlags(new Required()),
             new CreatedAtField(),
             new UpdatedAtField(),
         ]);

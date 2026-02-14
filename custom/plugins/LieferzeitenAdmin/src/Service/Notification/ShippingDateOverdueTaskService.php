@@ -3,20 +3,19 @@
 namespace LieferzeitenAdmin\Service\Notification;
 
 use LieferzeitenAdmin\Entity\PositionEntity;
-use LieferzeitenAdmin\Entity\TaskAssignmentRuleEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 
 class ShippingDateOverdueTaskService
 {
     public function __construct(
         private readonly EntityRepository $positionRepository,
-        private readonly EntityRepository $taskAssignmentRuleRepository,
+        private readonly TaskAssignmentRuleResolver $taskAssignmentRuleResolver,
         private readonly EntityRepository $taskRepository,
+        private readonly ChannelDateSettingsProvider $channelDateSettingsProvider,
     ) {
     }
 
@@ -30,7 +29,7 @@ class ShippingDateOverdueTaskService
         $criteria = new Criteria();
         $criteria->addAssociation('paket');
         $criteria->addFilter(new EqualsFilter('paket.shippingDate', null));
-        $criteria->addFilter(new RangeFilter('paket.businessDateTo', [RangeFilter::LT => $now->format(DATE_ATOM)]));
+        $criteria->addFilter(new RangeFilter('paket.businessDateTo', [RangeFilter::LT => $now->modify('+1 day')->format(DATE_ATOM)]));
 
         /** @var iterable<PositionEntity> $positions */
         $positions = $this->positionRepository->search($criteria, $context)->getEntities();
@@ -41,13 +40,24 @@ class ShippingDateOverdueTaskService
                 continue;
             }
 
+            $businessDateTo = $paket->getBusinessDateTo();
+            if (!$businessDateTo instanceof \DateTimeInterface) {
+                continue;
+            }
+
+            $settings = $this->channelDateSettingsProvider->getForChannel((string) ($paket->getSourceSystem() ?? 'shopware'));
+            $thresholdDate = $this->buildThresholdDate($now, $settings['shipping']);
+            if (\DateTimeImmutable::createFromInterface($businessDateTo) >= $thresholdDate) {
+                continue;
+            }
+
             $trigger = NotificationTriggerCatalog::SHIPPING_DATE_OVERDUE;
             if ($this->hasActiveTaskForPosition($position->getUniqueIdentifier(), $trigger, $context)) {
                 continue;
             }
 
-            $rule = $this->resolveAssignmentRule($trigger, $context);
-            $dueDate = $this->nextBusinessDay($now);
+            $rule = $this->taskAssignmentRuleResolver->resolve($trigger, $context);
+            $dueDate = self::nextBusinessDay($now);
 
             $this->taskRepository->create([[
                 'id' => \Shopware\Core\Framework\Uuid\Uuid::randomHex(),
@@ -81,34 +91,7 @@ class ShippingDateOverdueTaskService
         return $this->taskRepository->search($criteria, $context)->first() !== null;
     }
 
-    /**
-     * @return array<string, mixed>|null
-     */
-    private function resolveAssignmentRule(string $trigger, Context $context): ?array
-    {
-        $criteria = new Criteria();
-        $criteria->setLimit(1);
-        $criteria->addFilter(new EqualsFilter('active', true));
-        $criteria->addFilter(new EqualsFilter('triggerKey', $trigger));
-        $criteria->addSorting(new FieldSorting('priority', FieldSorting::DESCENDING));
-
-        /** @var TaskAssignmentRuleEntity|null $rule */
-        $rule = $this->taskAssignmentRuleRepository->search($criteria, $context)->first();
-        if ($rule === null) {
-            return null;
-        }
-
-        return [
-            'id' => $rule->getUniqueIdentifier(),
-            'name' => $rule->getName(),
-            'ruleId' => $rule->getRuleId(),
-            'assigneeType' => $rule->getAssigneeType(),
-            'assigneeIdentifier' => $rule->getAssigneeIdentifier(),
-            'conditions' => $rule->getConditions(),
-        ];
-    }
-
-    private function nextBusinessDay(\DateTimeImmutable $start): \DateTimeImmutable
+    public static function nextBusinessDay(\DateTimeImmutable $start): \DateTimeImmutable
     {
         $date = $start->setTime(0, 0)->modify('+1 day');
 
@@ -117,5 +100,27 @@ class ShippingDateOverdueTaskService
         }
 
         return $date;
+    }
+
+    /**
+     * @param array{workingDays:int,cutoff:string} $settings
+     */
+    private function buildThresholdDate(\DateTimeImmutable $now, array $settings): \DateTimeImmutable
+    {
+        [$hour, $minute] = array_map('intval', explode(':', $settings['cutoff']));
+        $threshold = $now->setTime($hour, $minute);
+
+        $remaining = max(0, (int) ($settings['workingDays'] ?? 0));
+        while ($remaining > 0) {
+            $threshold = $threshold->modify('-1 day');
+            $weekday = (int) $threshold->format('N');
+            if ($weekday >= 6) {
+                continue;
+            }
+
+            --$remaining;
+        }
+
+        return $threshold;
     }
 }

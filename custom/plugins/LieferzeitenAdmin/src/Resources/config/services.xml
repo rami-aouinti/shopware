@@ -8,6 +8,9 @@
         <service id="LieferzeitenAdmin\Entity\ChannelSettingsDefinition">
             <tag name="shopware.entity.definition"/>
         </service>
+        <service id="LieferzeitenAdmin\Entity\ChannelPdmsThresholdDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
         <service id="LieferzeitenAdmin\Entity\TaskAssignmentRuleDefinition">
             <tag name="shopware.entity.definition"/>
         </service>
@@ -64,6 +67,10 @@
         <service id="LieferzeitenAdmin\Service\ChannelDateSettingsProvider" />
         <service id="LieferzeitenAdmin\Service\BusinessDayDeliveryDateCalculator" />
         <service id="LieferzeitenAdmin\Service\Status8TrackingMappingProvider" />
+        <service id="LieferzeitenAdmin\Service\PdmsLieferzeitenClient" />
+        <service id="LieferzeitenAdmin\Service\PdmsLieferzeitenMappingService">
+            <argument type="service" id="sales_channel.repository" />
+        </service>
         <service id="LieferzeitenAdmin\Service\PaketDeliveryDateRecalculationService">
             <argument type="service" id="lieferzeiten_paket.repository" />
         </service>
@@ -86,6 +93,7 @@
             <argument type="service" id="lieferzeiten_neuer_liefertermin_history.repository" />
             <argument type="service" id="LieferzeitenAdmin\Service\LieferzeitenTaskService" />
             <argument type="service" id="LieferzeitenAdmin\Service\Notification\NotificationEventService" />
+            <argument type="service" id="LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver" />
         </service>
 
 
@@ -97,8 +105,14 @@
             <argument type="service" id="Doctrine\DBAL\Connection" />
         </service>
 
+        <service id="LieferzeitenAdmin\Service\LieferzeitenOrderStatusWriteService">
+            <argument type="service" id="lieferzeiten_paket.repository" />
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+        </service>
+
         <service id="LieferzeitenAdmin\Service\LieferzeitenStatisticsService">
             <argument type="service" id="Doctrine\DBAL\Connection" />
+            <argument type="service" id="LieferzeitenAdmin\Service\ChannelDateSettingsProvider" />
         </service>
 
         <service id="LieferzeitenAdmin\Service\DemoDataSeederService">
@@ -113,6 +127,9 @@
         </service>
         <service id="LieferzeitenAdmin\Service\Tracking\TrackingHistoryService">
             <argument type="tagged_iterator" tag="lieferzeiten.tracking_client" />
+        </service>
+        <service id="LieferzeitenAdmin\Service\Tracking\TrackingDeliveryDateSyncService">
+            <argument type="service" id="Doctrine\DBAL\Connection" />
         </service>
 
         <service id="LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog" />
@@ -133,12 +150,17 @@
         <service id="LieferzeitenAdmin\Service\Notification\VorkassePaymentReminderService">
             <argument type="service" id="lieferzeiten_paket.repository" />
         </service>
+        <service id="LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver">
+            <argument type="service" id="lieferzeiten_task_assignment_rule.repository" />
+        </service>
         <service id="LieferzeitenAdmin\Service\Notification\ShippingDateOverdueTaskService">
             <argument type="service" id="lieferzeiten_position.repository" />
-            <argument type="service" id="lieferzeiten_task_assignment_rule.repository" />
+            <argument type="service" id="LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver" />
             <argument type="service" id="lieferzeiten_task.repository" />
+            <argument type="service" id="LieferzeitenAdmin\Service\ChannelDateSettingsProvider" />
         </service>
         <service id="LieferzeitenAdmin\Controller\LieferzeitenSyncController" public="true" />
+        <service id="LieferzeitenAdmin\Controller\LieferzeitenOrderStatusController" public="true" />
 
         <service id="LieferzeitenAdmin\ScheduledTask\LieferzeitenImportTask">
             <tag name="shopware.scheduled.task" />

@@ -153,6 +153,12 @@
       "shipped": "Versendet",
       "closed": "Abgeschlossen",
       "unknown": "Unbekannt"
+    },
+    "statusChange": {
+      "placeholder": "Status 7/8 auswählen",
+      "save": "Status speichern",
+      "saved": "Status aktualisiert und für Push vorgemerkt.",
+      "invalidSelection": "Bitte Status 7 oder 8 auswählen."
     }
   }
 }
