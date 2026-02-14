@@ -139,8 +139,6 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 });
             }
 
-            this.notifyInitiatorIfClosed(this.editableOrders[order.id]);
-
             return this.editableOrders[order.id];
         },
 
@@ -809,19 +807,8 @@ Shopware.Component.register('lieferzeiten-order-table', {
             }
         },
 
-        notifyInitiatorIfClosed(order) {
-            const request = order.additionalDeliveryRequest;
-            if (!request || request.notifiedAt || this.isOrderOpen(order)) {
-                return;
-            }
-
-            request.notifiedAt = new Date().toISOString();
-            this.createNotificationInfo({
-                title: this.$t('lieferzeiten.additionalRequest.notificationTitle'),
-                message: this.$t('lieferzeiten.additionalRequest.notificationClosed', {
-                    initiator: request.initiator || this.$t('lieferzeiten.additionalRequest.defaultInitiator'),
-                }),
-            });
+        updateAudit(order, action) {
+            order.audit = `${action} • ${new Date().toLocaleString('de-DE')}`;
         },
 
         async reloadOrder(order) {

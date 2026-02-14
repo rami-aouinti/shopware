@@ -45,6 +45,12 @@ class LieferzeitenPositionWriteService
                 'lastChangedAt' => $changedAt,
             ],
         ], $context);
+
+        $this->taskService->closeLatestOpenTaskByPositionAndTrigger(
+            $positionId,
+            NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED,
+            $context,
+        );
     }
 
     public function updateNeuerLiefertermin(string $positionId, \DateTimeImmutable $from, \DateTimeImmutable $to, string $expectedUpdatedAt, Context $context): void
@@ -239,6 +245,7 @@ class LieferzeitenPositionWriteService
             'createdBy' => $actor,
             'createdAt' => $changedAt->format(DATE_ATOM),
             'initiator' => $initiator,
+            'initiatorUserId' => Uuid::isValid($actor) ? $actor : null,
             'customerEmail' => $notificationContext['customerEmail'],
             'externalOrderId' => $notificationContext['externalOrderId'],
             'sourceSystem' => $notificationContext['sourceSystem'],
@@ -247,9 +254,9 @@ class LieferzeitenPositionWriteService
 
         $this->taskService->createTask(
             $taskPayload,
-            $initiator,
-            is_array($rule) ? ($rule['assigneeIdentifier'] ?? null) : null,
-            $dueDate,
+            Uuid::isValid($actor) ? $actor : $initiator,
+            null,
+            null,
             $context,
         );
 
