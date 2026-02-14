@@ -119,8 +119,8 @@
       "status": {
         "overdue": "Überfällig"
       },
-      "overdueShipping": "Versand überfällig",
-      "overdueDelivery": "Lieferung überfällig",
+      "overdueShipping": "Überfälliger Versand",
+      "overdueDelivery": "Überfällige Lieferungen (abgeschlossen)",
       "activityDate": "Aktiv am"
     },
     "loading": {

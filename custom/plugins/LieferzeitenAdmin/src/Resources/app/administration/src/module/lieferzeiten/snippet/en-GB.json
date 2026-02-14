@@ -120,7 +120,7 @@
         "overdue": "Overdue"
       },
       "overdueShipping": "Overdue shipping",
-      "overdueDelivery": "Overdue delivery",
+      "overdueDelivery": "Overdue deliveries (completed)",
       "activityDate": "Activity at"
     },
     "loading": {

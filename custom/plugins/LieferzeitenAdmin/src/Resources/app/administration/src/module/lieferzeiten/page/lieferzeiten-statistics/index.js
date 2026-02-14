@@ -33,7 +33,6 @@ Shopware.Component.register('lieferzeiten-statistics', {
                     openOrders: 0,
                     overdueShipping: 0,
                     overdueDelivery: 0,
-                    activities: 0,
                 },
                 channels: [],
                 timeline: [],
@@ -79,7 +78,6 @@ Shopware.Component.register('lieferzeiten-statistics', {
                 open: this.statistics.metrics.openOrders,
                 overdueShipping: this.statistics.metrics.overdueShipping,
                 overdueDelivery: this.statistics.metrics.overdueDelivery,
-                activities: this.statistics.metrics.activities,
             };
         },
 
@@ -122,7 +120,6 @@ Shopware.Component.register('lieferzeiten-statistics', {
                         openOrders: 0,
                         overdueShipping: 0,
                         overdueDelivery: 0,
-                        activities: 0,
                     },
                     channels: Array.isArray(payload.channels) ? payload.channels : [],
                     timeline: Array.isArray(payload.timeline) ? payload.timeline : [],
@@ -134,7 +131,6 @@ Shopware.Component.register('lieferzeiten-statistics', {
                         openOrders: 0,
                         overdueShipping: 0,
                         overdueDelivery: 0,
-                        activities: 0,
                     },
                     channels: [],
                     timeline: [],
