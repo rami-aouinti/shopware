@@ -101,6 +101,39 @@ class ChannelPdmsThresholdResolverTest extends TestCase
         static::assertSame(8, $result['delivery']['workingDays']);
     }
 
+    public function testResolveForOrderUsesNestedCustomFieldFallbackWhenExternalOrderIdIsNested(): void
+    {
+        $this->connection->insert('sales_channel', [
+            'id' => 'sc-cf-nested',
+            'custom_fields' => json_encode(['pdms_lieferzeiten_mapping' => ['3' => 'lz-cf-nested']], JSON_THROW_ON_ERROR),
+        ]);
+        $this->connection->insert('order', [
+            'id' => 'order-cf-nested',
+            'order_number' => 'SW-3000',
+            'sales_channel_id' => 'sc-cf-nested',
+            'custom_fields' => json_encode(['integration' => ['externalOrderId' => 'EXT-3000']], JSON_THROW_ON_ERROR),
+            'created_at' => '2026-02-14 10:00:00',
+        ]);
+        $this->connection->insert('order_line_item', [
+            'id' => 'li-cf-nested',
+            'order_id' => 'order-cf-nested',
+            'custom_fields' => json_encode(['pdms_slot' => 3], JSON_THROW_ON_ERROR),
+            'created_at' => '2026-02-14 10:00:01',
+        ]);
+        $this->connection->insert('lieferzeiten_channel_pdms_threshold', [
+            'sales_channel_id' => 'sc-cf-nested',
+            'pdms_lieferzeit' => 'lz-cf-nested',
+            'shipping_overdue_working_days' => 4,
+            'delivery_overdue_working_days' => 6,
+        ]);
+
+        $resolver = new ChannelPdmsThresholdResolver($this->connection, $this->buildSettingsProvider());
+        $result = $resolver->resolveForOrder('shopware', 'EXT-3000', null);
+
+        static::assertSame(4, $result['shipping']['workingDays']);
+        static::assertSame(6, $result['delivery']['workingDays']);
+    }
+
     public function testResolveForOrderUsesPaketJoinFallbackWhenOrderNumberMismatches(): void
     {
         $this->connection->insert('sales_channel', [
@@ -147,6 +180,54 @@ class ChannelPdmsThresholdResolverTest extends TestCase
 
         static::assertSame(2, $result['shipping']['workingDays']);
         static::assertSame(9, $result['delivery']['workingDays']);
+    }
+
+    public function testResolveForOrderUsesPaketNumberJoinFallbackWhenExternalOrderIdIsPaketNumber(): void
+    {
+        $this->connection->insert('sales_channel', [
+            'id' => 'sc-paket-number',
+            'custom_fields' => json_encode(['pdms_lieferzeiten_mapping' => ['5' => 'lz-paket-number']], JSON_THROW_ON_ERROR),
+        ]);
+        $this->connection->insert('order', [
+            'id' => 'order-paket-number',
+            'order_number' => 'PAK-888',
+            'sales_channel_id' => 'sc-paket-number',
+            'custom_fields' => '{}',
+            'created_at' => '2026-02-14 10:00:00',
+        ]);
+        $this->connection->insert('order_line_item', [
+            'id' => 'li-paket-number',
+            'order_id' => 'order-paket-number',
+            'custom_fields' => json_encode(['pdms_slot' => 5], JSON_THROW_ON_ERROR),
+            'created_at' => '2026-02-14 10:00:01',
+        ]);
+        $this->connection->insert('lieferzeiten_paket', [
+            'id' => 'paket-2',
+            'paket_number' => 'PAK-888',
+            'external_order_id' => 'EXT-ALT-888',
+            'source_system' => 'shopware',
+            'created_at' => '2026-02-14 10:00:00',
+        ]);
+        $this->connection->insert('lieferzeiten_channel_pdms_threshold', [
+            'sales_channel_id' => 'sc-paket-number',
+            'pdms_lieferzeit' => 'lz-paket-number',
+            'shipping_overdue_working_days' => 10,
+            'delivery_overdue_working_days' => 11,
+        ]);
+
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects(static::once())
+            ->method('info')
+            ->with(
+                'PDMS threshold resolver order lookup used fallback strategy.',
+                static::callback(static fn (array $context): bool => ($context['strategy'] ?? null) === 'lieferzeiten_paket_number_join')
+            );
+
+        $resolver = new ChannelPdmsThresholdResolver($this->connection, $this->buildSettingsProvider(), $logger);
+        $result = $resolver->resolveForOrder('shopware', 'PAK-888', null);
+
+        static::assertSame(10, $result['shipping']['workingDays']);
+        static::assertSame(11, $result['delivery']['workingDays']);
     }
 
     public function testResolveForOrderFallsBackToChannelDefaultsWhenThresholdEntryMissing(): void
