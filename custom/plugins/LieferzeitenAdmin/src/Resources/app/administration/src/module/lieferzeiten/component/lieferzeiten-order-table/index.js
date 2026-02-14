@@ -613,14 +613,16 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         resolveTrackingEntries(order, position) {
+            const fallbackCarrier = String(position.trackingCarrier || order.trackingCarrier || '').toLowerCase();
+
             if (Array.isArray(position?.trackingEntries) && position.trackingEntries.length > 0) {
                 return position.trackingEntries.map((entry) => ({
                     number: String(entry?.number || '').trim(),
-                    carrier: String(entry?.carrier || '').trim().toLowerCase(),
+                    carrier: String(entry?.carrier || fallbackCarrier).trim().toLowerCase(),
                 })).filter((entry) => entry.number !== '');
             }
 
-            const carrier = String(position.trackingCarrier || order.trackingCarrier || '').toLowerCase();
+            const carrier = fallbackCarrier;
             const packageEntries = Array.isArray(position.packages) ? position.packages : [];
             const fallbackPackages = packageEntries.length === 0
                 ? [position.sendenummer || order.sendenummer || '']

@@ -709,6 +709,7 @@ readonly class LieferzeitenOrderOverviewService
             'SELECT
                 LOWER(HEX(sh.position_id)) AS positionId,
                 sh.sendenummer AS number,
+                sh.carrier AS carrier,
                 sh.last_changed_by AS lastChangedBy,
                 sh.last_changed_at AS lastChangedAt,
                 sh.created_at AS createdAt

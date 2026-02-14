@@ -330,6 +330,7 @@ class LieferzeitenImportService
         ]], $context);
 
         $trackingNumbers = $this->extractTrackingNumbers($payload);
+        $trackingCarrier = $this->resolveTrackingCarrier($payload);
         if ($trackingNumbers === [] && $this->isInternalShipment($payload)) {
             $trackingNumbers[] = self::INTERNAL_SHIPPING_LABEL;
         }
@@ -343,6 +344,7 @@ class LieferzeitenImportService
                 'id' => Uuid::randomHex(),
                 'positionId' => $positionId,
                 'sendenummer' => $trackingNumber,
+                'carrier' => $trackingCarrier,
             ]], $context);
         }
 
@@ -677,6 +679,29 @@ class LieferzeitenImportService
             'intern',
             'eigenversand',
         ], true);
+    }
+
+    /** @param array<string,mixed> $payload */
+    private function resolveTrackingCarrier(array $payload): ?string
+    {
+        $candidates = [
+            $payload['carrier'] ?? null,
+            $payload['shippingProvider'] ?? null,
+            $payload['trackingProvider'] ?? null,
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (!is_string($candidate)) {
+                continue;
+            }
+
+            $carrier = trim($candidate);
+            if ($carrier !== '') {
+                return $carrier;
+            }
+        }
+
+        return null;
     }
 
     /** @param array<string,mixed> $payload */
