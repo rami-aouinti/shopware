@@ -133,6 +133,7 @@
                                         <th>{{ $t('lieferzeiten.table.article') }}</th>
                                         <th>{{ $t('lieferzeiten.table.quantity') }}</th>
                                         <th>{{ $t('lieferzeiten.table.packageNumbers') }}</th>
+                                        <th>{{ $t('lieferzeiten.fields.shippingType') }}</th>
                                         <th>{{ $t('lieferzeiten.fields.supplierDate') }}</th>
                                         <th>{{ $t('lieferzeiten.fields.supplierWeek') }}</th>
                                     </tr>
@@ -154,6 +155,7 @@
                                                 </button>
                                             </template>
                                         </td>
+                                        <td>{{ shippingLabelForPosition(order, position) }}</td>
                                         <td>
                                             <sw-datepicker v-model:value="position.lieferterminLieferantRange.from" :disabled="!hasEditAccess()" size="small" />
                                             <sw-datepicker v-model:value="position.lieferterminLieferantRange.to" :disabled="!hasEditAccess()" size="small" />
