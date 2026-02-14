@@ -494,8 +494,15 @@ Component.register('lieferzeiten-channel-settings-list', {
                     this.ensureChannelMatrix(channel.id);
 
                     for (const { key } of this.getChannelPdmsLieferzeiten(channel.id)) {
-                        const entity = this.thresholdRepository.create(Shopware.Context.api);
-                        entity.id = this.existingEntryIds[this.getEntryKey(channel.id, key)] || entity.id;
+                        const existingEntryId = this.existingEntryIds[this.getEntryKey(channel.id, key)];
+                        const entity = existingEntryId
+                            ? await this.thresholdRepository.get(existingEntryId, Shopware.Context.api)
+                            : this.thresholdRepository.create(Shopware.Context.api);
+
+                        if (existingEntryId) {
+                            entity.id = existingEntryId;
+                        }
+
                         entity.salesChannelId = channel.id;
                         entity.pdmsLieferzeit = key;
                         entity.shippingOverdueWorkingDays = this.matrixValues[channel.id][key].shippingOverdueWorkingDays;
