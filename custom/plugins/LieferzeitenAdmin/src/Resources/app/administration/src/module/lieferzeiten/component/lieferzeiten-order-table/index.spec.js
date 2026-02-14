@@ -32,6 +32,15 @@ describe('lieferzeiten/component/lieferzeiten-order-table', () => {
         expect(value).toBe('10');
     });
 
+    it('uses san6Pos when san6Position is not available and no detailed positions exist', () => {
+        const context = createContext();
+        const order = { san6Pos: '11' };
+
+        const value = methods.resolveSan6Position.call(context, order, []);
+
+        expect(value).toBe('11');
+    });
+
     it('uses order level quantity fallback when no detailed positions exist', () => {
         const context = createContext();
         const order = { quantity: 7 };
@@ -39,6 +48,15 @@ describe('lieferzeiten/component/lieferzeiten-order-table', () => {
         const value = methods.resolveQuantity.call(context, order, []);
 
         expect(value).toBe('7');
+    });
+
+    it('uses positionsCount when quantity is not available and no detailed positions exist', () => {
+        const context = createContext();
+        const order = { positionsCount: 4 };
+
+        const value = methods.resolveQuantity.call(context, order, []);
+
+        expect(value).toBe('4');
     });
 
     it('prefers detailed positions over fallback values when available', () => {
