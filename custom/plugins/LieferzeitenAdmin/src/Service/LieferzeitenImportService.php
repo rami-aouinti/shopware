@@ -779,16 +779,30 @@ class LieferzeitenImportService
      */
     private function emitNotificationEvents(string $externalOrderId, string $sourceSystem, array $payload, array $trackingNumbers, ?PaketEntity $existingPaket, ?int $existingStatus, int $mappedStatus, Context $context): void
     {
+        $previousPaymentDate = $existingPaket?->getPaymentDate();
+        $previousDeliveryDate = $existingPaket?->getDeliveryDate();
+        $previousCalculatedDeliveryDate = $existingPaket?->getCalculatedDeliveryDate();
+
+        $currentDeliveryDate = $this->parseDate($payload['deliveryDate'] ?? null);
+        $currentCalculatedDeliveryDate = $this->parseDate($payload['calculatedDeliveryDate'] ?? null);
+
+        $hadDeliveryDate = $previousDeliveryDate !== null || $previousCalculatedDeliveryDate !== null;
+        $hasDeliveryDate = $currentDeliveryDate !== null || $currentCalculatedDeliveryDate !== null;
+        $deliveryDateChanged = $this->hasDateValueChanged($previousDeliveryDate, $currentDeliveryDate)
+            || $this->hasDateValueChanged($previousCalculatedDeliveryDate, $currentCalculatedDeliveryDate);
+
         foreach (NotificationTriggerCatalog::channels() as $channel) {
-            $this->notificationEventService->dispatch(
-                sprintf('order-created:%s:%s', $externalOrderId, $channel),
-                NotificationTriggerCatalog::ORDER_CREATED,
-                $channel,
-                $payload,
-                $context,
-                $externalOrderId,
-                $sourceSystem,
-            );
+            if ($existingPaket === null) {
+                $this->notificationEventService->dispatch(
+                    sprintf('order-created:%s:%s', $externalOrderId, $channel),
+                    NotificationTriggerCatalog::ORDER_CREATED,
+                    $channel,
+                    $payload,
+                    $context,
+                    $externalOrderId,
+                    $sourceSystem,
+                );
+            }
 
             if ($existingStatus !== null && $existingStatus !== $mappedStatus) {
                 $this->notificationEventService->dispatch(
@@ -833,20 +847,44 @@ class LieferzeitenImportService
                 );
             }
 
-            if (($payload['deliveryDate'] ?? null) !== null || ($payload['calculatedDeliveryDate'] ?? null) !== null) {
+            if ($hasDeliveryDate && ($existingPaket === null || $deliveryDateChanged)) {
+                $deliveryDatePayload = [
+                    'deliveryDate' => $payload['deliveryDate'] ?? null,
+                    'calculatedDeliveryDate' => $payload['calculatedDeliveryDate'] ?? null,
+                    'externalOrderId' => $externalOrderId,
+                ];
+
                 $this->notificationEventService->dispatch(
                     sprintf('delivery-change:%s:%s', $externalOrderId, $channel),
                     NotificationTriggerCatalog::DELIVERY_DATE_CHANGED,
                     $channel,
-                    [
-                        'deliveryDate' => $payload['deliveryDate'] ?? null,
-                        'calculatedDeliveryDate' => $payload['calculatedDeliveryDate'] ?? null,
-                        'externalOrderId' => $externalOrderId,
-                    ],
+                    $deliveryDatePayload,
                     $context,
                     $externalOrderId,
                     $sourceSystem,
                 );
+
+                if (!$hadDeliveryDate) {
+                    $this->notificationEventService->dispatch(
+                        sprintf('delivery-date-assigned:%s:%s', $externalOrderId, $channel),
+                        NotificationTriggerCatalog::DELIVERY_DATE_ASSIGNED,
+                        $channel,
+                        $deliveryDatePayload,
+                        $context,
+                        $externalOrderId,
+                        $sourceSystem,
+                    );
+                } else {
+                    $this->notificationEventService->dispatch(
+                        sprintf('delivery-date-updated:%s:%s', $externalOrderId, $channel),
+                        NotificationTriggerCatalog::DELIVERY_DATE_UPDATED,
+                        $channel,
+                        $deliveryDatePayload,
+                        $context,
+                        $externalOrderId,
+                        $sourceSystem,
+                    );
+                }
             }
 
             if (($payload['customsRequired'] ?? false) === true) {
@@ -890,7 +928,7 @@ class LieferzeitenImportService
 
 
 
-            if ($this->isPrepaymentOrder($payload) && ($payload['paymentDate'] ?? null) !== null && $existingPaket?->getPaymentDate() === null) {
+            if ($this->isPrepaymentOrder($payload) && ($payload['paymentDate'] ?? null) !== null && $previousPaymentDate === null) {
                 $this->notificationEventService->dispatch(
                     sprintf('vorkasse-payment-received:%s:%s', $externalOrderId, $channel),
                     NotificationTriggerCatalog::PAYMENT_RECEIVED_VORKASSE,
@@ -964,6 +1002,19 @@ class LieferzeitenImportService
         $paymentMethod = mb_strtolower((string) ($payload['paymentMethod'] ?? ''));
 
         return str_contains($paymentMethod, 'vorkasse') || str_contains($paymentMethod, 'prepayment');
+    }
+
+    private function hasDateValueChanged(?\DateTimeInterface $previous, ?\DateTimeInterface $current): bool
+    {
+        if ($previous === null && $current === null) {
+            return false;
+        }
+
+        if ($previous === null || $current === null) {
+            return true;
+        }
+
+        return $previous->format(DATE_ATOM) !== $current->format(DATE_ATOM);
     }
 
     private function normalizeStatusInt(mixed $value): ?int

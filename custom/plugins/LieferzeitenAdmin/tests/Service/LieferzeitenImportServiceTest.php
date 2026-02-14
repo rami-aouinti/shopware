@@ -10,6 +10,7 @@ use LieferzeitenAdmin\Service\Status8TrackingMappingProvider;
 use LieferzeitenAdmin\Service\ChannelDateSettingsProvider;
 use LieferzeitenAdmin\Service\LieferzeitenImportService;
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
 use LieferzeitenAdmin\Service\Reliability\IntegrationReliabilityService;
 use LieferzeitenAdmin\Sync\Adapter\ChannelOrderAdapterRegistry;
 use LieferzeitenAdmin\Sync\San6\San6Client;
@@ -429,6 +430,80 @@ class LieferzeitenImportServiceTest extends TestCase
         $method->invoke($service, $context);
     }
 
+    public function testEmitNotificationEventsDispatchesDeliveryDateAssignedWhenDateFirstSet(): void
+    {
+        $dispatchedTriggers = [];
+
+        $notificationService = $this->createMock(NotificationEventService::class);
+        $notificationService->method('dispatch')
+            ->willReturnCallback(static function (string $eventKey, string $triggerKey, string $channel, array $payload) use (&$dispatchedTriggers): bool {
+                if (str_starts_with($eventKey, 'delivery-date-assigned:')) {
+                    static::assertSame('2026-02-14', $payload['deliveryDate'] ?? null);
+                }
+
+                $dispatchedTriggers[] = $triggerKey;
+
+                return true;
+            });
+
+        $service = $this->createService(notificationEventService: $notificationService);
+        $method = new \ReflectionMethod($service, 'emitNotificationEvents');
+        $method->setAccessible(true);
+
+        $method->invoke(
+            $service,
+            'EXT-1',
+            'shopware',
+            ['deliveryDate' => '2026-02-14', 'paymentMethod' => 'vorkasse'],
+            [],
+            null,
+            null,
+            1,
+            Context::createDefaultContext()
+        );
+
+        static::assertContains(NotificationTriggerCatalog::DELIVERY_DATE_ASSIGNED, $dispatchedTriggers);
+    }
+
+    public function testEmitNotificationEventsDispatchesDeliveryDateUpdatedWhenDateChanges(): void
+    {
+        $dispatchedTriggers = [];
+
+        $notificationService = $this->createMock(NotificationEventService::class);
+        $notificationService->method('dispatch')
+            ->willReturnCallback(static function (string $eventKey, string $triggerKey, string $channel, array $payload) use (&$dispatchedTriggers): bool {
+                if (str_starts_with($eventKey, 'delivery-date-updated:')) {
+                    static::assertSame('2026-02-16', $payload['deliveryDate'] ?? null);
+                }
+
+                $dispatchedTriggers[] = $triggerKey;
+
+                return true;
+            });
+
+        $existing = new PaketEntity();
+        $existing->setUniqueIdentifier(Uuid::randomHex());
+        $existing->setDeliveryDate(new \DateTimeImmutable('2026-02-15'));
+
+        $service = $this->createService(notificationEventService: $notificationService);
+        $method = new \ReflectionMethod($service, 'emitNotificationEvents');
+        $method->setAccessible(true);
+
+        $method->invoke(
+            $service,
+            'EXT-2',
+            'shopware',
+            ['deliveryDate' => '2026-02-16'],
+            [],
+            $existing,
+            3,
+            3,
+            Context::createDefaultContext()
+        );
+
+        static::assertContains(NotificationTriggerCatalog::DELIVERY_DATE_UPDATED, $dispatchedTriggers);
+    }
+
     private function createSearchResult(PaketEntity $entity): EntitySearchResult
     {
         return new EntitySearchResult(
@@ -448,6 +523,7 @@ class LieferzeitenImportServiceTest extends TestCase
         ?HttpClientInterface $httpClient = null,
         ?SystemConfigService $config = null,
         ?Status8TrackingMappingProvider $status8TrackingMappingProvider = null,
+        ?NotificationEventService $notificationEventService = null,
     ): LieferzeitenImportService {
         $config ??= $this->createMock(SystemConfigService::class);
 
@@ -465,7 +541,7 @@ class LieferzeitenImportServiceTest extends TestCase
             $this->createMock(BusinessDayDeliveryDateCalculator::class),
             $status8TrackingMappingProvider ?? new Status8TrackingMappingProvider($config),
             $this->createMock(LockFactory::class),
-            $this->createMock(NotificationEventService::class),
+            $notificationEventService ?? $this->createMock(NotificationEventService::class),
             $this->createMock(IntegrationReliabilityService::class),
             $this->createMock(IntegrationContractValidator::class),
             $auditLogService ?? $this->createMock(AuditLogService::class),
