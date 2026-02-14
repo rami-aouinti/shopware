@@ -92,46 +92,20 @@ readonly class LieferzeitenStatisticsService
 
         $channels = $this->connection->fetchAllAssociative($channelSql, $params, $metricsParamTypes);
 
+        $eventSourcesSql = $this->buildUnifiedEventSourcesSql();
+
         $timelineSql = sprintf(
             'SELECT
-                DATE(COALESCE(CONVERT_TZ(t.occurred_at, :storageTimezone, :statisticsTimezone), t.occurred_at)) AS date,
+                DATE(t.event_at) AS date,
                 COUNT(*) AS count
             FROM (
-                SELECT a.created_at AS occurred_at, a.source_system AS source_system
-                FROM `lieferzeiten_audit_log` a
-                WHERE a.created_at >= :periodStart
-                  AND a.created_at <= :periodEnd
-
-                UNION ALL
-
-                SELECT t.created_at AS occurred_at, JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.sourceSystem")) AS source_system
-                FROM `lieferzeiten_task` t
-                WHERE t.created_at >= :periodStart
-                  AND t.created_at <= :periodEnd
-
-                UNION ALL
-
-                SELECT pos.last_changed_at AS occurred_at, p.source_system AS source_system
-                FROM `lieferzeiten_position` pos
-                INNER JOIN `lieferzeiten_paket` p ON p.id = pos.paket_id
-                WHERE pos.last_changed_at IS NOT NULL
-                  AND pos.last_changed_at >= :periodStart
-                  AND pos.last_changed_at <= :periodEnd
-                  AND COALESCE(p.is_test_order, 0) = 0
-
-                UNION ALL
-
-                SELECT p.last_changed_at AS occurred_at, p.source_system AS source_system
-                FROM `lieferzeiten_paket` p
-                WHERE p.last_changed_at IS NOT NULL
-                  AND p.last_changed_at >= :periodStart
-                  AND p.last_changed_at <= :periodEnd
-                  AND COALESCE(p.is_test_order, 0) = 0
+                %s
             ) t
-            WHERE 1=1
+            WHERE t.event_at IS NOT NULL
               %s
-            GROUP BY DATE(COALESCE(CONVERT_TZ(t.occurred_at, :storageTimezone, :statisticsTimezone), t.occurred_at))
-            ORDER BY DATE(COALESCE(CONVERT_TZ(t.occurred_at, :storageTimezone, :statisticsTimezone), t.occurred_at)) ASC',
+            GROUP BY DATE(t.event_at)
+            ORDER BY DATE(t.event_at) ASC',
+            $eventSourcesSql,
             $this->buildSourceScopeCondition('t.source_system', $params, $domain, $channel),
         );
 
@@ -141,103 +115,25 @@ readonly class LieferzeitenStatisticsService
 
         $activitiesSql = sprintf(
             'SELECT
-                LOWER(HEX(t.id)) AS id,
+                CONCAT(t.event_type, ":", LOWER(HEX(t.id)), ":", DATE_FORMAT(t.event_at, "%%Y%%m%%d%%H%%i%%s%%f")) AS id,
                 t.order_number AS orderNumber,
                 COALESCE(NULLIF(t.domain, ""), "Unknown") AS domain,
                 t.event_type AS eventType,
-                t.event_status AS status,
+                COALESCE(t.event_status, "unknown") AS status,
                 t.message AS message,
                 t.event_at AS eventAt,
-                p.delivery_date AS promisedAt,
-                LOWER(HEX(COALESCE(t.paket_id, p.id))) AS paketId,
-                LOWER(HEX(t.task_id)) AS taskId,
-                tracking_history.tracking_number AS trackingNumber
+                COALESCE(NULLIF(t.source_system, ""), "unknown") AS sourceSystem,
+                p.delivery_date AS promisedAt
             FROM (
-                SELECT
-                    a.id,
-                    COALESCE(JSON_UNQUOTE(JSON_EXTRACT(a.payload, "$.externalOrderId")), p.external_order_id) AS order_number,
-                    COALESCE(NULLIF(a.source_system, ""), p.source_system) AS domain,
-                    "audit" AS event_type,
-                    a.action AS event_status,
-                    a.action AS message,
-                    a.created_at AS event_at,
-                    p.id AS paket_id,
-                    NULL AS task_id
-                FROM `lieferzeiten_audit_log` a
-                LEFT JOIN `lieferzeiten_paket` p ON p.external_order_id = JSON_UNQUOTE(JSON_EXTRACT(a.payload, "$.externalOrderId"))
-                WHERE a.created_at >= :periodStart
-                  AND a.created_at <= :periodEnd
-
-                UNION ALL
-
-                SELECT
-                    t.id,
-                    COALESCE(JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.externalOrderId")), p.external_order_id) AS order_number,
-                    COALESCE(JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.sourceSystem")), p.source_system) AS domain,
-                    "task" AS event_type,
-                    t.status AS event_status,
-                    COALESCE(JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.taskType")), "task") AS message,
-                    t.created_at AS event_at,
-                    p.id AS paket_id,
-                    t.id AS task_id
-                FROM `lieferzeiten_task` t
-                LEFT JOIN `lieferzeiten_paket` p ON p.external_order_id = JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.externalOrderId"))
-                WHERE t.created_at >= :periodStart
-                  AND t.created_at <= :periodEnd
-
-                UNION ALL
-
-                SELECT
-                    pos.id,
-                    p.external_order_id AS order_number,
-                    p.source_system AS domain,
-                    "position" AS event_type,
-                    COALESCE(pos.status, "updated") AS event_status,
-                    "position_updated" AS message,
-                    pos.last_changed_at AS event_at,
-                    pos.paket_id AS paket_id,
-                    NULL AS task_id
-                FROM `lieferzeiten_position` pos
-                INNER JOIN `lieferzeiten_paket` p ON p.id = pos.paket_id
-                WHERE pos.last_changed_at IS NOT NULL
-                  AND pos.last_changed_at >= :periodStart
-                  AND pos.last_changed_at <= :periodEnd
-                  AND COALESCE(p.is_test_order, 0) = 0
-
-                UNION ALL
-
-                SELECT
-                    p.id,
-                    p.external_order_id AS order_number,
-                    p.source_system AS domain,
-                    "paket" AS event_type,
-                    COALESCE(p.status, "updated") AS event_status,
-                    "paket_updated" AS message,
-                    p.last_changed_at AS event_at,
-                    p.id AS paket_id,
-                    NULL AS task_id
-                FROM `lieferzeiten_paket` p
-                WHERE p.last_changed_at IS NOT NULL
-                  AND p.last_changed_at >= :periodStart
-                  AND p.last_changed_at <= :periodEnd
-                  AND COALESCE(p.is_test_order, 0) = 0
+                %s
             ) t
             LEFT JOIN `lieferzeiten_paket` p ON p.external_order_id = t.order_number
-            LEFT JOIN (
-                SELECT
-                    pos.paket_id,
-                    MIN(sh.sendenummer) AS tracking_number
-                FROM `lieferzeiten_sendenummer_history` sh
-                INNER JOIN `lieferzeiten_position` pos ON pos.id = sh.position_id
-                WHERE sh.sendenummer IS NOT NULL
-                  AND sh.sendenummer <> ""
-                GROUP BY pos.paket_id
-            ) tracking_history ON tracking_history.paket_id = COALESCE(t.paket_id, p.id)
-            WHERE t.order_number IS NOT NULL
+            WHERE t.event_at IS NOT NULL
               %s
             ORDER BY t.event_at DESC
             LIMIT 200',
-            $this->buildSourceScopeCondition('t.domain', $params, $domain, $channel),
+            $eventSourcesSql,
+            $this->buildSourceScopeCondition('t.source_system', $params, $domain, $channel),
         );
 
         $activities = $this->connection->fetchAllAssociative($activitiesSql, $params, $metricsParamTypes);
@@ -266,6 +162,7 @@ readonly class LieferzeitenStatisticsService
                 'eventType' => (string) ($row['eventType'] ?? ''),
                 'message' => (string) ($row['message'] ?? ''),
                 'eventAt' => (string) ($row['eventAt'] ?? ''),
+                'sourceSystem' => (string) ($row['sourceSystem'] ?? 'unknown'),
                 'promisedAt' => $row['promisedAt'],
                 'paketId' => isset($row['paketId']) ? (string) $row['paketId'] : null,
                 'taskId' => isset($row['taskId']) ? (string) $row['taskId'] : null,
@@ -406,7 +303,7 @@ readonly class LieferzeitenStatisticsService
             $placeholders[] = ':' . $paramName;
         }
 
-        return sprintf(' AND p.source_system IN (%s)', implode(', ', $placeholders));
+        return sprintf(' AND LOWER(COALESCE(p.source_system, "")) IN (%s)', implode(', ', $placeholders));
     }
 
     /**
@@ -426,7 +323,151 @@ readonly class LieferzeitenStatisticsService
             $placeholders[] = ':' . $paramName;
         }
 
-        return sprintf(' AND %s IN (%s)', $column, implode(', ', $placeholders));
+        return sprintf(' AND LOWER(COALESCE(%s, "")) IN (%s)', $column, implode(', ', $placeholders));
+    }
+
+
+    private function buildUnifiedEventSourcesSql(): string
+    {
+        return 'SELECT
+                    a.id AS id,
+                    COALESCE(JSON_UNQUOTE(JSON_EXTRACT(a.payload, "$.externalOrderId")), p.external_order_id) AS order_number,
+                    COALESCE(NULLIF(a.source_system, ""), p.source_system) AS domain,
+                    "audit" AS event_type,
+                    a.action AS event_status,
+                    a.action AS message,
+                    a.created_at AS event_at,
+                    COALESCE(NULLIF(a.source_system, ""), p.source_system) AS source_system
+                FROM `lieferzeiten_audit_log` a
+                LEFT JOIN `lieferzeiten_paket` p ON p.external_order_id = JSON_UNQUOTE(JSON_EXTRACT(a.payload, "$.externalOrderId"))
+                WHERE a.created_at >= :periodStart
+
+                UNION ALL
+
+                SELECT
+                    n.id,
+                    n.external_order_id AS order_number,
+                    COALESCE(NULLIF(n.source_system, ""), "notification") AS domain,
+                    "notification_event" AS event_type,
+                    n.status AS event_status,
+                    n.trigger_key AS message,
+                    COALESCE(n.dispatched_at, n.updated_at, n.created_at) AS event_at,
+                    COALESCE(NULLIF(n.source_system, ""), "notification") AS source_system
+                FROM `lieferzeiten_notification_event` n
+                WHERE COALESCE(n.dispatched_at, n.updated_at, n.created_at) >= :periodStart
+
+                UNION ALL
+
+                SELECT
+                    t.id,
+                    COALESCE(JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.externalOrderId")), p.external_order_id) AS order_number,
+                    COALESCE(JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.sourceSystem")), p.source_system, "task") AS domain,
+                    "task" AS event_type,
+                    t.status AS event_status,
+                    COALESCE(JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.taskType")), "task_created") AS message,
+                    t.created_at AS event_at,
+                    COALESCE(JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.sourceSystem")), p.source_system, "task") AS source_system
+                FROM `lieferzeiten_task` t
+                LEFT JOIN `lieferzeiten_paket` p ON p.external_order_id = JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.externalOrderId"))
+                WHERE t.created_at >= :periodStart
+
+                UNION ALL
+
+                SELECT
+                    t.id,
+                    COALESCE(JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.externalOrderId")), p.external_order_id) AS order_number,
+                    COALESCE(JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.sourceSystem")), p.source_system, "task") AS domain,
+                    "task_transition" AS event_type,
+                    t.status AS event_status,
+                    CONCAT("transition:", t.status) AS message,
+                    t.updated_at AS event_at,
+                    COALESCE(JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.sourceSystem")), p.source_system, "task") AS source_system
+                FROM `lieferzeiten_task` t
+                LEFT JOIN `lieferzeiten_paket` p ON p.external_order_id = JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.externalOrderId"))
+                WHERE t.updated_at IS NOT NULL
+                  AND t.updated_at >= :periodStart
+                  AND t.updated_at <> t.created_at
+
+                UNION ALL
+
+                SELECT
+                    d.id,
+                    JSON_UNQUOTE(JSON_EXTRACT(d.payload, "$.externalOrderId")) AS order_number,
+                    COALESCE(JSON_UNQUOTE(JSON_EXTRACT(d.payload, "$.sourceSystem")), LOWER(NULLIF(d.system, "")), "dead-letter") AS domain,
+                    "dead_letter" AS event_type,
+                    CAST(d.attempts AS CHAR) AS event_status,
+                    d.operation AS message,
+                    d.created_at AS event_at,
+                    COALESCE(JSON_UNQUOTE(JSON_EXTRACT(d.payload, "$.sourceSystem")), LOWER(NULLIF(d.system, "")), "dead-letter") AS source_system
+                FROM `lieferzeiten_dead_letter` d
+                WHERE d.created_at >= :periodStart
+
+                UNION ALL
+
+                SELECT
+                    sh.id,
+                    p.external_order_id AS order_number,
+                    p.source_system AS domain,
+                    "tracking_history" AS event_type,
+                    COALESCE(NULLIF(sh.sendenummer, ""), "updated") AS event_status,
+                    "tracking_number_updated" AS message,
+                    COALESCE(sh.last_changed_at, sh.created_at) AS event_at,
+                    p.source_system AS source_system
+                FROM `lieferzeiten_sendenummer_history` sh
+                INNER JOIN `lieferzeiten_position` pos ON pos.id = sh.position_id
+                INNER JOIN `lieferzeiten_paket` p ON p.id = pos.paket_id
+                WHERE COALESCE(sh.last_changed_at, sh.created_at) >= :periodStart
+                  AND COALESCE(p.is_test_order, 0) = 0
+
+                UNION ALL
+
+                SELECT
+                    nlh.id,
+                    p.external_order_id AS order_number,
+                    p.source_system AS domain,
+                    "delivery_date_history" AS event_type,
+                    DATE_FORMAT(COALESCE(nlh.liefertermin_to, nlh.liefertermin), "%Y-%m-%d") AS event_status,
+                    "delivery_date_range_updated" AS message,
+                    COALESCE(nlh.last_changed_at, nlh.created_at) AS event_at,
+                    p.source_system AS source_system
+                FROM `lieferzeiten_neuer_liefertermin_history` nlh
+                INNER JOIN `lieferzeiten_position` pos ON pos.id = nlh.position_id
+                INNER JOIN `lieferzeiten_paket` p ON p.id = pos.paket_id
+                WHERE COALESCE(nlh.last_changed_at, nlh.created_at) >= :periodStart
+                  AND COALESCE(p.is_test_order, 0) = 0
+
+                UNION ALL
+
+                SELECT
+                    pos.id,
+                    p.external_order_id AS order_number,
+                    p.source_system AS domain,
+                    "position" AS event_type,
+                    COALESCE(pos.status, "updated") AS event_status,
+                    "position_updated" AS message,
+                    pos.last_changed_at AS event_at,
+                    p.source_system AS source_system
+                FROM `lieferzeiten_position` pos
+                INNER JOIN `lieferzeiten_paket` p ON p.id = pos.paket_id
+                WHERE pos.last_changed_at IS NOT NULL
+                  AND pos.last_changed_at >= :periodStart
+                  AND COALESCE(p.is_test_order, 0) = 0
+
+                UNION ALL
+
+                SELECT
+                    p.id,
+                    p.external_order_id AS order_number,
+                    p.source_system AS domain,
+                    "paket" AS event_type,
+                    COALESCE(p.status, "updated") AS event_status,
+                    "paket_updated" AS message,
+                    p.last_changed_at AS event_at,
+                    p.source_system AS source_system
+                FROM `lieferzeiten_paket` p
+                WHERE p.last_changed_at IS NOT NULL
+                  AND p.last_changed_at >= :periodStart
+                  AND COALESCE(p.is_test_order, 0) = 0';
     }
 
     private function sanitizePeriod(int $periodDays): int
