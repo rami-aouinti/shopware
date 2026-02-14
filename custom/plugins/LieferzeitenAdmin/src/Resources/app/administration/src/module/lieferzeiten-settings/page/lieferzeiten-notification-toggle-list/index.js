@@ -13,11 +13,10 @@ Component.register('lieferzeiten-notification-toggle-list', {
     data() {
         return {
             repository: null,
-            items: null,
+            salesChannelRepository: null,
+            items: [],
+            salesChannels: [],
             isLoading: false,
-            total: 0,
-            page: 1,
-            limit: 50,
             triggerOptions: [
                 'commande.creee',
                 'commande.changement_statut',
@@ -37,6 +36,7 @@ Component.register('lieferzeiten-notification-toggle-list', {
                 'liefertermin.anfrage.wiedereroeffnet',
             ],
             channelOptions: ['email', 'sms', 'webhook'],
+            invalidEntries: [],
         };
     },
 
@@ -49,21 +49,24 @@ Component.register('lieferzeiten-notification-toggle-list', {
             return this.acl.can('lieferzeiten.editor') || this.acl.can('admin');
         },
 
-        columns() {
+        salesChannelColumns() {
             return [
-                { property: 'triggerKey', label: 'Trigger', inlineEdit: 'string', primary: true },
-                { property: 'channel', label: 'Canal', inlineEdit: 'string' },
-                { property: 'salesChannelId', label: 'Sales Channel Scope', inlineEdit: 'string' },
-                { property: 'enabled', label: 'Enabled', inlineEdit: 'boolean' },
-                { property: 'lastChangedBy', label: 'Last Changed By', inlineEdit: 'string' },
-                { property: 'lastChangedAt', label: 'Last Changed At', inlineEdit: 'date' },
+                {
+                    id: 'global',
+                    name: 'Global',
+                },
+                ...this.salesChannels.map((salesChannel) => ({
+                    id: salesChannel.id,
+                    name: salesChannel.name || salesChannel.id,
+                })),
             ];
         },
     },
 
     created() {
         this.repository = this.repositoryFactory.create('lieferzeiten_notification_toggle');
-        this.getList();
+        this.salesChannelRepository = this.repositoryFactory.create('sales_channel');
+        this.loadData();
     },
 
     methods: {
@@ -81,70 +84,117 @@ Component.register('lieferzeiten-notification-toggle-list', {
             });
         },
 
-        async getList() {
+        async loadData() {
             this.isLoading = true;
-            const criteria = new Criteria(this.page, this.limit);
-            criteria.addSorting(Criteria.sort('triggerKey', 'ASC'));
-            criteria.addSorting(Criteria.sort('channel', 'ASC'));
 
             try {
-                const result = await this.repository.search(criteria, Shopware.Context.api);
-                this.items = result;
-                this.total = result.total;
+                const toggleCriteria = new Criteria(1, 500);
+                toggleCriteria.addSorting(Criteria.sort('triggerKey', 'ASC'));
+                toggleCriteria.addSorting(Criteria.sort('channel', 'ASC'));
+                toggleCriteria.addSorting(Criteria.sort('salesChannelId', 'ASC'));
+
+                const salesChannelCriteria = new Criteria(1, 500);
+                salesChannelCriteria.addSorting(Criteria.sort('name', 'ASC'));
+
+                const [toggleResult, salesChannelResult] = await Promise.all([
+                    this.repository.search(toggleCriteria, Shopware.Context.api),
+                    this.salesChannelRepository.search(salesChannelCriteria, Shopware.Context.api),
+                ]);
+
+                this.items = [...toggleResult];
+                this.salesChannels = [...salesChannelResult];
+                this.invalidEntries = this.items.filter((item) => !this.isValidToggle(item));
             } catch (error) {
                 this.notifyRequestError(error, this.$tc('lieferzeiten.lms.general.mainMenuItem'));
             } finally {
                 this.isLoading = false;
             }
         },
-        onPageChange({ page, limit }) {
-            this.page = page;
-            this.limit = limit;
-            this.getList();
+
+        getToggleEntity(triggerKey, channel, salesChannelId) {
+            const scopeId = salesChannelId || null;
+
+            return this.items.find((item) => item.triggerKey === triggerKey
+                && item.channel === channel
+                && (item.salesChannelId || null) === scopeId);
         },
-        async onInlineEditSave(item) {
-            if (!this.hasEditAccess) {
-                return Promise.resolve();
+
+        getToggleValue(triggerKey, channel, salesChannelId) {
+            return Boolean(this.getToggleEntity(triggerKey, channel, salesChannelId)?.enabled);
+        },
+
+        isValidToggle(item) {
+            const expectedCode = `${item.triggerKey}:${item.channel}`;
+
+            return this.triggerOptions.includes(item.triggerKey)
+                && this.channelOptions.includes(item.channel)
+                && item.code === expectedCode;
+        },
+
+        isCellDisabled(triggerKey, channel, salesChannelId) {
+            const existingEntity = this.getToggleEntity(triggerKey, channel, salesChannelId);
+
+            if (!existingEntity) {
+                return false;
             }
+
+            return !this.isValidToggle(existingEntity);
+        },
+
+        async onToggleChanged(triggerKey, channel, salesChannelId, enabled) {
+            if (!this.hasEditAccess) {
+                return;
+            }
+
+            if (!this.triggerOptions.includes(triggerKey)) {
+                this.createNotificationError({
+                    title: 'Validation',
+                    message: `Trigger invalide: ${triggerKey}`,
+                });
+
+                return;
+            }
+
+            if (!this.channelOptions.includes(channel)) {
+                this.createNotificationError({
+                    title: 'Validation',
+                    message: `Canal invalide: ${channel}`,
+                });
+
+                return;
+            }
+
+            const normalizedSalesChannelId = salesChannelId || null;
+            let entity = this.getToggleEntity(triggerKey, channel, normalizedSalesChannelId);
+
+            if (entity && !this.isValidToggle(entity)) {
+                this.createNotificationError({
+                    title: 'Validation',
+                    message: 'Impossible de modifier une entrée incohérente. Corrigez triggerKey/channel/code via API ou supprimez-la.',
+                });
+
+                return;
+            }
+
+            if (!entity) {
+                entity = this.repository.create(Shopware.Context.api);
+                entity.triggerKey = triggerKey;
+                entity.channel = channel;
+                entity.salesChannelId = normalizedSalesChannelId;
+            }
+
+            entity.code = `${triggerKey}:${channel}`;
+            entity.enabled = Boolean(enabled);
 
             this.isLoading = true;
-            item.code = `${item.triggerKey}:${item.channel}`;
-            try {
-                await this.repository.save(item, Shopware.Context.api);
-                await this.getList();
-            } catch (error) {
-                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.general.mainMenuItem'));
-            }
-        },
-        async onDelete(item) {
-            if (!this.hasEditAccess) {
-                return Promise.resolve();
-            }
 
-            this.isLoading = true;
-            try {
-                await this.repository.delete(item.id, Shopware.Context.api);
-                await this.getList();
-            } catch (error) {
-                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.general.mainMenuItem'));
-            }
-        },
-        async onCreate() {
-            if (!this.hasEditAccess) {
-                return Promise.resolve();
-            }
-
-            const entity = this.repository.create(Shopware.Context.api);
-            entity.triggerKey = 'commande.creee';
-            entity.channel = 'email';
-            entity.salesChannelId = null;
-            entity.code = `${entity.triggerKey}:${entity.channel}`;
-            entity.enabled = true;
             try {
                 await this.repository.save(entity, Shopware.Context.api);
-                await this.getList();
+                await this.loadData();
             } catch (error) {
                 this.notifyRequestError(error, this.$tc('lieferzeiten.lms.general.mainMenuItem'));
+            } finally {
+                this.isLoading = false;
             }
         },
     },

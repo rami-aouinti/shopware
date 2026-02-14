@@ -36,7 +36,7 @@ Component.register('lieferzeiten-channel-settings-list', {
             return [
                 { property: 'salesChannelId', label: 'Sales Channel', inlineEdit: 'string', primary: true },
                 { property: 'defaultStatus', label: 'Default Status', inlineEdit: 'string' },
-                { property: 'enableNotifications', label: 'Notifications', inlineEdit: 'boolean' },
+                { property: 'enableNotifications', label: 'Notifications (global default)', inlineEdit: 'boolean' },
                 { property: 'lastChangedBy', label: 'Last Changed By', inlineEdit: 'string' },
                 { property: 'lastChangedAt', label: 'Last Changed At', inlineEdit: 'date' },
             ];
