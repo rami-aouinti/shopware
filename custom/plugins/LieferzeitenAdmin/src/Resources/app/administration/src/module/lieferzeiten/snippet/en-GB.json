@@ -46,7 +46,9 @@
         "channel": "Step 2 · Channel"
       },
       "accessPendingTitle": "Select area",
-      "accessPendingDescription": "Please select Area (step 1) and then Channel (step 2) to unlock the main views and filters."
+      "accessPendingDescription": "Please select Area (step 1) and then Channel (step 2) to unlock the main views and filters.",
+      "statisticsAccessPendingDescription": "Please select Area (step 1) and Channel (step 2) first. The “Delivery Time Management Statistics” tab stays hidden or inactive until then.",
+      "statisticsTabHint": "Select Area and Channel first to show “Delivery Time Management Statistics”."
     },
     "kpi": {
       "totalOrders": "Total orders",

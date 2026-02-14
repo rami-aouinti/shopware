@@ -46,7 +46,9 @@
         "channel": "Schritt 2 · Kanal"
       },
       "accessPendingTitle": "Bereich auswählen",
-      "accessPendingDescription": "Bitte zuerst Bereich (Schritt 1) und danach Kanal (Schritt 2) auswählen, damit die Hauptansichten und Filter geladen werden."
+      "accessPendingDescription": "Bitte zuerst Bereich (Schritt 1) und danach Kanal (Schritt 2) auswählen, damit die Hauptansichten und Filter geladen werden.",
+      "statisticsAccessPendingDescription": "Bitte zuerst Bereich (Schritt 1) und Kanal (Schritt 2) auswählen. Der Reiter „Statistiken Lieferzeiten-Management“ bleibt bis dahin ausgeblendet bzw. inaktiv.",
+      "statisticsTabHint": "Wähle zuerst Bereich und Kanal, um „Statistiken Lieferzeiten-Management“ anzuzeigen."
     },
     "kpi": {
       "totalOrders": "Bestellungen gesamt",
