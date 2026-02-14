@@ -82,6 +82,14 @@
             <tag name="kernel.event_subscriber" />
         </service>
 
+        <service id="LieferzeitenAdmin\Subscriber\ChannelPdmsThresholdValidationSubscriber">
+            <tag name="kernel.event_subscriber" />
+        </service>
+
+        <service id="LieferzeitenAdmin\Repository\ChannelPdmsThresholdRepository">
+            <argument type="service" id="lieferzeiten_channel_pdms_threshold.repository" />
+        </service>
+
         <service id="LieferzeitenAdmin\Service\LieferzeitenImportService">
             <argument type="service" id="lieferzeiten_paket.repository" />
             <argument type="service" id="lieferzeiten_position.repository" />

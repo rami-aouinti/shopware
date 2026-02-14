@@ -117,6 +117,23 @@ Component.register('lieferzeiten-channel-settings-list', {
             }
         },
 
+        normalizeNonNegativeInteger(rawValue) {
+            if (typeof rawValue === 'number') {
+                return Number.isInteger(rawValue) ? rawValue : rawValue;
+            }
+
+            if (typeof rawValue !== 'string') {
+                return rawValue;
+            }
+
+            const trimmed = rawValue.trim();
+            if (!/^\d+$/.test(trimmed)) {
+                return rawValue;
+            }
+
+            return Number.parseInt(trimmed, 10);
+        },
+
         validateValue(channelId, pdmsKey, fieldName) {
             const fieldKey = this.getFieldKey(channelId, pdmsKey, fieldName);
             const value = this.matrixValues[channelId]?.[pdmsKey]?.[fieldName];
@@ -131,8 +148,7 @@ Component.register('lieferzeiten-channel-settings-list', {
         },
 
         onChangeNumberField(channelId, pdmsKey, fieldName, rawValue) {
-            const normalized = Number.parseInt(rawValue, 10);
-            this.matrixValues[channelId][pdmsKey][fieldName] = Number.isNaN(normalized) ? rawValue : normalized;
+            this.matrixValues[channelId][pdmsKey][fieldName] = this.normalizeNonNegativeInteger(rawValue);
             this.validateValue(channelId, pdmsKey, fieldName);
         },
 
