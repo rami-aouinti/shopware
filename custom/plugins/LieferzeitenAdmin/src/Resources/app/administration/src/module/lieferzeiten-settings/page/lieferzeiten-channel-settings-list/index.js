@@ -10,10 +10,10 @@ const { Component } = Shopware;
 const { Criteria } = Shopware.Data;
 
 const DEFAULT_PDMS_LIEFERZEITEN = [
-    { key: 'PDMS_1', label: 'PDMS 1' },
-    { key: 'PDMS_2', label: 'PDMS 2' },
-    { key: 'PDMS_3', label: 'PDMS 3' },
-    { key: 'PDMS_4', label: 'PDMS 4' },
+    { key: 'PDMS_1', label: 'PDMS 1', isPlaceholder: true },
+    { key: 'PDMS_2', label: 'PDMS 2', isPlaceholder: true },
+    { key: 'PDMS_3', label: 'PDMS 3', isPlaceholder: true },
+    { key: 'PDMS_4', label: 'PDMS 4', isPlaceholder: true },
 ];
 
 const LMS_TARGET_DOMAIN_KEYS = LMS_TARGET_CHANNELS.map((targetChannel) => targetChannel.domainKey);
@@ -51,6 +51,7 @@ Component.register('lieferzeiten-channel-settings-list', {
             isSeedingDemoData: false,
             hasDemoData: false,
             channelPdmsLieferzeiten: {},
+            channelPdmsMappingIncomplete: {},
         };
     },
 
@@ -161,6 +162,10 @@ Component.register('lieferzeiten-channel-settings-list', {
             return `${channelId}.${pdmsKey}`;
         },
 
+        hasIncompletePdmsMapping(channelId) {
+            return Boolean(this.channelPdmsMappingIncomplete[channelId]);
+        },
+
         getFieldKey(channelId, pdmsKey, fieldName) {
             return `${channelId}.${pdmsKey}.${fieldName}`;
         },
@@ -183,20 +188,35 @@ Component.register('lieferzeiten-channel-settings-list', {
         async loadChannelPdmsLieferzeiten(channelId) {
             try {
                 const response = await this.lieferzeitenOrdersService.getSalesChannelLieferzeiten(channelId);
-                const entries = Array.isArray(response?.lieferzeiten)
-                    ? response.lieferzeiten.map((entry) => ({
-                        key: `PDMS_${entry?.slot ?? 0}`,
-                        label: entry?.lieferzeit?.name || `PDMS ${entry?.slot ?? ''}`,
-                    })).filter((entry) => /^PDMS_[1-4]$/.test(entry.key))
-                    : [];
+                const entriesBySlot = new Map();
 
-                const normalizedEntries = entries.length === 4
-                    ? entries
-                    : DEFAULT_PDMS_LIEFERZEITEN;
+                if (Array.isArray(response?.lieferzeiten)) {
+                    response.lieferzeiten.forEach((entry) => {
+                        const slot = Number.parseInt(entry?.slot, 10);
+
+                        if (!Number.isInteger(slot) || slot < 1 || slot > 4 || entriesBySlot.has(slot)) {
+                            return;
+                        }
+
+                        entriesBySlot.set(slot, {
+                            key: `PDMS_${slot}`,
+                            label: entry?.lieferzeit?.name || `PDMS ${slot}`,
+                            isPlaceholder: false,
+                        });
+                    });
+                }
+
+                const normalizedEntries = [1, 2, 3, 4].map((slot) => entriesBySlot.get(slot) || {
+                    key: `PDMS_${slot}`,
+                    label: this.$tc('lieferzeiten.lms.dashboard.incompleteMappingSlotLabel', 0, { slot }),
+                    isPlaceholder: true,
+                });
 
                 this.$set(this.channelPdmsLieferzeiten, channelId, normalizedEntries);
+                this.$set(this.channelPdmsMappingIncomplete, channelId, normalizedEntries.some((entry) => entry.isPlaceholder));
             } catch (error) {
                 this.$set(this.channelPdmsLieferzeiten, channelId, DEFAULT_PDMS_LIEFERZEITEN);
+                this.$set(this.channelPdmsMappingIncomplete, channelId, true);
                 this.notifyRequestError(error, this.$tc('lieferzeiten.lms.dashboard.title'));
             }
         },
@@ -263,6 +283,7 @@ Component.register('lieferzeiten-channel-settings-list', {
                 this.matrixValues = {};
                 this.existingEntryIds = {};
                 this.channelPdmsLieferzeiten = {};
+                this.channelPdmsMappingIncomplete = {};
 
                 const loadedChannelIds = new Set(this.channels.map((channel) => channel.id));
 

@@ -178,7 +178,9 @@
           "pdmsLieferzeit": "PDMS delivery time",
           "shippingOverdueWorkingDays": "Shipping overdue (working days)",
           "deliveryOverdueWorkingDays": "Delivery overdue (working days)"
-        }
+        },
+        "incompleteMappingBadge": "Incomplete PDMS mapping",
+        "incompleteMappingSlotLabel": "Slot {slot} not configured"
       }
     },
     "businessStatus": {
