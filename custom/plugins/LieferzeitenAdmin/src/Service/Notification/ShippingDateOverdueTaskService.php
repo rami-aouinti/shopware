@@ -8,7 +8,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 
 class ShippingDateOverdueTaskService
 {
@@ -23,14 +22,10 @@ class ShippingDateOverdueTaskService
     public function run(Context $context): void
     {
         $now = new \DateTimeImmutable();
-        if ((int) $now->format('H') < 12) {
-            return;
-        }
 
         $criteria = new Criteria();
         $criteria->addAssociation('paket');
         $criteria->addFilter(new EqualsFilter('paket.shippingDate', null));
-        $criteria->addFilter(new RangeFilter('paket.businessDateTo', [RangeFilter::LT => $now->modify('+1 day')->format(DATE_ATOM)]));
 
         /** @var iterable<PositionEntity> $positions */
         $positions = $this->positionRepository->search($criteria, $context)->getEntities();
@@ -41,6 +36,8 @@ class ShippingDateOverdueTaskService
                 continue;
             }
 
+            // businessDateTo is treated as "spätester Versandzeitpunkt" from the integration payload.
+            // paket.shippingDate cannot be used here because it is the actual shipment timestamp and remains NULL until shipped.
             $businessDateTo = $paket->getBusinessDateTo();
             if (!$businessDateTo instanceof \DateTimeInterface) {
                 continue;
@@ -51,6 +48,12 @@ class ShippingDateOverdueTaskService
                 $paket->getExternalOrderId(),
                 $position->getPositionNumber(),
             );
+
+            $cutoffToday = $this->buildCutoffDate($now, $settings['shipping']['cutoff']);
+            if ($now < $cutoffToday) {
+                continue;
+            }
+
             $thresholdDate = $this->buildThresholdDate($now, $settings['shipping']);
             if (\DateTimeImmutable::createFromInterface($businessDateTo) >= $thresholdDate) {
                 continue;
@@ -105,6 +108,13 @@ class ShippingDateOverdueTaskService
         }
 
         return $date;
+    }
+
+    private function buildCutoffDate(\DateTimeImmutable $now, string $cutoff): \DateTimeImmutable
+    {
+        [$hour, $minute] = array_map('intval', explode(':', $cutoff));
+
+        return $now->setTime($hour, $minute);
     }
 
     /**
