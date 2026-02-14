@@ -393,7 +393,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
 
         resolveQuantity(order, positions) {
             if (!positions.length) {
-                return this.displayOrDash(this.pickFirstDefined(order, ['quantity']));
+                return this.displayOrDash(this.pickFirstDefined(order, ['quantity', 'positionsCount']));
             }
 
             const total = positions.reduce((acc, position) => {
