@@ -22,6 +22,23 @@ describe('lieferzeiten/utils/lms-target-channel-mapping', () => {
         expect(resolveLmsTargetChannelKey(channel)).toBe('ebay.de');
     });
 
+    it('keeps LMS mapping stable when only display names change', () => {
+        const technicalChannel = {
+            technicalName: 'first-medical-shop',
+            name: 'Original display label',
+            translated: { name: 'Originale Übersetzung' },
+        };
+
+        const renamedChannel = {
+            ...technicalChannel,
+            name: 'Completely renamed display label',
+            translated: { name: 'Komplett umbenannte Übersetzung' },
+        };
+
+        expect(resolveLmsTargetChannelKey(technicalChannel)).toBe('first-medical-shop.de');
+        expect(resolveLmsTargetChannelKey(renamedChannel)).toBe('first-medical-shop.de');
+    });
+
     it('does not match by display names when no technical identifier exists', () => {
         const channel = {
             name: 'ebay.de',
