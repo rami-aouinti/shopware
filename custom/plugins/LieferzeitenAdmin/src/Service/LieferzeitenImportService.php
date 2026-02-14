@@ -280,6 +280,9 @@ class LieferzeitenImportService
             'externalOrderId' => $externalId,
             'sourceSystem' => $payload['sourceSystem'] ?? null,
             'customerEmail' => $payload['customerEmail'] ?? null,
+            'customerFirstName' => $this->extractCustomerNamePart($payload, 'firstName'),
+            'customerLastName' => $this->extractCustomerNamePart($payload, 'lastName'),
+            'customerAdditionalName' => $this->extractCustomerNamePart($payload, 'additionalName'),
             'paymentMethod' => $payload['paymentMethod'] ?? null,
             'paymentDate' => $this->parseDate($payload['paymentDate'] ?? null),
             'orderDate' => $this->parseDate($payload['orderDate'] ?? $payload['date'] ?? null),
@@ -420,6 +423,9 @@ class LieferzeitenImportService
                 'deliveryDate' => $parcel['deliveryDate'] ?? $parcel['delivery_date'] ?? ($payload['deliveryDate'] ?? null),
                 'sourceSystem' => $payload['sourceSystem'] ?? 'san6',
                 'customerEmail' => $payload['customerEmail'] ?? null,
+                'customerFirstName' => $this->extractCustomerNamePart($payload, 'firstName'),
+                'customerLastName' => $this->extractCustomerNamePart($payload, 'lastName'),
+                'customerAdditionalName' => $this->extractCustomerNamePart($payload, 'additionalName'),
                 'paymentMethod' => $payload['paymentMethod'] ?? null,
                 'paymentDate' => $payload['paymentDate'] ?? null,
                 'baseDateType' => $payload['baseDateType'] ?? null,
@@ -1200,6 +1206,86 @@ class LieferzeitenImportService
         }
 
         return null;
+    }
+
+
+    /** @param array<string,mixed> $payload */
+    private function extractCustomerNamePart(array $payload, string $part): ?string
+    {
+        $variants = [
+            'firstName' => [
+                'customerFirstName',
+                'customer_first_name',
+                'firstName',
+                'firstname',
+                'customer.firstName',
+                'customer.firstname',
+                'orderCustomer.firstName',
+                'orderCustomer.first_name',
+                'billingAddress.firstName',
+                'billingAddress.first_name',
+            ],
+            'lastName' => [
+                'customerLastName',
+                'customer_last_name',
+                'lastName',
+                'lastname',
+                'customer.lastName',
+                'customer.lastname',
+                'orderCustomer.lastName',
+                'orderCustomer.last_name',
+                'billingAddress.lastName',
+                'billingAddress.last_name',
+            ],
+            'additionalName' => [
+                'customerAdditionalName',
+                'customer_additional_name',
+                'additionalName',
+                'additional_name',
+                'customer.additionalName',
+                'customer.additional_name',
+                'orderCustomer.additionalName',
+                'orderCustomer.additional_name',
+                'billingAddress.additionalAddressLine1',
+                'billingAddress.additional_address_line1',
+            ],
+        ];
+
+        foreach ($variants[$part] ?? [] as $key) {
+            $value = $this->getNestedValue($payload, $key);
+            if (!is_scalar($value)) {
+                continue;
+            }
+
+            $normalized = trim((string) $value);
+            if ($normalized !== '') {
+                return $normalized;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array<string,mixed> $payload
+     * @return mixed
+     */
+    private function getNestedValue(array $payload, string $path)
+    {
+        if (array_key_exists($path, $payload)) {
+            return $payload[$path];
+        }
+
+        $value = $payload;
+        foreach (explode('.', $path) as $segment) {
+            if (!is_array($value) || !array_key_exists($segment, $value)) {
+                return null;
+            }
+
+            $value = $value[$segment];
+        }
+
+        return $value;
     }
 
     private function normalizeComparableDate(?\DateTimeInterface $value): ?string

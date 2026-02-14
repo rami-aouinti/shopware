@@ -201,6 +201,9 @@ readonly class LieferzeitenOrderOverviewService
                 p.shipping_assignment_type AS shippingAssignmentType,
                 p.source_system AS sourceSystem,
                 p.source_system AS domain,
+                p.customer_first_name AS customerFirstName,
+                p.customer_last_name AS customerLastName,
+                p.customer_additional_name AS customerAdditionalName,
                 GROUP_CONCAT(DISTINCT sh.sendenummer ORDER BY sh.sendenummer SEPARATOR ", ") AS sendenummer,
                 GROUP_CONCAT(DISTINCT sh.sendenummer ORDER BY sh.sendenummer SEPARATOR ", ") AS trackingSummary,
                 MAX(llh.liefertermin_to) AS lieferterminLieferantTo,
@@ -210,7 +213,7 @@ readonly class LieferzeitenOrderOverviewService
              FROM `lieferzeiten_paket` p
              %s
              %s
-             GROUP BY p.id, p.external_order_id, p.paket_number, p.partial_shipment_quantity, p.order_date, p.shipping_date, p.delivery_date, p.payment_method, p.payment_date, p.business_date_from, p.business_date_to, p.calculated_delivery_date, p.last_changed_by, p.last_changed_at, p.status, p.shipping_assignment_type, p.source_system
+             GROUP BY p.id, p.external_order_id, p.paket_number, p.partial_shipment_quantity, p.order_date, p.shipping_date, p.delivery_date, p.payment_method, p.payment_date, p.business_date_from, p.business_date_to, p.calculated_delivery_date, p.last_changed_by, p.last_changed_at, p.status, p.shipping_assignment_type, p.source_system, p.customer_first_name, p.customer_last_name, p.customer_additional_name
              ORDER BY %s
              LIMIT :limit OFFSET :offset',
             $joinSql,
