@@ -1,6 +1,6 @@
 # Integrationsvertrag — LieferzeitenAdmin
 
-Version: `1.1.0`  
+Version: `1.2.0`  
 Letzte Aktualisierung: `2026-02-14`
 
 ## 1) Ein-/Ausgabe-Verträge der APIs
@@ -21,6 +21,11 @@ Letzte Aktualisierung: `2026-02-14`
 - `customerFirstName` (optional)
 - `customerLastName` (optional)
 - `customerAdditionalName` (optional)
+
+- Kundenname-Mapping (explizit):
+  - `customerFirstName` ← `customerFirstName|orderCustomer.firstName|billingAddress.firstName`
+  - `customerLastName` ← `customerLastName|orderCustomer.lastName|billingAddress.lastName`
+  - `customerAdditionalName` ← `customerAdditionalName|orderCustomer.additionalName|billingAddress.additionalAddressLine1`
 
 ### Beispiel-Payload (anonymisiert)
 ```json
@@ -54,6 +59,11 @@ Letzte Aktualisierung: `2026-02-14`
 - `customerLastName` (optional)
 - `customerAdditionalName` (optional)
 
+- Kundenname-Mapping (explizit):
+  - `customerFirstName` ← `customer.firstName|customer.firstname|billingAddress.firstName`
+  - `customerLastName` ← `customer.lastName|customer.lastname|billingAddress.lastName`
+  - `customerAdditionalName` ← `customer.additionalName|customer.company|billingAddress.additionalAddressLine1`
+
 ### Beispiel-Payload (anonymisiert)
 ```json
 {
@@ -81,6 +91,11 @@ Letzte Aktualisierung: `2026-02-14`
 - `parcels`
 - `sourceSystem` (optional; hat Priorität, wenn vorhanden)
 - `customerFirstName` / `customerLastName` / `customerAdditionalName` (aus `customer.*`, optional)
+
+- Kundenname-Mapping (explizit aus `customer`):
+  - `customerFirstName` ← `customer.firstName|customer.firstname`
+  - `customerLastName` ← `customer.lastName|customer.lastname`
+  - `customerAdditionalName` ← `customer.additionalName|customer.company`
 
 ### Beispiel-Payload (anonymisiert)
 ```json

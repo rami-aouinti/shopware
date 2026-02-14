@@ -202,6 +202,8 @@ readonly class LieferzeitenOrderOverviewService
                 p.shipping_assignment_type AS shippingAssignmentType,
                 p.source_system AS sourceSystem,
                 p.source_system AS domain,
+                p.customer_email AS customerEmail,
+                p.customer_email AS customer_email,
                 p.customer_first_name AS customerFirstName,
                 p.customer_last_name AS customerLastName,
                 p.customer_additional_name AS customerAdditionalName,
@@ -263,11 +265,16 @@ readonly class LieferzeitenOrderOverviewService
                 p.last_changed_by AS changedBy,
                 p.last_changed_at AS changedAt,
                 p.source_system AS sourceSystem,
-                p.source_system AS domain
+                p.source_system AS domain,
+                p.customer_email AS customerEmail,
+                p.customer_email AS customer_email,
+                p.customer_first_name AS customerFirstName,
+                p.customer_last_name AS customerLastName,
+                p.customer_additional_name AS customerAdditionalName
              FROM `lieferzeiten_paket` p
              LEFT JOIN `lieferzeiten_position` pos ON pos.paket_id = p.id
              WHERE p.id = :paketId
-             GROUP BY p.id, p.external_order_id, p.paket_number, p.partial_shipment_quantity, p.status, p.last_changed_by, p.last_changed_at, p.source_system
+             GROUP BY p.id, p.external_order_id, p.paket_number, p.partial_shipment_quantity, p.status, p.last_changed_by, p.last_changed_at, p.source_system, p.customer_email, p.customer_first_name, p.customer_last_name, p.customer_additional_name
              LIMIT 1',
             ['paketId' => hex2bin($paketId)],
         );

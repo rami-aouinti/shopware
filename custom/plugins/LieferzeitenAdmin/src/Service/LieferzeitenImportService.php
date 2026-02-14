@@ -1224,6 +1224,8 @@ class LieferzeitenImportService
                 'orderCustomer.first_name',
                 'billingAddress.firstName',
                 'billingAddress.first_name',
+                'customer.shippingFirstName',
+                'customer.shipping_first_name',
             ],
             'lastName' => [
                 'customerLastName',
@@ -1236,6 +1238,8 @@ class LieferzeitenImportService
                 'orderCustomer.last_name',
                 'billingAddress.lastName',
                 'billingAddress.last_name',
+                'customer.shippingLastName',
+                'customer.shipping_last_name',
             ],
             'additionalName' => [
                 'customerAdditionalName',
@@ -1248,6 +1252,9 @@ class LieferzeitenImportService
                 'orderCustomer.additional_name',
                 'billingAddress.additionalAddressLine1',
                 'billingAddress.additional_address_line1',
+                'customer.company',
+                'customer.additionalName2',
+                'customer.additional_name_2',
             ],
         ];
 
