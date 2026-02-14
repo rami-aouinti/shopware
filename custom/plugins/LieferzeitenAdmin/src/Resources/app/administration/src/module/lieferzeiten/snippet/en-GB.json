@@ -143,15 +143,8 @@
         "create": "Create threshold"
       }
     },
-    "businessStatus": {
-      "1": "Order captured",
-      "2": "Under review",
-      "3": "Approved",
-      "4": "In procurement",
-      "5": "Partially shipped",
-      "6": "Shipped",
-      "7": "Delivered",
-      "8": "Completed"
+    "validation": {
+      "supplierSaveRequiresCombinedRange": "Supplier delivery date can only be saved when the combined validation is met: supplier range 1-14 days and at least one new delivery date range 1-4 days must already exist for this line."
     }
   }
 }

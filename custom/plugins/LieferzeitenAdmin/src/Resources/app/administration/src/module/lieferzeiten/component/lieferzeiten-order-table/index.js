@@ -408,9 +408,15 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 || (range?.to || null) !== (originalRange?.to || null);
         },
 
-        canSaveLiefertermin(target) {
+        hasValidNeuerLieferterminRange(order) {
+            return Array.isArray(order?.parcels)
+                && order.parcels.some((parcel) => this.isRangeValid(parcel.neuerLieferterminRange, 1, 4));
+        },
+
+        canSaveLiefertermin(order, target) {
             return this.isRangeValid(target.lieferterminLieferantRange, 1, 14)
-                && this.isRangeChanged(target.lieferterminLieferantRange, target.originalLieferterminLieferantRange);
+                && this.isRangeChanged(target.lieferterminLieferantRange, target.originalLieferterminLieferantRange)
+                && this.hasValidNeuerLieferterminRange(order);
         },
 
         canSaveNeuerLiefertermin(target) {
@@ -498,7 +504,16 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         async saveLiefertermin(order, position) {
-            if (!this.hasEditAccess() || !this.canSaveLiefertermin(position)) {
+            if (!this.hasEditAccess()) {
+                return;
+            }
+
+            if (!this.canSaveLiefertermin(order, position)) {
+                this.createNotificationWarning({
+                    title: this.$t('global.default.warning'),
+                    message: this.$t('lieferzeiten.validation.supplierSaveRequiresCombinedRange'),
+                });
+
                 return;
             }
 

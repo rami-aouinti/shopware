@@ -143,15 +143,8 @@
         "create": "Schwellenwert anlegen"
       }
     },
-    "businessStatus": {
-      "1": "Auftrag erfasst",
-      "2": "In Prüfung",
-      "3": "Freigegeben",
-      "4": "In Beschaffung",
-      "5": "Teilweise versendet",
-      "6": "Versendet",
-      "7": "Zugestellt",
-      "8": "Abgeschlossen"
+    "validation": {
+      "supplierSaveRequiresCombinedRange": "Der Liefertermin Lieferant kann nur gespeichert werden, wenn die Liefertermin-Änderung gültig ist: Lieferant 1-14 Tage und mindestens ein Neuer Liefertermin 1-4 Tage muss bereits für diese Zeile vorhanden sein."
     }
   }
 }
