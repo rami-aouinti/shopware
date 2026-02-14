@@ -30,7 +30,7 @@ Module.register('lieferzeiten', {
         index: {
             component: 'lieferzeiten-index',
             path: 'index',
-            redirect: { name: 'lieferzeiten.all' },
+            redirect: { name: 'lieferzeiten.index.all' },
             children: {
                 all: {
                     component: 'lieferzeiten-all',
@@ -75,7 +75,7 @@ Module.register('lieferzeiten', {
             id: 'lieferzeiten-statistics',
             label: 'lieferzeiten.general.mainMenuItemStatistics',
             color: '#2B8CBF',
-            path: 'lieferzeiten.statistics',
+            path: 'lieferzeiten.index.statistics',
             icon: 'regular-chart-bar',
             parent: 'sw-dashboard',
             position: 110,
