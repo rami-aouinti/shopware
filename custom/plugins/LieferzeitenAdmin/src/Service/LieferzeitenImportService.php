@@ -225,12 +225,21 @@ class LieferzeitenImportService
     private function resolveAndApplyBusinessDates(array $payload, string $channel): array
     {
         $resolution = $this->baseDateResolver->resolve($payload);
+
+        $payload['baseDateType'] = $resolution['baseDateType'];
+        $payload['paymentDate'] = $payload['paymentDate'] ?? null;
+
+        if ($resolution['baseDate'] === null) {
+            $payload['calculatedShippingDate'] = null;
+            $payload['calculatedDeliveryDate'] = null;
+
+            return [$payload, $resolution];
+        }
+
         $settings = $this->settingsProvider->getForChannel($channel);
         $calculatedShippingDate = $this->deliveryDateCalculator->calculate($resolution['baseDate'], $settings['shipping']);
         $calculatedDeliveryDate = $this->deliveryDateCalculator->calculate($resolution['baseDate'], $settings['delivery']);
 
-        $payload['baseDateType'] = $resolution['baseDateType'];
-        $payload['paymentDate'] = $payload['paymentDate'] ?? null;
         $payload['calculatedShippingDate'] = $calculatedShippingDate?->format(DATE_ATOM);
         $payload['calculatedDeliveryDate'] = $calculatedDeliveryDate?->format(DATE_ATOM);
 

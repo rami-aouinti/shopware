@@ -108,7 +108,6 @@ readonly class LieferzeitenOrderOverviewService
         ?string $sort = null,
         ?string $order = null,
         array $filters = [],
-        bool $includeDetails = false,
     ): array {
         $page = max(1, (int) $page);
         $limit = max(1, min(200, (int) $limit));
@@ -186,8 +185,12 @@ readonly class LieferzeitenOrderOverviewService
                 p.order_date AS orderDate,
                 p.shipping_date AS spaetester_versand,
                 p.shipping_date AS latestShippingDate,
+                p.shipping_date AS latestShippingDeadline,
+                p.shipping_date AS shippingDate,
                 p.delivery_date AS spaeteste_lieferung,
                 p.delivery_date AS latestDeliveryDate,
+                p.delivery_date AS latestDeliveryDeadline,
+                p.delivery_date AS deliveryDate,
                 p.payment_method AS paymentMethod,
                 p.payment_date AS paymentDate,
                 p.business_date_from AS businessDateFrom,
@@ -230,9 +233,6 @@ readonly class LieferzeitenOrderOverviewService
 
         $rows = $this->connection->fetchAllAssociative($dataSql, $dataParams, $paramTypes);
         $rows = array_map(fn (array $row): array => $this->appendBusinessStatus($row), $rows);
-        if ($includeDetails) {
-            $rows = $this->enrichOrdersWithDetails($rows);
-        }
 
         return [
             'total' => $total,

@@ -156,9 +156,19 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     positionsCountDisplay: positions.length,
                     packageStatusDisplay: this.resolvePackageStatus(order),
                     trackingSummaryDisplay: this.resolveTrackingSummaryDisplay(order),
-                    latestShippingAtDisplay: this.resolveLatestShippingAt(order),
+                    latestShippingDeadlineDisplay: this.formatDateTime(this.resolveDeadlineValue(order, [
+                        'latestShippingDeadline',
+                        'spaetester_versand',
+                        'spaetesterVersand',
+                        'latestShippingDate',
+                    ])),
                     shippingDateDisplay: this.resolveShippingDate(order),
-                    latestDeliveryAtDisplay: this.resolveLatestDeliveryAt(order),
+                    latestDeliveryDeadlineDisplay: this.formatDateTime(this.resolveDeadlineValue(order, [
+                        'latestDeliveryDeadline',
+                        'spaeteste_lieferung',
+                        'spaetesteLieferung',
+                        'latestDeliveryDate',
+                    ])),
                     deliveryDateDisplay: this.resolveDeliveryDate(order),
                     lieferterminLieferantRange: supplierRange,
                     neuerLieferterminRange: newRange,
@@ -210,7 +220,31 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         canSaveComment(order) {
-            return this.hasEditAccess() && !!order?.commentTargetPositionId;
+            return this.hasEditAccess() && !!this.getValidCommentTargetPositionId(order);
+        },
+
+        getValidCommentTargetPositionId(order) {
+            if (!order || !Array.isArray(order.positions)) {
+                return null;
+            }
+
+            const currentTargetPositionId = order.commentTargetPositionId;
+            if (currentTargetPositionId
+                && order.positions.some((position) => position?.id === currentTargetPositionId)) {
+                return currentTargetPositionId;
+            }
+
+            return this.resolveCommentTargetPositionId(order.positions);
+        },
+
+        ensureCommentTargetPositionId(order) {
+            const validPositionId = this.getValidCommentTargetPositionId(order);
+
+            if (order && order.commentTargetPositionId !== validPositionId) {
+                this.$set(order, 'commentTargetPositionId', validPositionId);
+            }
+
+            return validPositionId;
         },
 
 
@@ -376,7 +410,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         resolveSan6OrderNumber(order) {
-            return this.pickFirstDefined(order, ['san6OrderNumber', 'san6', 'paketNumber', 'paket_number']);
+            return this.pickFirstDefined(order, ['san6OrderNumber']);
         },
 
         resolveSan6Position(order, positions) {
@@ -385,7 +419,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
             }
 
             const values = positions
-                .map((position) => this.pickFirstDefined(position, ['positionNumber', 'number', 'position_number']))
+                .map((position) => this.pickFirstDefined(position, ['number']))
                 .filter((value) => value !== null && value !== undefined && String(value).trim() !== '');
 
             return values.length ? values.join(', ') : '-';
@@ -393,7 +427,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
 
         resolveQuantity(order, positions) {
             if (!positions.length) {
-                return this.displayOrDash(this.pickFirstDefined(order, ['quantity']));
+                return this.displayOrDash(this.pickFirstDefined(order, ['quantity', 'positionsCount']));
             }
 
             const total = positions.reduce((acc, position) => {
@@ -406,15 +440,15 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         resolveOrderDate(order) {
-            return this.formatDate(this.pickFirstDefined(order, ['orderDate', 'bestelldatum', 'createdAt']));
+            return this.formatDate(this.pickFirstDefined(order, ['orderDate']));
         },
 
         resolvePaymentMethod(order) {
-            return this.pickFirstDefined(order, ['paymentMethod', 'zahlart', 'payment_method']) || '-';
+            return this.pickFirstDefined(order, ['paymentMethod']) || '-';
         },
 
         resolvePaymentDate(order) {
-            return this.formatDate(this.pickFirstDefined(order, ['paymentDate', 'payment_date']));
+            return this.formatDate(this.pickFirstDefined(order, ['paymentDate']));
         },
 
         resolveCustomerNames(order) {
@@ -455,12 +489,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         resolvePackageStatus(order) {
-            const rawStatus = this.pickFirstDefined(order, [
-                'packageStatus',
-                'paketStatus',
-                'paket_status',
-                'status',
-            ]);
+            const rawStatus = this.pickFirstDefined(order, ['packageStatus', 'status']);
 
             if (!rawStatus || String(rawStatus).trim() === '') {
                 return null;
@@ -479,49 +508,19 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         resolveLatestShippingAt(order) {
-            return this.formatDateTime(this.pickFirstDefined(order, [
-                'latestShippingDate',
-                'spaetesterVersand',
-                'spaetester_versand',
-                'shippingDateTo',
-                'shipping_date_to',
-            ]));
+            return this.formatDateTime(this.pickFirstDefined(order, ['latestShippingDate']));
         },
 
         resolveShippingDate(order) {
-            return this.formatDate(this.pickFirstDefined(order, [
-                'shippingDate',
-                'shipping_date',
-                'versandDatum',
-                'versand_datum',
-                'businessDateFrom',
-                'business_date_from',
-                'shippedAt',
-            ]));
+            return this.formatDate(this.pickFirstDefined(order, ['shippingDate', 'businessDateFrom']));
         },
 
         resolveLatestDeliveryAt(order) {
-            return this.formatDateTime(this.pickFirstDefined(order, [
-                'latestDeliveryDate',
-                'spaetesteLieferung',
-                'spaeteste_lieferung',
-                'deliveryDateTo',
-                'delivery_date_to',
-            ]));
+            return this.formatDateTime(this.pickFirstDefined(order, ['latestDeliveryDate']));
         },
 
         resolveDeliveryDate(order) {
-            return this.formatDate(this.pickFirstDefined(order, [
-                'deliveryDate',
-                'delivery_date',
-                'lieferDatum',
-                'liefer_datum',
-                'businessDateTo',
-                'business_date_to',
-                'deliveredAt',
-                'calculatedDeliveryDate',
-                'calculated_delivery_date',
-            ]));
+            return this.formatDate(this.pickFirstDefined(order, ['deliveryDate', 'businessDateTo', 'calculatedDeliveryDate']));
         },
 
         pickFirstDefined(source, keys) {
@@ -737,7 +736,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
 
 
         resolveLastChangedBy(order) {
-            const changedBy = this.pickFirstDefined(order, ['last_changed_by', 'lastChangedBy', 'user']);
+            const changedBy = this.pickFirstDefined(order, ['lastChangedBy', 'user']);
 
             return changedBy ? String(changedBy).trim() : null;
         },
@@ -1042,7 +1041,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 return;
             }
 
-            const positionId = order.commentTargetPositionId;
+            const positionId = this.ensureCommentTargetPositionId(order);
 
             if (!positionId) {
                 this.createNotificationError({ title: this.$t('global.default.error'), message: 'Missing position id' });

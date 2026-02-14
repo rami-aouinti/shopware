@@ -19,19 +19,7 @@ class LieferzeitenOrdersService extends ApiService {
             return [];
         }
 
-        return rows.map((row) => ({
-            ...row,
-            orderNumber: row.orderNumber || row.bestellnummer || null,
-            san6OrderNumber: row.san6OrderNumber || row.san6 || null,
-            san6Position: row.san6Position || row.san6Pos || null,
-            quantity: row.quantity || null,
-            paymentMethod: row.paymentMethod || null,
-            paymentDate: row.paymentDate || null,
-            trackingSummary: row.trackingSummary || row.sendenummer || null,
-            shippingAssignmentType: row.shippingAssignmentType || row.shipping_assignment_type || null,
-            sourceSystem: row.sourceSystem || row.domain || null,
-            domain: row.domain || row.sourceSystem || null,
-        }));
+        return rows.map((row) => this.normalizeOrderRow(row));
     }
 
     async getOrderDetails(paketId) {
@@ -41,9 +29,39 @@ class LieferzeitenOrdersService extends ApiService {
 
         const data = ApiService.handleResponse(response) ?? response?.data ?? {};
 
-        return data?.data || data;
+        const details = data?.data || data;
+
+        return this.normalizeOrderDetails(details);
     }
 
+    normalizeOrderRow(row = {}) {
+        return {
+            ...row,
+            orderNumber: row.orderNumber || null,
+            san6OrderNumber: row.san6OrderNumber || null,
+            san6Position: row.san6Position || null,
+            quantity: row.quantity || null,
+            paymentMethod: row.paymentMethod || null,
+            paymentDate: row.paymentDate || null,
+            trackingSummary: row.trackingSummary || null,
+            shippingAssignmentType: row.shippingAssignmentType || null,
+            sourceSystem: row.sourceSystem || null,
+            domain: row.domain || null,
+            positions: Array.isArray(row.positions) ? row.positions : [],
+            parcels: Array.isArray(row.parcels) ? row.parcels : [],
+            lieferterminLieferantHistory: Array.isArray(row.lieferterminLieferantHistory) ? row.lieferterminLieferantHistory : [],
+            neuerLieferterminHistory: Array.isArray(row.neuerLieferterminHistory) ? row.neuerLieferterminHistory : [],
+            commentHistory: Array.isArray(row.commentHistory) ? row.commentHistory : [],
+        };
+    }
+
+    normalizeOrderDetails(details) {
+        if (!details || typeof details !== 'object') {
+            return details;
+        }
+
+        return this.normalizeOrderRow(details);
+    }
 
     async getStatistics(params = {}) {
         const response = await this.httpClient.get(`_action/${this.getApiBasePath()}/statistics`, {
@@ -101,6 +119,10 @@ class LieferzeitenOrdersService extends ApiService {
     }
 
     async updateComment(positionId, payload) {
+        if (!positionId) {
+            throw new Error('Missing position id');
+        }
+
         return this.post(`position/${positionId}/comment`, payload);
     }
 

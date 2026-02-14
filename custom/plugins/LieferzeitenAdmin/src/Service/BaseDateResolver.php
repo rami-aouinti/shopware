@@ -21,7 +21,7 @@ class BaseDateResolver
                 return ['baseDate' => $paymentDate, 'baseDateType' => 'payment_date', 'missingPaymentDate' => false];
             }
 
-            return ['baseDate' => $orderDate, 'baseDateType' => 'order_date_fallback', 'missingPaymentDate' => true];
+            return ['baseDate' => null, 'baseDateType' => 'payment_date_missing', 'missingPaymentDate' => true];
         }
 
         return ['baseDate' => $orderDate, 'baseDateType' => 'order_date', 'missingPaymentDate' => false];

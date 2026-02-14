@@ -106,16 +106,16 @@
         </service>
 
         <service id="LieferzeitenAdmin\Service\LieferzeitenPositionWriteService">
-            <argument type="service" id="lieferzeiten_position.repository" />
-            <argument type="service" id="lieferzeiten_paket.repository" />
-            <argument type="service" id="Doctrine\DBAL\Connection" />
-            <argument type="service" id="lieferzeiten_liefertermin_lieferant_history.repository" />
-            <argument type="service" id="lieferzeiten_neuer_liefertermin_history.repository" />
-            <argument type="service" id="lieferzeiten_neuer_liefertermin_paket_history.repository" />
-            <argument type="service" id="user.repository" />
-            <argument type="service" id="LieferzeitenAdmin\Service\LieferzeitenTaskService" />
-            <argument type="service" id="LieferzeitenAdmin\Service\Notification\NotificationEventService" />
-            <argument type="service" id="LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver" />
+            <argument key="$positionRepository" type="service" id="lieferzeiten_position.repository" />
+            <argument key="$paketRepository" type="service" id="lieferzeiten_paket.repository" />
+            <argument key="$connection" type="service" id="Doctrine\DBAL\Connection" />
+            <argument key="$lieferterminLieferantHistoryRepository" type="service" id="lieferzeiten_liefertermin_lieferant_history.repository" />
+            <argument key="$neuerLieferterminHistoryRepository" type="service" id="lieferzeiten_neuer_liefertermin_history.repository" />
+            <argument key="$neuerLieferterminPaketHistoryRepository" type="service" id="lieferzeiten_neuer_liefertermin_paket_history.repository" />
+            <argument key="$userRepository" type="service" id="user.repository" />
+            <argument key="$taskService" type="service" id="LieferzeitenAdmin\Service\LieferzeitenTaskService" />
+            <argument key="$notificationEventService" type="service" id="LieferzeitenAdmin\Service\Notification\NotificationEventService" />
+            <argument key="$taskAssignmentRuleResolver" type="service" id="LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver" />
         </service>
 
 
