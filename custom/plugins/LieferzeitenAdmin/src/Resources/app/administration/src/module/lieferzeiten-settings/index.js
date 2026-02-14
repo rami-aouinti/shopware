@@ -13,6 +13,13 @@ Module.register('lieferzeiten-settings', {
     icon: 'regular-cog',
 
     routes: {
+        index: {
+            component: 'lieferzeiten-channel-settings-list',
+            path: '',
+            meta: {
+                privilege: 'admin',
+            },
+        },
         channelSettings: {
             component: 'lieferzeiten-channel-settings-list',
             path: 'channel-settings',
@@ -41,7 +48,7 @@ Module.register('lieferzeiten-settings', {
             id: 'lieferzeiten-settings',
             label: 'lieferzeiten.lms.general.mainMenuItem',
             color: '#009ee3',
-            path: 'lieferzeiten.settings.channelSettings',
+            path: 'lieferzeiten.settings.index',
             icon: 'regular-cog',
             parent: 'sw-order',
             position: 90,
@@ -50,7 +57,7 @@ Module.register('lieferzeiten-settings', {
             id: 'lieferzeiten-settings-channel',
             label: 'lieferzeiten.lms.navigation.thresholdsByChannel',
             color: '#009ee3',
-            path: 'lieferzeiten.settings.channelSettings',
+            path: 'lieferzeiten.settings.index',
             parent: 'lieferzeiten-settings',
             position: 10,
         },

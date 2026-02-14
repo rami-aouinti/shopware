@@ -1,21 +1,21 @@
 <sw-page class="lieferzeiten-channel-settings-list">
     <template #smart-bar-header>
-        <h2>{{ $tc('lieferzeiten.lms.channelSettings.title') }}</h2>
+        <h2>{{ $tc('lieferzeiten.lms.dashboard.title') }}</h2>
     </template>
 
     <template #smart-bar-actions>
-        <sw-button v-if="hasEditAccess" :isLoading="isSeedingDemoData" :variant="hasDemoData ? 'danger' : 'default'" @click="onToggleDemoData">{{ hasDemoData ? 'DemoDaten entfernen' : 'DemoDaten speichern' }}</sw-button>
+        <sw-button v-if="hasEditAccess" :isLoading="isSeedingDemoData" :variant="hasDemoData ? 'danger' : 'default'" @click="onToggleDemoData">{{ hasDemoData ? $tc('lieferzeiten.lms.dashboard.removeDemoData') : $tc('lieferzeiten.lms.dashboard.seedDemoData') }}</sw-button>
         <sw-button-process v-if="hasEditAccess" variant="primary" :isLoading="isSaving" @click="onSave">{{ $tc('global.default.save') }}</sw-button-process>
     </template>
 
     <template #content>
-        <sw-card :isLoading="isLoading">
+        <sw-card :isLoading="isLoading" :title="$tc('lieferzeiten.lms.dashboard.cardTitle')">
             <sw-alert variant="info" appearance="default" :showIcon="true">
-                Configuration par canal et Lieferzeit PDMS : 4 Lieferzeiten × 2 seuils (jours ouvrés).
+                {{ $tc('lieferzeiten.lms.dashboard.introText') }}
             </sw-alert>
 
             <sw-alert v-if="hasValidationErrors" variant="error" appearance="default" :showIcon="true" class="sw-mt-16">
-                Veuillez corriger les valeurs invalides. Seules les valeurs entières ≥ 0 sont autorisées.
+                {{ $tc('lieferzeiten.lms.dashboard.validationError') }}
             </sw-alert>
 
             <div v-for="channel in channels" :key="channel.id" class="sw-mt-24">
@@ -24,9 +24,9 @@
                 <sw-data-grid
                     :dataSource="pdmsLieferzeiten"
                     :columns="[
-                        { property: 'label', label: 'Lieferzeit PDMS', width: '160px' },
-                        { property: 'shippingOverdueWorkingDays', label: 'shippingOverdueWorkingDays' },
-                        { property: 'deliveryOverdueWorkingDays', label: 'deliveryOverdueWorkingDays' }
+                        { property: 'label', label: $tc('lieferzeiten.lms.dashboard.columns.pdmsLieferzeit'), width: '160px' },
+                        { property: 'shippingOverdueWorkingDays', label: $tc('lieferzeiten.lms.dashboard.columns.shippingOverdueWorkingDays') },
+                        { property: 'deliveryOverdueWorkingDays', label: $tc('lieferzeiten.lms.dashboard.columns.deliveryOverdueWorkingDays') }
                     ]"
                     :showSelection="false"
                     :showActions="false"

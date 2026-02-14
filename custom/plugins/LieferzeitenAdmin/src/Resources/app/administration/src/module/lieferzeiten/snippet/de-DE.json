@@ -138,16 +138,34 @@
     "lms": {
       "general": {
         "mainMenuItem": "Lieferzeiten-Management-System",
-        "description": "Steuerung der Lieferzeiten-Schwellenwerte je Verkaufskanal"
+        "description": "LMS-Hauptseite zur Steuerung der Verzögerungsschwellen pro Verkaufskanal"
       },
       "navigation": {
-        "thresholdsByChannel": "Schwellenwerte je Verkaufskanal",
-        "taskAssignmentRules": "Regeln zur Aufgaben-Zuweisung",
-        "notificationToggles": "Benachrichtigungs-Toggles"
+        "thresholdsByChannel": "LMS-Hauptseite: Verzögerungsschwellen je Kanal",
+        "taskAssignmentRules": "Aufgaben-Zuweisungsregeln",
+        "notificationToggles": "Benachrichtigungseinstellungen"
       },
       "channelSettings": {
         "title": "LMS · Schwellenwerte je Verkaufskanal",
         "create": "Schwellenwert anlegen"
+      },
+      "dashboard": {
+        "title": "Lieferzeiten-Management-System",
+        "cardTitle": "Verzögerungsschwellen je Verkaufskanal verwalten",
+        "introText": "Hier verwalten Sie die Versand- und Lieferverzögerungsschwellen pro Verkaufskanal und PDMS-Lieferzeit.",
+        "validationError": "Bitte ungültige Werte korrigieren (nur ganze Zahlen ≥ 0).",
+        "inlineValidationError": "Bitte eine ganze Zahl ≥ 0 eingeben.",
+        "saveSuccess": "Verzögerungsschwellen erfolgreich gespeichert.",
+        "seedDemoData": "Demo-Daten anlegen",
+        "removeDemoData": "Demo-Daten entfernen",
+        "demoDataTitle": "Demo-Daten",
+        "demoDataRemoved": "Demo-Daten entfernt.",
+        "demoDataSaved": "Demo-Daten gespeichert.",
+        "columns": {
+          "pdmsLieferzeit": "PDMS-Lieferzeit",
+          "shippingOverdueWorkingDays": "Versand überfällig (Arbeitstage)",
+          "deliveryOverdueWorkingDays": "Lieferung überfällig (Arbeitstage)"
+        }
       }
     },
     "businessStatus": {
