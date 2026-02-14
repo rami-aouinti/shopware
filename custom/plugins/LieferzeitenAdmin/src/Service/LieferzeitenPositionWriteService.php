@@ -20,6 +20,7 @@ class LieferzeitenPositionWriteService
 {
     private const DEFAULT_ADDITIONAL_DELIVERY_ASSIGNEE_CONFIG_KEY = 'LieferzeitenAdmin.config.defaultAssigneeLieferterminAnfrageZusaetzlich';
     private const LEGACY_DEFAULT_ADDITIONAL_DELIVERY_ASSIGNEE_CONFIG_KEY = 'LieferzeitenAdmin.config.defaultAdditionalDeliveryAssignee';
+    private const TECHNICAL_FALLBACK_ASSIGNEE_IDENTIFIER = 'system';
 
     public function __construct(
         private readonly EntityRepository $positionRepository,
@@ -360,7 +361,7 @@ class LieferzeitenPositionWriteService
             return $defaultAssignee;
         }
 
-        throw new AdditionalDeliveryAssigneeMissingException('No assignee available for additional delivery request task. Configure an active assignment rule or set LieferzeitenAdmin.config.defaultAssigneeLieferterminAnfrageZusaetzlich.');
+        return self::TECHNICAL_FALLBACK_ASSIGNEE_IDENTIFIER;
     }
 
     private function assertOptimisticLockOrThrow(string $positionId, string $expectedUpdatedAt): void

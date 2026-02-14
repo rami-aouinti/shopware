@@ -4,7 +4,6 @@ namespace LieferzeitenAdmin\Tests\Service;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use LieferzeitenAdmin\Service\AdditionalDeliveryAssigneeMissingException;
 use LieferzeitenAdmin\Service\LieferzeitenPositionWriteService;
 use LieferzeitenAdmin\Service\LieferzeitenTaskService;
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
@@ -303,7 +302,7 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
         $service->createAdditionalDeliveryRequest($positionId, 'manual', Context::createDefaultContext());
     }
 
-    public function testCreateAdditionalDeliveryRequestThrowsWhenRuleAndFallbackAssigneeAreMissing(): void
+    public function testCreateAdditionalDeliveryRequestUsesTechnicalFallbackWhenRuleAndFallbackAssigneeAreMissing(): void
     {
         $positionId = '7e3f2a13f95f4707b1ef7fd4f02d1292';
         $this->connection->insert('lieferzeiten_position', [
@@ -318,7 +317,16 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
         $systemConfig->method('get')->willReturn('  ');
 
         $taskService = $this->createMock(LieferzeitenTaskService::class);
-        $taskService->expects(static::never())->method('createTask');
+        $taskService
+            ->expects(static::once())
+            ->method('createTask')
+            ->with(
+                static::isArray(),
+                static::isInstanceOf(Context::class),
+                'manual',
+                'system',
+                static::isInstanceOf(\DateTimeInterface::class),
+            );
 
         $service = $this->createService(
             positionRepository: $this->createNoOpPositionRepository(),
@@ -327,8 +335,6 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
             systemConfigService: $systemConfig,
         );
 
-        $this->expectException(AdditionalDeliveryAssigneeMissingException::class);
-        $this->expectExceptionMessage('No assignee available for additional delivery request task. Configure an active assignment rule or set LieferzeitenAdmin.config.defaultAssigneeLieferterminAnfrageZusaetzlich.');
         $service->createAdditionalDeliveryRequest($positionId, 'manual', Context::createDefaultContext());
     }
 
