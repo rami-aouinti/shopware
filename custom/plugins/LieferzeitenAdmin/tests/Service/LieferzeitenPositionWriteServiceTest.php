@@ -122,10 +122,10 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
                         && array_key_exists('initiatorUserId', $payload)
                         && ($payload['initiatorUserId'] ?? null) === null;
                 }),
+                static::isInstanceOf(Context::class),
                 'manual',
                 'rule-assignee',
                 static::isInstanceOf(\DateTimeInterface::class),
-                static::isInstanceOf(Context::class),
             );
 
         $ruleResolver = $this->createMock(TaskAssignmentRuleResolver::class);
@@ -165,10 +165,10 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
                     return ($payload['initiatorUserId'] ?? null) === $contextUserId
                         && ($payload['initiatorDisplay'] ?? null) === 'UI User';
                 }),
+                static::isInstanceOf(Context::class),
                 'UI User',
                 'rule-assignee',
                 static::isInstanceOf(\DateTimeInterface::class),
-                static::isInstanceOf(Context::class),
             );
 
         $ruleResolver = $this->createMock(TaskAssignmentRuleResolver::class);
@@ -199,10 +199,10 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
             ->method('createTask')
             ->with(
                 static::isArray(),
+                static::isInstanceOf(Context::class),
                 'manual',
                 'fallback-assignee',
                 static::isInstanceOf(\DateTimeInterface::class),
-                static::isInstanceOf(Context::class),
             );
 
         $ruleResolver = $this->createMock(TaskAssignmentRuleResolver::class);

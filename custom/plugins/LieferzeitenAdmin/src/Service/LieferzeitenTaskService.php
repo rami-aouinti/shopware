@@ -45,7 +45,7 @@ class LieferzeitenTaskService
     }
 
     /** @param array<string,mixed> $payload */
-    public function createTask(array $payload, ?string $initiator, ?string $assignee, ?\DateTimeInterface $dueDate, Context $context): string
+    public function createTask(array $payload, Context $context, ?string $initiator = null, ?string $assignee = null, ?\DateTimeInterface $dueDate = null): string
     {
         $positionId = isset($payload['positionId']) ? (string) $payload['positionId'] : null;
         $triggerKey = isset($payload['triggerKey']) ? (string) $payload['triggerKey'] : (($payload['taskType'] ?? null) ? (string) $payload['taskType'] : null);
@@ -64,13 +64,29 @@ class LieferzeitenTaskService
             }
         }
 
+        $contextInitiator = $this->resolveActorUserId($context);
+        $payloadInitiatorUserId = isset($payload['initiatorUserId']) && is_string($payload['initiatorUserId']) && Uuid::isValid($payload['initiatorUserId'])
+            ? $payload['initiatorUserId']
+            : null;
+        $resolvedInitiatorUserId = $contextInitiator ?? $payloadInitiatorUserId;
+
+        $payloadInitiatorDisplay = isset($payload['initiatorDisplay']) && is_string($payload['initiatorDisplay'])
+            ? trim($payload['initiatorDisplay'])
+            : '';
+        $resolvedInitiatorDisplay = $payloadInitiatorDisplay !== ''
+            ? $payloadInitiatorDisplay
+            : ($initiator !== null ? trim($initiator) : '');
+
+        $payload['initiatorUserId'] = $resolvedInitiatorUserId;
+        $payload['initiatorDisplay'] = $resolvedInitiatorDisplay !== '' ? $resolvedInitiatorDisplay : null;
+
         $id = Uuid::randomHex();
         $this->taskRepository->create([[
             'id' => $id,
             'status' => self::STATUS_OPEN,
             'assignee' => $assignee,
             'dueDate' => $dueDate,
-            'initiator' => $initiator,
+            'initiator' => $resolvedInitiatorDisplay !== '' ? $resolvedInitiatorDisplay : $resolvedInitiatorUserId,
             'positionId' => $positionId,
             'triggerKey' => $triggerKey,
             'payload' => $payload,
@@ -255,6 +271,20 @@ class LieferzeitenTaskService
                 isset($payload['sourceSystem']) ? (string) $payload['sourceSystem'] : null,
             );
         }
+    }
+
+
+    private function resolveActorUserId(Context $context): ?string
+    {
+        $source = $context->getSource();
+        if ($source instanceof AdminApiSource) {
+            $userId = $source->getUserId();
+            if (is_string($userId) && Uuid::isValid($userId)) {
+                return $userId;
+            }
+        }
+
+        return null;
     }
 
     private function resolveNotificationRecipient(array $payload, string $initiator, ?string $initiatorUserId): ?string
