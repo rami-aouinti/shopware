@@ -74,11 +74,11 @@ export function resolveLmsTargetChannelKey(channel) {
         return domainMatch;
     }
 
+    // Important: display names are not technical identifiers and can be edited/translatable.
+    // Matching must stay strict to domain hostnames and explicit technical keys only.
     const technicalIdentifierCandidates = [
         channel?.technicalName,
         channel?.shortName,
-        channel?.name,
-        channel?.translated?.name,
         channel?.customFields?.technicalIdentifier,
         channel?.customFields?.technical_identifier,
     ]
