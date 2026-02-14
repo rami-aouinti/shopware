@@ -18,13 +18,23 @@ const DEFAULT_PDMS_LIEFERZEITEN = [
 
 const LMS_TARGET_DOMAIN_KEYS = LMS_TARGET_CHANNELS.map((targetChannel) => targetChannel.domainKey);
 
-const CHANNEL_GROUPS = DOMAIN_GROUPS.map((group, index) => ({
-    id: group.id,
-    title: `Gruppe ${index + 1}`,
-    domainKeys: group.channels
-        .map((channel) => channel.value)
-        .filter((channelDomainKey) => LMS_TARGET_DOMAIN_KEYS.includes(channelDomainKey)),
-}));
+const CHANNEL_GROUP_TITLES = {
+    'first-medical-e-commerce': 'First Medical - E-Commerce',
+    'medical-solutions': 'Medical Solutions',
+};
+
+const CHANNEL_GROUPS = Object.entries(CHANNEL_GROUP_TITLES)
+    .map(([groupId, groupTitle]) => {
+        const sourceGroup = DOMAIN_GROUPS.find((group) => group.id === groupId);
+
+        return {
+            id: groupId,
+            title: groupTitle,
+            domainKeys: (sourceGroup?.channels || [])
+                .map((channel) => channel.value)
+                .filter((channelDomainKey) => LMS_TARGET_DOMAIN_KEYS.includes(channelDomainKey)),
+        };
+    });
 
 const OTHER_CHANNELS_GROUP = {
     id: 'other-channels',

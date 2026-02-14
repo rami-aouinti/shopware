@@ -18,8 +18,8 @@
                 {{ $tc('lieferzeiten.lms.dashboard.validationError') }}
             </sw-alert>
 
-            <div v-for="group in groupedChannels" :key="group.id" class="sw-mt-24">
-                <h3>{{ group.title }}</h3>
+            <section v-for="group in groupedChannels" :key="group.id" class="sw-mt-24">
+                <h3 class="sw-mb-8">{{ group.title }}</h3>
 
                 <div v-for="channel in group.channels" :key="channel.id" class="sw-mt-16">
                     <div class="sw-flex sw-flex--align-center sw-flex--justify-space-between">
@@ -67,7 +67,7 @@
                         </template>
                     </sw-data-grid>
                 </div>
-            </div>
+            </section>
         </sw-card>
     </template>
 </sw-page>
