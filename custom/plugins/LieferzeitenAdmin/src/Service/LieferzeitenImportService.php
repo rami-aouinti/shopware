@@ -325,24 +325,8 @@ class LieferzeitenImportService
             'articleNumber' => $payload['articleNumber'] ?? null,
             'status' => $payload['status'] ?? null,
             'orderedAt' => $this->parseDate($payload['orderDate'] ?? $payload['date'] ?? null),
-            'orderedQuantity' => $this->extractQuantity($payload, [
-                'orderedQuantity',
-                'ordered_quantity',
-                'quantityOrdered',
-                'orderQuantity',
-                'bestellmenge',
-                'menge',
-                'qtyOrdered',
-            ]),
-            'shippedQuantity' => $this->extractQuantity($payload, [
-                'shippedQuantity',
-                'shipped_quantity',
-                'quantityShipped',
-                'deliveryQuantity',
-                'versandmenge',
-                'geliefert',
-                'qtyShipped',
-            ]),
+            'orderedQuantity' => $this->resolveOrderedQuantity($payload, $positionNumber),
+            'shippedQuantity' => $this->resolveShippedQuantity($payload, $positionNumber),
         ]], $context);
 
         $trackingNumbers = $this->extractTrackingNumbers($payload);
@@ -430,6 +414,96 @@ class LieferzeitenImportService
         }
 
         return null;
+    }
+
+    /** @param array<string,mixed> $payload */
+    private function resolveOrderedQuantity(array $payload, string $positionNumber): ?int
+    {
+        return $this->extractQuantity($this->resolvePositionPayload($payload, $positionNumber), [
+            'orderedQuantity',
+            'ordered_quantity',
+            'quantityOrdered',
+            'orderQuantity',
+            'bestellmenge',
+            'menge',
+            'qtyOrdered',
+            'quantity',
+        ]);
+    }
+
+    /** @param array<string,mixed> $payload */
+    private function resolveShippedQuantity(array $payload, string $positionNumber): ?int
+    {
+        return $this->extractQuantity($this->resolvePositionPayload($payload, $positionNumber), [
+            'shippedQuantity',
+            'shipped_quantity',
+            'quantityShipped',
+            'deliveryQuantity',
+            'versandmenge',
+            'geliefert',
+            'qtyShipped',
+            'deliveredQuantity',
+        ]);
+    }
+
+    /**
+     * @param array<string,mixed> $payload
+     * @return array<string,mixed>
+     */
+    private function resolvePositionPayload(array $payload, string $positionNumber): array
+    {
+        $candidates = [
+            $payload,
+            $payload['position'] ?? null,
+        ];
+
+        $parcels = $payload['parcels'] ?? [];
+        if (is_array($parcels)) {
+            foreach ($parcels as $parcel) {
+                if (!is_array($parcel)) {
+                    continue;
+                }
+
+                $positionRows = $parcel['positions']
+                    ?? $parcel['items']
+                    ?? $parcel['lineItems']
+                    ?? $parcel['orderPositions']
+                    ?? $parcel['auftragspositionen']
+                    ?? [];
+
+                if (!is_array($positionRows)) {
+                    continue;
+                }
+
+                foreach ($positionRows as $positionRow) {
+                    if (!is_array($positionRow)) {
+                        continue;
+                    }
+
+                    $candidateNumber = (string) ($positionRow['positionNumber']
+                        ?? $positionRow['number']
+                        ?? $positionRow['pos']
+                        ?? $positionRow['lineNumber']
+                        ?? $positionRow['orderPosition']
+                        ?? '');
+
+                    if ($candidateNumber !== '' && $candidateNumber === $positionNumber) {
+                        $candidates[] = $positionRow;
+                    }
+                }
+            }
+        }
+
+        $resolved = [];
+        foreach ($candidates as $candidate) {
+            if (!is_array($candidate)) {
+                continue;
+            }
+
+            $resolved = array_merge($resolved, $candidate);
+        }
+
+        return $resolved;
     }
 
     private function normalizeQuantityValue(mixed $value): ?int

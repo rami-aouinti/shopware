@@ -849,11 +849,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
             }
 
             if (shippingType === 'teil') {
-                if (orderedQuantity !== null && shippedQuantity !== null && shippedQuantity >= orderedQuantity) {
-                    return this.$t('lieferzeiten.shipping.partialShipment');
-                }
-
-                return `${this.$t('lieferzeiten.shipping.splitPosition')} ${this.positionQuantitySuffix(shippedQuantity, orderedQuantity)}`;
+                return `${this.$t('lieferzeiten.shipping.partialShipment')} ${this.positionQuantitySuffix(shippedQuantity, orderedQuantity)}`;
             }
 
             if (shippingType === 'trennung') {

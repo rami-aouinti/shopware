@@ -149,6 +149,8 @@ readonly class LieferzeitenOrderOverviewService
                 GROUP_CONCAT(DISTINCT pos.position_number ORDER BY pos.position_number SEPARATOR ", ") AS san6Pos,
                 GROUP_CONCAT(DISTINCT pos.position_number ORDER BY pos.position_number SEPARATOR ", ") AS san6Position,
                 COUNT(DISTINCT pos.id) AS positionsCount,
+                COALESCE(SUM(pos.ordered_quantity), 0) AS orderedQuantityTotal,
+                COALESCE(SUM(pos.shipped_quantity), 0) AS shippedQuantityTotal,
                 GROUP_CONCAT(DISTINCT LOWER(HEX(pos.id)) ORDER BY pos.position_number SEPARATOR ",") AS positionIds,
                 (
                     SELECT LOWER(HEX(pos_target.id))
@@ -259,6 +261,8 @@ readonly class LieferzeitenOrderOverviewService
                 p.paket_number AS san6,
                 p.paket_number AS san6OrderNumber,
                 COUNT(DISTINCT pos.id) AS positionsCount,
+                COALESCE(SUM(pos.ordered_quantity), 0) AS orderedQuantityTotal,
+                COALESCE(SUM(pos.shipped_quantity), 0) AS shippedQuantityTotal,
                 p.partial_shipment_quantity AS quantity,
                 p.status AS status,
                 p.last_changed_by AS user,
