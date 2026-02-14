@@ -16,6 +16,13 @@ const DEFAULT_PDMS_LIEFERZEITEN = [
     { key: 'PDMS_4', label: 'PDMS 4', isPlaceholder: true },
 ];
 
+/**
+ * LMS whitelist matching is resolved in lms-target-channel-mapping via:
+ * 1) canonical sales-channel domain mapping (normalized hostname)
+ * 2) explicit technical identifiers (exact match after normalization)
+ *
+ * Display names are not used as fuzzy matching input.
+ */
 const LMS_TARGET_DOMAIN_KEYS = LMS_TARGET_CHANNELS.map((targetChannel) => targetChannel.domainKey);
 
 const CHANNEL_GROUP_TITLES = {
@@ -119,6 +126,14 @@ Component.register('lieferzeiten-channel-settings-list', {
     },
 
     methods: {
+        getWhitelistedChannels(salesChannels) {
+            return salesChannels.filter((channel) => isLmsTargetChannel(channel));
+        },
+
+        getWhitelistedChannelIds() {
+            return new Set(this.channels.map((channel) => channel.id));
+        },
+
         resolveChannelDomainKey(channel) {
             const lmsTargetDomainKey = resolveLmsTargetChannelKey(channel);
 
@@ -289,13 +304,13 @@ Component.register('lieferzeiten-channel-settings-list', {
                     this.salesChannelRepository.search(salesChannelCriteria, Shopware.Context.api),
                 ]);
 
-                this.channels = salesChannels.filter((channel) => isLmsTargetChannel(channel));
+                this.channels = this.getWhitelistedChannels(salesChannels);
                 this.matrixValues = {};
                 this.existingEntryIds = {};
                 this.channelPdmsLieferzeiten = {};
                 this.channelPdmsMappingIncomplete = {};
 
-                const loadedChannelIds = new Set(this.channels.map((channel) => channel.id));
+                const loadedChannelIds = this.getWhitelistedChannelIds();
 
                 await Promise.all(this.channels.map((channel) => this.loadChannelPdmsLieferzeiten(channel.id)));
 
@@ -347,7 +362,13 @@ Component.register('lieferzeiten-channel-settings-list', {
             this.isSaving = true;
 
             try {
+                const whitelistedChannelIds = this.getWhitelistedChannelIds();
+
                 for (const channel of this.channels) {
+                    if (!whitelistedChannelIds.has(channel.id)) {
+                        continue;
+                    }
+
                     this.ensureChannelMatrix(channel.id);
 
                     for (const { key } of this.getChannelPdmsLieferzeiten(channel.id)) {
