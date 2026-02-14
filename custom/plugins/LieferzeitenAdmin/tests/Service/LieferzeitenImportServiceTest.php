@@ -238,7 +238,7 @@ class LieferzeitenImportServiceTest extends TestCase
         ], []));
     }
 
-    public function testIsCompletedStatus8RecognizesAllParcelsDelivered(): void
+    public function testIsCompletedStatus8ReturnsTrueWhenAllParcelsDelivered(): void
     {
         $service = $this->createService();
         $method = new \ReflectionMethod($service, 'isCompletedStatus8');
@@ -252,7 +252,7 @@ class LieferzeitenImportServiceTest extends TestCase
         ], []));
     }
 
-    public function testIsCompletedStatus8RejectsWhenAnyParcelNotDelivered(): void
+    public function testIsCompletedStatus8ReturnsFalseWhenAtLeastOneParcelNotDelivered(): void
     {
         $service = $this->createService();
         $method = new \ReflectionMethod($service, 'isCompletedStatus8');
@@ -261,28 +261,27 @@ class LieferzeitenImportServiceTest extends TestCase
         static::assertFalse($method->invoke($service, [
             'parcels' => [
                 ['trackingStatus' => 'zugestellt'],
-                ['trackingStatus' => 'in_transit'],
+                ['trackingStatus' => 'unterwegs'],
             ],
         ], []));
     }
 
-    public function testIsCompletedStatus8SupportsSan6InternalDeliveryCompletedWithoutTracking(): void
+    public function testIsCompletedStatus8SupportsInternalDeliveryWithoutTrackingViaSan6Flag(): void
     {
         $service = $this->createService();
         $method = new \ReflectionMethod($service, 'isCompletedStatus8');
         $method->setAccessible(true);
 
         static::assertTrue($method->invoke($service, [], [
-            San6MatchingService::INTERNAL_DELIVERY_COMPLETED_FLAG => true,
+            'internalDeliveryCompleted' => true,
         ]));
 
         static::assertTrue($method->invoke($service, [], [
-            San6MatchingService::INTERNAL_DELIVERY_STATE => San6MatchingService::INTERNAL_DELIVERY_COMPLETED_STATE,
+            'deliveryCompletionState' => 'internal_completed',
         ]));
 
         static::assertFalse($method->invoke($service, [], [
-            San6MatchingService::INTERNAL_DELIVERY_COMPLETED_FLAG => false,
-            San6MatchingService::INTERNAL_DELIVERY_STATE => 'open',
+            'internalDeliveryCompleted' => false,
         ]));
     }
 
