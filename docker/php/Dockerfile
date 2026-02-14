@@ -29,3 +29,7 @@ RUN apt-get update \
 WORKDIR /var/www/html
 
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/zz-shopware.ini
+
+COPY docker/php/entrypoint.sh /usr/local/bin/shopware-entrypoint
+ENTRYPOINT ["shopware-entrypoint"]
+CMD ["php-fpm"]
