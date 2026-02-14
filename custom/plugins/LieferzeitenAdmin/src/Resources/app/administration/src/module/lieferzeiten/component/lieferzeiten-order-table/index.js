@@ -134,6 +134,8 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     additionalDeliveryRequest: order.additionalDeliveryRequest || null,
                     latestShippingDeadline: this.resolveDeadlineValue(order, ['spaetester_versand', 'spaetesterVersand', 'latestShippingDeadline']),
                     latestDeliveryDeadline: this.resolveDeadlineValue(order, ['spaeteste_lieferung', 'spaetesteLieferung', 'latestDeliveryDeadline']),
+                    lastChangedByDisplay: this.resolveLastChangedBy(order),
+                    businessStatusDisplay: this.resolveBusinessStatusDisplay(order),
                 });
             }
 
@@ -455,6 +457,38 @@ Shopware.Component.register('lieferzeiten-order-table', {
             this.activeTracking = null;
         },
 
+
+        resolveLastChangedBy(order) {
+            const changedBy = this.pickFirstDefined(order, ['last_changed_by', 'lastChangedBy', 'user']);
+
+            return changedBy ? String(changedBy).trim() : null;
+        },
+
+        resolveBusinessStatusDisplay(order) {
+            const businessStatus = order?.business_status || order?.businessStatus || null;
+            const statusCode = String(businessStatus?.code || order?.status || '').trim();
+            const statusLabel = String(
+                businessStatus?.label
+                || order?.business_status_label
+                || order?.statusLabel
+                || '',
+            ).trim();
+
+            if (!statusCode && !statusLabel) {
+                return null;
+            }
+
+            if (!statusCode) {
+                return statusLabel;
+            }
+
+            if (!statusLabel) {
+                return statusCode;
+            }
+
+            return `${statusCode} · ${statusLabel}`;
+        },
+
         businessStatusLabel(order) {
             const statusCode = String(order?.businessStatus?.code || order?.status || '').trim();
             const snippetKey = BUSINESS_STATUS_SNIPPETS[statusCode] || 'lieferzeiten.businessStatus.unknown';
@@ -735,8 +769,6 @@ Shopware.Component.register('lieferzeiten-order-table', {
             }
 
             request.notifiedAt = new Date().toISOString();
-            this.updateAudit(order, this.$t('lieferzeiten.additionalRequest.auditClosed'));
-
             this.createNotificationInfo({
                 title: this.$t('lieferzeiten.additionalRequest.notificationTitle'),
                 message: this.$t('lieferzeiten.additionalRequest.notificationClosed', {
@@ -745,17 +777,12 @@ Shopware.Component.register('lieferzeiten-order-table', {
             });
         },
 
-        updateAudit(order, action) {
-            order.audit = `${action} • ${new Date().toLocaleString('de-DE')}`;
-        },
-
         async reloadOrder(order) {
             if (typeof this.onReloadOrder === 'function') {
                 await this.onReloadOrder(order);
                 return;
             }
 
-            this.updateAudit(order, this.$t('lieferzeiten.audit.savedComment'));
         },
     },
 });
