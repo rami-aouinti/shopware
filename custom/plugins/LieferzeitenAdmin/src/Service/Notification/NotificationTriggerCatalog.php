@@ -51,6 +51,6 @@ class NotificationTriggerCatalog
     /** @return array<int,string> */
     public static function channels(): array
     {
-        return ['email', 'sms', 'webhook'];
+        return ['email'];
     }
 }

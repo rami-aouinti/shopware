@@ -206,7 +206,7 @@
       "navigation": {
         "thresholdsByChannel": "LMS-Hauptseite: Verzögerungsschwellen je Kanal",
         "taskAssignmentRules": "Aufgaben-Zuweisungsregeln",
-        "notificationToggles": "Benachrichtigungseinstellungen"
+        "notificationToggles": "E-Mail-Benachrichtigungseinstellungen"
       },
       "channelSettings": {
         "title": "LMS · Schwellenwerte je Verkaufskanal",
@@ -232,6 +232,13 @@
         "incompleteMappingBadge": "Unvollständige PDMS-Zuordnung",
         "incompleteMappingWarning": "Die PDMS-Zuordnung für den Kanal \"{channelName}\" ist unvollständig. Fehlende Slots sind unten markiert, damit Sie die Zuordnung vervollständigen können.",
         "incompleteMappingSlotLabel": "Slot {slot} nicht konfiguriert"
+      },
+      "notificationMatrix": {
+        "title": "Benachrichtigungsmatrix (E-Mail)",
+        "source": "Quelle: `lieferzeiten_notification_toggle` mit logischem Schlüssel",
+        "emailOnlyHint": "Derzeit ist nur der E-Mail-Kanal produktiv und konfigurierbar.",
+        "invalidEntries": "{count} inkonsistente(r) Eintrag/Einträge erkannt (triggerKey/channel/code). Diese sind in der Matrix gesperrt.",
+        "notificationType": "Benachrichtigungstyp"
       }
     },
     "businessStatus": {
