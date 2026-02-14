@@ -1,5 +1,10 @@
 import template from './lieferzeiten-channel-settings-list.html.twig';
 import { DOMAIN_GROUPS, normalizeDomainKey } from '../../../lieferzeiten/utils/domain-source-mapping';
+import {
+    isLmsTargetChannel,
+    LMS_TARGET_CHANNELS,
+    resolveLmsTargetChannelKey,
+} from '../../../lieferzeiten/utils/lms-target-channel-mapping';
 
 const { Component } = Shopware;
 const { Criteria } = Shopware.Data;
@@ -11,10 +16,14 @@ const DEFAULT_PDMS_LIEFERZEITEN = [
     { key: 'PDMS_4', label: 'PDMS 4' },
 ];
 
+const LMS_TARGET_DOMAIN_KEYS = LMS_TARGET_CHANNELS.map((targetChannel) => targetChannel.domainKey);
+
 const CHANNEL_GROUPS = DOMAIN_GROUPS.map((group, index) => ({
     id: group.id,
     title: `Gruppe ${index + 1}`,
-    domainKeys: group.channels.map((channel) => channel.value),
+    domainKeys: group.channels
+        .map((channel) => channel.value)
+        .filter((channelDomainKey) => LMS_TARGET_DOMAIN_KEYS.includes(channelDomainKey)),
 }));
 
 const OTHER_CHANNELS_GROUP = {
@@ -100,6 +109,12 @@ Component.register('lieferzeiten-channel-settings-list', {
 
     methods: {
         resolveChannelDomainKey(channel) {
+            const lmsTargetDomainKey = resolveLmsTargetChannelKey(channel);
+
+            if (lmsTargetDomainKey) {
+                return lmsTargetDomainKey;
+            }
+
             const domainFromChannelDomain = channel?.domains
                 ?.map((domain) => this.normalizeDomainFromUrl(domain?.url))
                 .find((domainKey) => domainKey !== null);
@@ -239,10 +254,12 @@ Component.register('lieferzeiten-channel-settings-list', {
                     this.salesChannelRepository.search(salesChannelCriteria, Shopware.Context.api),
                 ]);
 
-                this.channels = salesChannels;
+                this.channels = salesChannels.filter((channel) => isLmsTargetChannel(channel));
                 this.matrixValues = {};
                 this.existingEntryIds = {};
                 this.channelPdmsLieferzeiten = {};
+
+                const loadedChannelIds = new Set(this.channels.map((channel) => channel.id));
 
                 await Promise.all(this.channels.map((channel) => this.loadChannelPdmsLieferzeiten(channel.id)));
 
@@ -251,6 +268,10 @@ Component.register('lieferzeiten-channel-settings-list', {
                 });
 
                 thresholds.forEach((entry) => {
+                    if (!loadedChannelIds.has(entry.salesChannelId)) {
+                        return;
+                    }
+
                     this.ensureChannelMatrix(entry.salesChannelId);
                     this.$set(this.matrixValues[entry.salesChannelId], entry.pdmsLieferzeit, {
                         shippingOverdueWorkingDays: entry.shippingOverdueWorkingDays,
