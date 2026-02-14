@@ -15,50 +15,80 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 class QueuedNotificationEmailProcessorTest extends TestCase
 {
-    public function testRunSendsMailUsingResolvedTemplate(): void
+    public function testRunSendsQueuedEmailWithDefaultTriggerTemplateAndMarksSent(): void
     {
         $event = new NotificationEventEntity();
-        $event->setUniqueIdentifier('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-        $event->setEventKey('evt-1');
-        $event->setTriggerKey('date_livraison.modifiee');
+        $event->setId(Uuid::randomHex());
+        $event->setEventKey('delivery-date-updated:EXT-200:email');
+        $event->setTriggerKey('livraison.date.modifiee');
         $event->setChannel('email');
-        $event->setExternalOrderId('EXT-44');
+        $event->setExternalOrderId('EXT-200');
         $event->setSourceSystem('shopware');
-        $event->setPayload([
-            'customerEmail' => 'buyer@example.org',
-            'deliveryDate' => '2026-02-20',
-        ]);
         $event->setStatus('queued');
+        $event->setPayload([
+            'customerEmail' => 'buyer@example.com',
+            'deliveryDate' => '2026-02-22 10:00:00',
+            'previousDeliveryDate' => '2026-02-21 10:00:00',
+        ]);
 
-        $repository = $this->createMock(EntityRepository::class);
-        $repository->expects($this->once())
+        $notificationEventRepository = $this->createMock(EntityRepository::class);
+        $notificationEventRepository->expects($this->once())
             ->method('search')
-            ->willReturn(new EntitySearchResult('lieferzeiten_notification_event', 1, new EntityCollection([$event]), null, new Criteria(), Context::createDefaultContext()));
+            ->with($this->isInstanceOf(Criteria::class), $this->isInstanceOf(Context::class))
+            ->willReturn(new EntitySearchResult(
+                'lieferzeiten_notification_event',
+                1,
+                new EntityCollection([$event]),
+                null,
+                new Criteria(),
+                Context::createDefaultContext()
+            ));
 
-        $templateResolver = $this->createMock(NotificationTemplateResolver::class);
-        $templateResolver->expects($this->once())
-            ->method('resolve')
-            ->willReturn([
-                'subject' => 'Sujet test',
-                'contentHtml' => '<p>HTML test</p>',
-                'contentPlain' => 'TXT test',
-            ]);
+        $templateRepository = $this->createMock(EntityRepository::class);
+        $templateRepository->method('search')->willReturn(new EntitySearchResult(
+            'lieferzeiten_notification_template',
+            0,
+            new EntityCollection([]),
+            null,
+            new Criteria(),
+            Context::createDefaultContext()
+        ));
+
+        $templateResolver = new NotificationTemplateResolver($templateRepository);
 
         $mailService = $this->createMock(AbstractMailService::class);
         $mailService->expects($this->once())
             ->method('send')
-            ->with($this->callback(static fn (array $data): bool => ($data['subject'] ?? null) === 'Sujet test'));
+            ->with(
+                $this->callback(static function (array $data): bool {
+                    return ($data['subject'] ?? null) === '[shopware] Date de livraison modifiée - EXT-200'
+                        && ($data['recipients']['buyer@example.com'] ?? null) === 'buyer@example.com';
+                }),
+                $this->isInstanceOf(Context::class),
+                $this->isType('array')
+            );
 
         $connection = $this->createMock(Connection::class);
         $connection->expects($this->exactly(2))
             ->method('executeStatement')
-            ->willReturnOnConsecutiveCalls(1, 1);
+            ->willReturnCallback(static function (string $sql, array $params = []): int {
+                if (str_contains($sql, 'WHERE `id` = :id AND `status` = :queued')) {
+                    return 1;
+                }
+
+                if (str_contains($sql, 'SET `status` = :status, `updated_at` = :updatedAt')) {
+                    return 1;
+                }
+
+                return 0;
+            });
 
         $processor = new QueuedNotificationEmailProcessor(
-            $repository,
+            $notificationEventRepository,
             $templateResolver,
             $mailService,
             $connection,
@@ -66,6 +96,6 @@ class QueuedNotificationEmailProcessorTest extends TestCase
             $this->createMock(AuditLogService::class),
         );
 
-        $processor->run(Context::createDefaultContext());
+        $processor->run(Context::createDefaultContext(), 10);
     }
 }

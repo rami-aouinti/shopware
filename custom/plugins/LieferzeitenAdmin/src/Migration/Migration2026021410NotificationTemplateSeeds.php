@@ -29,14 +29,12 @@ class Migration2026021410NotificationTemplateSeeds extends MigrationStep
             NotificationTriggerCatalog::DELIVERY_DATE_ASSIGNED => [
                 'subject' => '[{{ sourceSystem }}] Date de livraison attribuée - {{ externalOrderId }}',
                 'contentHtml' => '<p>Une date de livraison a été attribuée pour la commande <strong>{{ externalOrderId }}</strong>.</p><p>Date: {{ deliveryDate }}</p>',
-                'contentPlain' => "Une date de livraison a été attribuée pour la commande {{ externalOrderId }}.
-Date: {{ deliveryDate }}",
+                'contentPlain' => "Une date de livraison a été attribuée pour la commande {{ externalOrderId }}.\nDate: {{ deliveryDate }}",
             ],
             NotificationTriggerCatalog::DELIVERY_DATE_UPDATED => [
                 'subject' => '[{{ sourceSystem }}] Date de livraison modifiée - {{ externalOrderId }}',
-                'contentHtml' => '<p>La date de livraison a été modifiée pour la commande <strong>{{ externalOrderId }}</strong>.</p><p>Nouvelle date: {{ deliveryDate }}</p>',
-                'contentPlain' => "La date de livraison a été modifiée pour la commande {{ externalOrderId }}.
-Nouvelle date: {{ deliveryDate }}",
+                'contentHtml' => '<p>La date de livraison a été modifiée pour la commande <strong>{{ externalOrderId }}</strong>.</p><p>Ancienne date: {{ previousDeliveryDate }}</p><p>Nouvelle date: {{ deliveryDate }}</p>',
+                'contentPlain' => "La date de livraison a été modifiée pour la commande {{ externalOrderId }}.\nAncienne date: {{ previousDeliveryDate }}\nNouvelle date: {{ deliveryDate }}",
             ],
             NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED => [
                 'subject' => '[{{ sourceSystem }}] Demande de date de livraison supplémentaire - {{ externalOrderId }}',

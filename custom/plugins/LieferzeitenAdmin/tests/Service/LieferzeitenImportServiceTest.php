@@ -584,78 +584,112 @@ class LieferzeitenImportServiceTest extends TestCase
         $method->invoke($service, $context);
     }
 
-    public function testEmitNotificationEventsDispatchesDeliveryDateAssignedWhenDateFirstSet(): void
+
+    public function testEmitNotificationEventsDispatchesDeliveryDateAssignedWhenDateAppearsFirstTime(): void
     {
-        $dispatchedTriggers = [];
+        $calls = [];
+        $notificationEventService = $this->createMock(NotificationEventService::class);
+        $notificationEventService->method('dispatch')->willReturnCallback(static function (string $eventKey, string $triggerKey, string $channel) use (&$calls): bool {
+            $calls[] = [$eventKey, $triggerKey, $channel];
 
-        $notificationService = $this->createMock(NotificationEventService::class);
-        $notificationService->method('dispatch')
-            ->willReturnCallback(static function (string $eventKey, string $triggerKey, string $channel, array $payload) use (&$dispatchedTriggers): bool {
-                if (str_starts_with($eventKey, 'delivery-date-assigned:')) {
-                    static::assertSame('2026-02-14', $payload['deliveryDate'] ?? null);
-                }
+            return true;
+        });
 
-                $dispatchedTriggers[] = $triggerKey;
-
-                return true;
-            });
-
-        $service = $this->createService(notificationEventService: $notificationService);
+        $service = $this->createService(notificationEventService: $notificationEventService);
         $method = new \ReflectionMethod($service, 'emitNotificationEvents');
         $method->setAccessible(true);
 
         $method->invoke(
             $service,
-            'EXT-1',
+            'EXT-100',
             'shopware',
-            ['deliveryDate' => '2026-02-14', 'paymentMethod' => 'vorkasse'],
+            ['deliveryDate' => '2026-02-20 09:00:00'],
             [],
             null,
             null,
-            1,
+            2,
             Context::createDefaultContext()
         );
 
-        static::assertContains(NotificationTriggerCatalog::DELIVERY_DATE_ASSIGNED, $dispatchedTriggers);
+        $assigned = array_values(array_filter($calls, static fn (array $call): bool => $call[1] === 'livraison.date.attribuee'));
+        static::assertCount(3, $assigned);
     }
 
     public function testEmitNotificationEventsDispatchesDeliveryDateUpdatedWhenDateChanges(): void
     {
-        $dispatchedTriggers = [];
-
-        $notificationService = $this->createMock(NotificationEventService::class);
-        $notificationService->method('dispatch')
-            ->willReturnCallback(static function (string $eventKey, string $triggerKey, string $channel, array $payload) use (&$dispatchedTriggers): bool {
-                if (str_starts_with($eventKey, 'delivery-date-updated:')) {
-                    static::assertSame('2026-02-16', $payload['deliveryDate'] ?? null);
-                }
-
-                $dispatchedTriggers[] = $triggerKey;
-
-                return true;
-            });
-
         $existing = new PaketEntity();
-        $existing->setUniqueIdentifier(Uuid::randomHex());
-        $existing->setDeliveryDate(new \DateTimeImmutable('2026-02-15'));
+        $existing->setDeliveryDate(new \DateTimeImmutable('2026-02-20 09:00:00'));
 
-        $service = $this->createService(notificationEventService: $notificationService);
+        $calls = [];
+        $notificationEventService = $this->createMock(NotificationEventService::class);
+        $notificationEventService->method('dispatch')->willReturnCallback(static function (string $eventKey, string $triggerKey, string $channel, array $payload) use (&$calls): bool {
+            $calls[] = [$eventKey, $triggerKey, $channel, $payload];
+
+            return true;
+        });
+
+        $service = $this->createService(notificationEventService: $notificationEventService);
         $method = new \ReflectionMethod($service, 'emitNotificationEvents');
         $method->setAccessible(true);
 
         $method->invoke(
             $service,
-            'EXT-2',
+            'EXT-101',
             'shopware',
-            ['deliveryDate' => '2026-02-16'],
+            ['deliveryDate' => '2026-02-21 09:00:00'],
             [],
             $existing,
-            3,
-            3,
+            2,
+            2,
             Context::createDefaultContext()
         );
 
-        static::assertContains(NotificationTriggerCatalog::DELIVERY_DATE_UPDATED, $dispatchedTriggers);
+        $updated = array_values(array_filter($calls, static fn (array $call): bool => $call[1] === 'livraison.date.modifiee'));
+        static::assertCount(3, $updated);
+        static::assertSame('2026-02-20 09:00:00', $updated[0][3]['previousDeliveryDate'] ?? null);
+    }
+
+    public function testEmitNotificationEventsDispatchesReviewReminderOnTransitionToStatus8Only(): void
+    {
+        $notificationEventService = $this->createMock(NotificationEventService::class);
+        $calls = [];
+        $notificationEventService->method('dispatch')->willReturnCallback(static function (string $eventKey, string $triggerKey) use (&$calls): bool {
+            $calls[] = [$eventKey, $triggerKey];
+
+            return true;
+        });
+
+        $service = $this->createService(notificationEventService: $notificationEventService);
+        $method = new \ReflectionMethod($service, 'emitNotificationEvents');
+        $method->setAccessible(true);
+
+        $method->invoke(
+            $service,
+            'EXT-102',
+            'shopware',
+            [],
+            [],
+            null,
+            7,
+            8,
+            Context::createDefaultContext()
+        );
+
+        $method->invoke(
+            $service,
+            'EXT-103',
+            'shopware',
+            [],
+            [],
+            null,
+            8,
+            8,
+            Context::createDefaultContext()
+        );
+
+        $reviewReminderCalls = array_values(array_filter($calls, static fn (array $call): bool => $call[1] === 'commande.terminee.rappel_evaluation'));
+        static::assertCount(1, $reviewReminderCalls);
+        static::assertStringStartsWith('order-completed-review-reminder:EXT-102:', $reviewReminderCalls[0][0]);
     }
 
     private function createSearchResult(PaketEntity $entity): EntitySearchResult

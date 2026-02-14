@@ -9,8 +9,8 @@ class NotificationTriggerCatalog
     public const TRACKING_UPDATED = 'tracking.mis_a_jour';
     public const SHIPPING_CONFIRMED = 'expedition.confirmee';
     public const DELIVERY_DATE_CHANGED = 'changements.date_livraison';
-    public const DELIVERY_DATE_ASSIGNED = 'date_livraison.attribuee';
-    public const DELIVERY_DATE_UPDATED = 'date_livraison.modifiee';
+    public const DELIVERY_DATE_ASSIGNED = 'livraison.date.attribuee';
+    public const DELIVERY_DATE_UPDATED = 'livraison.date.modifiee';
     public const CUSTOMS_REQUIRED = 'douane.requise';
     public const ORDER_CANCELLED_STORNO = 'commande.storno';
     public const DELIVERY_IMPOSSIBLE = 'livraison.impossible';
