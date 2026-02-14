@@ -1,13 +1,13 @@
 {
   "lieferzeiten": {
     "general": {
-      "mainMenuItemGeneral": "Lieferzeiten-Management",
+      "mainMenuItemGeneral": "Lieferzeiten",
       "description": "Monitoring der Lieferzeiten im Admin",
       "infoTitle": "Hinweis",
       "timezoneInfo": "Zeitberechnungen basieren auf der Zeitzone Europe/Berlin.",
       "openDefinition": "„Offen“ bedeutet mindestens ein noch nicht geschlossenes Paket.",
-      "mainMenuItemStatistics": "Statistiken Lieferzeiten-Management",
-      "navigationHint": "Die Liste findest du im Admin unter Bestellungen → Lieferzeiten. Wähle zuerst Bereich und Kanal oben rechts aus, sonst bleibt die Ansicht leer. Mit dem Button „Demo-Daten speichern“ kannst du Testdaten für Bestell- und Lieferdaten erzeugen."
+      "mainMenuItemStatistics": "Lieferzeiten Statistiken",
+      "navigationHint": "Du findest die Liste unter Bestellungen → Lieferzeiten. Falls sie leer ist, wähle zuerst Bereich und Kanal oben rechts aus. Mit „Demo-Daten speichern“ kannst du Testdaten erzeugen."
     },
     "tabs": {
       "all": "Alle Bestellungen",
