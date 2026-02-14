@@ -901,6 +901,19 @@ Shopware.Component.register('lieferzeiten-order-table', {
             return `${shipped}/${ordered} ${this.$t('lieferzeiten.shipping.pieces')}`;
         },
 
+        positionQuantityDisplay(position) {
+            const orderedQuantity = this.parseQuantity(position?.orderedQuantity);
+            const shippedQuantity = this.parseQuantity(position?.shippedQuantity);
+
+            if (orderedQuantity !== null || shippedQuantity !== null) {
+                return this.positionQuantitySuffix(shippedQuantity, orderedQuantity);
+            }
+
+            const fallbackQuantity = this.pickFirstDefined(position, ['quantity', 'menge']);
+
+            return this.displayOrDash(fallbackQuantity);
+        },
+
         rangeToDays(range) {
             if (!range?.from || !range?.to) {
                 return null;
