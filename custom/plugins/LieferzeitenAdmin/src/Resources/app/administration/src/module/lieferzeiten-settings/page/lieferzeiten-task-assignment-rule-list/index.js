@@ -1,3 +1,4 @@
+import './lieferzeiten-task-assignment-rule-list.scss';
 import template from './lieferzeiten-task-assignment-rule-list.html.twig';
 
 const { Component } = Shopware;
