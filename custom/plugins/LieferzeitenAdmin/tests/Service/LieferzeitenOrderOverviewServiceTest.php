@@ -111,7 +111,7 @@ class LieferzeitenOrderOverviewServiceTest extends TestCase
                     return str_contains($sql, 'p.payment_date >= :paymentDateFrom')
                         && str_contains($sql, 'p.calculated_delivery_date <= :calculatedDeliveryDateTo')
                         && str_contains($sql, 'FROM `lieferzeiten_liefertermin_lieferant_history` latest')
-                        && str_contains($sql, 'FROM `lieferzeiten_neuer_liefertermin_history` latest')
+                        && str_contains($sql, 'FROM `lieferzeiten_neuer_liefertermin_paket_history` latest')
                         && str_contains($sql, 'ORDER BY p.shipping_date ASC, p.order_date DESC, p.id DESC');
                 }),
                 $this->callback(static function (array $params): bool {

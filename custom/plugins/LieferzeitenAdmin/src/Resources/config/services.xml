@@ -35,6 +35,9 @@
         <service id="LieferzeitenAdmin\Entity\NeuerLieferterminHistoryDefinition">
             <tag name="shopware.entity.definition"/>
         </service>
+        <service id="LieferzeitenAdmin\Entity\NeuerLieferterminPaketHistoryDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
         <service id="LieferzeitenAdmin\Entity\SendenummerHistoryDefinition">
             <tag name="shopware.entity.definition"/>
         </service>
@@ -84,6 +87,7 @@
             <argument type="service" id="Doctrine\DBAL\Connection" />
             <argument type="service" id="lieferzeiten_liefertermin_lieferant_history.repository" />
             <argument type="service" id="lieferzeiten_neuer_liefertermin_history.repository" />
+            <argument type="service" id="lieferzeiten_neuer_liefertermin_paket_history.repository" />
             <argument type="service" id="LieferzeitenAdmin\Service\LieferzeitenTaskService" />
             <argument type="service" id="LieferzeitenAdmin\Service\Notification\NotificationEventService" />
         </service>

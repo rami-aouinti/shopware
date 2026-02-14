@@ -104,12 +104,17 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     originalLieferterminLieferantRange: { ...supplierRange },
                 }));
 
-                const parcels = (order.parcels || []).map((parcel) => ({
-                    ...parcel,
-                    supplierRange: { ...supplierRange },
-                    neuerLieferterminRange: { ...newRange },
-                    originalNeuerLieferterminRange: { ...newRange },
-                }));
+                const parcels = (order.parcels || []).map((parcel) => {
+                    const parcelNewRange = this.resolveParcelInitialRange(parcel, newRange);
+
+                    return {
+                        ...parcel,
+                        supplierRange: { ...supplierRange },
+                        neuerLieferterminRange: { ...parcelNewRange },
+                        originalNeuerLieferterminRange: { ...parcelNewRange },
+                        statusDisplay: this.resolveParcelStatus(parcel),
+                    };
+                });
 
                 this.$set(this.editableOrders, order.id, {
                     ...order,
@@ -139,6 +144,38 @@ Shopware.Component.register('lieferzeiten-order-table', {
             this.notifyInitiatorIfClosed(this.editableOrders[order.id]);
 
             return this.editableOrders[order.id];
+        },
+
+
+        resolveParcelInitialRange(parcel, fallbackRange) {
+            const from = this.normalizeDate(parcel?.neuerLieferterminFrom || parcel?.neuer_liefertermin_from || parcel?.neuerLiefertermin?.from);
+            const to = this.normalizeDate(parcel?.neuerLieferterminTo || parcel?.neuer_liefertermin_to || parcel?.neuerLiefertermin?.to || parcel?.neuerLiefertermin);
+
+            if (from && to) {
+                return { from, to };
+            }
+
+            return { ...fallbackRange };
+        },
+
+        resolveParcelStatus(parcel) {
+            const status = String(parcel?.status || '').trim();
+
+            if (status === '') {
+                return parcel?.closed ? this.$t('lieferzeiten.status.closed') : this.$t('lieferzeiten.status.open');
+            }
+
+            return status;
+        },
+
+        isParcelEditableByStatus(parcel) {
+            const status = String(parcel?.status || '').trim().toLowerCase();
+
+            if (parcel?.closed === true) {
+                return false;
+            }
+
+            return !['closed', 'done', 'completed', 'shipped', 'delivered', '8'].includes(status);
         },
 
         resolveInitialRange(order, fieldPrefix, fallbackMaxDays) {
@@ -444,7 +481,8 @@ Shopware.Component.register('lieferzeiten-order-table', {
             const supplierRange = target.supplierRange;
             const newRange = target.neuerLieferterminRange;
 
-            if (!this.isRangeValid(supplierRange, 1, 14)
+            if (!this.isParcelEditableByStatus(target)
+                || !this.isRangeValid(supplierRange, 1, 14)
                 || !this.isRangeValid(newRange, 1, 4)
                 || !this.isRangeChanged(newRange, target.originalNeuerLieferterminRange)) {
                 return false;

@@ -472,6 +472,10 @@ class LieferzeitenSyncController extends AbstractController
             return $validationError;
         }
 
+        if (!$this->positionWriteService->canUpdateNeuerLieferterminForPaket($paketId)) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Paket status does not allow editing the new delivery date'], Response::HTTP_BAD_REQUEST);
+        }
+
         $supplierRange = $this->positionWriteService->getSupplierRangeBoundsByPaketId($paketId);
         if ($supplierRange === null) {
             return new JsonResponse(['status' => 'error', 'message' => 'Supplier delivery date range must be saved first for all positions of this paket'], Response::HTTP_BAD_REQUEST);

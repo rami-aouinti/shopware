@@ -20,8 +20,14 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->connection = DriverManager::getConnection(['url' => 'sqlite:///:memory:']);
+        $this->connection->executeStatement('CREATE TABLE lieferzeiten_paket (
+            id BLOB PRIMARY KEY,
+            status TEXT NULL,
+            updated_at TEXT NOT NULL
+        )');
         $this->connection->executeStatement('CREATE TABLE lieferzeiten_position (
             id BLOB PRIMARY KEY,
+            paket_id BLOB NULL,
             comment TEXT NULL,
             current_comment TEXT NULL,
             last_changed_by TEXT NULL,
@@ -37,6 +43,13 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
         )');
         $this->connection->executeStatement('CREATE TABLE lieferzeiten_neuer_liefertermin_history (
             position_id BLOB NOT NULL,
+            liefertermin_from TEXT NULL,
+            liefertermin_to TEXT NULL,
+            liefertermin TEXT NULL,
+            created_at TEXT NULL
+        )');
+        $this->connection->executeStatement('CREATE TABLE lieferzeiten_neuer_liefertermin_paket_history (
+            paket_id BLOB NOT NULL,
             liefertermin_from TEXT NULL,
             liefertermin_to TEXT NULL,
             liefertermin TEXT NULL,
@@ -61,10 +74,13 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
         $positionRepository = $this->createPositionRepositoryMock();
         $service = new LieferzeitenPositionWriteService(
             $positionRepository,
+            $this->createMock(EntityRepository::class),
             $this->connection,
             $this->createMock(EntityRepository::class),
             $this->createMock(EntityRepository::class),
+            $this->createMock(EntityRepository::class),
             $this->createMock(LieferzeitenTaskService::class),
+            $this->createMock(\LieferzeitenAdmin\Service\Notification\NotificationEventService::class),
         );
 
         $contextUserA = new Context(new AdminApiSource('user-a'));

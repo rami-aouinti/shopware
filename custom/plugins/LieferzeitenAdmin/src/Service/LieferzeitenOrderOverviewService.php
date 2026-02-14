@@ -267,7 +267,7 @@ readonly class LieferzeitenOrderOverviewService
         $this->addLatestHistoryRangeCondition(
             $conditions,
             $params,
-            'neuer_liefertermin_history',
+            'neuer_liefertermin_paket_history',
             'neuerLieferterminFrom',
             'neuerLieferterminTo',
             $filters,
@@ -355,12 +355,12 @@ readonly class LieferzeitenOrderOverviewService
             'EXISTS (
                 SELECT 1
                 FROM `lieferzeiten_position` pos_filter
-                INNER JOIN `lieferzeiten_%1$s` %2$s ON %2$s.position_id = pos_filter.id
+                INNER JOIN `lieferzeiten_%1$s` %2$s ON %2$s.paket_id = p.id
                 WHERE pos_filter.paket_id = p.id
                   AND %2$s.id = (
                       SELECT latest.id
                       FROM `lieferzeiten_%1$s` latest
-                      WHERE latest.position_id = pos_filter.id
+                      WHERE latest.paket_id = p.id
                       ORDER BY latest.created_at DESC
                       LIMIT 1
                   )
