@@ -221,6 +221,46 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
         $service->createAdditionalDeliveryRequest($positionId, 'manual', Context::createDefaultContext());
     }
 
+
+    public function testCreateAdditionalDeliveryRequestUsesFallbackWhenResolvedRuleIsInactive(): void
+    {
+        $positionId = '341cedcc8ec04f71a2cbf25f59feaa2f';
+        $this->connection->insert('lieferzeiten_position', [
+            'id' => hex2bin($positionId),
+            'updated_at' => '2026-02-10 09:00:00.000',
+        ]);
+
+        $taskService = $this->createMock(LieferzeitenTaskService::class);
+        $taskService
+            ->expects(static::once())
+            ->method('createTask')
+            ->with(
+                static::isArray(),
+                static::isInstanceOf(Context::class),
+                'manual',
+                'fallback-assignee',
+                static::isInstanceOf(\DateTimeInterface::class),
+            );
+
+        $ruleResolver = $this->createMock(TaskAssignmentRuleResolver::class);
+        $ruleResolver->method('resolve')->willReturn([
+            'active' => false,
+            'assigneeIdentifier' => 'rule-assignee',
+        ]);
+
+        $systemConfig = $this->createMock(SystemConfigService::class);
+        $systemConfig->method('get')->with('LieferzeitenAdmin.config.defaultAssigneeLieferterminAnfrageZusaetzlich')->willReturn(' fallback-assignee ');
+
+        $service = $this->createService(
+            positionRepository: $this->createNoOpPositionRepository(),
+            taskService: $taskService,
+            ruleResolver: $ruleResolver,
+            systemConfigService: $systemConfig,
+        );
+
+        $service->createAdditionalDeliveryRequest($positionId, 'manual', Context::createDefaultContext());
+    }
+
     public function testCreateAdditionalDeliveryRequestThrowsWhenRuleAndFallbackAssigneeAreMissing(): void
     {
         $positionId = '7e3f2a13f95f4707b1ef7fd4f02d1292';
