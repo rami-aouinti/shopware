@@ -7,6 +7,9 @@ use Doctrine\DBAL\Connection;
 
 readonly class LieferzeitenStatisticsService
 {
+    private const STATISTICS_TIMEZONE = 'Europe/Berlin';
+    private const STORAGE_TIMEZONE = 'UTC';
+
     private const DOMAIN_SOURCE_MAPPING = [
         'first-medical-e-commerce' => ['first medical', 'e-commerce', 'shopware', 'gambio'],
         'medical-solutions' => ['medical solutions', 'medical-solutions', 'medical_solutions'],
@@ -29,16 +32,18 @@ readonly class LieferzeitenStatisticsService
     /**
      * @return array<string, mixed>
      */
-    public function getStatistics(int $periodDays, ?string $domain, ?string $channel): array
+    public function getStatistics(int $periodDays, ?string $domain, ?string $channel, ?\DateTimeImmutable $referenceNow = null): array
     {
         $periodDays = $this->sanitizePeriod($periodDays);
-        $periodStart = (new \DateTimeImmutable('now'))->setTime(0, 0)->modify(sprintf('-%d days', $periodDays - 1));
+        $statisticsTimezone = $this->getStatisticsTimezone();
+        $now = $this->normalizeToStatisticsTimezone($referenceNow ?? new \DateTimeImmutable('now', $statisticsTimezone));
+        $periodStart = $now->setTime(0, 0)->modify(sprintf('-%d days', $periodDays - 1));
         $periodStartSql = $periodStart->format('Y-m-d H:i:s');
-        $now = new \DateTimeImmutable('now');
 
         $params = [
             'periodStart' => $periodStartSql,
             'now' => $now->format('Y-m-d H:i:s'),
+            'statisticsTimezone' => self::STATISTICS_TIMEZONE,
         ];
 
         $scopeSql = $this->buildScopeCondition($params, $domain, $channel);
@@ -59,6 +64,7 @@ readonly class LieferzeitenStatisticsService
             ) pos_stats ON pos_stats.paket_id = p.id
             WHERE COALESCE(p.is_test_order, 0) = 0
               AND p.created_at >= :periodStart
+              AND p.created_at <= :periodEnd
               %s',
             $scopeSql,
         );
@@ -68,7 +74,7 @@ readonly class LieferzeitenStatisticsService
             : [];
 
         $metrics = $this->connection->fetchAssociative($metricsSql, $params, $metricsParamTypes) ?: [];
-        $overdueCounts = $this->calculateOverdueCounts($periodStartSql, $domain, $channel, $now);
+        $overdueCounts = $this->calculateOverdueCounts($periodStartSql, $periodEndSql, $domain, $channel, $effectiveNow);
 
         $channelSql = sprintf(
             'SELECT
@@ -77,6 +83,7 @@ readonly class LieferzeitenStatisticsService
             FROM `lieferzeiten_paket` p
             WHERE COALESCE(p.is_test_order, 0) = 0
               AND p.created_at >= :periodStart
+              AND p.created_at <= :periodEnd
               %s
             GROUP BY COALESCE(NULLIF(p.source_system, ""), "Unknown")
             ORDER BY value DESC, channel ASC',
@@ -101,6 +108,8 @@ readonly class LieferzeitenStatisticsService
             $eventSourcesSql,
             $this->buildSourceScopeCondition('t.source_system', $params, $domain, $channel),
         );
+
+        $params['storageTimezone'] = self::STORAGE_TIMEZONE;
 
         $timeline = $this->connection->fetchAllAssociative($timelineSql, $params, $metricsParamTypes);
 
@@ -131,6 +140,7 @@ readonly class LieferzeitenStatisticsService
 
         return [
             'periodDays' => $periodDays,
+            'timezone' => self::STATISTICS_TIMEZONE,
             'metrics' => [
                 'openOrders' => (int) ($metrics['open_orders'] ?? 0),
                 'overdueShipping' => $overdueCounts['shipping'],
@@ -154,6 +164,9 @@ readonly class LieferzeitenStatisticsService
                 'eventAt' => (string) ($row['eventAt'] ?? ''),
                 'sourceSystem' => (string) ($row['sourceSystem'] ?? 'unknown'),
                 'promisedAt' => $row['promisedAt'],
+                'paketId' => isset($row['paketId']) ? (string) $row['paketId'] : null,
+                'taskId' => isset($row['taskId']) ? (string) $row['taskId'] : null,
+                'trackingNumber' => isset($row['trackingNumber']) ? (string) $row['trackingNumber'] : null,
             ], $activities),
         ];
     }
@@ -161,10 +174,11 @@ readonly class LieferzeitenStatisticsService
     /**
      * @return array{shipping:int,delivery:int}
      */
-    private function calculateOverdueCounts(string $periodStartSql, ?string $domain, ?string $channel, \DateTimeImmutable $now): array
+    private function calculateOverdueCounts(string $periodStartSql, string $periodEndSql, ?string $domain, ?string $channel, \DateTimeImmutable $now): array
     {
         $params = [
             'periodStart' => $periodStartSql,
+            'periodEnd' => $periodEndSql,
         ];
         $scopeSql = $this->buildScopeCondition($params, $domain, $channel);
 
@@ -187,6 +201,7 @@ readonly class LieferzeitenStatisticsService
             ) pos_stats ON pos_stats.paket_id = p.id
             WHERE COALESCE(p.is_test_order, 0) = 0
               AND p.created_at >= :periodStart
+              AND p.created_at <= :periodEnd
               %s',
             $scopeSql,
         ), $params);
@@ -244,8 +259,10 @@ readonly class LieferzeitenStatisticsService
 
     private function parseDateValue(mixed $value): ?\DateTimeImmutable
     {
+        $timezone = $this->getStatisticsTimezone();
+
         if ($value instanceof \DateTimeInterface) {
-            return \DateTimeImmutable::createFromInterface($value);
+            return \DateTimeImmutable::createFromInterface($value)->setTimezone($timezone);
         }
 
         if (!is_string($value) || trim($value) === '') {
@@ -253,10 +270,20 @@ readonly class LieferzeitenStatisticsService
         }
 
         try {
-            return new \DateTimeImmutable($value);
+            return $this->normalizeToStatisticsTimezone(new \DateTimeImmutable($value, $timezone));
         } catch (\Throwable) {
             return null;
         }
+    }
+
+    private function getStatisticsTimezone(): \DateTimeZone
+    {
+        return new \DateTimeZone(self::STATISTICS_TIMEZONE);
+    }
+
+    private function normalizeToStatisticsTimezone(\DateTimeImmutable $dateTime): \DateTimeImmutable
+    {
+        return $dateTime->setTimezone($this->getStatisticsTimezone());
     }
 
     /**
@@ -450,6 +477,46 @@ readonly class LieferzeitenStatisticsService
         }
 
         return 30;
+    }
+
+    /**
+     * @return array{mode:string,from:\DateTimeImmutable,to:\DateTimeImmutable,timezone:\DateTimeZone,periodDays:int}
+     */
+    private function resolveWindow(?int $periodDays, ?string $from, ?string $to): array
+    {
+        $timezone = new \DateTimeZone(date_default_timezone_get());
+        $now = new \DateTimeImmutable('now', $timezone);
+        $normalizedPeriod = $this->sanitizePeriod($periodDays ?? 30);
+
+        $fromDate = $this->parseDateValue($from);
+        $toDate = $this->parseDateValue($to);
+
+        if ($fromDate !== null || $toDate !== null) {
+            $resolvedTo = $toDate ?? $now;
+            $resolvedFrom = $fromDate ?? $resolvedTo->setTime(0, 0)->modify(sprintf('-%d days', $normalizedPeriod - 1));
+
+            if ($resolvedFrom > $resolvedTo) {
+                [$resolvedFrom, $resolvedTo] = [$resolvedTo, $resolvedFrom];
+            }
+
+            return [
+                'mode' => 'custom',
+                'from' => $resolvedFrom,
+                'to' => $resolvedTo,
+                'timezone' => new \DateTimeZone($resolvedFrom->getTimezone()->getName()),
+                'periodDays' => max(1, (int) $resolvedFrom->diff($resolvedTo)->days + 1),
+            ];
+        }
+
+        $resolvedFrom = $now->setTime(0, 0)->modify(sprintf('-%d days', $normalizedPeriod - 1));
+
+        return [
+            'mode' => 'period',
+            'from' => $resolvedFrom,
+            'to' => $now,
+            'timezone' => $timezone,
+            'periodDays' => $normalizedPeriod,
+        ];
     }
 
     /**

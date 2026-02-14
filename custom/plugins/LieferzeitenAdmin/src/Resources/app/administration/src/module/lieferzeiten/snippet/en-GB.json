@@ -19,10 +19,10 @@
       "status": "Status"
     },
     "domainSelection": {
-      "placeholder": "Please select a channel",
+      "placeholder": "Select channel",
       "reset": "Reset selection",
-      "modalTitle": "Choose channel",
-      "modalDescription": "Choose a channel to load delivery-time views.",
+      "modalTitle": "Select area and channel",
+      "modalDescription": "Step 1: Select an area. Step 2: Select a channel to load delivery-time views.",
       "persistLabel": "Persist selection on this device",
       "confirm": "Apply selection",
       "groups": {
@@ -37,6 +37,14 @@
         "peg": "PEG",
         "zonami": "Zonami",
         "medicalSolutionsGermany": "medical-solutions-germany.de"
+      },
+      "groupPlaceholder": "Select area",
+      "channelPlaceholder": "Select channel",
+      "next": "Next",
+      "back": "Back",
+      "steps": {
+        "group": "Step 1 · Area",
+        "channel": "Step 2 · Channel"
       }
     },
     "kpi": {
@@ -85,10 +93,14 @@
       "latestDelivery": "Latest delivery"
     },
     "shipping": {
-      "unclear": "Unclear",
+      "unclear": "Unklar",
       "complete": "Complete",
       "partial": "Partial",
-      "split": "Split"
+      "split": "Split",
+      "completeShipment": "Gesamt-Versand",
+      "partialShipment": "Teillieferung",
+      "splitPosition": "Trennung Auftragsposition",
+      "pieces": "Stück"
     },
     "audit": {
       "savedSupplierDate": "Supplier date saved",
@@ -147,7 +159,36 @@
       },
       "overdueShipping": "Overdue shipping",
       "overdueDelivery": "Overdue deliveries (completed)",
-      "activityDate": "Activity at"
+      "activityDate": "Activity at",
+      "actionsColumn": "Actions",
+      "actionsUnavailable": "No action available",
+      "actionUnavailableReason": "No contextual action is available for this activity.",
+      "actionSuccessTitle": "Action executed",
+      "actionErrorTitle": "Action failed",
+      "actions": {
+        "openOrder": "Open order",
+        "openTask": "Open task",
+        "openTracking": "Tracking",
+        "closeTask": "Close task",
+        "reopenTask": "Reopen task"
+      },
+      "actionReasons": {
+        "noViewAcl": "Missing permission: lieferzeiten.viewer.",
+        "noEditAcl": "Missing permission: lieferzeiten.editor.",
+        "missingOrderReference": "Order reference unavailable for this activity.",
+        "missingTaskReference": "Task reference unavailable for this activity.",
+        "missingTrackingReference": "Tracking number unavailable for this activity.",
+        "unsupportedTaskStatus": "Action unavailable for current task status."
+      },
+      "actionSuccess": {
+        "closeTask": "Task successfully closed.",
+        "reopenTask": "Task successfully reopened."
+      },
+      "actionError": {
+        "closeTask": "Task could not be closed.",
+        "reopenTask": "Task could not be reopened.",
+        "openTracking": "Tracking history could not be loaded."
+      }
     },
     "loading": {
       "errorTitle": "Unable to load orders",
