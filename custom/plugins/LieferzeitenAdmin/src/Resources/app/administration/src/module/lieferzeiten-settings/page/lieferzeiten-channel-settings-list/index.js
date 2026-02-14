@@ -12,14 +12,13 @@ Component.register('lieferzeiten-channel-settings-list', {
 
     data() {
         return {
-            repository: null,
-            items: null,
+            salesChannelRepository: null,
+            salesChannels: [],
+            selectedSalesChannelId: null,
             isLoading: false,
-            total: 0,
-            page: 1,
-            limit: 25,
             isSeedingDemoData: false,
             hasDemoData: false,
+            pdmsPayload: null,
         };
     },
 
@@ -32,20 +31,14 @@ Component.register('lieferzeiten-channel-settings-list', {
             return this.acl.can('lieferzeiten.editor') || this.acl.can('admin');
         },
 
-        columns() {
-            return [
-                { property: 'salesChannelId', label: 'Sales Channel', inlineEdit: 'string', primary: true },
-                { property: 'defaultStatus', label: 'Default Status', inlineEdit: 'string' },
-                { property: 'enableNotifications', label: 'Notifications (global default)', inlineEdit: 'boolean' },
-                { property: 'lastChangedBy', label: 'Last Changed By', inlineEdit: 'string' },
-                { property: 'lastChangedAt', label: 'Last Changed At', inlineEdit: 'date' },
-            ];
+        canLoadPdmsLieferzeiten() {
+            return typeof this.selectedSalesChannelId === 'string' && this.selectedSalesChannelId.length > 0;
         },
     },
 
     created() {
-        this.repository = this.repositoryFactory.create('lieferzeiten_channel_settings');
-        this.getList();
+        this.salesChannelRepository = this.repositoryFactory.create('sales_channel');
+        this.loadSalesChannels();
         this.loadDemoDataStatus();
     },
 
@@ -62,6 +55,27 @@ Component.register('lieferzeiten-channel-settings-list', {
                 title: fallbackTitle,
                 message: this.extractErrorMessage(error),
             });
+        },
+
+        async loadSalesChannels() {
+            this.isLoading = true;
+
+            try {
+                const criteria = new Criteria(1, 250);
+                criteria.addSorting(Criteria.sort('name', 'ASC'));
+
+                const result = await this.salesChannelRepository.search(criteria, Shopware.Context.api);
+                this.salesChannels = result;
+
+                if (!this.selectedSalesChannelId && this.salesChannels.length > 0) {
+                    this.selectedSalesChannelId = this.salesChannels[0].id;
+                    await this.loadPdmsLieferzeiten();
+                }
+            } catch (error) {
+                this.notifyRequestError(error, 'Sales Channels');
+            } finally {
+                this.isLoading = false;
+            }
         },
 
         async loadDemoDataStatus() {
@@ -113,65 +127,25 @@ Component.register('lieferzeiten-channel-settings-list', {
             }
         },
 
-        async getList() {
+        async onSalesChannelChange() {
+            await this.loadPdmsLieferzeiten();
+        },
+
+        async loadPdmsLieferzeiten() {
+            if (!this.canLoadPdmsLieferzeiten) {
+                this.pdmsPayload = null;
+                return;
+            }
+
             this.isLoading = true;
-            const criteria = new Criteria(this.page, this.limit);
-            criteria.addSorting(Criteria.sort('createdAt', 'DESC'));
 
             try {
-                const result = await this.repository.search(criteria, Shopware.Context.api);
-                this.items = result;
-                this.total = result.total;
+                this.pdmsPayload = await this.lieferzeitenOrdersService.getSalesChannelLieferzeiten(this.selectedSalesChannelId);
             } catch (error) {
-                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.general.mainMenuItem'));
+                this.pdmsPayload = null;
+                this.notifyRequestError(error, 'PDMS Lieferzeiten');
             } finally {
                 this.isLoading = false;
-            }
-        },
-        onPageChange({ page, limit }) {
-            this.page = page;
-            this.limit = limit;
-            this.getList();
-        },
-        async onInlineEditSave(item) {
-            if (!this.hasEditAccess) {
-                return Promise.resolve();
-            }
-
-            this.isLoading = true;
-            try {
-                await this.repository.save(item, Shopware.Context.api);
-                await this.getList();
-            } catch (error) {
-                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.general.mainMenuItem'));
-            }
-        },
-        async onDelete(item) {
-            if (!this.hasEditAccess) {
-                return Promise.resolve();
-            }
-
-            this.isLoading = true;
-            try {
-                await this.repository.delete(item.id, Shopware.Context.api);
-                await this.getList();
-            } catch (error) {
-                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.general.mainMenuItem'));
-            }
-        },
-        async onCreate() {
-            if (!this.hasEditAccess) {
-                return Promise.resolve();
-            }
-
-            const entity = this.repository.create(Shopware.Context.api);
-            entity.salesChannelId = '';
-            entity.enableNotifications = false;
-            try {
-                await this.repository.save(entity, Shopware.Context.api);
-                await this.getList();
-            } catch (error) {
-                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.general.mainMenuItem'));
             }
         },
     },

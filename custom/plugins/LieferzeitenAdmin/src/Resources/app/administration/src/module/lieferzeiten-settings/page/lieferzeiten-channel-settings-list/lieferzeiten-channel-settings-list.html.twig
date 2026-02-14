@@ -5,31 +5,58 @@
 
     <template #smart-bar-actions>
         <sw-button v-if="hasEditAccess" :isLoading="isSeedingDemoData" :variant="hasDemoData ? 'danger' : 'default'" @click="onToggleDemoData">{{ hasDemoData ? 'DemoDaten entfernen' : 'DemoDaten speichern' }}</sw-button>
-        <sw-button v-if="hasEditAccess" variant="primary" @click="onCreate">{{ $tc('lieferzeiten.lms.channelSettings.create') }}</sw-button>
     </template>
 
     <template #content>
         <sw-card>
             <sw-alert variant="info" appearance="default" :showIcon="true">
-                Ce booléen reste un paramètre global par canal de vente et ne remplace pas la granularité de la matrice des Notification toggles.
+                Affiche les 4 Lieferzeiten PDMS mappées pour le canal sélectionné.
             </sw-alert>
-            <sw-entity-listing
-                v-if="items"
-                :items="items"
-                :repository="repository"
-                :columns="columns"
-                :isLoading="isLoading"
-                :showSelection="false"
-                :allowInlineEdit="hasEditAccess"
-                :allowDelete="hasEditAccess"
-                :total="total"
-                :page="page"
-                :limit="limit"
-                @page-change="onPageChange"
-                @inline-edit-save="onInlineEditSave"
-                @inline-edit-cancel="getList"
-                @delete="onDelete"
+
+            <sw-single-select
+                v-model:value="selectedSalesChannelId"
+                label="Verkaufskanal"
+                :options="salesChannels"
+                labelProperty="name"
+                valueProperty="id"
+                :disabled="isLoading"
+                @update:value="onSalesChannelChange"
             />
+
+            <sw-loader v-if="isLoading" />
+
+            <sw-empty-state
+                v-else-if="!pdmsPayload || !pdmsPayload.lieferzeiten || pdmsPayload.lieferzeiten.length === 0"
+                title="Keine Lieferzeiten"
+                subline="Für den gewählten Kanal konnten keine PDMS Lieferzeiten geladen werden."
+            />
+
+            <div v-else class="sw-data-grid sw-data-grid--small">
+                <div class="sw-data-grid__wrapper">
+                    <table class="sw-data-grid__table">
+                        <thead class="sw-data-grid__header">
+                            <tr class="sw-data-grid__row">
+                                <th class="sw-data-grid__cell">Slot</th>
+                                <th class="sw-data-grid__cell">Mapping</th>
+                                <th class="sw-data-grid__cell">PDMS ID</th>
+                                <th class="sw-data-grid__cell">Name</th>
+                                <th class="sw-data-grid__cell">Tage min</th>
+                                <th class="sw-data-grid__cell">Tage max</th>
+                            </tr>
+                        </thead>
+                        <tbody class="sw-data-grid__body">
+                            <tr v-for="entry in pdmsPayload.lieferzeiten" :key="entry.slot" class="sw-data-grid__row">
+                                <td class="sw-data-grid__cell">{{ entry.slot }}</td>
+                                <td class="sw-data-grid__cell">{{ entry.mapping || '-' }}</td>
+                                <td class="sw-data-grid__cell">{{ entry.lieferzeit && (entry.lieferzeit.id || entry.lieferzeit.uuid) ? (entry.lieferzeit.id || entry.lieferzeit.uuid) : '-' }}</td>
+                                <td class="sw-data-grid__cell">{{ entry.lieferzeit && (entry.lieferzeit.name || entry.lieferzeit.label) ? (entry.lieferzeit.name || entry.lieferzeit.label) : '-' }}</td>
+                                <td class="sw-data-grid__cell">{{ entry.lieferzeit && entry.lieferzeit.minDays !== undefined ? entry.lieferzeit.minDays : '-' }}</td>
+                                <td class="sw-data-grid__cell">{{ entry.lieferzeit && entry.lieferzeit.maxDays !== undefined ? entry.lieferzeit.maxDays : '-' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </sw-card>
     </template>
 </sw-page>
