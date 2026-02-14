@@ -15,11 +15,14 @@ use LieferzeitenAdmin\Service\Reliability\IntegrationReliabilityService;
 use LieferzeitenAdmin\Sync\Adapter\ChannelOrderAdapterRegistry;
 use LieferzeitenAdmin\Sync\San6\San6Client;
 use LieferzeitenAdmin\Sync\San6\San6MatchingService;
+use LieferzeitenAdmin\Entity\PositionEntity;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Framework\Context;
@@ -779,6 +782,109 @@ class LieferzeitenImportServiceTest extends TestCase
 
         static::assertSame(6, $orderedMethod->invoke($service, $payload, '99'));
         static::assertSame(2, $shippedMethod->invoke($service, $payload, '99'));
+    }
+
+    public function testUpsertPositionAndTrackingHistoryScopesLookupByPaketIdWhenPositionNumberIsShared(): void
+    {
+        $sharedPositionNumber = '10';
+        $targetPaketId = Uuid::randomHex();
+        $otherPaketId = Uuid::randomHex();
+        $targetPositionId = Uuid::randomHex();
+
+        $positionRepository = $this->createMock(EntityRepository::class);
+        $historyRepository = $this->createMock(EntityRepository::class);
+
+        $positionRepository->expects($this->once())
+            ->method('search')
+            ->with($this->callback(function (Criteria $criteria) use ($sharedPositionNumber, $targetPaketId): bool {
+                return $this->criteriaHasEqualsFilter($criteria, 'positionNumber', $sharedPositionNumber)
+                    && $this->criteriaHasEqualsFilter($criteria, 'paketId', $targetPaketId);
+            }), $this->isInstanceOf(Context::class))
+            ->willReturnCallback(function () use ($targetPositionId): EntitySearchResult {
+                $entity = new PositionEntity();
+                $entity->setUniqueIdentifier($targetPositionId);
+
+                return new EntitySearchResult(
+                    'lieferzeiten_position',
+                    1,
+                    new EntityCollection([$entity]),
+                    null,
+                    new Criteria(),
+                    Context::createDefaultContext()
+                );
+            });
+
+        $positionRepository->expects($this->once())
+            ->method('upsert')
+            ->with($this->callback(static fn (array $payload): bool => ($payload[0]['id'] ?? null) === $targetPositionId && ($payload[0]['paketId'] ?? null) === $targetPaketId && ($payload[0]['paketId'] ?? null) !== $otherPaketId));
+
+        $historyRepository->expects($this->once())
+            ->method('search')
+            ->willReturn(new EntitySearchResult(
+                'lieferzeiten_sendenummer_history',
+                0,
+                new EntityCollection(),
+                null,
+                new Criteria(),
+                Context::createDefaultContext()
+            ));
+
+        $historyRepository->expects($this->once())
+            ->method('create')
+            ->with($this->callback(static fn (array $payload): bool => ($payload[0]['positionId'] ?? null) === $targetPositionId && ($payload[0]['sendenummer'] ?? null) === 'TRACK-NEW'));
+
+        $service = new LieferzeitenImportService(
+            $this->createMock(EntityRepository::class),
+            $positionRepository,
+            $historyRepository,
+            $this->createMock(HttpClientInterface::class),
+            $this->createMock(SystemConfigService::class),
+            $this->createMock(ChannelOrderAdapterRegistry::class),
+            $this->createMock(San6Client::class),
+            $this->createMock(San6MatchingService::class),
+            $this->createMock(BaseDateResolver::class),
+            $this->createMock(ChannelDateSettingsProvider::class),
+            $this->createMock(BusinessDayDeliveryDateCalculator::class),
+            new Status8TrackingMappingProvider($this->createMock(SystemConfigService::class)),
+            $this->createMock(LockFactory::class),
+            $this->createMock(NotificationEventService::class),
+            $this->createMock(IntegrationReliabilityService::class),
+            $this->createMock(IntegrationContractValidator::class),
+            $this->createMock(AuditLogService::class),
+            $this->createMock(LoggerInterface::class),
+        );
+
+        $method = new \ReflectionMethod($service, 'upsertPositionAndTrackingHistory');
+        $method->setAccessible(true);
+
+        $method->invoke($service, $targetPaketId, [
+            'externalId' => 'EXT-ORDER-1',
+            'positionNumber' => $sharedPositionNumber,
+            'trackingNumber' => 'TRACK-NEW',
+            'parcels' => [
+                ['positionNumber' => $sharedPositionNumber, 'trackingNumber' => 'TRACK-NEW'],
+            ],
+        ], Context::createDefaultContext());
+
+    }
+
+    private function criteriaHasEqualsFilter(Criteria $criteria, string $field, string $value): bool
+    {
+        foreach ($criteria->getFilters() as $filter) {
+            if (!$filter instanceof EqualsFilter) {
+                continue;
+            }
+
+            if ($filter->getField() !== $field) {
+                continue;
+            }
+
+            if ((string) $filter->getValue() === $value) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function createSearchResult(PaketEntity $entity): EntitySearchResult

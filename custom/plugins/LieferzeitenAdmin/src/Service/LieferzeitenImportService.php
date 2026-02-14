@@ -317,7 +317,12 @@ class LieferzeitenImportService
             return [];
         }
 
-        $positionId = $this->findPositionIdByNumber($positionNumber, $context) ?? Uuid::randomHex();
+        $positionId = $this->findPositionIdByScope(
+            $positionNumber,
+            $context,
+            $paketId,
+            $this->extractExternalOrderKey($payload)
+        ) ?? Uuid::randomHex();
         $this->positionRepository->upsert([[
             'id' => $positionId,
             'paketId' => $paketId,
@@ -383,15 +388,34 @@ class LieferzeitenImportService
         return $entity;
     }
 
-    private function findPositionIdByNumber(string $positionNumber, Context $context): ?string
+    private function findPositionIdByScope(
+        string $positionNumber,
+        Context $context,
+        ?string $paketId = null,
+        ?string $externalOrderKey = null
+    ): ?string
     {
         $criteria = new Criteria();
         $criteria->setLimit(1);
         $criteria->addFilter(new EqualsFilter('positionNumber', $positionNumber));
 
+        if ($paketId !== null && $paketId !== '') {
+            $criteria->addFilter(new EqualsFilter('paketId', $paketId));
+        } elseif ($externalOrderKey !== null && $externalOrderKey !== '') {
+            $criteria->addFilter(new EqualsFilter('paket.externalOrderId', $externalOrderKey));
+        }
+
         $entity = $this->positionRepository->search($criteria, $context)->first();
 
         return $entity?->getId();
+    }
+
+    /** @param array<string,mixed> $payload */
+    private function extractExternalOrderKey(array $payload): ?string
+    {
+        $externalOrderKey = (string) ($payload['externalId'] ?? $payload['orderNumber'] ?? '');
+
+        return $externalOrderKey !== '' ? $externalOrderKey : null;
     }
 
 
