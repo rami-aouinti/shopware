@@ -6,7 +6,8 @@
       "infoTitle": "Notice",
       "timezoneInfo": "Time calculations are based on timezone Europe/Berlin.",
       "openDefinition": "\"Open\" means at least one parcel is still not closed.",
-      "mainMenuItemStatistics": "Delivery Time Management Statistics"
+      "mainMenuItemStatistics": "Delivery Time Management Statistics",
+      "navigationHint": "You can find this list in Admin under Orders → Delivery Time Management. Select area and channel first (top right), otherwise the view stays empty. Use “Save demo data” to generate test rows for order and delivery dates."
     },
     "tabs": {
       "all": "All orders",
