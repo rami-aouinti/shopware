@@ -85,7 +85,7 @@ Component.register('lieferzeiten-notification-toggle-list', {
                 this.items = result;
                 this.total = result.total;
             } catch (error) {
-                this.notifyRequestError(error, 'Lieferzeiten Settings');
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.general.mainMenuItem'));
             } finally {
                 this.isLoading = false;
             }
@@ -106,7 +106,7 @@ Component.register('lieferzeiten-notification-toggle-list', {
                 await this.repository.save(item, Shopware.Context.api);
                 await this.getList();
             } catch (error) {
-                this.notifyRequestError(error, 'Lieferzeiten Settings');
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.general.mainMenuItem'));
             }
         },
         async onDelete(item) {
@@ -119,7 +119,7 @@ Component.register('lieferzeiten-notification-toggle-list', {
                 await this.repository.delete(item.id, Shopware.Context.api);
                 await this.getList();
             } catch (error) {
-                this.notifyRequestError(error, 'Lieferzeiten Settings');
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.general.mainMenuItem'));
             }
         },
         async onCreate() {
@@ -137,7 +137,7 @@ Component.register('lieferzeiten-notification-toggle-list', {
                 await this.repository.save(entity, Shopware.Context.api);
                 await this.getList();
             } catch (error) {
-                this.notifyRequestError(error, 'Lieferzeiten Settings');
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.general.mainMenuItem'));
             }
         },
     },

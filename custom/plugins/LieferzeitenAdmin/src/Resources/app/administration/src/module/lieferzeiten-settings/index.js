@@ -7,8 +7,8 @@ const { Module } = Shopware;
 Module.register('lieferzeiten-settings', {
     type: 'plugin',
     name: 'lieferzeiten-settings',
-    title: 'Lieferzeiten Settings',
-    description: 'Einstellungen für Lieferzeiten',
+    title: 'lieferzeiten.lms.general.mainMenuItem',
+    description: 'lieferzeiten.lms.general.description',
     color: '#009ee3',
     icon: 'regular-cog',
 
@@ -39,7 +39,7 @@ Module.register('lieferzeiten-settings', {
     navigation: [
         {
             id: 'lieferzeiten-settings',
-            label: 'Lieferzeiten Settings',
+            label: 'lieferzeiten.lms.general.mainMenuItem',
             color: '#009ee3',
             path: 'lieferzeiten.settings.channelSettings',
             icon: 'regular-cog',
@@ -48,7 +48,7 @@ Module.register('lieferzeiten-settings', {
         },
         {
             id: 'lieferzeiten-settings-channel',
-            label: 'Channel Settings',
+            label: 'lieferzeiten.lms.navigation.thresholdsByChannel',
             color: '#009ee3',
             path: 'lieferzeiten.settings.channelSettings',
             parent: 'lieferzeiten-settings',
@@ -56,7 +56,7 @@ Module.register('lieferzeiten-settings', {
         },
         {
             id: 'lieferzeiten-settings-task',
-            label: 'Task Assignment Rules',
+            label: 'lieferzeiten.lms.navigation.taskAssignmentRules',
             color: '#009ee3',
             path: 'lieferzeiten.settings.taskAssignmentRules',
             parent: 'lieferzeiten-settings',
@@ -64,7 +64,7 @@ Module.register('lieferzeiten-settings', {
         },
         {
             id: 'lieferzeiten-settings-notifications',
-            label: 'Notification Toggles',
+            label: 'lieferzeiten.lms.navigation.notificationToggles',
             color: '#009ee3',
             path: 'lieferzeiten.settings.notificationToggles',
             parent: 'lieferzeiten-settings',
