@@ -114,6 +114,9 @@
         <service id="LieferzeitenAdmin\Service\Tracking\TrackingHistoryService">
             <argument type="tagged_iterator" tag="lieferzeiten.tracking_client" />
         </service>
+        <service id="LieferzeitenAdmin\Service\Tracking\TrackingDeliveryDateSyncService">
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+        </service>
 
         <service id="LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog" />
         <service id="LieferzeitenAdmin\Service\Notification\NotificationToggleResolver">

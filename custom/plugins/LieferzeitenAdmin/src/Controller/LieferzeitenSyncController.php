@@ -10,6 +10,7 @@ use LieferzeitenAdmin\Service\LieferzeitenTaskService;
 use LieferzeitenAdmin\Service\WriteEndpointConflictException;
 use LieferzeitenAdmin\Service\LieferzeitenStatisticsService;
 use LieferzeitenAdmin\Service\DemoDataSeederService;
+use LieferzeitenAdmin\Service\Tracking\TrackingDeliveryDateSyncService;
 use LieferzeitenAdmin\Service\Tracking\TrackingHistoryService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -27,6 +28,7 @@ class LieferzeitenSyncController extends AbstractController
     public function __construct(
         private readonly LieferzeitenImportService $importService,
         private readonly TrackingHistoryService $trackingHistoryService,
+        private readonly TrackingDeliveryDateSyncService $trackingDeliveryDateSyncService,
         private readonly LieferzeitenOrderOverviewService $orderOverviewService,
         private readonly LieferzeitenPositionWriteService $positionWriteService,
         private readonly LieferzeitenTaskService $taskService,
@@ -214,6 +216,7 @@ class LieferzeitenSyncController extends AbstractController
     public function syncNow(Context $context): JsonResponse
     {
         $this->importService->sync($context, 'on_demand');
+        $this->trackingDeliveryDateSyncService->sync($context);
         $this->auditLogService->log('sync_started', 'lieferzeiten_sync', null, $context, [], 'shopware');
 
         return new JsonResponse(['status' => 'ok']);
