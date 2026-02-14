@@ -4,6 +4,8 @@ namespace LieferzeitenAdmin\Service;
 
 use Doctrine\DBAL\Connection;
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Notification\ShippingDateOverdueTaskService;
+use LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver;
 use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
@@ -20,6 +22,7 @@ class LieferzeitenPositionWriteService
         private readonly EntityRepository $neuerLieferterminHistoryRepository,
         private readonly LieferzeitenTaskService $taskService,
         private readonly NotificationEventService $notificationEventService,
+        private readonly TaskAssignmentRuleResolver $taskAssignmentRuleResolver,
     ) {
     }
 
@@ -225,9 +228,13 @@ class LieferzeitenPositionWriteService
             ],
         ], $context);
 
+        $triggerKey = NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED;
+        $rule = $this->taskAssignmentRuleResolver->resolve($triggerKey, $context);
+        $dueDate = ShippingDateOverdueTaskService::nextBusinessDay($changedAt);
+
         $taskPayload = [
             'taskType' => 'additional-delivery-request',
-            'triggerKey' => NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED,
+            'triggerKey' => $triggerKey,
             'positionId' => $positionId,
             'createdBy' => $actor,
             'createdAt' => $changedAt->format(DATE_ATOM),
@@ -241,8 +248,8 @@ class LieferzeitenPositionWriteService
         $this->taskService->createTask(
             $taskPayload,
             $initiator,
-            null,
-            null,
+            is_array($rule) ? ($rule['assigneeIdentifier'] ?? null) : null,
+            $dueDate,
             $context,
         );
 

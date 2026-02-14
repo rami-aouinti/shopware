@@ -93,6 +93,7 @@
             <argument type="service" id="lieferzeiten_neuer_liefertermin_history.repository" />
             <argument type="service" id="LieferzeitenAdmin\Service\LieferzeitenTaskService" />
             <argument type="service" id="LieferzeitenAdmin\Service\Notification\NotificationEventService" />
+            <argument type="service" id="LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver" />
         </service>
 
 
@@ -144,9 +145,12 @@
         <service id="LieferzeitenAdmin\Service\Notification\VorkassePaymentReminderService">
             <argument type="service" id="lieferzeiten_paket.repository" />
         </service>
+        <service id="LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver">
+            <argument type="service" id="lieferzeiten_task_assignment_rule.repository" />
+        </service>
         <service id="LieferzeitenAdmin\Service\Notification\ShippingDateOverdueTaskService">
             <argument type="service" id="lieferzeiten_position.repository" />
-            <argument type="service" id="lieferzeiten_task_assignment_rule.repository" />
+            <argument type="service" id="LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver" />
             <argument type="service" id="lieferzeiten_task.repository" />
             <argument type="service" id="LieferzeitenAdmin\Service\ChannelDateSettingsProvider" />
         </service>
