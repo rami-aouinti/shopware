@@ -156,9 +156,19 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     positionsCountDisplay: positions.length,
                     packageStatusDisplay: this.resolvePackageStatus(order),
                     trackingSummaryDisplay: this.resolveTrackingSummaryDisplay(order),
-                    latestShippingAtDisplay: this.resolveLatestShippingAt(order),
+                    latestShippingDeadlineDisplay: this.formatDateTime(this.resolveDeadlineValue(order, [
+                        'latestShippingDeadline',
+                        'spaetester_versand',
+                        'spaetesterVersand',
+                        'latestShippingDate',
+                    ])),
                     shippingDateDisplay: this.resolveShippingDate(order),
-                    latestDeliveryAtDisplay: this.resolveLatestDeliveryAt(order),
+                    latestDeliveryDeadlineDisplay: this.formatDateTime(this.resolveDeadlineValue(order, [
+                        'latestDeliveryDeadline',
+                        'spaeteste_lieferung',
+                        'spaetesteLieferung',
+                        'latestDeliveryDate',
+                    ])),
                     deliveryDateDisplay: this.resolveDeliveryDate(order),
                     lieferterminLieferantRange: supplierRange,
                     neuerLieferterminRange: newRange,
@@ -472,16 +482,6 @@ Shopware.Component.register('lieferzeiten-order-table', {
             return labels[normalized.toLowerCase()] || normalized;
         },
 
-        resolveLatestShippingAt(order) {
-            return this.formatDateTime(this.pickFirstDefined(order, [
-                'latestShippingDate',
-                'spaetesterVersand',
-                'spaetester_versand',
-                'shippingDateTo',
-                'shipping_date_to',
-            ]));
-        },
-
         resolveShippingDate(order) {
             return this.formatDate(this.pickFirstDefined(order, [
                 'shippingDate',
@@ -491,16 +491,6 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 'businessDateFrom',
                 'business_date_from',
                 'shippedAt',
-            ]));
-        },
-
-        resolveLatestDeliveryAt(order) {
-            return this.formatDateTime(this.pickFirstDefined(order, [
-                'latestDeliveryDate',
-                'spaetesteLieferung',
-                'spaeteste_lieferung',
-                'deliveryDateTo',
-                'delivery_date_to',
             ]));
         },
 
