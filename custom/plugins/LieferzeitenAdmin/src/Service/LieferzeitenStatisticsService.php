@@ -7,6 +7,9 @@ use Doctrine\DBAL\Connection;
 
 readonly class LieferzeitenStatisticsService
 {
+    private const STATISTICS_TIMEZONE = 'Europe/Berlin';
+    private const STORAGE_TIMEZONE = 'UTC';
+
     private const DOMAIN_SOURCE_MAPPING = [
         'first-medical-e-commerce' => ['first medical', 'e-commerce', 'shopware', 'gambio'],
         'medical-solutions' => ['medical solutions', 'medical-solutions', 'medical_solutions'],
@@ -29,16 +32,18 @@ readonly class LieferzeitenStatisticsService
     /**
      * @return array<string, mixed>
      */
-    public function getStatistics(int $periodDays, ?string $domain, ?string $channel): array
+    public function getStatistics(int $periodDays, ?string $domain, ?string $channel, ?\DateTimeImmutable $referenceNow = null): array
     {
         $periodDays = $this->sanitizePeriod($periodDays);
-        $periodStart = (new \DateTimeImmutable('now'))->setTime(0, 0)->modify(sprintf('-%d days', $periodDays - 1));
+        $statisticsTimezone = $this->getStatisticsTimezone();
+        $now = $this->normalizeToStatisticsTimezone($referenceNow ?? new \DateTimeImmutable('now', $statisticsTimezone));
+        $periodStart = $now->setTime(0, 0)->modify(sprintf('-%d days', $periodDays - 1));
         $periodStartSql = $periodStart->format('Y-m-d H:i:s');
-        $now = new \DateTimeImmutable('now');
 
         $params = [
             'periodStart' => $periodStartSql,
             'now' => $now->format('Y-m-d H:i:s'),
+            'statisticsTimezone' => self::STATISTICS_TIMEZONE,
         ];
 
         $scopeSql = $this->buildScopeCondition($params, $domain, $channel);
@@ -87,7 +92,7 @@ readonly class LieferzeitenStatisticsService
 
         $timelineSql = sprintf(
             'SELECT
-                DATE(t.occurred_at) AS date,
+                DATE(COALESCE(CONVERT_TZ(t.occurred_at, :storageTimezone, :statisticsTimezone), t.occurred_at)) AS date,
                 COUNT(*) AS count
             FROM (
                 SELECT a.created_at AS occurred_at, a.source_system AS source_system
@@ -119,10 +124,12 @@ readonly class LieferzeitenStatisticsService
             ) t
             WHERE 1=1
               %s
-            GROUP BY DATE(t.occurred_at)
-            ORDER BY DATE(t.occurred_at) ASC',
+            GROUP BY DATE(COALESCE(CONVERT_TZ(t.occurred_at, :storageTimezone, :statisticsTimezone), t.occurred_at))
+            ORDER BY DATE(COALESCE(CONVERT_TZ(t.occurred_at, :storageTimezone, :statisticsTimezone), t.occurred_at)) ASC',
             $this->buildSourceScopeCondition('t.source_system', $params, $domain, $channel),
         );
+
+        $params['storageTimezone'] = self::STORAGE_TIMEZONE;
 
         $timeline = $this->connection->fetchAllAssociative($timelineSql, $params, $metricsParamTypes);
 
@@ -206,6 +213,7 @@ readonly class LieferzeitenStatisticsService
 
         return [
             'periodDays' => $periodDays,
+            'timezone' => self::STATISTICS_TIMEZONE,
             'metrics' => [
                 'openOrders' => (int) ($metrics['open_orders'] ?? 0),
                 'overdueShipping' => $overdueCounts['shipping'],
@@ -318,8 +326,10 @@ readonly class LieferzeitenStatisticsService
 
     private function parseDateValue(mixed $value): ?\DateTimeImmutable
     {
+        $timezone = $this->getStatisticsTimezone();
+
         if ($value instanceof \DateTimeInterface) {
-            return \DateTimeImmutable::createFromInterface($value);
+            return \DateTimeImmutable::createFromInterface($value)->setTimezone($timezone);
         }
 
         if (!is_string($value) || trim($value) === '') {
@@ -327,10 +337,20 @@ readonly class LieferzeitenStatisticsService
         }
 
         try {
-            return new \DateTimeImmutable($value);
+            return $this->normalizeToStatisticsTimezone(new \DateTimeImmutable($value, $timezone));
         } catch (\Throwable) {
             return null;
         }
+    }
+
+    private function getStatisticsTimezone(): \DateTimeZone
+    {
+        return new \DateTimeZone(self::STATISTICS_TIMEZONE);
+    }
+
+    private function normalizeToStatisticsTimezone(\DateTimeImmutable $dateTime): \DateTimeImmutable
+    {
+        return $dateTime->setTimezone($this->getStatisticsTimezone());
     }
 
     /**
