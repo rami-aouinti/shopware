@@ -80,6 +80,23 @@
                             <sw-label :variant="isOrderOpen(order) ? 'warning' : 'success'">
                                 {{ isOrderOpen(order) ? $t('lieferzeiten.status.open') : $t('lieferzeiten.status.closed') }}
                             </sw-label>
+                            <div v-if="canUpdateOrderStatus(order)" class="lieferzeiten-order-table__status-editor">
+                                <sw-single-select
+                                    v-model:value="order.selectedManualStatus"
+                                    size="small"
+                                    :options="statusOptions()"
+                                    value-property="value"
+                                    label-property="label"
+                                />
+                                <sw-button
+                                    size="small"
+                                    variant="primary"
+                                    :is-loading="Boolean(statusUpdateLoadingByOrder[order.id])"
+                                    @click="saveOrderStatus(order)"
+                                >
+                                    {{ $t('lieferzeiten.status.manual.save') }}
+                                </sw-button>
+                            </div>
                         </td>
                         <td>{{ displayOrDash(order.packageStatusDisplay) }}</td>
                         <td>{{ displayOrDash(order.latestShippingAtDisplay) }}</td>

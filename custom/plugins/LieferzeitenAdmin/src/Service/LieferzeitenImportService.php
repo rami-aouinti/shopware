@@ -178,18 +178,9 @@ class LieferzeitenImportService
                     $existingStatus = $this->normalizeStatusInt($existingPaket?->getStatus());
 
                     $mappedStatus = $this->resolveMappedStatus($matched, $san6, $existingStatus);
-                    $queue = is_array($existingPaket?->getStatusPushQueue()) ? $existingPaket->getStatusPushQueue() : [];
-
-                    if ($mappedStatus === 7 && $this->isManualStatus7Change($matched, $existingPaket, $existingStatus)) {
-                        $queue = $this->enqueueStatusPush($queue, 7, 'manual_status_7');
-                    }
-
-                    if ($mappedStatus === 8 && $this->isForceSetCompleted($matched, $existingPaket)) {
-                        $queue = $this->enqueueStatusPush($queue, 8, 'force_set_status_8');
-                    }
 
                     $matched['status'] = (string) $mappedStatus;
-                    $matched['statusPushQueue'] = $queue;
+                    $matched['statusPushQueue'] = is_array($existingPaket?->getStatusPushQueue()) ? $existingPaket->getStatusPushQueue() : [];
 
                     $paketId = $this->upsertPaket($externalId, $matched, $context, $existingPaket);
                     $trackingNumbers = $this->upsertPositionAndTrackingHistory($paketId, $matched, $context);
@@ -576,71 +567,6 @@ class LieferzeitenImportService
         return str_replace([' ', '-', '/'], '_', $state);
     }
 
-    private function isManualStatus7Change(array $payload, ?PaketEntity $existingPaket, ?int $existingStatus): bool
-    {
-        if ((bool) ($payload['manualStatusChange'] ?? false)) {
-            return true;
-        }
-
-        if ($existingPaket === null || $existingStatus !== 7) {
-            return false;
-        }
-
-        $lastChangedBy = strtolower((string) ($existingPaket->getLastChangedBy() ?? ''));
-        if ($lastChangedBy === '' || $lastChangedBy === 'system' || $lastChangedBy === 'sync') {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function isForceSetCompleted(array $payload, ?PaketEntity $existingPaket): bool
-    {
-        if ((bool) ($payload['forceSetCompleted'] ?? $payload['forceSetStatus8'] ?? false)) {
-            return true;
-        }
-
-        if ($existingPaket === null) {
-            return false;
-        }
-
-        if ($this->normalizeStatusInt($existingPaket->getStatus()) !== 8) {
-            return false;
-        }
-
-        $lastChangedBy = strtolower((string) ($existingPaket->getLastChangedBy() ?? ''));
-
-        return $lastChangedBy !== '' && $lastChangedBy !== 'system' && $lastChangedBy !== 'sync';
-    }
-
-    /**
-     * @param array<int, array<string,mixed>> $queue
-     *
-     * @return array<int, array<string,mixed>>
-     */
-    private function enqueueStatusPush(array $queue, int $targetStatus, string $reason): array
-    {
-        foreach ($queue as $item) {
-            if (!is_array($item)) {
-                continue;
-            }
-
-            if ((int) ($item['targetStatus'] ?? 0) === $targetStatus && (string) ($item['state'] ?? '') === 'pending') {
-                return $queue;
-            }
-        }
-
-        $queue[] = [
-            'targetStatus' => $targetStatus,
-            'reason' => $reason,
-            'attempts' => 0,
-            'state' => 'pending',
-            'nextAttemptAt' => date(DATE_ATOM),
-            'createdAt' => date(DATE_ATOM),
-        ];
-
-        return $queue;
-    }
 
     private function processPendingStatusPushQueue(Context $context): void
     {
@@ -664,6 +590,10 @@ class LieferzeitenImportService
             $changed = false;
             foreach ($queue as $index => $item) {
                 if (!is_array($item) || (string) ($item['state'] ?? '') !== 'pending') {
+                    continue;
+                }
+
+                if (($item['triggerSource'] ?? null) !== 'user_lms') {
                     continue;
                 }
 

@@ -87,7 +87,12 @@
     },
     "status": {
       "open": "Offen",
-      "closed": "Abgeschlossen"
+      "closed": "Abgeschlossen",
+      "manual": {
+        "save": "Status setzen",
+        "updated": "Status {status} zur Push-Queue hinzugefügt",
+        "invalid": "Nur Status 7 oder 8 ist erlaubt"
+      }
     },
     "emptyState": {
       "title": "Keine offenen Bestellungen",

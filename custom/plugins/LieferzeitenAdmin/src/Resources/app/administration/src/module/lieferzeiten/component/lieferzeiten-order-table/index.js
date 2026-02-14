@@ -46,6 +46,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
             trackingError: '',
             trackingEvents: [],
             activeTracking: null,
+            statusUpdateLoadingByOrder: {},
         };
     },
 
@@ -73,6 +74,22 @@ Shopware.Component.register('lieferzeiten-order-table', {
             }
 
             return this.acl.can('lieferzeiten.editor') || this.acl.can('admin');
+        },
+
+        canUpdateOrderStatus(order) {
+            return this.hasEditAccess() && !!order?.id;
+        },
+
+        statusOptions() {
+            return [7, 8].map((code) => ({
+                value: code,
+                label: this.$t(BUSINESS_STATUS_SNIPPETS[String(code)]),
+            }));
+        },
+
+        statusOptionLabel(code) {
+            const snippet = BUSINESS_STATUS_SNIPPETS[String(code)] || 'lieferzeiten.businessStatus.unknown';
+            return `${code} · ${this.$t(snippet)}`;
         },
 
         resolveBusinessStatus(order) {
@@ -133,6 +150,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     additionalDeliveryRequest: order.additionalDeliveryRequest || null,
                     latestShippingDeadline: this.resolveDeadlineValue(order, ['spaetester_versand', 'spaetesterVersand', 'latestShippingDeadline']),
                     latestDeliveryDeadline: this.resolveDeadlineValue(order, ['spaeteste_lieferung', 'spaetesteLieferung', 'latestDeliveryDeadline']),
+                    selectedManualStatus: [7, 8].includes(Number(order?.status)) ? Number(order.status) : 7,
                 });
             }
 
@@ -651,6 +669,49 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     title: this.$t('global.default.error'),
                     message: error?.response?.data?.message || error?.message || this.$t('global.default.error'),
                 });
+            }
+        },
+
+
+        async saveOrderStatus(order) {
+            if (!this.canUpdateOrderStatus(order)) {
+                return;
+            }
+
+            const targetStatus = Number(order.selectedManualStatus);
+            if (![7, 8].includes(targetStatus)) {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: this.$t('lieferzeiten.status.manual.invalid'),
+                });
+                return;
+            }
+
+            this.$set(this.statusUpdateLoadingByOrder, order.id, true);
+
+            try {
+                await this.lieferzeitenOrdersService.updatePaketStatus(order.id, {
+                    status: targetStatus,
+                    updatedAt: this.resolveConcurrencyToken(order),
+                });
+
+                this.createNotificationSuccess({
+                    title: this.$t('global.default.success'),
+                    message: this.$t('lieferzeiten.status.manual.updated', { status: targetStatus }),
+                });
+
+                await this.reloadOrder(order);
+            } catch (error) {
+                if (this.handleConflictError(error, order)) {
+                    return;
+                }
+
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: error?.response?.data?.message || error?.message || this.$t('global.default.error'),
+                });
+            } finally {
+                this.$set(this.statusUpdateLoadingByOrder, order.id, false);
             }
         },
 

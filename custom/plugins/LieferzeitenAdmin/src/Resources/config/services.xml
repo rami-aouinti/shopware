@@ -78,6 +78,13 @@
         </service>
 
 
+
+
+        <service id="LieferzeitenAdmin\Service\LieferzeitenOrderStatusWriteService">
+            <argument type="service" id="lieferzeiten_paket.repository" />
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+        </service>
+
         <service id="LieferzeitenAdmin\Service\LieferzeitenPositionWriteService">
             <argument type="service" id="lieferzeiten_position.repository" />
             <argument type="service" id="lieferzeiten_paket.repository" />
