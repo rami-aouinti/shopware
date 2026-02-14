@@ -39,11 +39,11 @@ Component.register('lieferzeiten-task-assignment-rule-list', {
         columns() {
             return [
                 { property: 'name', label: 'Name', inlineEdit: 'string', primary: true },
-                { property: 'status', label: 'Status', inlineEdit: 'string' },
-                { property: 'triggerKey', label: 'Trigger', inlineEdit: 'string' },
-                { property: 'ruleId', label: 'Rule (Rules Engine)', inlineEdit: 'string' },
-                { property: 'assigneeType', label: 'Assignee type', inlineEdit: 'string' },
-                { property: 'assigneeIdentifier', label: 'Assignee', inlineEdit: 'string' },
+                { property: 'status', label: 'Status (optional)', inlineEdit: 'string' },
+                { property: 'triggerKey', label: 'Trigger *', inlineEdit: 'string' },
+                { property: 'ruleId', label: 'Rule (Rules Engine, optional)', inlineEdit: 'string' },
+                { property: 'assigneeType', label: 'Assignee type *', inlineEdit: 'string' },
+                { property: 'assigneeIdentifier', label: 'Assignee *', inlineEdit: 'string' },
                 { property: 'priority', label: 'Priority', inlineEdit: 'number' },
                 { property: 'active', label: 'Active', inlineEdit: 'boolean' },
                 { property: 'lastChangedBy', label: 'Last Changed By', inlineEdit: 'string' },
@@ -72,6 +72,34 @@ Component.register('lieferzeiten-task-assignment-rule-list', {
             });
         },
 
+        validateRule(item) {
+            const triggerKey = String(item?.triggerKey ?? '').trim();
+            const assigneeType = String(item?.assigneeType ?? '').trim();
+            const assigneeIdentifier = String(item?.assigneeIdentifier ?? '').trim();
+            const ruleId = String(item?.ruleId ?? '').trim();
+            const rawConditions = item?.conditions;
+
+            const hasConditions = (typeof rawConditions === 'string' && rawConditions.trim() !== '')
+                || (rawConditions && typeof rawConditions === 'object' && Object.keys(rawConditions).length > 0);
+
+            if (!triggerKey || !assigneeType || !assigneeIdentifier) {
+                return 'Die Pflichtfelder Trigger, Assignee type und Assignee müssen gesetzt sein.';
+            }
+
+            if (item?.active && !ruleId && !hasConditions) {
+                return 'Aktive Regeln benötigen mindestens Rule (Rules Engine) oder Conditions JSON, sonst sind sie nicht operant.';
+            }
+
+            return null;
+        },
+
+        notifyValidationError(message) {
+            this.createNotificationError({
+                title: this.$tc('lieferzeiten.lms.navigation.taskAssignmentRules'),
+                message,
+            });
+        },
+
         async getList() {
             this.isLoading = true;
             const criteria = new Criteria(this.page, this.limit);
@@ -94,6 +122,12 @@ Component.register('lieferzeiten-task-assignment-rule-list', {
         },
         async onInlineEditSave(item) {
             if (!this.hasEditAccess) {
+                return Promise.resolve();
+            }
+
+            const validationError = this.validateRule(item);
+            if (validationError) {
+                this.notifyValidationError(validationError);
                 return Promise.resolve();
             }
 
@@ -127,6 +161,7 @@ Component.register('lieferzeiten-task-assignment-rule-list', {
             entity.name = 'New rule';
             entity.triggerKey = this.triggerOptions[0];
             entity.assigneeType = this.assigneeTypeOptions[0];
+            entity.assigneeIdentifier = '';
             entity.active = false;
             try {
                 await this.repository.save(entity, Shopware.Context.api);

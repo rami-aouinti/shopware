@@ -275,7 +275,16 @@ class LieferzeitenPositionWriteService
         $initiatorUserId = $resolvedInitiatorUserId;
 
         $triggerKey = NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED;
-        $rule = $this->taskAssignmentRuleResolver->resolve($triggerKey, $context);
+        $rule = $this->taskAssignmentRuleResolver->resolve($triggerKey, $context, [
+            'position' => [
+                'id' => $positionId,
+                'number' => $notificationContext['positionNumber'],
+            ],
+            'sourceSystem' => $notificationContext['sourceSystem'],
+            'externalOrderId' => $notificationContext['externalOrderId'],
+            'salesChannel' => null,
+            'status' => null,
+        ]);
         $assigneeIdentifier = $this->resolveAdditionalDeliveryAssignee($rule);
         $dueDate = ShippingDateOverdueTaskService::nextBusinessDay($changedAt);
 
