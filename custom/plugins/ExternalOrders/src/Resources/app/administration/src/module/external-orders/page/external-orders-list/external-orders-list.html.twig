@@ -261,7 +261,7 @@
                                         </div>
                                     </div>
                                 </th>
-                                <th class="external-orders__cell">
+                                <th class="external-orders__cell external-orders__cell--order-reference">
                                     <div class="external-orders__column-header">
                                         <button
                                             class="external-orders__column-sort"
@@ -395,7 +395,7 @@
                                         </div>
                                     </div>
                                 </th>
-                                <th class="external-orders__cell">
+                                <th class="external-orders__cell external-orders__cell--date">
                                     <div class="external-orders__column-header">
                                         <button
                                             class="external-orders__column-sort"
@@ -546,9 +546,9 @@
                                 </td>
                                 <td class="external-orders__cell">{{ order.orderNumber }}</td>
                                 <td class="external-orders__cell">{{ order.customerName }}</td>
-                                <td class="external-orders__cell">{{ order.orderReference }}</td>
+                                <td class="external-orders__cell external-orders__cell--order-reference">{{ order.orderReference }}</td>
                                 <td class="external-orders__cell">{{ order.email }}</td>
-                                <td class="external-orders__cell">{{ order.date }}</td>
+                                <td class="external-orders__cell external-orders__cell--date">{{ formatDateForTable(order.date) }}</td>
                                 <td class="external-orders__cell">
                                     <span class="external-orders__status-pill" :class="statusClass(order)">
                                         {{ order.statusLabel }}
