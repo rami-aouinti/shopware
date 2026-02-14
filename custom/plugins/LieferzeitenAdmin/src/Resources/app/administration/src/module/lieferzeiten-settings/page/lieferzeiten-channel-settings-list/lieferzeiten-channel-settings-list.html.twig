@@ -21,20 +21,32 @@
             <section v-for="group in groupedChannels" :key="group.id" class="sw-mt-24">
                 <h3 class="sw-mb-8">{{ group.title }}</h3>
 
-                <div v-for="channel in group.channels" :key="channel.id" class="sw-mt-16">
+                <div class="sw-flex sw-flex--wrap sw-gap-8 sw-mb-12">
+                    <sw-button
+                        v-for="channel in group.channels"
+                        :key="`${group.id}-${channel.id}`"
+                        size="small"
+                        :variant="getSelectedChannelId(group.id) === channel.id ? 'primary' : 'ghost'"
+                        @click="onSelectChannel(group.id, channel.id)"
+                    >
+                        {{ channel.name || channel.id }}
+                    </sw-button>
+                </div>
+
+                <template v-if="getActiveChannel(group)">
                     <div class="sw-flex sw-flex--align-center sw-flex--justify-space-between">
-                        <h4 class="sw-m-0">{{ channel.name || channel.id }}</h4>
-                        <sw-label v-if="hasIncompletePdmsMapping(channel.id)" appearance="pill" variant="warning" size="small">
+                        <h4 class="sw-m-0">{{ getActiveChannel(group).name || getActiveChannel(group).id }}</h4>
+                        <sw-label v-if="hasIncompletePdmsMapping(getActiveChannel(group).id)" appearance="pill" variant="warning" size="small">
                             {{ $tc('lieferzeiten.lms.dashboard.incompleteMappingBadge') }}
                         </sw-label>
                     </div>
 
-                    <sw-alert v-if="hasIncompletePdmsMapping(channel.id)" variant="warning" appearance="default" :showIcon="true" class="sw-mt-8 sw-mb-8">
-                        {{ $tc('lieferzeiten.lms.dashboard.incompleteMappingWarning', 0, { channelName: channel.name || channel.id }) }}
+                    <sw-alert v-if="hasIncompletePdmsMapping(getActiveChannel(group).id)" variant="warning" appearance="default" :showIcon="true" class="sw-mt-8 sw-mb-8">
+                        {{ $t('lieferzeiten.lms.dashboard.incompleteMappingWarning', { channelName: getActiveChannel(group).name || getActiveChannel(group).id }) }}
                     </sw-alert>
 
                     <sw-data-grid
-                        :dataSource="getChannelPdmsLieferzeiten(channel.id)"
+                        :dataSource="getChannelPdmsLieferzeiten(getActiveChannel(group).id)"
                         :columns="[
                             { property: 'label', label: $tc('lieferzeiten.lms.dashboard.columns.pdmsLieferzeit'), width: '160px' },
                             { property: 'shippingOverdueWorkingDays', label: $tc('lieferzeiten.lms.dashboard.columns.shippingOverdueWorkingDays') },
@@ -53,9 +65,9 @@
                                 numberType="int"
                                 :min="0"
                                 :disabled="!hasEditAccess"
-                                :value="getMatrixValue(channel.id, item.key, 'shippingOverdueWorkingDays')"
-                                :error="getFieldError(channel.id, item.key, 'shippingOverdueWorkingDays')"
-                                @input="onChangeNumberField(channel.id, item.key, 'shippingOverdueWorkingDays', $event)"
+                                :value="getMatrixValue(getActiveChannel(group).id, item.key, 'shippingOverdueWorkingDays')"
+                                :error="getFieldError(getActiveChannel(group).id, item.key, 'shippingOverdueWorkingDays')"
+                                @input="onChangeNumberField(getActiveChannel(group).id, item.key, 'shippingOverdueWorkingDays', $event)"
                             />
                         </template>
 
@@ -64,13 +76,13 @@
                                 numberType="int"
                                 :min="0"
                                 :disabled="!hasEditAccess"
-                                :value="getMatrixValue(channel.id, item.key, 'deliveryOverdueWorkingDays')"
-                                :error="getFieldError(channel.id, item.key, 'deliveryOverdueWorkingDays')"
-                                @input="onChangeNumberField(channel.id, item.key, 'deliveryOverdueWorkingDays', $event)"
+                                :value="getMatrixValue(getActiveChannel(group).id, item.key, 'deliveryOverdueWorkingDays')"
+                                :error="getFieldError(getActiveChannel(group).id, item.key, 'deliveryOverdueWorkingDays')"
+                                @input="onChangeNumberField(getActiveChannel(group).id, item.key, 'deliveryOverdueWorkingDays', $event)"
                             />
                         </template>
                     </sw-data-grid>
-                </div>
+                </template>
             </section>
         </sw-card>
     </template>

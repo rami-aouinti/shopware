@@ -74,6 +74,7 @@ Component.register('lieferzeiten-channel-settings-list', {
             hasDemoData: false,
             channelPdmsLieferzeiten: {},
             channelPdmsMappingIncomplete: {},
+            selectedChannelByGroup: {},
         };
     },
 
@@ -165,6 +166,82 @@ Component.register('lieferzeiten-channel-settings-list', {
             return this.appendMissingLmsTargetChannels(whitelistedChannels);
         },
 
+        getSelectedChannelId(groupId) {
+            return this.selectedChannelByGroup[groupId] || null;
+        },
+
+        setSelectedChannel(groupId, channelId) {
+            this.selectedChannelByGroup = {
+                ...this.selectedChannelByGroup,
+                [groupId]: channelId,
+            };
+        },
+
+        initializeGroupSelections() {
+            const nextSelections = {};
+
+            this.groupedChannels.forEach((group) => {
+                if (group.channels.length === 0) {
+                    return;
+                }
+
+                const currentSelection = this.selectedChannelByGroup[group.id];
+                const hasCurrentSelection = group.channels.some((channel) => channel.id === currentSelection);
+
+                nextSelections[group.id] = hasCurrentSelection ? currentSelection : group.channels[0].id;
+            });
+
+            this.selectedChannelByGroup = nextSelections;
+        },
+
+        getActiveChannel(group) {
+            const selectedChannelId = this.getSelectedChannelId(group.id);
+
+            return group.channels.find((channel) => channel.id === selectedChannelId) || group.channels[0] || null;
+        },
+
+        onSelectChannel(groupId, channelId) {
+            this.setSelectedChannel(groupId, channelId);
+        },
+
+        getSelectedChannelId(groupId) {
+            return this.selectedChannelByGroup[groupId] || null;
+        },
+
+        setSelectedChannel(groupId, channelId) {
+            this.selectedChannelByGroup = {
+                ...this.selectedChannelByGroup,
+                [groupId]: channelId,
+            };
+        },
+
+        initializeGroupSelections() {
+            const nextSelections = {};
+
+            this.groupedChannels.forEach((group) => {
+                if (group.channels.length === 0) {
+                    return;
+                }
+
+                const currentSelection = this.selectedChannelByGroup[group.id];
+                const hasCurrentSelection = group.channels.some((channel) => channel.id === currentSelection);
+
+                nextSelections[group.id] = hasCurrentSelection ? currentSelection : group.channels[0].id;
+            });
+
+            this.selectedChannelByGroup = nextSelections;
+        },
+
+        getActiveChannel(group) {
+            const selectedChannelId = this.getSelectedChannelId(group.id);
+
+            return group.channels.find((channel) => channel.id === selectedChannelId) || group.channels[0] || null;
+        },
+
+        onSelectChannel(groupId, channelId) {
+            this.setSelectedChannel(groupId, channelId);
+        },
+
         getWhitelistedChannelIds() {
             return new Set(this.channels.map((channel) => channel.id));
         },
@@ -221,7 +298,7 @@ Component.register('lieferzeiten-channel-settings-list', {
         createMissingSlotEntry(slot) {
             return {
                 key: `PDMS_${slot}`,
-                label: this.$tc('lieferzeiten.lms.dashboard.incompleteMappingSlotLabel', 0, { slot }),
+                label: this.$t('lieferzeiten.lms.dashboard.incompleteMappingSlotLabel', { slot }),
                 isPlaceholder: true,
             };
         },
@@ -360,6 +437,8 @@ Component.register('lieferzeiten-channel-settings-list', {
                 this.channels.forEach((channel) => {
                     this.ensureChannelMatrix(channel.id);
                 });
+
+                this.initializeGroupSelections();
 
                 thresholds.forEach((entry) => {
                     if (!loadedChannelIds.has(entry.salesChannelId)) {
