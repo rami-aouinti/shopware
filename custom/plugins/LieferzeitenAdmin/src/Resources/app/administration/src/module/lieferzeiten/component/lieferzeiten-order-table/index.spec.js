@@ -73,4 +73,44 @@ describe('lieferzeiten/component/lieferzeiten-order-table', () => {
         expect(san6Position).toBe('1, 2');
         expect(quantity).toBe('5');
     });
+
+
+    it('disables comment save when order has no positions', () => {
+        const context = {
+            hasEditAccess: () => true,
+            getValidCommentTargetPositionId: methods.getValidCommentTargetPositionId,
+            resolveCommentTargetPositionId: methods.resolveCommentTargetPositionId,
+            isOpenPosition: methods.isOpenPosition,
+        };
+        const order = { positions: [], commentTargetPositionId: null };
+
+        const canSave = methods.canSaveComment.call(context, order);
+
+        expect(canSave).toBe(false);
+    });
+
+    it('does not call updateComment for order without positions', async () => {
+        const updateComment = jest.fn();
+        const context = {
+            canSaveComment: methods.canSaveComment,
+            hasEditAccess: () => true,
+            getValidCommentTargetPositionId: methods.getValidCommentTargetPositionId,
+            ensureCommentTargetPositionId: methods.ensureCommentTargetPositionId,
+            resolveCommentTargetPositionId: methods.resolveCommentTargetPositionId,
+            isOpenPosition: methods.isOpenPosition,
+            $set: jest.fn(),
+            createNotificationError: jest.fn(),
+            createNotificationSuccess: jest.fn(),
+            resolveConcurrencyToken: jest.fn(() => null),
+            reloadOrder: jest.fn(),
+            handleConflictError: jest.fn(() => false),
+            lieferzeitenOrdersService: { updateComment },
+            $t: (key) => key,
+        };
+
+        await methods.saveComment.call(context, { positions: [], comment: 'foo', commentTargetPositionId: null });
+
+        expect(updateComment).not.toHaveBeenCalled();
+    });
+
 });

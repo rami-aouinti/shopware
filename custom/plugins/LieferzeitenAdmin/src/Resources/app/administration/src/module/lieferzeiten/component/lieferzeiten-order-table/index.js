@@ -220,7 +220,31 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         canSaveComment(order) {
-            return this.hasEditAccess() && !!order?.commentTargetPositionId;
+            return this.hasEditAccess() && !!this.getValidCommentTargetPositionId(order);
+        },
+
+        getValidCommentTargetPositionId(order) {
+            if (!order || !Array.isArray(order.positions)) {
+                return null;
+            }
+
+            const currentTargetPositionId = order.commentTargetPositionId;
+            if (currentTargetPositionId
+                && order.positions.some((position) => position?.id === currentTargetPositionId)) {
+                return currentTargetPositionId;
+            }
+
+            return this.resolveCommentTargetPositionId(order.positions);
+        },
+
+        ensureCommentTargetPositionId(order) {
+            const validPositionId = this.getValidCommentTargetPositionId(order);
+
+            if (order && order.commentTargetPositionId !== validPositionId) {
+                this.$set(order, 'commentTargetPositionId', validPositionId);
+            }
+
+            return validPositionId;
         },
 
 
@@ -1026,7 +1050,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 return;
             }
 
-            const positionId = order.commentTargetPositionId;
+            const positionId = this.ensureCommentTargetPositionId(order);
 
             if (!positionId) {
                 this.createNotificationError({ title: this.$t('global.default.error'), message: 'Missing position id' });
