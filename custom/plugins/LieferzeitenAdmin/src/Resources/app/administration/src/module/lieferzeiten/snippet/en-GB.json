@@ -147,7 +147,36 @@
       },
       "overdueShipping": "Overdue shipping",
       "overdueDelivery": "Overdue deliveries (completed)",
-      "activityDate": "Activity at"
+      "activityDate": "Activity at",
+      "actionsColumn": "Actions",
+      "actionsUnavailable": "No action available",
+      "actionUnavailableReason": "No contextual action is available for this activity.",
+      "actionSuccessTitle": "Action executed",
+      "actionErrorTitle": "Action failed",
+      "actions": {
+        "openOrder": "Open order",
+        "openTask": "Open task",
+        "openTracking": "Tracking",
+        "closeTask": "Close task",
+        "reopenTask": "Reopen task"
+      },
+      "actionReasons": {
+        "noViewAcl": "Missing permission: lieferzeiten.viewer.",
+        "noEditAcl": "Missing permission: lieferzeiten.editor.",
+        "missingOrderReference": "Order reference unavailable for this activity.",
+        "missingTaskReference": "Task reference unavailable for this activity.",
+        "missingTrackingReference": "Tracking number unavailable for this activity.",
+        "unsupportedTaskStatus": "Action unavailable for current task status."
+      },
+      "actionSuccess": {
+        "closeTask": "Task successfully closed.",
+        "reopenTask": "Task successfully reopened."
+      },
+      "actionError": {
+        "closeTask": "Task could not be closed.",
+        "reopenTask": "Task could not be reopened.",
+        "openTracking": "Tracking history could not be loaded."
+      }
     },
     "loading": {
       "errorTitle": "Unable to load orders",

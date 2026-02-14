@@ -78,6 +78,24 @@
                     {{ formatDate(item.promisedAt) }}
                 </template>
 
+                <template #column-actions="{ item }">
+                    <div class="lieferzeiten-statistics__actions">
+                        <sw-button
+                            v-for="action in resolveActivityActions(item)"
+                            :key="`${item.id}-${action.id}`"
+                            size="x-small"
+                            :variant="action.disabled ? 'ghost' : 'secondary'"
+                            :disabled="action.disabled || action.isLoading"
+                            :is-loading="action.isLoading"
+                            v-tooltip="actionTooltip(action)"
+                            @click="action.onClick && action.onClick()"
+                        >
+                            <sw-icon v-if="action.icon" :name="action.icon" size="12px" />
+                            {{ action.label }}
+                        </sw-button>
+                    </div>
+                </template>
+
                 <template #actions="{ item }">
                     <sw-context-menu-item @click="onDrilldown(item)">
                         {{ $t('lieferzeiten.statistics.drilldown') }}
