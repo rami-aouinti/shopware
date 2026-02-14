@@ -19,6 +19,18 @@ class ChannelPdmsThresholdResolver
         'lieferzeit',
     ];
 
+    /**
+     * @var list<string>
+     */
+    private const POSITION_NUMBER_FIELD_CANDIDATES = [
+        'position_number',
+        'positionNumber',
+        'line_item_number',
+        'lineItemNumber',
+        'san6_pos',
+        'san6Pos',
+    ];
+
     public function __construct(
         private readonly Connection $connection,
         private readonly ChannelDateSettingsProvider $channelDateSettingsProvider,
@@ -26,26 +38,39 @@ class ChannelPdmsThresholdResolver
     }
 
     /**
-     * Fallback policy:
-     * - If no sales channel / PDMS slot can be derived, use channel defaults from ChannelDateSettingsProvider.
-     * - If no channel+PDMS threshold entry exists, use channel defaults from ChannelDateSettingsProvider.
-     *
      * @return array{shipping:array{workingDays:int,cutoff:string},delivery:array{workingDays:int,cutoff:string}}
      */
     public function resolveForOrder(string $sourceSystem, ?string $externalOrderId, ?string $positionNumber = null): array
     {
         $defaults = $this->channelDateSettingsProvider->getForChannel($sourceSystem);
 
-        $salesChannelId = null;
-        $pdmsLieferzeit = null;
-
-        if (is_string($externalOrderId) && trim($externalOrderId) !== '') {
-            $salesChannelId = $this->resolveSalesChannelId($externalOrderId);
-            $pdmsSlotRaw = $this->resolvePdmsSlotRaw($externalOrderId, $positionNumber);
-            $pdmsLieferzeit = $this->resolvePdmsLieferzeitKey($salesChannelId, $pdmsSlotRaw);
+        if (!is_string($externalOrderId) || trim($externalOrderId) === '') {
+            return $defaults;
         }
 
+        $salesChannelId = $this->resolveSalesChannelId($externalOrderId);
+        $pdmsSlotRaw = $this->resolvePdmsSlotRaw($externalOrderId, $positionNumber);
+        $pdmsLieferzeit = $this->resolvePdmsLieferzeitKey($salesChannelId, $pdmsSlotRaw);
+
         if ($salesChannelId === null || $pdmsLieferzeit === null) {
+            return $defaults;
+        }
+
+        return $this->resolveForSalesChannelAndPdmsLieferzeit($sourceSystem, $salesChannelId, $pdmsLieferzeit);
+    }
+
+    /**
+     * Explicit fallback behavior:
+     * - If no LMS threshold entry exists for the resolved sales-channel + PDMS value, channel defaults are returned.
+     * - If lookup fails (query/DB issue), channel defaults are returned.
+     *
+     * @return array{shipping:array{workingDays:int,cutoff:string},delivery:array{workingDays:int,cutoff:string}}
+     */
+    public function resolveForSalesChannelAndPdmsLieferzeit(string $sourceSystem, string $salesChannelId, string $pdmsLieferzeit): array
+    {
+        $defaults = $this->channelDateSettingsProvider->getForChannel($sourceSystem);
+
+        if (trim($salesChannelId) === '' || trim($pdmsLieferzeit) === '') {
             return $defaults;
         }
 
@@ -120,34 +145,53 @@ class ChannelPdmsThresholdResolver
 
         $orderId = $orderRow['id'];
         if (is_string($positionNumber) && trim($positionNumber) !== '') {
-            try {
-                $lineItemRows = $this->connection->fetchAllAssociative(
-                    'SELECT custom_fields
-                     FROM `order_line_item`
-                     WHERE order_id = :orderId
-                     ORDER BY created_at ASC',
-                    ['orderId' => $orderId],
-                );
-            } catch (\Throwable) {
-                $lineItemRows = [];
-            }
-
-            foreach ($lineItemRows as $lineItemRow) {
-                $customFields = $this->decodeJsonObject($lineItemRow['custom_fields'] ?? null);
-                if ($customFields === null) {
-                    continue;
-                }
-
-                $candidate = $this->findFirstValue($customFields, self::PDMS_SLOT_FIELD_CANDIDATES);
-                if ($candidate !== null) {
-                    return $candidate;
-                }
+            $matchedLineItemSlot = $this->resolveLineItemPdmsSlot($orderId, $positionNumber);
+            if ($matchedLineItemSlot !== null) {
+                return $matchedLineItemSlot;
             }
         }
 
         $orderCustomFields = $this->decodeJsonObject($orderRow['custom_fields'] ?? null);
 
         return $this->findFirstValue($orderCustomFields, self::PDMS_SLOT_FIELD_CANDIDATES);
+    }
+
+    private function resolveLineItemPdmsSlot(string $orderId, string $positionNumber): mixed
+    {
+        try {
+            $lineItemRows = $this->connection->fetchAllAssociative(
+                'SELECT custom_fields
+                 FROM `order_line_item`
+                 WHERE order_id = :orderId
+                 ORDER BY created_at ASC',
+                ['orderId' => $orderId],
+            );
+        } catch (\Throwable) {
+            return null;
+        }
+
+        $fallbackSlot = null;
+        foreach ($lineItemRows as $lineItemRow) {
+            $customFields = $this->decodeJsonObject($lineItemRow['custom_fields'] ?? null);
+            if ($customFields === null) {
+                continue;
+            }
+
+            $slotCandidate = $this->findFirstValue($customFields, self::PDMS_SLOT_FIELD_CANDIDATES);
+            if ($slotCandidate === null) {
+                continue;
+            }
+
+            if ($fallbackSlot === null) {
+                $fallbackSlot = $slotCandidate;
+            }
+
+            if ($this->matchesPositionNumber($customFields, $positionNumber)) {
+                return $slotCandidate;
+            }
+        }
+
+        return $fallbackSlot;
     }
 
     private function resolvePdmsLieferzeitKey(?string $salesChannelId, mixed $pdmsSlotRaw): ?string
@@ -201,6 +245,27 @@ class ChannelPdmsThresholdResolver
         $decoded = json_decode($value, true);
 
         return is_array($decoded) ? $decoded : null;
+    }
+
+    private function matchesPositionNumber(array $customFields, string $positionNumber): bool
+    {
+        $positionNumber = trim($positionNumber);
+        if ($positionNumber === '') {
+            return false;
+        }
+
+        foreach (self::POSITION_NUMBER_FIELD_CANDIDATES as $field) {
+            $value = $customFields[$field] ?? null;
+            if (!is_scalar($value)) {
+                continue;
+            }
+
+            if (trim((string) $value) === $positionNumber) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

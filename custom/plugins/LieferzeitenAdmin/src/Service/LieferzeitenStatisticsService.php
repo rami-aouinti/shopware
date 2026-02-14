@@ -38,6 +38,7 @@ readonly class LieferzeitenStatisticsService
 
         $params = [
             'periodStart' => $periodStartSql,
+            'now' => $now->format('Y-m-d H:i:s'),
         ];
 
         $scopeSql = $this->buildScopeCondition($params, $domain, $channel);
@@ -207,8 +208,8 @@ readonly class LieferzeitenStatisticsService
             'periodDays' => $periodDays,
             'metrics' => [
                 'openOrders' => (int) ($metrics['open_orders'] ?? 0),
-                'overdueShipping' => (int) ($metrics['overdue_shipping'] ?? 0),
-                'overdueDelivery' => (int) ($metrics['overdue_delivery'] ?? 0),
+                'overdueShipping' => $overdueCounts['shipping'],
+                'overdueDelivery' => $overdueCounts['delivery'],
             ],
             'channels' => array_map(static fn (array $row): array => [
                 'channel' => (string) ($row['channel'] ?? 'Unknown'),
