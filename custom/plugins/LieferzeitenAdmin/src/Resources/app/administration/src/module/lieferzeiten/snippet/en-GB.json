@@ -138,16 +138,34 @@
     "lms": {
       "general": {
         "mainMenuItem": "Delivery Time Management System",
-        "description": "Manage delivery-time thresholds per sales channel"
+        "description": "LMS landing page to manage delay thresholds per sales channel"
       },
       "navigation": {
-        "thresholdsByChannel": "Thresholds by sales channel",
+        "thresholdsByChannel": "LMS landing page: Delay thresholds by channel",
         "taskAssignmentRules": "Task assignment rules",
-        "notificationToggles": "Notification toggles"
+        "notificationToggles": "Notification settings"
       },
       "channelSettings": {
         "title": "LMS · Thresholds by sales channel",
         "create": "Create threshold"
+      },
+      "dashboard": {
+        "title": "Delivery Time Management System",
+        "cardTitle": "Manage delay thresholds by sales channel",
+        "introText": "Manage shipping and delivery delay thresholds per sales channel and PDMS delivery time.",
+        "validationError": "Please correct invalid values (only integer values ≥ 0 are allowed).",
+        "inlineValidationError": "Please enter an integer value ≥ 0.",
+        "saveSuccess": "Delay thresholds saved successfully.",
+        "seedDemoData": "Create demo data",
+        "removeDemoData": "Remove demo data",
+        "demoDataTitle": "Demo data",
+        "demoDataRemoved": "Demo data removed.",
+        "demoDataSaved": "Demo data saved.",
+        "columns": {
+          "pdmsLieferzeit": "PDMS delivery time",
+          "shippingOverdueWorkingDays": "Shipping overdue (working days)",
+          "deliveryOverdueWorkingDays": "Delivery overdue (working days)"
+        }
       }
     },
     "businessStatus": {

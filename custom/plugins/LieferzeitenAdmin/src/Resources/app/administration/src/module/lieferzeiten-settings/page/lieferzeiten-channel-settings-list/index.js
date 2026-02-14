@@ -102,7 +102,7 @@ Component.register('lieferzeiten-channel-settings-list', {
             const isValid = Number.isInteger(value) && value >= 0;
 
             if (!isValid) {
-                this.$set(this.validationErrors, fieldKey, 'Bitte eine ganze Zahl >= 0 eingeben.');
+                this.$set(this.validationErrors, fieldKey, this.$tc('lieferzeiten.lms.dashboard.inlineValidationError'));
                 return;
             }
 
@@ -149,7 +149,7 @@ Component.register('lieferzeiten-channel-settings-list', {
                     this.$set(this.existingEntryIds, this.getEntryKey(entry.salesChannelId, entry.pdmsLieferzeit), entry.id);
                 });
             } catch (error) {
-                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.channelSettings.title'));
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.dashboard.title'));
             } finally {
                 this.isLoading = false;
             }
@@ -170,8 +170,8 @@ Component.register('lieferzeiten-channel-settings-list', {
 
             if (this.hasValidationErrors) {
                 this.createNotificationError({
-                    title: this.$tc('lieferzeiten.lms.channelSettings.title'),
-                    message: 'Bitte ungültige Werte korrigieren (nur ganze Zahlen >= 0).',
+                    title: this.$tc('lieferzeiten.lms.dashboard.title'),
+                    message: this.$tc('lieferzeiten.lms.dashboard.validationError'),
                 });
 
                 return;
@@ -194,13 +194,13 @@ Component.register('lieferzeiten-channel-settings-list', {
                 }
 
                 this.createNotificationSuccess({
-                    title: this.$tc('lieferzeiten.lms.channelSettings.title'),
-                    message: 'PDMS-Schwellenwerte gespeichert.',
+                    title: this.$tc('lieferzeiten.lms.dashboard.title'),
+                    message: this.$tc('lieferzeiten.lms.dashboard.saveSuccess'),
                 });
 
                 await this.loadData();
             } catch (error) {
-                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.channelSettings.title'));
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.dashboard.title'));
             } finally {
                 this.isSaving = false;
             }
@@ -211,7 +211,7 @@ Component.register('lieferzeiten-channel-settings-list', {
                 const response = await this.lieferzeitenOrdersService.getDemoDataStatus();
                 this.hasDemoData = Boolean(response?.hasDemoData);
             } catch (error) {
-                this.notifyRequestError(error, 'DemoDaten');
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.dashboard.demoDataTitle'));
             }
         },
 
@@ -228,11 +228,13 @@ Component.register('lieferzeiten-channel-settings-list', {
                 await this.loadData();
 
                 this.createNotificationSuccess({
-                    title: 'DemoDaten',
-                    message: response?.action === 'removed' ? 'Demo-Daten entfernt.' : 'Demo-Daten gespeichert.',
+                    title: this.$tc('lieferzeiten.lms.dashboard.demoDataTitle'),
+                    message: response?.action === 'removed'
+                        ? this.$tc('lieferzeiten.lms.dashboard.demoDataRemoved')
+                        : this.$tc('lieferzeiten.lms.dashboard.demoDataSaved'),
                 });
             } catch (error) {
-                this.notifyRequestError(error, 'DemoDaten');
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.dashboard.demoDataTitle'));
             } finally {
                 this.isSeedingDemoData = false;
             }
