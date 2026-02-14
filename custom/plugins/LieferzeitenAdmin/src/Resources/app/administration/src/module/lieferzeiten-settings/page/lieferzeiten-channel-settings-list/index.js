@@ -122,7 +122,13 @@ Component.register('lieferzeiten-channel-settings-list', {
 
     methods: {
         getWhitelistedChannels(salesChannels) {
-            return salesChannels.filter((channel) => isLmsTargetChannel(channel));
+            const whitelistedChannels = salesChannels.filter((channel) => isLmsTargetChannel(channel));
+
+            if (whitelistedChannels.length > 0) {
+                return whitelistedChannels;
+            }
+
+            return salesChannels;
         },
 
         getWhitelistedChannelIds() {
