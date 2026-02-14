@@ -8,13 +8,17 @@ class ChannelDateSettingsProvider
 {
     private const DEFAULT_WORKING_DAYS = 2;
     private const DEFAULT_CUTOFF = '14:00';
+    private const DEFAULT_SHIPPING_WORKING_DAYS = 0;
 
     public function __construct(private readonly SystemConfigService $config)
     {
     }
 
     /**
-     * @return array{workingDays:int,cutoff:string}
+     * @return array{
+     *     shipping:array{workingDays:int,cutoff:string},
+     *     delivery:array{workingDays:int,cutoff:string}
+     * }
      */
     public function getForChannel(string $channel): array
     {
@@ -25,24 +29,67 @@ class ChannelDateSettingsProvider
 
         $raw = $this->config->get($key);
         if (!is_string($raw) || trim($raw) === '') {
-            return ['workingDays' => self::DEFAULT_WORKING_DAYS, 'cutoff' => self::DEFAULT_CUTOFF];
+            return $this->defaultSettings();
         }
 
         $decoded = json_decode($raw, true);
         if (!is_array($decoded)) {
-            return ['workingDays' => self::DEFAULT_WORKING_DAYS, 'cutoff' => self::DEFAULT_CUTOFF];
+            return $this->defaultSettings();
         }
 
-        $workingDays = (int) ($decoded['workingDays'] ?? self::DEFAULT_WORKING_DAYS);
+        $legacySettings = $this->normalizeRuleSettings($decoded, self::DEFAULT_WORKING_DAYS, self::DEFAULT_CUTOFF);
+
+        return [
+            'shipping' => $this->normalizeRuleSettings(
+                is_array($decoded['shipping'] ?? null) ? $decoded['shipping'] : [],
+                self::DEFAULT_SHIPPING_WORKING_DAYS,
+                $legacySettings['cutoff'],
+            ),
+            'delivery' => $this->normalizeRuleSettings(
+                is_array($decoded['delivery'] ?? null) ? $decoded['delivery'] : $decoded,
+                $legacySettings['workingDays'],
+                $legacySettings['cutoff'],
+            ),
+        ];
+    }
+
+    /**
+     * @param array<string,mixed> $settings
+     *
+     * @return array{workingDays:int,cutoff:string}
+     */
+    private function normalizeRuleSettings(array $settings, int $defaultWorkingDays, string $defaultCutoff): array
+    {
+        $workingDays = (int) ($settings['workingDays'] ?? $defaultWorkingDays);
         if ($workingDays < 0) {
             $workingDays = 0;
         }
 
-        $cutoff = (string) ($decoded['cutoff'] ?? self::DEFAULT_CUTOFF);
+        $cutoff = (string) ($settings['cutoff'] ?? $defaultCutoff);
         if (preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $cutoff) !== 1) {
-            $cutoff = self::DEFAULT_CUTOFF;
+            $cutoff = $defaultCutoff;
         }
 
         return ['workingDays' => $workingDays, 'cutoff' => $cutoff];
+    }
+
+    /**
+     * @return array{
+     *     shipping:array{workingDays:int,cutoff:string},
+     *     delivery:array{workingDays:int,cutoff:string}
+     * }
+     */
+    private function defaultSettings(): array
+    {
+        return [
+            'shipping' => [
+                'workingDays' => self::DEFAULT_SHIPPING_WORKING_DAYS,
+                'cutoff' => self::DEFAULT_CUTOFF,
+            ],
+            'delivery' => [
+                'workingDays' => self::DEFAULT_WORKING_DAYS,
+                'cutoff' => self::DEFAULT_CUTOFF,
+            ],
+        ];
     }
 }
