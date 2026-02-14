@@ -1,11 +1,15 @@
 {% block lieferzeiten_domain_selection %}
     <div class="lieferzeiten-domain-selection">
+        <sw-label>
+            {{ $t('lieferzeiten.domainSelection.steps.channel') }}
+        </sw-label>
+
         <sw-single-select
             v-model="selectedChannel"
             :options="channelOptions"
             :placeholder="$t('lieferzeiten.domainSelection.channelPlaceholder')"
             :clearable="false"
-            :disabled="showDomainModal || !selectedGroup"
+            :disabled="showDomainModal || !selectedBereich"
         />
 
         <sw-button
@@ -25,12 +29,12 @@
             <p>{{ $t('lieferzeiten.domainSelection.modalDescription') }}</p>
 
             <sw-label>
-                {{ $t('lieferzeiten.domainSelection.steps.group') }}
+                {{ $t('lieferzeiten.domainSelection.steps.bereich') }}
             </sw-label>
             <sw-single-select
-                v-model="draftGroup"
+                v-model="draftBereich"
                 :options="groupOptions"
-                :placeholder="$t('lieferzeiten.domainSelection.groupPlaceholder')"
+                :placeholder="$t('lieferzeiten.domainSelection.bereichPlaceholder')"
                 :clearable="false"
                 required
             />
@@ -47,7 +51,7 @@
                     :disabled="!canConfirmGroupSelection"
                     @click="confirmGroupSelection"
                 >
-                    {{ $t('lieferzeiten.domainSelection.confirmGroup') }}
+                    {{ $t('lieferzeiten.domainSelection.confirmBereich') }}
                 </sw-button>
             </template>
         </sw-modal>

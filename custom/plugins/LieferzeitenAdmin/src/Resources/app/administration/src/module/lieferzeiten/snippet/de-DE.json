@@ -24,7 +24,7 @@
       "modalTitle": "Bereich auswählen",
       "modalDescription": "Schritt 1: Wähle den Bereich. Danach werden die Lieferzeiten-Ansichten freigeschaltet und der passende Kanal vorausgewählt.",
       "persistLabel": "Auswahl auf diesem Gerät speichern",
-      "confirmGroup": "Bereich übernehmen",
+      "confirmBereich": "Bereich übernehmen",
       "groups": {
         "firstMedicalECommerce": "First Medical - E-Commerce",
         "medicalSolutions": "Medical Solutions"
@@ -38,10 +38,11 @@
         "zonami": "Zonami",
         "medicalSolutionsGermany": "medical-solutions-germany.de"
       },
-      "groupPlaceholder": "Bitte Bereich wählen",
+      "bereichPlaceholder": "Bitte Bereich wählen",
       "channelPlaceholder": "Bitte Kanal wählen",
       "steps": {
-        "group": "Schritt 1 · Bereich (Pflicht)"
+        "bereich": "Schritt 1 · Bereich (Pflicht)",
+        "channel": "Schritt 2 · Kanal"
       },
       "accessPendingTitle": "Bereich auswählen",
       "accessPendingDescription": "Bitte zuerst einen Bereich auswählen, damit die Hauptansichten geladen werden."

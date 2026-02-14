@@ -24,7 +24,7 @@
       "modalTitle": "Select area",
       "modalDescription": "Step 1: Select the area. Delivery-time views will then be enabled and a matching channel will be preselected.",
       "persistLabel": "Persist selection on this device",
-      "confirmGroup": "Apply area",
+      "confirmBereich": "Apply area",
       "groups": {
         "firstMedicalECommerce": "First Medical - E-Commerce",
         "medicalSolutions": "Medical Solutions"
@@ -38,10 +38,11 @@
         "zonami": "Zonami",
         "medicalSolutionsGermany": "medical-solutions-germany.de"
       },
-      "groupPlaceholder": "Select area",
+      "bereichPlaceholder": "Select area",
       "channelPlaceholder": "Select channel",
       "steps": {
-        "group": "Step 1 · Area (required)"
+        "bereich": "Step 1 · Area (required)",
+        "channel": "Step 2 · Channel"
       },
       "accessPendingTitle": "Select area",
       "accessPendingDescription": "Please select an area first to unlock the main views."

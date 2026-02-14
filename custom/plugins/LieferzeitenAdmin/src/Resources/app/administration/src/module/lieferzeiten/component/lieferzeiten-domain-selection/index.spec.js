@@ -64,24 +64,45 @@ describe('lieferzeiten/component/lieferzeiten-domain-selection', () => {
         methods = global.Shopware.Component.register.mock.calls[0][1].methods;
     });
 
-    it('persists group + channel in localStorage when persistSelection is enabled', () => {
+    it('persists bereich + kanal in localStorage when persistSelection is enabled', () => {
         const context = {
             persistSelection: true,
         };
 
         methods.persistDomainSelection.call(context, 'first-medical-e-commerce', 'ebay.de');
 
-        expect(global.localStorage.setItem).toHaveBeenCalledWith('lieferzeitenManagementGroup', 'first-medical-e-commerce');
+        expect(global.localStorage.setItem).toHaveBeenCalledWith('lieferzeitenManagementBereich', 'first-medical-e-commerce');
         expect(global.localStorage.setItem).toHaveBeenCalledWith('lieferzeitenManagementChannel', 'ebay.de');
-        expect(global.sessionStorage.removeItem).toHaveBeenCalledWith('lieferzeitenManagementGroup');
+        expect(global.sessionStorage.removeItem).toHaveBeenCalledWith('lieferzeitenManagementBereich');
         expect(global.sessionStorage.removeItem).toHaveBeenCalledWith('lieferzeitenManagementChannel');
     });
 
-    it('confirms mandatory group step and emits group + channel selection', () => {
+
+    it('loads persisted bereich + kanal from localStorage first', () => {
+        global.localStorage.getItem = jest.fn((key) => ({
+            lieferzeitenManagementBereich: 'medical-solutions',
+            lieferzeitenManagementChannel: 'medical-solutions-germany.de',
+        }[key] ?? null));
+
+        const applySelection = jest.fn();
+        const context = {
+            value: null,
+            persistSelection: false,
+            applySelection,
+            $emit: jest.fn(),
+        };
+
+        methods.loadStoredSelection.call(context);
+
+        expect(context.persistSelection).toBe(true);
+        expect(applySelection).toHaveBeenCalledWith('medical-solutions', 'medical-solutions-germany.de', true, false);
+    });
+
+    it('confirms mandatory group step and emits bereich + kanal selection', () => {
         const applySelection = jest.fn();
 
         const context = {
-            draftGroup: 'medical-solutions',
+            draftBereich: 'medical-solutions',
             selectedChannel: 'ebay.de',
             canConfirmGroupSelection: true,
             showDomainModal: true,
@@ -94,10 +115,10 @@ describe('lieferzeiten/component/lieferzeiten-domain-selection', () => {
         expect(context.showDomainModal).toBe(false);
     });
 
-    it('does not confirm when no area is selected', () => {
+    it('does not confirm when no bereich is selected', () => {
         const applySelection = jest.fn();
         const context = {
-            draftGroup: null,
+            draftBereich: null,
             canConfirmGroupSelection: false,
             applySelection,
         };
