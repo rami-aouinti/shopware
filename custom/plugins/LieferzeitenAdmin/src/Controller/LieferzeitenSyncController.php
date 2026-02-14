@@ -688,11 +688,20 @@ class LieferzeitenSyncController extends AbstractController
         }
 
         $payload = $request->toArray();
+
         $rawInitiator = $payload['initiator'] ?? null;
         $initiator = is_string($rawInitiator) ? trim($rawInitiator) : null;
         $initiator = $initiator !== '' ? $initiator : null;
 
-        $resolvedInitiator = $this->positionWriteService->createAdditionalDeliveryRequest($positionId, $initiator, $context);
+        $rawInitiatorDisplay = $payload['initiatorDisplay'] ?? null;
+        $initiatorDisplay = is_string($rawInitiatorDisplay) ? trim($rawInitiatorDisplay) : null;
+        $initiatorDisplay = $initiatorDisplay !== '' ? $initiatorDisplay : null;
+
+        $rawInitiatorUserId = $payload['initiatorUserId'] ?? null;
+        $initiatorUserId = is_string($rawInitiatorUserId) ? trim($rawInitiatorUserId) : null;
+        $initiatorUserId = ($initiatorUserId !== '' && Uuid::isValid($initiatorUserId)) ? $initiatorUserId : null;
+
+        $resolvedInitiator = $this->positionWriteService->createAdditionalDeliveryRequest($positionId, $initiator, $context, $initiatorUserId, $initiatorDisplay);
         $this->auditLogService->log('additional_delivery_request_created', 'lieferzeiten_position', $positionId, $context, ['initiator' => $resolvedInitiator], 'shopware');
 
         return new JsonResponse(['status' => 'ok']);

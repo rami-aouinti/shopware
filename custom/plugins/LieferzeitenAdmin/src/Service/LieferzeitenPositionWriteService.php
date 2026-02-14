@@ -245,14 +245,30 @@ class LieferzeitenPositionWriteService
         ], $context);
     }
 
-    public function createAdditionalDeliveryRequest(string $positionId, ?string $initiator, Context $context): string
-    {
+    public function createAdditionalDeliveryRequest(
+        string $positionId,
+        ?string $initiator,
+        Context $context,
+        ?string $initiatorUserId = null,
+        ?string $initiatorDisplay = null,
+    ): string {
         $actor = $this->resolveActor($context);
         $changedAt = new \DateTimeImmutable();
         $notificationContext = $this->fetchNotificationContext($positionId);
 
-        $initiatorDisplay = is_string($initiator) && trim($initiator) !== '' ? trim($initiator) : $actor;
-        $initiatorUserId = $this->resolveActorUserId($context);
+        $resolvedContextUserId = $this->resolveActorUserId($context);
+        $resolvedInitiatorUserId = $resolvedContextUserId
+            ?? ((is_string($initiatorUserId) && Uuid::isValid($initiatorUserId)) ? $initiatorUserId : null);
+
+        $resolvedInitiatorDisplay = is_string($initiatorDisplay) && trim($initiatorDisplay) !== ''
+            ? trim($initiatorDisplay)
+            : null;
+        if ($resolvedInitiatorDisplay === null && is_string($initiator) && trim($initiator) !== '') {
+            $resolvedInitiatorDisplay = trim($initiator);
+        }
+
+        $initiatorDisplay = $resolvedInitiatorDisplay ?? $actor;
+        $initiatorUserId = $resolvedInitiatorUserId;
 
         $triggerKey = NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED;
         $rule = $this->taskAssignmentRuleResolver->resolve($triggerKey, $context);
