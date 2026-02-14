@@ -35,6 +35,7 @@ class LieferzeitenSyncController extends AbstractController
         private readonly LieferzeitenStatisticsService $statisticsService,
         private readonly DemoDataSeederService $demoDataSeederService,
         private readonly AuditLogService $auditLogService,
+        private readonly PdmsLieferzeitenMappingService $pdmsLieferzeitenMappingService,
     ) {
     }
 
@@ -149,6 +150,7 @@ class LieferzeitenSyncController extends AbstractController
             [
                 'bestellnummer' => $request->query->get('bestellnummer'),
                 'san6' => $request->query->get('san6'),
+                'san6Pos' => $request->query->get('san6Pos'),
                 'orderDateFrom' => $request->query->get('orderDateFrom'),
                 'orderDateTo' => $request->query->get('orderDateTo'),
                 'shippingDateFrom' => $request->query->get('shippingDateFrom'),
@@ -158,6 +160,8 @@ class LieferzeitenSyncController extends AbstractController
                 'user' => $request->query->get('user'),
                 'sendenummer' => $request->query->get('sendenummer'),
                 'status' => $request->query->get('status'),
+                'positionStatus' => $request->query->get('positionStatus'),
+                'paymentMethod' => $request->query->get('paymentMethod'),
                 'shippingAssignmentType' => $request->query->get('shippingAssignmentType'),
                 'businessDateFrom' => $request->query->get('businessDateFrom'),
                 'businessDateTo' => $request->query->get('businessDateTo'),
@@ -172,6 +176,7 @@ class LieferzeitenSyncController extends AbstractController
                 'neuerLieferterminFrom' => $request->query->get('neuerLieferterminFrom'),
                 'neuerLieferterminTo' => $request->query->get('neuerLieferterminTo'),
                 'domain' => $request->query->get('domain'),
+                'rowMode' => $request->query->get('rowMode'),
             ],
         );
 
@@ -205,6 +210,22 @@ class LieferzeitenSyncController extends AbstractController
         ], 'shopware');
 
         return new JsonResponse($payload);
+    }
+
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/sales-channel/{salesChannelId}/lieferzeiten',
+        name: 'api.admin.lieferzeiten.sales_channel_lieferzeiten',
+        defaults: ['_acl' => ['lieferzeiten.viewer']],
+        methods: [Request::METHOD_GET]
+    )]
+    public function salesChannelLieferzeiten(string $salesChannelId, Context $context): JsonResponse
+    {
+        if (!Uuid::isValid($salesChannelId)) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Invalid sales channel id'], Response::HTTP_BAD_REQUEST);
+        }
+
+        return new JsonResponse($this->pdmsLieferzeitenMappingService->getForSalesChannel($salesChannelId, $context));
     }
 
     #[Route(

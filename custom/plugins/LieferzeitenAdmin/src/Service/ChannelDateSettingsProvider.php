@@ -2,6 +2,8 @@
 
 namespace LieferzeitenAdmin\Service;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class ChannelDateSettingsProvider
@@ -10,7 +12,10 @@ class ChannelDateSettingsProvider
     private const DEFAULT_CUTOFF = '14:00';
     private const DEFAULT_SHIPPING_WORKING_DAYS = 0;
 
-    public function __construct(private readonly SystemConfigService $config)
+    public function __construct(
+        private readonly SystemConfigService $config,
+        private readonly Connection $connection,
+    )
     {
     }
 
@@ -22,6 +27,11 @@ class ChannelDateSettingsProvider
      */
     public function getForChannel(string $channel): array
     {
+        $persisted = $this->loadPersistedChannelSettings($channel);
+        if ($persisted !== null) {
+            return $persisted;
+        }
+
         $key = match (mb_strtolower($channel)) {
             'gambio' => 'LieferzeitenAdmin.config.gambioDateSettings',
             default => 'LieferzeitenAdmin.config.shopwareDateSettings',
@@ -50,6 +60,53 @@ class ChannelDateSettingsProvider
                 $legacySettings['workingDays'],
                 $legacySettings['cutoff'],
             ),
+        ];
+    }
+
+    /**
+     * @return array{shipping:array{workingDays:int,cutoff:string},delivery:array{workingDays:int,cutoff:string}}|null
+     */
+    private function loadPersistedChannelSettings(string $channel): ?array
+    {
+        $normalized = trim(mb_strtolower($channel));
+        if ($normalized === '') {
+            return null;
+        }
+
+        $candidates = array_values(array_unique([
+            $normalized,
+            str_replace('_', '-', $normalized),
+            str_replace('-', '_', $normalized),
+        ]));
+
+        $row = $this->connection->fetchAssociative(
+            'SELECT shipping_working_days, shipping_cutoff, delivery_working_days, delivery_cutoff
+             FROM `lieferzeiten_channel_settings`
+             WHERE LOWER(sales_channel_id) IN (:channels)
+             ORDER BY CASE WHEN LOWER(sales_channel_id) = :preferred THEN 0 ELSE 1 END
+             LIMIT 1',
+            [
+                'channels' => $candidates,
+                'preferred' => $normalized,
+            ],
+            [
+                'channels' => ArrayParameterType::STRING,
+            ],
+        );
+
+        if (!is_array($row) || $row === []) {
+            return null;
+        }
+
+        return [
+            'shipping' => $this->normalizeRuleSettings([
+                'workingDays' => $row['shipping_working_days'] ?? null,
+                'cutoff' => $row['shipping_cutoff'] ?? null,
+            ], self::DEFAULT_SHIPPING_WORKING_DAYS, self::DEFAULT_CUTOFF),
+            'delivery' => $this->normalizeRuleSettings([
+                'workingDays' => $row['delivery_working_days'] ?? null,
+                'cutoff' => $row['delivery_cutoff'] ?? null,
+            ], self::DEFAULT_WORKING_DAYS, self::DEFAULT_CUTOFF),
         ];
     }
 

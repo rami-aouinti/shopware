@@ -369,6 +369,66 @@ class LieferzeitenImportServiceTest extends TestCase
         $method->invoke($service, $context);
     }
 
+
+    public function testResolveAndApplyBusinessDatesUsesPaymentDateForPrepaymentShippingAndDeliveryDates(): void
+    {
+        $settingsProvider = $this->createMock(ChannelDateSettingsProvider::class);
+        $settingsProvider->method('getForChannel')->with('shopware')->willReturn([
+            'shipping' => 1,
+            'delivery' => 3,
+        ]);
+
+        $calculator = new BusinessDayDeliveryDateCalculator();
+        $service = $this->createService(
+            baseDateResolver: new BaseDateResolver(),
+            settingsProvider: $settingsProvider,
+            deliveryDateCalculator: $calculator,
+        );
+
+        $method = new \ReflectionMethod($service, 'resolveAndApplyBusinessDates');
+        $method->setAccessible(true);
+
+        [$result, $resolution] = $method->invoke($service, [
+            'paymentMethod' => 'Vorkasse',
+            'orderDate' => '2026-02-02 09:00:00',
+            'paymentDate' => '2026-02-05 10:00:00',
+        ], 'shopware');
+
+        static::assertSame('payment_date', $resolution['baseDateType']);
+        static::assertSame('2026-02-06T10:00:00+00:00', $result['shippingDate']);
+        static::assertSame('2026-02-10T10:00:00+00:00', $result['deliveryDate']);
+        static::assertSame($result['calculatedDeliveryDate'], $result['deliveryDate']);
+    }
+
+    public function testResolveAndApplyBusinessDatesFallsBackToOrderDateForPrepaymentWithoutPaymentDate(): void
+    {
+        $settingsProvider = $this->createMock(ChannelDateSettingsProvider::class);
+        $settingsProvider->method('getForChannel')->with('shopware')->willReturn([
+            'shipping' => 1,
+            'delivery' => 2,
+        ]);
+
+        $calculator = new BusinessDayDeliveryDateCalculator();
+        $service = $this->createService(
+            baseDateResolver: new BaseDateResolver(),
+            settingsProvider: $settingsProvider,
+            deliveryDateCalculator: $calculator,
+        );
+
+        $method = new \ReflectionMethod($service, 'resolveAndApplyBusinessDates');
+        $method->setAccessible(true);
+
+        [$result, $resolution] = $method->invoke($service, [
+            'paymentMethod' => 'prepayment',
+            'orderDate' => '2026-02-02 09:00:00',
+            'paymentDate' => null,
+        ], 'shopware');
+
+        static::assertSame('order_date_fallback', $resolution['baseDateType']);
+        static::assertTrue($resolution['missingPaymentDate']);
+        static::assertSame('2026-02-03T09:00:00+00:00', $result['shippingDate']);
+        static::assertSame('2026-02-04T09:00:00+00:00', $result['deliveryDate']);
+    }
     public function testProcessPendingStatusPushQueueAppliesRetryBackoffOnFailure(): void
     {
         $context = Context::createDefaultContext();
@@ -429,6 +489,46 @@ class LieferzeitenImportServiceTest extends TestCase
         $method->invoke($service, $context);
     }
 
+
+    public function testBuildParcelRowsReturnsSeparateRowsPerParcel(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'buildParcelRows');
+        $method->setAccessible(true);
+
+        $rows = $method->invoke($service, [
+            'orderNumber' => 'SO-1000',
+            'sourceSystem' => 'san6',
+            'status' => '7',
+            'parcels' => [
+                ['paketNumber' => 'PK-1', 'trackingNumber' => 'TR-1', 'status' => 'in_transit'],
+                ['paketNumber' => 'PK-2', 'trackingNumber' => 'TR-2', 'status' => 'delivered'],
+            ],
+        ], 'SO-1000');
+
+        static::assertCount(2, $rows);
+        static::assertSame('PK-1', $rows[0]['paketNumber']);
+        static::assertSame('PK-2', $rows[1]['paketNumber']);
+        static::assertSame(['TR-1'], $rows[0]['trackingNumbers']);
+        static::assertSame(['TR-2'], $rows[1]['trackingNumbers']);
+    }
+
+    public function testBuildParcelRowsCreatesFallbackParcelNumberWhenMissing(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'buildParcelRows');
+        $method->setAccessible(true);
+
+        $rows = $method->invoke($service, [
+            'parcels' => [
+                ['status' => 'ready'],
+            ],
+        ], 'EXT-9');
+
+        static::assertCount(1, $rows);
+        static::assertSame('EXT-9-1', $rows[0]['paketNumber']);
+    }
+
     private function createSearchResult(PaketEntity $entity): EntitySearchResult
     {
         return new EntitySearchResult(
@@ -448,6 +548,9 @@ class LieferzeitenImportServiceTest extends TestCase
         ?HttpClientInterface $httpClient = null,
         ?SystemConfigService $config = null,
         ?Status8TrackingMappingProvider $status8TrackingMappingProvider = null,
+        ?BaseDateResolver $baseDateResolver = null,
+        ?ChannelDateSettingsProvider $settingsProvider = null,
+        ?BusinessDayDeliveryDateCalculator $deliveryDateCalculator = null,
     ): LieferzeitenImportService {
         $config ??= $this->createMock(SystemConfigService::class);
 
@@ -460,9 +563,9 @@ class LieferzeitenImportServiceTest extends TestCase
             $this->createMock(ChannelOrderAdapterRegistry::class),
             $this->createMock(San6Client::class),
             $this->createMock(San6MatchingService::class),
-            $this->createMock(BaseDateResolver::class),
-            $this->createMock(ChannelDateSettingsProvider::class),
-            $this->createMock(BusinessDayDeliveryDateCalculator::class),
+            $baseDateResolver ?? $this->createMock(BaseDateResolver::class),
+            $settingsProvider ?? $this->createMock(ChannelDateSettingsProvider::class),
+            $deliveryDateCalculator ?? $this->createMock(BusinessDayDeliveryDateCalculator::class),
             $status8TrackingMappingProvider ?? new Status8TrackingMappingProvider($config),
             $this->createMock(LockFactory::class),
             $this->createMock(NotificationEventService::class),
