@@ -112,6 +112,15 @@
             <label lang="de-DE">San6 API-Token</label>
         </input-field>
 
+
+        <input-field type="text">
+            <name>defaultAdditionalDeliveryAssignee</name>
+            <label lang="en-GB">Default assignee for additional delivery requests</label>
+            <label lang="de-DE">Standard-Zuweisung für zusätzliche Lieferterminanfragen</label>
+            <helpText lang="en-GB">Fallback assignee used when no assignment rule resolves an assignee.</helpText>
+            <helpText lang="de-DE">Fallback-Zuweisung, wenn keine Regel eine verantwortliche Person ermittelt.</helpText>
+        </input-field>
+
         <component name="lieferzeiten-demo-data-button">
             <name>toggleDemoData</name>
             <label lang="en-GB">Demo data</label>

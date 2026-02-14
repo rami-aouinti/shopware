@@ -87,6 +87,10 @@
             <tag name="kernel.event_subscriber" />
         </service>
 
+        <service id="LieferzeitenAdmin\Subscriber\AdditionalDeliveryAssigneeConfigValidationSubscriber">
+            <tag name="kernel.event_subscriber" />
+        </service>
+
         <service id="LieferzeitenAdmin\Repository\ChannelPdmsThresholdRepository">
             <argument type="service" id="lieferzeiten_channel_pdms_threshold.repository" />
         </service>
@@ -116,6 +120,7 @@
             <argument key="$taskService" type="service" id="LieferzeitenAdmin\Service\LieferzeitenTaskService" />
             <argument key="$notificationEventService" type="service" id="LieferzeitenAdmin\Service\Notification\NotificationEventService" />
             <argument key="$taskAssignmentRuleResolver" type="service" id="LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver" />
+            <argument key="$systemConfigService" type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
         </service>
 
 
