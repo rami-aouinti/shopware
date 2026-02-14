@@ -650,6 +650,40 @@ Shopware.Component.register('lieferzeiten-order-table', {
             }).filter((entry) => entry.number !== '');
         },
 
+
+        resolveOrderTrackingEntries(order) {
+            const positions = Array.isArray(order?.positions) ? order.positions : [];
+            const entries = positions.flatMap((position) => this.resolveTrackingEntries(order, position));
+
+            if (entries.length === 0) {
+                const fallbackEntry = this.resolveTrackingEntries(order, {
+                    packages: [order?.sendenummer || ''],
+                    trackingCarrier: order?.trackingCarrier,
+                });
+
+                if (fallbackEntry.length > 0) {
+                    entries.push(...fallbackEntry);
+                }
+            }
+
+            if (entries.length === 0 && this.isInternalShippingMode(order)) {
+                entries.push({ number: INTERNAL_SHIPPING_LABEL, carrier: 'internal', isInternal: true });
+            }
+
+            const seen = new Set();
+
+            return entries.filter((entry) => {
+                const key = `${entry.carrier}-${entry.number}`;
+
+                if (seen.has(key)) {
+                    return false;
+                }
+
+                seen.add(key);
+                return true;
+            });
+        },
+
         resolveTrackingSummaryDisplay(order) {
             const entries = this.resolveOrderTrackingEntries(order)
                 .filter((entry) => ['dhl', 'gls'].includes(entry.carrier));
