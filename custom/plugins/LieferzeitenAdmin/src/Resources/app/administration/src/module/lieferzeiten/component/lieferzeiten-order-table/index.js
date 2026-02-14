@@ -110,10 +110,8 @@ Shopware.Component.register('lieferzeiten-order-table', {
                         newDateDisplay: position
                             ? this.formatDate(this.pickFirstDefined(position, ['newDeliveryDate', 'neuerLiefertermin']))
                             : this.formatDate(this.pickFirstDefined(order, ['newDeliveryDate', 'neuerLiefertermin'])),
-                        packageStatusDisplay: position
-                            ? this.displayOrDash(position?.status || position?.packageStatus || order.packageStatusDisplay)
-                            : order.packageStatusDisplay,
-                        shippingLabelDisplay: position ? this.shippingLabelForPosition(order, position) : this.shippingLabel(order),
+                        packageStatusDisplay: this.resolvePackageStatusField(order, position),
+                        shippingLabelDisplay: this.shippingLabel(order),
                     };
                 });
             });
@@ -939,11 +937,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
             }
         },
 
-        shippingLabel(order) {
-            return this.shippingLabelForPosition(order, null);
-        },
-
-        shippingLabelForPosition(order, position) {
+        resolvePackageStatusField(order, position = null) {
             const shippingType = this.normalizeShippingType(order?.shippingAssignmentType || order?.versandart);
             const orderedQuantity = this.parseQuantity(position?.orderedQuantity);
             const shippedQuantity = this.parseQuantity(position?.shippedQuantity);
@@ -962,6 +956,24 @@ Shopware.Component.register('lieferzeiten-order-table', {
 
             if (shippingType === 'trennung') {
                 return `${this.$t('lieferzeiten.shipping.splitPosition')} ${this.positionQuantitySuffix(shippedQuantity, orderedQuantity)}`;
+            }
+
+            return this.$t('lieferzeiten.shipping.unclear');
+        },
+
+        shippingLabel(order) {
+            const shippingType = this.normalizeShippingType(order?.shippingAssignmentType || order?.versandart);
+
+            if (shippingType === 'gesamt') {
+                return this.$t('lieferzeiten.shipping.complete');
+            }
+
+            if (shippingType === 'teil') {
+                return this.$t('lieferzeiten.shipping.partial');
+            }
+
+            if (shippingType === 'trennung') {
+                return this.$t('lieferzeiten.shipping.split');
             }
 
             return this.$t('lieferzeiten.shipping.unclear');

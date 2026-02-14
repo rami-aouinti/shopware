@@ -170,7 +170,7 @@
                                                 </button>
                                             </template>
                                         </td>
-                                        <td>{{ shippingLabelForPosition(row.order, position) }}</td>
+                                        <td>{{ resolvePackageStatusField(row.order, position) }}</td>
                                         <td>
                                             <sw-datepicker v-model:value="position.lieferterminLieferantRange.from" :disabled="!hasEditAccess()" size="small" />
                                             <sw-datepicker v-model:value="position.lieferterminLieferantRange.to" :disabled="!hasEditAccess()" size="small" />
