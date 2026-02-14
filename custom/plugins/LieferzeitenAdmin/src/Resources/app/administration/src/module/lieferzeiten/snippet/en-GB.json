@@ -1,12 +1,13 @@
 {
   "lieferzeiten": {
     "general": {
-      "mainMenuItemGeneral": "Delivery Time Management",
+      "mainMenuItemGeneral": "Lieferzeiten",
       "description": "Delivery time monitoring in admin",
       "infoTitle": "Notice",
       "timezoneInfo": "Time calculations are based on timezone Europe/Berlin.",
       "openDefinition": "\"Open\" means at least one parcel is still not closed.",
-      "mainMenuItemStatistics": "Delivery Time Management Statistics"
+      "mainMenuItemStatistics": "Lieferzeiten Statistiken",
+      "navigationHint": "You can find the list under Orders → Lieferzeiten. If it looks empty, first select area and channel (top right). Use “Save demo data” to generate test data."
     },
     "tabs": {
       "all": "All orders",

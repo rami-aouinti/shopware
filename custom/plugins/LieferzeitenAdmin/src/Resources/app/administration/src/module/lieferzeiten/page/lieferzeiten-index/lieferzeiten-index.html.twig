@@ -8,6 +8,7 @@
 
         <template #smart-bar-actions>
             <lieferzeiten-domain-selection v-model="selectedDomain" @bereich-change="onBereichChange" />
+            <lieferzeiten-demo-data-button class="lieferzeiten-index__demo-data" />
         </template>
 
         <template #content>
@@ -15,6 +16,7 @@
                 <sw-card class="lieferzeiten-index__info" :title="$t('lieferzeiten.general.infoTitle')">
                     <p>{{ $t('lieferzeiten.general.timezoneInfo') }}</p>
                     <p>{{ $t('lieferzeiten.general.openDefinition') }}</p>
+                    <p>{{ $t('lieferzeiten.general.navigationHint') }}</p>
                 </sw-card>
 
 
