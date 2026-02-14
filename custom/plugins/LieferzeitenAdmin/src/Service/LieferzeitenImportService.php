@@ -1111,10 +1111,23 @@ class LieferzeitenImportService
     {
         $existingDeliveryDate = $this->normalizeComparableDate($existingPaket?->getDeliveryDate());
         $existingCalculatedDeliveryDate = $this->normalizeComparableDate($existingPaket?->getCalculatedDeliveryDate());
+        $previousPaymentDate = $this->normalizeComparableDate($existingPaket?->getPaymentDate());
         $incomingDeliveryDate = $this->parseDate($payload['deliveryDate'] ?? null);
         $incomingCalculatedDeliveryDate = $this->parseDate($payload['calculatedDeliveryDate'] ?? null);
+        $incomingPaymentDate = $this->parseDate($payload['paymentDate'] ?? null);
         $hasIncomingDeliveryDate = $incomingDeliveryDate !== null || $incomingCalculatedDeliveryDate !== null;
         $hasExistingDeliveryDate = $existingDeliveryDate !== null || $existingCalculatedDeliveryDate !== null;
+        $deliveryDateChanged = $hasIncomingDeliveryDate
+            && (!$hasExistingDeliveryDate
+                || $existingDeliveryDate !== $incomingDeliveryDate
+                || $existingCalculatedDeliveryDate !== $incomingCalculatedDeliveryDate);
+        $deliveryDatePayload = [
+            'previousDeliveryDate' => $existingDeliveryDate,
+            'previousCalculatedDeliveryDate' => $existingCalculatedDeliveryDate,
+            'deliveryDate' => $incomingDeliveryDate,
+            'calculatedDeliveryDate' => $incomingCalculatedDeliveryDate,
+            'externalOrderId' => $externalOrderId,
+        ];
 
         foreach (NotificationTriggerCatalog::channels() as $channel) {
             if ($existingPaket === null) {
@@ -1172,7 +1185,7 @@ class LieferzeitenImportService
                 );
             }
 
-            if ($hasIncomingDeliveryDate) {
+            if ($deliveryDateChanged) {
                 $this->notificationEventService->dispatch(
                     sprintf('delivery-change:%s:%s', $externalOrderId, $channel),
                     NotificationTriggerCatalog::DELIVERY_DATE_CHANGED,
@@ -1189,8 +1202,8 @@ class LieferzeitenImportService
                         NotificationTriggerCatalog::DELIVERY_DATE_ASSIGNED,
                         $channel,
                         [
-                            'deliveryDate' => $payload['deliveryDate'] ?? null,
-                            'calculatedDeliveryDate' => $payload['calculatedDeliveryDate'] ?? null,
+                            'deliveryDate' => $incomingDeliveryDate,
+                            'calculatedDeliveryDate' => $incomingCalculatedDeliveryDate,
                             'externalOrderId' => $externalOrderId,
                         ],
                         $context,
@@ -1205,8 +1218,8 @@ class LieferzeitenImportService
                         [
                             'previousDeliveryDate' => $existingDeliveryDate,
                             'previousCalculatedDeliveryDate' => $existingCalculatedDeliveryDate,
-                            'deliveryDate' => $payload['deliveryDate'] ?? null,
-                            'calculatedDeliveryDate' => $payload['calculatedDeliveryDate'] ?? null,
+                            'deliveryDate' => $incomingDeliveryDate,
+                            'calculatedDeliveryDate' => $incomingCalculatedDeliveryDate,
                             'externalOrderId' => $externalOrderId,
                         ],
                         $context,
@@ -1257,14 +1270,14 @@ class LieferzeitenImportService
 
 
 
-            if ($this->isPrepaymentOrder($payload) && ($payload['paymentDate'] ?? null) !== null && $previousPaymentDate === null) {
+            if ($this->isPrepaymentOrder($payload) && $incomingPaymentDate !== null && $previousPaymentDate === null) {
                 $this->notificationEventService->dispatch(
                     sprintf('vorkasse-payment-received:%s:%s', $externalOrderId, $channel),
                     NotificationTriggerCatalog::PAYMENT_RECEIVED_VORKASSE,
                     $channel,
                     [
                         'externalOrderId' => $externalOrderId,
-                        'paymentDate' => $payload['paymentDate'],
+                        'paymentDate' => $incomingPaymentDate,
                         'paymentMethod' => $payload['paymentMethod'] ?? null,
                     ],
                     $context,
