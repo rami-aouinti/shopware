@@ -13,6 +13,11 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 class NotificationEventService
 {
+    /** @var array<int,string> */
+    private const CRITICAL_FORCEABLE_TRIGGERS = [
+        NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUEST_CLOSED,
+    ];
+
     public function __construct(
         private readonly EntityRepository $notificationEventRepository,
         private readonly NotificationToggleResolver $toggleResolver,
@@ -34,12 +39,11 @@ class NotificationEventService
         ?string $externalOrderId = null,
         ?string $sourceSystem = null,
         ?string $salesChannelId = null,
+        bool $forceIfCritical = false,
     ): bool {
-        if ($salesChannelId !== null && $salesChannelId !== '' && !isset($payload['salesChannelId'])) {
-            $payload['salesChannelId'] = $salesChannelId;
-        }
-
-        if (!$this->toggleResolver->isEnabled($triggerKey, $channel, $context, $salesChannelId)) {
+        $triggerEnabled = $this->toggleResolver->isEnabled($triggerKey, $channel, $context, $salesChannelId);
+        $forced = $forceIfCritical && $this->isCriticalForceableTrigger($triggerKey);
+        if (!$triggerEnabled && !$forced) {
             return false;
         }
 
@@ -65,14 +69,21 @@ class NotificationEventService
             'eventKey' => $eventKey,
             'triggerKey' => $triggerKey,
             'channel' => $channel,
+            'forced' => $forced,
         ]);
 
         $this->auditLogService->log('notification_queued', 'notification_event', $eventKey, $context, [
             'triggerKey' => $triggerKey,
             'channel' => $channel,
+            'forced' => $forced,
         ], 'mails');
 
         return true;
+    }
+
+    private function isCriticalForceableTrigger(string $triggerKey): bool
+    {
+        return \in_array($triggerKey, self::CRITICAL_FORCEABLE_TRIGGERS, true);
     }
 
     private function existsByEventKey(string $eventKey, Context $context): bool

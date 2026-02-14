@@ -12,6 +12,7 @@ Zusätzlich stellt das Plugin Admin-API-Endpunkte unter `/api/_action/lieferzeit
 - **Tracking**: Historie je Carrier/Trackingnummer.
 - **Status**: Auftragslisten und aggregierte Statistiken.
 - **Benachrichtigungen**: Vorkasse-Erinnerungen, Overdue-Shipping-Date, Notification-Dispatch.
+  - **Geschäftskritisch (nicht deaktivierbar im Ergebnis):** `liefertermin.anfrage.geschlossen` wird beim Abschluss/Abbruch einer Zusatzliefertermin-Anfrage immer in die Queue gestellt (kontrollierter Toggle-Bypass über den Event-Service).
 - **Aufgaben**: Listen, Zuweisung, Abschließen/Wiederöffnen/Abbrechen von Business-Tasks.
 
 ---
@@ -236,7 +237,13 @@ Beispiel-Body (`neuer-liefertermin`):
 ACL: Lesen `viewer`, Mutation `editor`.
 
 
-### 7.6 Statistics
+### 7.6 Geschäftskritische Benachrichtigungen
+
+- Trigger `liefertermin.anfrage.geschlossen` (Konstante `NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUEST_CLOSED`) ist **business-mandatory**.
+- Für diesen Trigger kann `NotificationEventService::dispatch(..., forceIfCritical: true)` gesetzt werden; dann wird das Event auch bei deaktiviertem Toggle weiter in `lieferzeiten_notification_event` gequeued.
+- Aktuell nutzt der Task-Workflow (`additional-delivery-request` bei `close`/`cancel`) diesen erzwungenen Pfad.
+
+### 7.7 Statistics
 - **GET** `/statistics`
 - **ACL**: `lieferzeiten.viewer`
 - **Query**: `period` (`7|30|90`), `domain`, `channel`
