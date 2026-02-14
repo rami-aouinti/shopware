@@ -142,7 +142,7 @@
                                     <tr v-for="position in order.positions" :key="position.id">
                                         <td>{{ displayOrDash(position.number || position.positionNumber) }}</td>
                                         <td>{{ displayOrDash(position.label || position.article) }}</td>
-                                        <td>{{ displayOrDash(position.quantity) }}</td>
+                                        <td>{{ positionQuantityDisplay(position) }}</td>
                                         <td>
                                             <template v-for="entry in resolveTrackingEntries(order, position)">
                                                 <button

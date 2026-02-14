@@ -228,6 +228,8 @@ class LieferzeitenOrderOverviewServiceTest extends TestCase
                         'number' => '10',
                         'label' => 'ART-1',
                         'quantity' => '1',
+                        'orderedQuantity' => '3',
+                        'shippedQuantity' => '2',
                         'status' => 'open',
                         'updatedAt' => '2026-01-01 10:00:00',
                         'currentComment' => 'commentaire',
@@ -285,5 +287,7 @@ class LieferzeitenOrderOverviewServiceTest extends TestCase
         static::assertArrayHasKey('lieferterminLieferantHistory', $result);
         static::assertArrayHasKey('neuerLieferterminHistory', $result);
         static::assertArrayHasKey('commentHistory', $result);
+        static::assertSame('3', $result['positions'][0]['orderedQuantity']);
+        static::assertSame('2', $result['positions'][0]['shippedQuantity']);
     }
 }

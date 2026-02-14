@@ -113,6 +113,24 @@ describe('lieferzeiten/component/lieferzeiten-order-table', () => {
         expect(updateComment).not.toHaveBeenCalled();
     });
 
+
+
+    it('formats position quantity as shipped/ordered ratio for complete and fractional cases', () => {
+        const context = {
+            parseQuantity: methods.parseQuantity,
+            positionQuantitySuffix: methods.positionQuantitySuffix,
+            pickFirstDefined: methods.pickFirstDefined,
+            displayOrDash: methods.displayOrDash,
+            $t: (key) => ({
+                'lieferzeiten.shipping.pieces': 'Stück',
+            }[key] || key),
+        };
+
+        expect(methods.positionQuantityDisplay.call(context, { orderedQuantity: 3, shippedQuantity: 3 })).toBe('3/3 Stück');
+        expect(methods.positionQuantityDisplay.call(context, { orderedQuantity: 3, shippedQuantity: 2 })).toBe('2/3 Stück');
+        expect(methods.positionQuantityDisplay.call(context, { quantity: 5 })).toBe('5');
+    });
+
     it('returns expected shipping labels per position state', () => {
         const context = {
             $t: (key) => ({
