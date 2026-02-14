@@ -21,7 +21,7 @@ readonly class LieferzeitenStatisticsService
 
     public function __construct(
         private Connection $connection,
-        private ChannelDateSettingsProvider $channelDateSettingsProvider,
+        private ChannelPdmsThresholdResolver $channelPdmsThresholdResolver,
     )
     {
     }
@@ -244,12 +244,17 @@ readonly class LieferzeitenStatisticsService
         $rows = $this->connection->fetchAllAssociative(sprintf(
             'SELECT
                 p.source_system,
+                p.external_order_id,
                 p.shipping_date,
                 p.delivery_date,
-                COALESCE(pos_stats.open_positions, 0) AS open_positions
+                COALESCE(pos_stats.open_positions, 0) AS open_positions,
+                pos_stats.open_position_number
             FROM `lieferzeiten_paket` p
             LEFT JOIN (
-                SELECT paket_id, SUM(CASE WHEN LOWER(COALESCE(status, "")) IN ("done", "closed", "completed") THEN 0 ELSE 1 END) AS open_positions
+                SELECT
+                    paket_id,
+                    SUM(CASE WHEN LOWER(COALESCE(status, "")) IN ("done", "closed", "completed") THEN 0 ELSE 1 END) AS open_positions,
+                    MIN(CASE WHEN LOWER(COALESCE(status, "")) IN ("done", "closed", "completed") THEN NULL ELSE position_number END) AS open_position_number
                 FROM `lieferzeiten_position`
                 GROUP BY paket_id
             ) pos_stats ON pos_stats.paket_id = p.id
@@ -268,7 +273,11 @@ readonly class LieferzeitenStatisticsService
             }
 
             $sourceSystem = (string) ($row['source_system'] ?? 'shopware');
-            $settings = $this->channelDateSettingsProvider->getForChannel($sourceSystem);
+            $settings = $this->channelPdmsThresholdResolver->resolveForOrder(
+                $sourceSystem,
+                isset($row['external_order_id']) ? (string) $row['external_order_id'] : null,
+                isset($row['open_position_number']) ? (string) $row['open_position_number'] : null,
+            );
 
             $shippingDate = $this->parseDateValue($row['shipping_date'] ?? null);
             if ($shippingDate !== null && $shippingDate < $this->buildThresholdDate($now, $settings['shipping'])) {

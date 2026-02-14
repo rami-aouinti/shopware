@@ -6,6 +6,7 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Connection;
 use LieferzeitenAdmin\Service\DemoDataSeederService;
 use LieferzeitenAdmin\Service\ChannelDateSettingsProvider;
+use LieferzeitenAdmin\Service\ChannelPdmsThresholdResolver;
 use LieferzeitenAdmin\Service\LieferzeitenOrderOverviewService;
 use LieferzeitenAdmin\Service\LieferzeitenStatisticsService;
 use PHPUnit\Framework\TestCase;
@@ -86,7 +87,10 @@ class DemoDataSeederIntegrationTest extends TestCase
 
         $statisticsService = new LieferzeitenStatisticsService(
             $this->connection,
-            new ChannelDateSettingsProvider($this->createMock(SystemConfigService::class), $this->connection),
+            new ChannelPdmsThresholdResolver(
+                $this->connection,
+                new ChannelDateSettingsProvider($this->createMock(SystemConfigService::class), $this->connection),
+            ),
         );
         $stats = $statisticsService->getStatistics(30, null, null);
 
