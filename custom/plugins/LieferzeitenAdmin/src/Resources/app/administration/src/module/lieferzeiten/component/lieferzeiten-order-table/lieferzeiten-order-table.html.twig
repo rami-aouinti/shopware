@@ -4,7 +4,7 @@
             <thead>
                 <tr>
                     <th colspan="4">{{ $t('lieferzeiten.zones.order') }}</th>
-                    <th colspan="5">{{ $t('lieferzeiten.zones.delivery') }}</th>
+                    <th colspan="7">{{ $t('lieferzeiten.zones.delivery') }}</th>
                     <th colspan="3">{{ $t('lieferzeiten.zones.status') }}</th>
                 </tr>
                 <tr>
@@ -15,6 +15,8 @@
                     <th>{{ $t('lieferzeiten.fields.supplierDate') }}</th>
                     <th>{{ $t('lieferzeiten.fields.supplierWeek') }}</th>
                     <th>{{ $t('lieferzeiten.fields.newDate') }}</th>
+                    <th>{{ $t('lieferzeiten.fields.latestShipping') }}</th>
+                    <th>{{ $t('lieferzeiten.fields.latestDelivery') }}</th>
                     <th>{{ $t('lieferzeiten.fields.comment') }}</th>
                     <th>{{ $t('lieferzeiten.fields.history') }}</th>
                     <th>{{ $t('lieferzeiten.table.status') }}</th>
@@ -51,6 +53,8 @@
                                 {{ $t('global.default.save') }}
                             </sw-button>
                         </td>
+                        <td>{{ formatDateTime(order.latestShippingDeadline) }}</td>
+                        <td>{{ formatDateTime(order.latestDeliveryDeadline) }}</td>
                         <td>
                             <sw-text-field v-model:value="order.comment" :disabled="!hasEditAccess()" size="small" />
                             <sw-button v-if="hasEditAccess()" size="small" @click="saveComment(order)">
@@ -76,7 +80,7 @@
                         <td>{{ order.audit || '-' }}</td>
                     </tr>
                     <tr v-if="isExpanded(order.id)" :key="`${order.id}-positions`">
-                        <td colspan="12">
+                        <td colspan="14">
                             <table class="sw-data-grid__table">
                                 <thead>
                                     <tr>

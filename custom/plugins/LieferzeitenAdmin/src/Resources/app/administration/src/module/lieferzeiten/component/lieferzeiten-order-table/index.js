@@ -79,6 +79,8 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     originalLieferterminLieferantRange: { ...supplierRange },
                     originalNeuerLieferterminRange: { ...newRange },
                     additionalDeliveryRequest: order.additionalDeliveryRequest || null,
+                    latestShippingDeadline: this.resolveDeadlineValue(order, ['spaetester_versand', 'spaetesterVersand', 'latestShippingDeadline']),
+                    latestDeliveryDeadline: this.resolveDeadlineValue(order, ['spaeteste_lieferung', 'spaetesteLieferung', 'latestDeliveryDeadline']),
                 });
             }
 
@@ -144,6 +146,37 @@ Shopware.Component.register('lieferzeiten-order-table', {
         parcelSummary(order) {
             const openParcels = order.parcels.filter((parcel) => !parcel.closed).length;
             return `${openParcels}/${order.parcels.length}`;
+        },
+
+        resolveDeadlineValue(order, keys) {
+            const value = keys.map((key) => order[key]).find((candidate) => candidate);
+
+            if (!value) {
+                return null;
+            }
+
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) {
+                return null;
+            }
+
+            return date.toISOString();
+        },
+
+        formatDateTime(value) {
+            if (!value) {
+                return '-';
+            }
+
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) {
+                return '-';
+            }
+
+            return new Intl.DateTimeFormat('de-DE', {
+                dateStyle: 'short',
+                timeStyle: 'short',
+            }).format(date);
         },
 
         resolveTrackingEntries(order, position) {
