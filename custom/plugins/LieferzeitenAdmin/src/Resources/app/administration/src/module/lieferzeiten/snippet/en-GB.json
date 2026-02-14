@@ -19,19 +19,32 @@
       "status": "Status"
     },
     "domainSelection": {
-      "placeholder": "Choose domain",
+      "placeholder": "Please select a channel",
       "reset": "Reset selection",
-      "modalTitle": "Choose domain",
-      "modalDescription": "Choose a domain to load delivery-time views.",
+      "modalTitle": "Choose channel",
+      "modalDescription": "Choose a channel to load delivery-time views.",
       "persistLabel": "Persist selection on this device",
-      "confirm": "Apply selection"
+      "confirm": "Apply selection",
+      "groups": {
+        "firstMedicalECommerce": "First Medical - E-Commerce",
+        "medicalSolutions": "Medical Solutions"
+      },
+      "channels": {
+        "firstMedicalShop": "first-medical-shop.de",
+        "ebayDe": "ebay.de",
+        "ebayAt": "ebay.at",
+        "kaufland": "Kaufland",
+        "peg": "PEG",
+        "zonami": "Zonami",
+        "medicalSolutionsGermany": "medical-solutions-germany.de"
+      }
     },
     "kpi": {
       "totalOrders": "Total orders",
       "openOrders": "Open orders",
       "closedOrders": "Closed orders",
       "openParcels": "Open parcels",
-      "filteredDomain": "Domain"
+      "filteredDomain": "Channel"
     },
     "table": {
       "orderNumber": "Order number",
@@ -42,7 +55,7 @@
       "paymentMethod": "Payment method",
       "paymentDate": "Payment date",
       "customerNames": "Customer name",
-      "domain": "Domain",
+      "domain": "Channel",
       "parcels": "Open/total parcels",
       "openParcels": "Open parcels",
       "positions": "Positions",
@@ -97,7 +110,7 @@
     },
     "emptyState": {
       "title": "No open orders",
-      "description": "There are currently no open orders for the selected domain."
+      "description": "There are currently no open orders for the selected channel."
     },
     "tracking": {
       "loading": "Loading tracking history …",

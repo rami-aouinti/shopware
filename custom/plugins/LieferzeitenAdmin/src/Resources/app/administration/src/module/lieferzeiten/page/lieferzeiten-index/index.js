@@ -2,15 +2,20 @@ import template from './lieferzeiten-index.html.twig';
 import { normalizeDomainKey, resolveDomainKeyForSourceSystem } from '../../utils/domain-source-mapping';
 
 const DOMAIN_SOURCE_MAP = {
-    'first-medical-e-commerce': ['first medical', 'e-commerce', 'shopware', 'gambio', 'first-medical-e-commerce'],
-    'medical-solutions': ['medical solutions', 'medical-solutions'],
+    'first-medical-shop.de': ['first-medical-shop.de', 'first medical', 'e-commerce', 'shopware', 'gambio', 'first-medical-e-commerce'],
+    'ebay.de': ['ebay.de', 'ebay de'],
+    'ebay.at': ['ebay.at', 'ebay at'],
+    kaufland: ['kaufland'],
+    peg: ['peg'],
+    zonami: ['zonami'],
+    'medical-solutions-germany.de': ['medical-solutions-germany.de', 'medical solutions', 'medical-solutions'],
 };
 
 const DOMAIN_LABEL_ALIASES = {
-    'First Medical': 'first-medical-e-commerce',
-    'E-Commerce': 'first-medical-e-commerce',
-    'First Medical - E-Commerce': 'first-medical-e-commerce',
-    'Medical Solutions': 'medical-solutions',
+    'First Medical': 'first-medical-shop.de',
+    'E-Commerce': 'first-medical-shop.de',
+    'First Medical - E-Commerce': 'first-medical-shop.de',
+    'Medical Solutions': 'medical-solutions-germany.de',
 };
 
 Shopware.Component.register('lieferzeiten-index', {
