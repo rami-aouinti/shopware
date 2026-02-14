@@ -6,7 +6,8 @@
       "infoTitle": "Hinweis",
       "timezoneInfo": "Zeitberechnungen basieren auf der Zeitzone Europe/Berlin.",
       "openDefinition": "„Offen“ bedeutet mindestens ein noch nicht geschlossenes Paket.",
-      "mainMenuItemStatistics": "Statistiken Lieferzeiten-Management"
+      "mainMenuItemStatistics": "Statistiken Lieferzeiten-Management",
+      "navigationHint": "Die Liste findest du im Admin unter Bestellungen → Lieferzeiten. Wähle zuerst Bereich und Kanal oben rechts aus, sonst bleibt die Ansicht leer. Mit dem Button „Demo-Daten speichern“ kannst du Testdaten für Bestell- und Lieferdaten erzeugen."
     },
     "tabs": {
       "all": "Alle Bestellungen",
