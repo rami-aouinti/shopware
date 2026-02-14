@@ -1244,6 +1244,20 @@ Component.register('external-orders-list', {
             }
             return new Date(parsed).toISOString().slice(0, 10);
         },
+
+        formatDateForTable(value) {
+            if (!value) {
+                return '';
+            }
+
+            const parsed = this.parseOrderDate(value);
+            if (Number.isNaN(parsed)) {
+                return String(value);
+            }
+
+            return new Date(parsed).toISOString().slice(0, 16);
+        },
+
         formatNumberForExport(value) {
             const numeric = typeof value === 'number' ? value : Number(value);
             if (!Number.isFinite(numeric)) {
