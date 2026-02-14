@@ -143,6 +143,7 @@ readonly class LieferzeitenOrderOverviewService
                 p.shipping_date AS spaetester_versand,
                 p.delivery_date AS spaeteste_lieferung,
                 p.last_changed_by AS user,
+                p.last_changed_by AS last_changed_by,
                 p.status AS status,
                 p.shipping_assignment_type AS shipping_assignment_type,
                 p.source_system AS sourceSystem,
@@ -446,6 +447,12 @@ readonly class LieferzeitenOrderOverviewService
             'code' => $statusCodeString,
             'label' => $statusLabel,
         ];
+        $row['business_status'] = [
+            'code' => $statusCodeString,
+            'label' => $statusLabel,
+        ];
+        $row['business_status_label'] = $statusLabel;
+        $row['last_changed_by'] = $row['last_changed_by'] ?? ($row['user'] ?? null);
 
         return $row;
     }
