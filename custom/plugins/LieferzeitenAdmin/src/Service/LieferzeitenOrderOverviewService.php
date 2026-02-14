@@ -149,6 +149,37 @@ readonly class LieferzeitenOrderOverviewService
                 GROUP_CONCAT(DISTINCT pos.position_number ORDER BY pos.position_number SEPARATOR ", ") AS san6Pos,
                 GROUP_CONCAT(DISTINCT pos.position_number ORDER BY pos.position_number SEPARATOR ", ") AS san6Position,
                 COUNT(DISTINCT pos.id) AS positionsCount,
+                GROUP_CONCAT(DISTINCT LOWER(HEX(pos.id)) ORDER BY pos.position_number SEPARATOR ",") AS positionIds,
+                (
+                    SELECT LOWER(HEX(pos_target.id))
+                    FROM `lieferzeiten_position` pos_target
+                    WHERE pos_target.paket_id = p.id
+                    ORDER BY
+                        CASE WHEN LOWER(TRIM(COALESCE(pos_target.status, ""))) IN ("closed", "done", "completed", "shipped", "delivered", "8") THEN 1 ELSE 0 END ASC,
+                        pos_target.position_number ASC,
+                        pos_target.id ASC
+                    LIMIT 1
+                ) AS commentTargetPositionId,
+                (
+                    SELECT pos_comment.current_comment
+                    FROM `lieferzeiten_position` pos_comment
+                    WHERE pos_comment.paket_id = p.id
+                    ORDER BY
+                        CASE WHEN LOWER(TRIM(COALESCE(pos_comment.status, ""))) IN ("closed", "done", "completed", "shipped", "delivered", "8") THEN 1 ELSE 0 END ASC,
+                        pos_comment.position_number ASC,
+                        pos_comment.id ASC
+                    LIMIT 1
+                ) AS currentComment,
+                (
+                    SELECT pos_comment.comment
+                    FROM `lieferzeiten_position` pos_comment
+                    WHERE pos_comment.paket_id = p.id
+                    ORDER BY
+                        CASE WHEN LOWER(TRIM(COALESCE(pos_comment.status, ""))) IN ("closed", "done", "completed", "shipped", "delivered", "8") THEN 1 ELSE 0 END ASC,
+                        pos_comment.position_number ASC,
+                        pos_comment.id ASC
+                    LIMIT 1
+                ) AS comment,
                 p.partial_shipment_quantity AS quantity,
                 p.order_date AS bestelldatum,
                 p.order_date AS orderDate,
@@ -499,6 +530,23 @@ readonly class LieferzeitenOrderOverviewService
         $row['last_changed_by'] = $row['last_changed_by'] ?? ($row['user'] ?? null);
 
         $row['positionsCount'] = (int) ($row['positionsCount'] ?? 0);
+
+        $positionIds = array_values(array_filter(array_map(
+            static fn (string $id): string => trim($id),
+            explode(',', (string) ($row['positionIds'] ?? '')),
+        ), static fn (string $id): bool => $id !== ''));
+
+        if (!isset($row['positions']) || !is_array($row['positions']) || count($row['positions']) === 0) {
+            $row['positions'] = array_map(static fn (string $id): array => ['id' => $id], $positionIds);
+        }
+
+        if (($row['commentTargetPositionId'] ?? null) === null || trim((string) $row['commentTargetPositionId']) === '') {
+            $row['commentTargetPositionId'] = $positionIds[0] ?? null;
+        }
+
+        if (($row['currentComment'] ?? null) === null && ($row['comment'] ?? null) !== null) {
+            $row['currentComment'] = $row['comment'];
+        }
 
         if (($row['quantity'] ?? null) === null || trim((string) $row['quantity']) === '') {
             $row['quantity'] = (string) $row['positionsCount'];
