@@ -2,10 +2,13 @@ import { normalizeDomainKey } from './domain-source-mapping';
 
 /**
  * LMS channel matching rules (in priority order):
- * 1) Match by mapped sales-channel domain hostname (canonical + legacy aliases via normalizeDomainKey).
- * 2) If no mapped domain exists, match by explicit technical identifiers only (exact string match after normalization).
+ * 1) Match by mapped sales-channel domain hostname only
+ *    (canonical + legacy aliases via normalizeDomainKey).
+ * 2) If no mapped domain exists, match by explicit technical identifiers only
+ *    (technicalName, shortName, technical custom-field keys; exact match after normalization).
  *
- * Display names are intentionally not used for fuzzy/partial matching to avoid ambiguity.
+ * Freely editable display labels (name, translated.name) are intentionally excluded
+ * from technical matching to avoid false-positive LMS assignments after renames/translations.
  */
 export const LMS_TARGET_CHANNELS = Object.freeze([
     {
@@ -80,6 +83,8 @@ export function resolveLmsTargetChannelKey(channel) {
         channel?.technicalName,
         channel?.shortName,
         channel?.customFields?.technicalIdentifier,
+        channel?.customFields?.technicalName,
+        channel?.customFields?.technical_name,
         channel?.customFields?.technical_identifier,
     ]
         .map((identifier) => normalizeIdentifier(identifier))
