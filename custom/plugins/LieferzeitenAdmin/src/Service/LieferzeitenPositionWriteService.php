@@ -275,9 +275,9 @@ class LieferzeitenPositionWriteService
 
         $this->taskService->createTask(
             $taskPayload,
-            Uuid::isValid($actor) ? $actor : $initiator,
-            null,
-            null,
+            $initiator,
+            is_array($rule) ? ($rule['assigneeIdentifier'] ?? null) : null,
+            $dueDate,
             $context,
         );
 
