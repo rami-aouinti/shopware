@@ -147,6 +147,16 @@ class LieferzeitenOrdersService extends ApiService {
             payload.initiator = initiator.trim();
         }
 
+        if (initiator && typeof initiator === 'object') {
+            if (typeof initiator.display === 'string' && initiator.display.trim() !== '') {
+                payload.initiatorDisplay = initiator.display.trim();
+            }
+
+            if (typeof initiator.userId === 'string' && initiator.userId.trim() !== '') {
+                payload.initiatorUserId = initiator.userId.trim();
+            }
+        }
+
         return this.post(`position/${positionId}/additional-delivery-request`, payload);
     }
 

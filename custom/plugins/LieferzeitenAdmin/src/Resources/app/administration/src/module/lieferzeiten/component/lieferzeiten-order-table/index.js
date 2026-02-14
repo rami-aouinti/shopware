@@ -1143,7 +1143,9 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 await this.lieferzeitenOrdersService.createAdditionalDeliveryRequest(positionId, initiator);
                 this.createNotificationSuccess({
                     title: this.$t('lieferzeiten.additionalRequest.notificationTitle'),
-                    message: this.$t('lieferzeiten.additionalRequest.notificationRequested', { initiator }),
+                    message: this.$t('lieferzeiten.additionalRequest.notificationRequested', {
+                        initiator: initiator.display || this.$t('lieferzeiten.additionalRequest.defaultInitiator'),
+                    }),
                 });
 
                 await this.reloadOrder(order);
@@ -1221,14 +1223,16 @@ Shopware.Component.register('lieferzeiten-order-table', {
             const user = contextUser || sessionUser;
 
             const userId = typeof user?.id === 'string' ? user.id.trim() : '';
-            const fullName = [user?.firstName, user?.lastName].filter((part) => typeof part === 'string' && part.trim() !== '').join(' ').trim();
+            const fullName = [user?.firstName, user?.lastName]
+                .filter((part) => typeof part === 'string' && part.trim() !== '')
+                .join(' ')
+                .trim();
             const readableName = fullName || String(user?.username || user?.email || '').trim();
 
-            if (readableName && userId) {
-                return `${readableName} (${userId})`;
-            }
-
-            return userId || readableName || this.$t('lieferzeiten.additionalRequest.defaultInitiator');
+            return {
+                userId: userId || null,
+                display: readableName || this.$t('lieferzeiten.additionalRequest.defaultInitiator'),
+            };
         },
 
         updateAudit(order, action) {
