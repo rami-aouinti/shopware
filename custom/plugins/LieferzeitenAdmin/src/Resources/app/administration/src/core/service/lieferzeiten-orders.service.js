@@ -6,8 +6,9 @@ class LieferzeitenOrdersService extends ApiService {
         this.name = 'lieferzeitenOrdersService';
     }
 
-    async getOrders() {
+    async getOrders(params = {}) {
         const response = await this.httpClient.get(`_action/${this.getApiBasePath()}/orders`, {
+            params,
             headers: this.getBasicHeaders(),
         });
 
