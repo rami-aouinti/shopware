@@ -97,6 +97,11 @@
             <argument type="service" id="Doctrine\DBAL\Connection" />
         </service>
 
+        <service id="LieferzeitenAdmin\Service\LieferzeitenOrderStatusWriteService">
+            <argument type="service" id="lieferzeiten_paket.repository" />
+            <argument type="service" id="Doctrine\DBAL\Connection" />
+        </service>
+
         <service id="LieferzeitenAdmin\Service\LieferzeitenStatisticsService">
             <argument type="service" id="Doctrine\DBAL\Connection" />
         </service>
@@ -139,6 +144,7 @@
             <argument type="service" id="lieferzeiten_task.repository" />
         </service>
         <service id="LieferzeitenAdmin\Controller\LieferzeitenSyncController" public="true" />
+        <service id="LieferzeitenAdmin\Controller\LieferzeitenOrderStatusController" public="true" />
 
         <service id="LieferzeitenAdmin\ScheduledTask\LieferzeitenImportTask">
             <tag name="shopware.scheduled.task" />

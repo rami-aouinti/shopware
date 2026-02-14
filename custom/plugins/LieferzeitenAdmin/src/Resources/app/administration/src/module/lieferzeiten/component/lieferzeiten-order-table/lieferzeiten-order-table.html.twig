@@ -75,7 +75,25 @@
                                 <li v-for="entry in order.commentHistory" :key="entry">{{ entry }}</li>
                             </ul>
                         </td>
-                        <td>{{ businessStatusLabel(order) }}</td>
+                        <td>
+                            <sw-single-select
+                                v-model:value="order.selectedBusinessStatus"
+                                :options="editableBusinessStatuses"
+                                :disabled="!hasEditAccess()"
+                                size="small"
+                                :placeholder="$t('lieferzeiten.statusChange.placeholder')"
+                            />
+                            <sw-button
+                                v-if="hasEditAccess()"
+                                size="small"
+                                variant="primary"
+                                :disabled="!canSaveBusinessStatus(order)"
+                                @click="saveBusinessStatus(order)"
+                            >
+                                {{ $t('lieferzeiten.statusChange.save') }}
+                            </sw-button>
+                            <div class="lieferzeiten-order-table__business-status-current">{{ businessStatusLabel(order) }}</div>
+                        </td>
                         <td>
                             <sw-label :variant="isOrderOpen(order) ? 'warning' : 'success'">
                                 {{ isOrderOpen(order) ? $t('lieferzeiten.status.open') : $t('lieferzeiten.status.closed') }}

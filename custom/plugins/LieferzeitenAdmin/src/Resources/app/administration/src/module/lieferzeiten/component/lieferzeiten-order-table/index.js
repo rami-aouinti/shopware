@@ -55,6 +55,12 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 .filter((order) => (this.onlyOpen ? this.isOrderOpen(order) : true))
                 .map((order) => this.getEditableOrder(order));
         },
+        editableBusinessStatuses() {
+            return [7, 8].map((status) => ({
+                value: String(status),
+                label: `${status} · ${this.$t(BUSINESS_STATUS_SNIPPETS[String(status)])}`,
+            }));
+        },
     },
 
     methods: {
@@ -133,6 +139,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     additionalDeliveryRequest: order.additionalDeliveryRequest || null,
                     latestShippingDeadline: this.resolveDeadlineValue(order, ['spaetester_versand', 'spaetesterVersand', 'latestShippingDeadline']),
                     latestDeliveryDeadline: this.resolveDeadlineValue(order, ['spaeteste_lieferung', 'spaetesteLieferung', 'latestDeliveryDeadline']),
+                    selectedBusinessStatus: this.resolveEditableBusinessStatus(order),
                 });
             }
 
@@ -389,6 +396,61 @@ Shopware.Component.register('lieferzeiten-order-table', {
             const resolvedLabel = translatedLabel === snippetKey ? (fallbackLabel || this.$t('lieferzeiten.businessStatus.unknown')) : translatedLabel;
 
             return `${statusCode || '-'} · ${resolvedLabel}`;
+        },
+
+        resolveEditableBusinessStatus(order) {
+            const statusCode = Number(order?.businessStatus?.code ?? order?.status ?? 0);
+
+            if (statusCode === 7 || statusCode === 8) {
+                return String(statusCode);
+            }
+
+            return null;
+        },
+
+        canSaveBusinessStatus(order) {
+            if (!this.hasEditAccess()) {
+                return false;
+            }
+
+            const nextStatus = Number(order?.selectedBusinessStatus || 0);
+            if (![7, 8].includes(nextStatus)) {
+                return false;
+            }
+
+            const currentStatus = Number(order?.businessStatus?.code ?? order?.status ?? 0);
+
+            return nextStatus !== currentStatus;
+        },
+
+        async saveBusinessStatus(order) {
+            if (!this.hasEditAccess()) {
+                return;
+            }
+
+            const paketId = order?.id || null;
+            const status = Number(order?.selectedBusinessStatus || 0);
+            if (!paketId || ![7, 8].includes(status)) {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: this.$t('lieferzeiten.statusChange.invalidSelection'),
+                });
+                return;
+            }
+
+            try {
+                await this.lieferzeitenOrdersService.updateOrderStatus(paketId, status);
+                this.createNotificationSuccess({
+                    title: this.$t('global.default.success'),
+                    message: this.$t('lieferzeiten.statusChange.saved'),
+                });
+                await this.reloadOrder(order);
+            } catch (error) {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: error?.response?.data?.message || error?.message || this.$t('global.default.error'),
+                });
+            }
         },
 
         shippingLabel(order) {
