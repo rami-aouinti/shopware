@@ -125,23 +125,7 @@ class LieferzeitenImportService
 
                     $matched = $this->matchingService->match($normalized, $san6);
 
-                    $resolution = $this->baseDateResolver->resolve($matched);
-                    $settings = $this->settingsProvider->getForChannel($channel);
-                    $calculatedShippingDate = $this->deliveryDateCalculator->calculate($resolution['baseDate'], $settings['shipping']);
-                    $calculatedDeliveryDate = $this->deliveryDateCalculator->calculate($resolution['baseDate'], $settings['delivery']);
-
-                    $matched['baseDateType'] = $resolution['baseDateType'];
-                    $matched['paymentDate'] = $matched['paymentDate'] ?? null;
-                    $matched['calculatedShippingDate'] = $calculatedShippingDate?->format(DATE_ATOM);
-                    $matched['calculatedDeliveryDate'] = $calculatedDeliveryDate?->format(DATE_ATOM);
-
-                    if ($this->parseDate($matched['shippingDate'] ?? null) === null) {
-                        $matched['shippingDate'] = $matched['calculatedShippingDate'];
-                    }
-
-                    if ($this->parseDate($matched['deliveryDate'] ?? null) === null) {
-                        $matched['deliveryDate'] = $matched['calculatedDeliveryDate'];
-                    }
+                    [$matched, $resolution] = $this->resolveAndApplyBusinessDates($matched, $channel);
 
                     $matched['sourceSystem'] = $this->contractValidator->resolveValueByPriority(
                         $matched['sourceSystem'] ?? $channel,
@@ -221,6 +205,28 @@ class LieferzeitenImportService
         } finally {
             $lock->release();
         }
+    }
+
+    /**
+     * @param array<string,mixed> $payload
+     * @return array{0: array<string,mixed>, 1: array{baseDate: ?\DateTimeImmutable, baseDateType: string, missingPaymentDate: bool}}
+     */
+    private function resolveAndApplyBusinessDates(array $payload, string $channel): array
+    {
+        $resolution = $this->baseDateResolver->resolve($payload);
+        $settings = $this->settingsProvider->getForChannel($channel);
+        $calculatedShippingDate = $this->deliveryDateCalculator->calculate($resolution['baseDate'], $settings['shipping']);
+        $calculatedDeliveryDate = $this->deliveryDateCalculator->calculate($resolution['baseDate'], $settings['delivery']);
+
+        $payload['baseDateType'] = $resolution['baseDateType'];
+        $payload['paymentDate'] = $payload['paymentDate'] ?? null;
+        $payload['calculatedShippingDate'] = $calculatedShippingDate?->format(DATE_ATOM);
+        $payload['calculatedDeliveryDate'] = $calculatedDeliveryDate?->format(DATE_ATOM);
+
+        $payload['shippingDate'] = $payload['calculatedShippingDate'] ?? $payload['shippingDate'] ?? null;
+        $payload['deliveryDate'] = $payload['calculatedDeliveryDate'] ?? $payload['deliveryDate'] ?? null;
+
+        return [$payload, $resolution];
     }
 
     private function canRunMode(string $mode): bool
