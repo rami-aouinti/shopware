@@ -146,10 +146,11 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
     }
 
 
-    public function testCreateAdditionalDeliveryRequestPrioritizesContextUserIdOverPayloadUserId(): void
+    public function testCreateAdditionalDeliveryRequestUsesProvidedInitiatorWhenExplicitlySent(): void
     {
         $positionId = '2ca3ed2a8f584947af8715ef26b64e57';
         $contextUserId = 'd2f0c2db4cfe4fd39189a8f5d13d54d1';
+        $providedUserId = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 
         $this->connection->insert('lieferzeiten_position', [
             'id' => hex2bin($positionId),
@@ -161,8 +162,8 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
             ->expects(static::once())
             ->method('createTask')
             ->with(
-                static::callback(static function (array $payload) use ($contextUserId): bool {
-                    return ($payload['initiatorUserId'] ?? null) === $contextUserId
+                static::callback(static function (array $payload) use ($providedUserId): bool {
+                    return ($payload['initiatorUserId'] ?? null) === $providedUserId
                         && ($payload['initiatorDisplay'] ?? null) === 'UI User';
                 }),
                 static::isInstanceOf(Context::class),
@@ -182,7 +183,46 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
         );
 
         $context = new Context(new AdminApiSource($contextUserId));
-        $service->createAdditionalDeliveryRequest($positionId, null, $context, 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'UI User');
+        $service->createAdditionalDeliveryRequest($positionId, null, $context, $providedUserId, 'UI User');
+    }
+
+    public function testCreateAdditionalDeliveryRequestFallsBackToContextUserWhenInitiatorMissing(): void
+    {
+        $positionId = 'b142f8bead7844b4a5e91f6f4af0d9f2';
+        $contextUserId = 'd2f0c2db4cfe4fd39189a8f5d13d54d1';
+
+        $this->connection->insert('lieferzeiten_position', [
+            'id' => hex2bin($positionId),
+            'updated_at' => '2026-02-10 09:00:00.000',
+        ]);
+
+        $taskService = $this->createMock(LieferzeitenTaskService::class);
+        $taskService
+            ->expects(static::once())
+            ->method('createTask')
+            ->with(
+                static::callback(static function (array $payload) use ($contextUserId): bool {
+                    return ($payload['initiatorUserId'] ?? null) === $contextUserId
+                        && ($payload['initiatorDisplay'] ?? null) === $contextUserId;
+                }),
+                static::isInstanceOf(Context::class),
+                $contextUserId,
+                'rule-assignee',
+                static::isInstanceOf(\DateTimeInterface::class),
+            );
+
+        $ruleResolver = $this->createMock(TaskAssignmentRuleResolver::class);
+        $ruleResolver->method('resolve')->willReturn(['assigneeIdentifier' => 'rule-assignee']);
+
+        $service = $this->createService(
+            positionRepository: $this->createNoOpPositionRepository(),
+            taskService: $taskService,
+            ruleResolver: $ruleResolver,
+            systemConfigService: $this->createMock(SystemConfigService::class),
+        );
+
+        $context = new Context(new AdminApiSource($contextUserId));
+        $service->createAdditionalDeliveryRequest($positionId, null, $context, null, null);
     }
 
     public function testCreateAdditionalDeliveryRequestFallsBackToConfiguredAssigneeWhenRuleMissing(): void

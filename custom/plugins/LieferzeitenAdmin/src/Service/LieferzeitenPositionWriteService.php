@@ -257,8 +257,7 @@ class LieferzeitenPositionWriteService
         $notificationContext = $this->fetchNotificationContext($positionId);
 
         $resolvedContextUserId = $this->resolveActorUserId($context);
-        $resolvedInitiatorUserId = $resolvedContextUserId
-            ?? ((is_string($initiatorUserId) && Uuid::isValid($initiatorUserId)) ? $initiatorUserId : null);
+        $providedInitiatorUserId = (is_string($initiatorUserId) && Uuid::isValid($initiatorUserId)) ? $initiatorUserId : null;
 
         $resolvedInitiatorDisplay = is_string($initiatorDisplay) && trim($initiatorDisplay) !== ''
             ? trim($initiatorDisplay)
@@ -266,6 +265,11 @@ class LieferzeitenPositionWriteService
         if ($resolvedInitiatorDisplay === null && is_string($initiator) && trim($initiator) !== '') {
             $resolvedInitiatorDisplay = trim($initiator);
         }
+
+        $hasExplicitInitiator = $resolvedInitiatorDisplay !== null || $providedInitiatorUserId !== null;
+        $resolvedInitiatorUserId = $hasExplicitInitiator
+            ? $providedInitiatorUserId
+            : ($resolvedContextUserId ?? $providedInitiatorUserId);
 
         $initiatorDisplay = $resolvedInitiatorDisplay ?? $actor;
         $initiatorUserId = $resolvedInitiatorUserId;
