@@ -2,6 +2,13 @@ import template from './lieferzeiten-domain-selection.html.twig';
 
 const STORAGE_KEY = 'lieferzeitenManagementDomain';
 
+const LEGACY_DOMAIN_MAPPING = {
+    'First Medical': 'first-medical-e-commerce',
+    'E-Commerce': 'first-medical-e-commerce',
+    'First Medical - E-Commerce': 'first-medical-e-commerce',
+    'Medical Solutions': 'medical-solutions',
+};
+
 Shopware.Component.register('lieferzeiten-domain-selection', {
     template,
 
@@ -19,9 +26,8 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
             persistSelection: false,
             showDomainModal: false,
             domains: [
-                { value: 'First Medical', label: 'First Medical' },
-                { value: 'E-Commerce', label: 'E-Commerce' },
-                { value: 'Medical Solutions', label: 'Medical Solutions' },
+                { value: 'first-medical-e-commerce', label: 'First Medical - E-Commerce' },
+                { value: 'medical-solutions', label: 'Medical Solutions' },
             ],
         };
     },
@@ -44,18 +50,22 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
     },
 
     methods: {
+
+        normalizeDomainValue(value) {
+            return LEGACY_DOMAIN_MAPPING[value] || value;
+        },
         loadStoredDomain() {
             const localValue = localStorage.getItem(STORAGE_KEY);
             if (localValue) {
                 this.persistSelection = true;
-                this.selectedDomain = localValue;
+                this.selectedDomain = this.normalizeDomainValue(localValue);
                 return;
             }
 
             const sessionValue = sessionStorage.getItem(STORAGE_KEY);
             if (sessionValue) {
                 this.persistSelection = false;
-                this.selectedDomain = sessionValue;
+                this.selectedDomain = this.normalizeDomainValue(sessionValue);
                 return;
             }
 
