@@ -267,6 +267,8 @@ class LieferzeitenSyncController extends AbstractController
     )]
     public function salesChannelLieferzeiten(string $salesChannelId, Context $context): JsonResponse
     {
+        $salesChannelId = str_replace('-', '', $salesChannelId);
+
         if (!Uuid::isValid($salesChannelId)) {
             return new JsonResponse(['status' => 'error', 'message' => 'Invalid sales channel id'], Response::HTTP_BAD_REQUEST);
         }
