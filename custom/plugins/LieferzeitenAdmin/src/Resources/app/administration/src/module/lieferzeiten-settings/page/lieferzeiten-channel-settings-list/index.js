@@ -67,6 +67,7 @@ Component.register('lieferzeiten-channel-settings-list', {
             channels: [],
             matrixValues: {},
             existingEntryIds: {},
+            existingEntries: {},
             validationErrors: {},
             isLoading: false,
             isSaving: false,
@@ -427,6 +428,7 @@ Component.register('lieferzeiten-channel-settings-list', {
                 this.channels = this.getWhitelistedChannels(salesChannels);
                 this.matrixValues = {};
                 this.existingEntryIds = {};
+                this.existingEntries = {};
                 this.channelPdmsLieferzeiten = {};
                 this.channelPdmsMappingIncomplete = {};
 
@@ -450,7 +452,9 @@ Component.register('lieferzeiten-channel-settings-list', {
                         shippingOverdueWorkingDays: entry.shippingOverdueWorkingDays,
                         deliveryOverdueWorkingDays: entry.deliveryOverdueWorkingDays,
                     };
-                    this.existingEntryIds[this.getEntryKey(entry.salesChannelId, entry.pdmsLieferzeit)] = entry.id;
+                    const entryKey = this.getEntryKey(entry.salesChannelId, entry.pdmsLieferzeit);
+                    this.existingEntryIds[entryKey] = entry.id;
+                    this.existingEntries[entryKey] = entry;
                 });
             } catch (error) {
                 this.notifyRequestError(error, this.$tc('lieferzeiten.lms.dashboard.title'));
@@ -494,8 +498,14 @@ Component.register('lieferzeiten-channel-settings-list', {
                     this.ensureChannelMatrix(channel.id);
 
                     for (const { key } of this.getChannelPdmsLieferzeiten(channel.id)) {
-                        const entity = this.thresholdRepository.create(Shopware.Context.api);
-                        entity.id = this.existingEntryIds[this.getEntryKey(channel.id, key)] || entity.id;
+                        const entryKey = this.getEntryKey(channel.id, key);
+                        const existingEntity = this.existingEntries[entryKey];
+                        const entity = existingEntity || this.thresholdRepository.create(Shopware.Context.api);
+
+                        if (!existingEntity) {
+                            entity.id = this.existingEntryIds[entryKey] || entity.id;
+                        }
+
                         entity.salesChannelId = channel.id;
                         entity.pdmsLieferzeit = key;
                         entity.shippingOverdueWorkingDays = this.matrixValues[channel.id][key].shippingOverdueWorkingDays;
