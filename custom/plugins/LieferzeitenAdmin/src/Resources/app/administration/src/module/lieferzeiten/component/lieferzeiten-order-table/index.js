@@ -63,8 +63,23 @@ Shopware.Component.register('lieferzeiten-order-table', {
 
             return this.acl.can('lieferzeiten.editor') || this.acl.can('admin');
         },
+
+        resolveBusinessStatus(order) {
+            const businessStatus = order?.business_status || order?.businessStatus || null;
+            const code = Number(businessStatus?.code ?? order?.status);
+
+            if (!Number.isInteger(code) || code < 1 || code > 8) {
+                return '-';
+            }
+
+            const labelKey = businessStatus?.labelKey || `lieferzeiten.businessStatus.${code}`;
+
+            return `${code} - ${this.$t(labelKey)}`;
+        },
+
         isOrderOpen(order) {
-            return order.parcels.some((parcel) => !parcel.closed);
+            const parcels = Array.isArray(order?.parcels) ? order.parcels : [];
+            return parcels.some((parcel) => !parcel.closed);
         },
 
         getEditableOrder(order) {

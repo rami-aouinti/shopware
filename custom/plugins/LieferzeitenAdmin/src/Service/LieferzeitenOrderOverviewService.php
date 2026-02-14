@@ -8,6 +8,20 @@ use Doctrine\DBAL\Connection;
 readonly class LieferzeitenOrderOverviewService
 {
     /**
+     * @var array<int, string>
+     */
+    private const BUSINESS_STATUS_LABEL_KEYS = [
+        1 => 'lieferzeiten.businessStatus.1',
+        2 => 'lieferzeiten.businessStatus.2',
+        3 => 'lieferzeiten.businessStatus.3',
+        4 => 'lieferzeiten.businessStatus.4',
+        5 => 'lieferzeiten.businessStatus.5',
+        6 => 'lieferzeiten.businessStatus.6',
+        7 => 'lieferzeiten.businessStatus.7',
+        8 => 'lieferzeiten.businessStatus.8',
+    ];
+
+    /**
      * @var array<string, list<string>>
      */
     private const DOMAIN_SOURCE_MAPPING = [
@@ -154,6 +168,10 @@ readonly class LieferzeitenOrderOverviewService
         $dataParams['offset'] = ($page - 1) * $limit;
 
         $rows = $this->connection->fetchAllAssociative($dataSql, $dataParams, $paramTypes);
+        foreach ($rows as &$row) {
+            $row['business_status'] = $this->buildBusinessStatusPayload($row['status'] ?? null);
+        }
+        unset($row);
 
         return [
             'total' => $total,
@@ -403,25 +421,22 @@ readonly class LieferzeitenOrderOverviewService
     }
 
     /**
-     * @return array<int, string>
+     * @return array{code: int|null, labelKey: string|null}
      */
-    private function resolveDomainFilter(string $domain): array
+    private function buildBusinessStatusPayload(mixed $status): array
     {
-        $domain = $this->normalizeValue($domain);
-        if ($domain === null || $domain === 'all') {
-            return [];
+        $statusCode = is_numeric($status) ? (int) $status : null;
+
+        if ($statusCode === null || !isset(self::BUSINESS_STATUS_LABEL_KEYS[$statusCode])) {
+            return [
+                'code' => $statusCode,
+                'labelKey' => null,
+            ];
         }
 
-        $domainKey = self::LEGACY_DOMAIN_MAPPING[$domain] ?? $domain;
-
-        return self::DOMAIN_SOURCE_MAPPING[$domainKey] ?? [$domainKey];
+        return [
+            'code' => $statusCode,
+            'labelKey' => self::BUSINESS_STATUS_LABEL_KEYS[$statusCode],
+        ];
     }
-
-    private function normalizeValue(string $value): ?string
-    {
-        $value = trim(mb_strtolower($value));
-
-        return $value !== '' ? $value : null;
-    }
-
 }

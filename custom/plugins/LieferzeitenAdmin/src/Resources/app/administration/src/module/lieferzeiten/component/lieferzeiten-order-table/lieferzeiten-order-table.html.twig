@@ -3,9 +3,9 @@
         <table class="sw-data-grid__table">
             <thead>
                 <tr>
-                    <th colspan="11">{{ $t('lieferzeiten.zones.order') }}</th>
-                    <th colspan="5">{{ $t('lieferzeiten.zones.delivery') }}</th>
-                    <th colspan="8">{{ $t('lieferzeiten.zones.status') }}</th>
+                    <th colspan="4">{{ $t('lieferzeiten.zones.order') }}</th>
+                    <th colspan="7">{{ $t('lieferzeiten.zones.delivery') }}</th>
+                    <th colspan="4">{{ $t('lieferzeiten.zones.status') }}</th>
                 </tr>
                 <tr>
                     <th>{{ $t('lieferzeiten.table.orderNumber') }}</th>
@@ -26,6 +26,7 @@
                     <th>{{ $t('lieferzeiten.fields.latestDelivery') }}</th>
                     <th>{{ $t('lieferzeiten.fields.comment') }}</th>
                     <th>{{ $t('lieferzeiten.fields.history') }}</th>
+                    <th>{{ $t('lieferzeiten.table.businessStatus') }}</th>
                     <th>{{ $t('lieferzeiten.table.status') }}</th>
                     <th>Paket-Status</th>
                     <th>spätester Versandzeitpunkt</th>
@@ -74,6 +75,7 @@
                                 <li v-for="entry in order.commentHistory" :key="entry">{{ entry }}</li>
                             </ul>
                         </td>
+                        <td>{{ resolveBusinessStatus(order) }}</td>
                         <td>
                             <sw-label :variant="isOrderOpen(order) ? 'warning' : 'success'">
                                 {{ isOrderOpen(order) ? $t('lieferzeiten.status.open') : $t('lieferzeiten.status.closed') }}
