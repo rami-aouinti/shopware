@@ -454,7 +454,6 @@ Component.register('lieferzeiten-channel-settings-list', {
                     };
                     const entryKey = this.getEntryKey(entry.salesChannelId, entry.pdmsLieferzeit);
                     this.existingEntryIds[entryKey] = entry.id;
-                    this.existingEntries[entryKey] = entry;
                 });
             } catch (error) {
                 this.notifyRequestError(error, this.$tc('lieferzeiten.lms.dashboard.title'));
@@ -489,6 +488,27 @@ Component.register('lieferzeiten-channel-settings-list', {
 
             try {
                 const whitelistedChannelIds = this.getWhitelistedChannelIds();
+                const existingEntries = new Map();
+
+                this.channels.forEach((channel) => {
+                    this.getChannelPdmsLieferzeiten(channel.id).forEach(({ key }) => {
+                        const existingEntryId = this.existingEntryIds[this.getEntryKey(channel.id, key)];
+
+                        if (existingEntryId) {
+                            existingEntries.set(this.getEntryKey(channel.id, key), null);
+                        }
+                    });
+                });
+
+                if (existingEntries.size > 0) {
+                    const criteria = new Criteria(1, existingEntries.size);
+                    criteria.setIds(Object.values(this.existingEntryIds));
+                    const persistedEntries = await this.thresholdRepository.search(criteria, Shopware.Context.api);
+
+                    persistedEntries.forEach((entry) => {
+                        existingEntries.set(this.getEntryKey(entry.salesChannelId, entry.pdmsLieferzeit), entry);
+                    });
+                }
 
                 for (const channel of this.channels) {
                     if (!whitelistedChannelIds.has(channel.id)) {
@@ -499,7 +519,7 @@ Component.register('lieferzeiten-channel-settings-list', {
 
                     for (const { key } of this.getChannelPdmsLieferzeiten(channel.id)) {
                         const entryKey = this.getEntryKey(channel.id, key);
-                        const existingEntity = this.existingEntries[entryKey];
+                        const existingEntity = existingEntries.get(entryKey) || null;
                         const entity = existingEntity || this.thresholdRepository.create(Shopware.Context.api);
 
                         if (!existingEntity) {
