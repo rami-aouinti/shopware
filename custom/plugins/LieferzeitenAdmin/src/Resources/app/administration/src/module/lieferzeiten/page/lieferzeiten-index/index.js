@@ -27,10 +27,24 @@ Shopware.Component.register('lieferzeiten-index', {
             isLoading: false,
             isStatisticsLoading: false,
             loadError: null,
-            statisticsMetrics: {
-                openOrders: 0,
-                overdueShipping: 0,
-                overdueDelivery: 0,
+            filters: {
+                bestellnummer: '',
+                san6: '',
+                shippingDateFrom: null,
+                shippingDateTo: null,
+                businessDateFrom: null,
+                businessDateTo: null,
+                deliveryDateFrom: null,
+                deliveryDateTo: null,
+                businessDateEndFrom: null,
+                businessDateEndTo: null,
+                lieferterminLieferantFrom: null,
+                lieferterminLieferantTo: null,
+                neuerLieferterminFrom: null,
+                neuerLieferterminTo: null,
+                user: '',
+                sendenummer: '',
+                status: '',
             },
         };
     },
@@ -89,7 +103,10 @@ Shopware.Component.register('lieferzeiten-index', {
 
             try {
                 const domainKey = normalizeDomainKey(this.selectedDomain);
-                const result = await this.lieferzeitenOrdersService.getOrders({ domain: domainKey });
+                const result = await this.lieferzeitenOrdersService.getOrders({
+                    ...this.buildFilterParams(),
+                    domain: domainKey,
+                });
                 const orders = Array.isArray(result) ? result : [];
 
                 this.orders = orders.map((order) => ({
@@ -104,30 +121,49 @@ Shopware.Component.register('lieferzeiten-index', {
             }
         },
 
-        async loadStatistics() {
-            this.isStatisticsLoading = true;
+        buildFilterParams() {
+            return Object.entries(this.filters).reduce((params, [key, value]) => {
+                if (value === null || value === undefined) {
+                    return params;
+                }
 
-            try {
-                const payload = await this.lieferzeitenOrdersService.getStatistics({
-                    period: 30,
-                    domain: normalizeDomainKey(this.selectedDomain),
-                    channel: 'all',
-                });
+                const normalizedValue = typeof value === 'string' ? value.trim() : value;
+                if (normalizedValue === '') {
+                    return params;
+                }
 
-                this.statisticsMetrics = {
-                    openOrders: payload?.metrics?.openOrders ?? 0,
-                    overdueShipping: payload?.metrics?.overdueShipping ?? 0,
-                    overdueDelivery: payload?.metrics?.overdueDelivery ?? 0,
-                };
-            } catch (error) {
-                this.statisticsMetrics = {
-                    openOrders: 0,
-                    overdueShipping: 0,
-                    overdueDelivery: 0,
-                };
-            } finally {
-                this.isStatisticsLoading = false;
-            }
+                params[key] = normalizedValue;
+
+                return params;
+            }, {});
+        },
+
+        applyFilters() {
+            this.loadOrders();
+        },
+
+        resetFilters() {
+            this.filters = {
+                bestellnummer: '',
+                san6: '',
+                shippingDateFrom: null,
+                shippingDateTo: null,
+                businessDateFrom: null,
+                businessDateTo: null,
+                deliveryDateFrom: null,
+                deliveryDateTo: null,
+                businessDateEndFrom: null,
+                businessDateEndTo: null,
+                lieferterminLieferantFrom: null,
+                lieferterminLieferantTo: null,
+                neuerLieferterminFrom: null,
+                neuerLieferterminTo: null,
+                user: '',
+                sendenummer: '',
+                status: '',
+            };
+
+            this.loadOrders();
         },
     },
 });
