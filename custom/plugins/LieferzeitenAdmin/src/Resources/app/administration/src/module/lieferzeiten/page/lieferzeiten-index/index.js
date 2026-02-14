@@ -25,6 +25,7 @@ Shopware.Component.register('lieferzeiten-index', {
             selectedDomain: null,
             orders: [],
             isLoading: false,
+            isStatisticsLoading: false,
             loadError: null,
             statisticsMetrics: {
                 openOrders: 0,
@@ -98,13 +99,24 @@ Shopware.Component.register('lieferzeiten-index', {
                 .map((source) => source.toLowerCase())
                 .includes(normalizedOrderDomain)) || null;
         },
+
+        async reloadData() {
+            await Promise.all([
+                this.loadOrders(),
+                this.loadStatistics(),
+            ]);
+        },
+
         async loadOrders() {
             this.isLoading = true;
             this.loadError = null;
 
             try {
                 const domainKey = normalizeDomainKey(this.selectedDomain);
-                const result = await this.lieferzeitenOrdersService.getOrders({ domain: domainKey });
+                const result = await this.lieferzeitenOrdersService.getOrders({
+                    ...this.buildFilterParams(),
+                    domain: domainKey,
+                });
                 const orders = Array.isArray(result) ? result : [];
 
                 this.orders = orders.map((order) => ({
@@ -117,6 +129,51 @@ Shopware.Component.register('lieferzeiten-index', {
             } finally {
                 this.isLoading = false;
             }
+        },
+
+        buildFilterParams() {
+            return Object.entries(this.filters).reduce((params, [key, value]) => {
+                if (value === null || value === undefined) {
+                    return params;
+                }
+
+                const normalizedValue = typeof value === 'string' ? value.trim() : value;
+                if (normalizedValue === '') {
+                    return params;
+                }
+
+                params[key] = normalizedValue;
+
+                return params;
+            }, {});
+        },
+
+        applyFilters() {
+            this.loadOrders();
+        },
+
+        resetFilters() {
+            this.filters = {
+                bestellnummer: '',
+                san6: '',
+                shippingDateFrom: null,
+                shippingDateTo: null,
+                businessDateFrom: null,
+                businessDateTo: null,
+                deliveryDateFrom: null,
+                deliveryDateTo: null,
+                businessDateEndFrom: null,
+                businessDateEndTo: null,
+                lieferterminLieferantFrom: null,
+                lieferterminLieferantTo: null,
+                neuerLieferterminFrom: null,
+                neuerLieferterminTo: null,
+                user: '',
+                sendenummer: '',
+                status: '',
+            };
+
+            this.loadOrders();
         },
     },
 });

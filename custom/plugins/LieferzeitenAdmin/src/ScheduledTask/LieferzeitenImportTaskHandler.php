@@ -3,12 +3,16 @@
 namespace LieferzeitenAdmin\ScheduledTask;
 
 use LieferzeitenAdmin\Service\LieferzeitenImportService;
+use LieferzeitenAdmin\Service\Tracking\TrackingDeliveryDateSyncService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 
 class LieferzeitenImportTaskHandler extends ScheduledTaskHandler
 {
-    public function __construct(private readonly LieferzeitenImportService $importService)
+    public function __construct(
+        private readonly LieferzeitenImportService $importService,
+        private readonly TrackingDeliveryDateSyncService $trackingDeliveryDateSyncService,
+    )
     {
         parent::__construct();
     }
@@ -20,6 +24,8 @@ class LieferzeitenImportTaskHandler extends ScheduledTaskHandler
 
     public function run(): void
     {
-        $this->importService->sync(Context::createDefaultContext(), 'scheduled');
+        $context = Context::createDefaultContext();
+        $this->importService->sync($context, 'scheduled');
+        $this->trackingDeliveryDateSyncService->sync($context);
     }
 }

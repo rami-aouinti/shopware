@@ -1,4 +1,10 @@
 .lieferzeiten-order-table {
+    &__business-status-current {
+        margin-top: 6px;
+        color: #52667a;
+        font-size: 12px;
+    }
+
     &__tracking-link {
         border: 0;
         background: transparent;
@@ -67,4 +73,11 @@
             padding: 10px;
         }
     }
+}
+
+.lieferzeiten-order-table__status-editor {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
 }

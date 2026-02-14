@@ -10,6 +10,7 @@ use LieferzeitenAdmin\Service\Status8TrackingMappingProvider;
 use LieferzeitenAdmin\Service\ChannelDateSettingsProvider;
 use LieferzeitenAdmin\Service\LieferzeitenImportService;
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
 use LieferzeitenAdmin\Service\Reliability\IntegrationReliabilityService;
 use LieferzeitenAdmin\Sync\Adapter\ChannelOrderAdapterRegistry;
 use LieferzeitenAdmin\Sync\San6\San6Client;
@@ -237,6 +238,53 @@ class LieferzeitenImportServiceTest extends TestCase
         ], []));
     }
 
+    public function testIsCompletedStatus8ReturnsTrueWhenAllParcelsDelivered(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'isCompletedStatus8');
+        $method->setAccessible(true);
+
+        static::assertTrue($method->invoke($service, [
+            'parcels' => [
+                ['trackingStatus' => 'zugestellt'],
+                ['trackingStatus' => 'delivered'],
+            ],
+        ], []));
+    }
+
+    public function testIsCompletedStatus8ReturnsFalseWhenAtLeastOneParcelNotDelivered(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'isCompletedStatus8');
+        $method->setAccessible(true);
+
+        static::assertFalse($method->invoke($service, [
+            'parcels' => [
+                ['trackingStatus' => 'zugestellt'],
+                ['trackingStatus' => 'unterwegs'],
+            ],
+        ], []));
+    }
+
+    public function testIsCompletedStatus8SupportsInternalDeliveryWithoutTrackingViaSan6Flag(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'isCompletedStatus8');
+        $method->setAccessible(true);
+
+        static::assertTrue($method->invoke($service, [], [
+            'internalDeliveryCompleted' => true,
+        ]));
+
+        static::assertTrue($method->invoke($service, [], [
+            'deliveryCompletionState' => 'internal_completed',
+        ]));
+
+        static::assertFalse($method->invoke($service, [], [
+            'internalDeliveryCompleted' => false,
+        ]));
+    }
+
     public function testIsCompletedStatus8UsesCarrierSpecificMappingForDhlAndGls(): void
     {
         $service = $this->createService();
@@ -291,6 +339,53 @@ class LieferzeitenImportServiceTest extends TestCase
         static::assertTrue($method->invoke($service, [], ['status' => 'bereit']));
         static::assertTrue($method->invoke($service, ['san6Ready' => true], []));
         static::assertFalse($method->invoke($service, ['san6Ready' => false], ['status' => 'in_progress']));
+    }
+
+    public function testExtractTrackingNumbersFiltersPlaceholdersAndNormalizesVariants(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'extractTrackingNumbers');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($service, [
+            'tracking_numbers' => ['  ', 'N/A', 'ABC-123'],
+            'trackingNumber' => 'XYZ-987',
+            'parcels' => [
+                ['trackingNumber' => 'ohne tracking'],
+                ['trackingNumber' => 'ABC-123'],
+            ],
+        ]);
+
+        static::assertSame(['ABC-123', 'XYZ-987'], $result);
+    }
+
+    public function testIsInternalShipmentRecognizesDedicatedBusinessIndicators(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'isInternalShipment');
+        $method->setAccessible(true);
+
+        static::assertTrue($method->invoke($service, ['internalShipment' => true]));
+        static::assertTrue($method->invoke($service, ['shippingAssignmentType' => 'eigenversand']));
+        static::assertTrue($method->invoke($service, ['carrier' => 'first medical']));
+    }
+
+    public function testIsInternalShipmentFallsBackWhenNoExternalTrackingExists(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'isInternalShipment');
+        $method->setAccessible(true);
+
+        static::assertTrue($method->invoke($service, [
+            'trackingNumbers' => ['', 'N/A'],
+            'parcels' => [
+                ['trackingNumber' => 'ohne tracking'],
+            ],
+        ]));
+
+        static::assertFalse($method->invoke($service, [
+            'trackingNumbers' => ['DHL-12345'],
+        ]));
     }
 
     public function testEnqueueStatusPushIsIdempotentForSamePendingStatus(): void
@@ -369,6 +464,66 @@ class LieferzeitenImportServiceTest extends TestCase
         $method->invoke($service, $context);
     }
 
+
+    public function testResolveAndApplyBusinessDatesUsesPaymentDateForPrepaymentShippingAndDeliveryDates(): void
+    {
+        $settingsProvider = $this->createMock(ChannelDateSettingsProvider::class);
+        $settingsProvider->method('getForChannel')->with('shopware')->willReturn([
+            'shipping' => 1,
+            'delivery' => 3,
+        ]);
+
+        $calculator = new BusinessDayDeliveryDateCalculator();
+        $service = $this->createService(
+            baseDateResolver: new BaseDateResolver(),
+            settingsProvider: $settingsProvider,
+            deliveryDateCalculator: $calculator,
+        );
+
+        $method = new \ReflectionMethod($service, 'resolveAndApplyBusinessDates');
+        $method->setAccessible(true);
+
+        [$result, $resolution] = $method->invoke($service, [
+            'paymentMethod' => 'Vorkasse',
+            'orderDate' => '2026-02-02 09:00:00',
+            'paymentDate' => '2026-02-05 10:00:00',
+        ], 'shopware');
+
+        static::assertSame('payment_date', $resolution['baseDateType']);
+        static::assertSame('2026-02-06T10:00:00+00:00', $result['shippingDate']);
+        static::assertSame('2026-02-10T10:00:00+00:00', $result['deliveryDate']);
+        static::assertSame($result['calculatedDeliveryDate'], $result['deliveryDate']);
+    }
+
+    public function testResolveAndApplyBusinessDatesFallsBackToOrderDateForPrepaymentWithoutPaymentDate(): void
+    {
+        $settingsProvider = $this->createMock(ChannelDateSettingsProvider::class);
+        $settingsProvider->method('getForChannel')->with('shopware')->willReturn([
+            'shipping' => 1,
+            'delivery' => 2,
+        ]);
+
+        $calculator = new BusinessDayDeliveryDateCalculator();
+        $service = $this->createService(
+            baseDateResolver: new BaseDateResolver(),
+            settingsProvider: $settingsProvider,
+            deliveryDateCalculator: $calculator,
+        );
+
+        $method = new \ReflectionMethod($service, 'resolveAndApplyBusinessDates');
+        $method->setAccessible(true);
+
+        [$result, $resolution] = $method->invoke($service, [
+            'paymentMethod' => 'prepayment',
+            'orderDate' => '2026-02-02 09:00:00',
+            'paymentDate' => null,
+        ], 'shopware');
+
+        static::assertSame('order_date_fallback', $resolution['baseDateType']);
+        static::assertTrue($resolution['missingPaymentDate']);
+        static::assertSame('2026-02-03T09:00:00+00:00', $result['shippingDate']);
+        static::assertSame('2026-02-04T09:00:00+00:00', $result['deliveryDate']);
+    }
     public function testProcessPendingStatusPushQueueAppliesRetryBackoffOnFailure(): void
     {
         $context = Context::createDefaultContext();
@@ -429,6 +584,114 @@ class LieferzeitenImportServiceTest extends TestCase
         $method->invoke($service, $context);
     }
 
+
+    public function testEmitNotificationEventsDispatchesDeliveryDateAssignedWhenDateAppearsFirstTime(): void
+    {
+        $calls = [];
+        $notificationEventService = $this->createMock(NotificationEventService::class);
+        $notificationEventService->method('dispatch')->willReturnCallback(static function (string $eventKey, string $triggerKey, string $channel) use (&$calls): bool {
+            $calls[] = [$eventKey, $triggerKey, $channel];
+
+            return true;
+        });
+
+        $service = $this->createService(notificationEventService: $notificationEventService);
+        $method = new \ReflectionMethod($service, 'emitNotificationEvents');
+        $method->setAccessible(true);
+
+        $method->invoke(
+            $service,
+            'EXT-100',
+            'shopware',
+            ['deliveryDate' => '2026-02-20 09:00:00'],
+            [],
+            null,
+            null,
+            2,
+            Context::createDefaultContext()
+        );
+
+        $assigned = array_values(array_filter($calls, static fn (array $call): bool => $call[1] === 'livraison.date.attribuee'));
+        static::assertCount(3, $assigned);
+    }
+
+    public function testEmitNotificationEventsDispatchesDeliveryDateUpdatedWhenDateChanges(): void
+    {
+        $existing = new PaketEntity();
+        $existing->setDeliveryDate(new \DateTimeImmutable('2026-02-20 09:00:00'));
+
+        $calls = [];
+        $notificationEventService = $this->createMock(NotificationEventService::class);
+        $notificationEventService->method('dispatch')->willReturnCallback(static function (string $eventKey, string $triggerKey, string $channel, array $payload) use (&$calls): bool {
+            $calls[] = [$eventKey, $triggerKey, $channel, $payload];
+
+            return true;
+        });
+
+        $service = $this->createService(notificationEventService: $notificationEventService);
+        $method = new \ReflectionMethod($service, 'emitNotificationEvents');
+        $method->setAccessible(true);
+
+        $method->invoke(
+            $service,
+            'EXT-101',
+            'shopware',
+            ['deliveryDate' => '2026-02-21 09:00:00'],
+            [],
+            $existing,
+            2,
+            2,
+            Context::createDefaultContext()
+        );
+
+        $updated = array_values(array_filter($calls, static fn (array $call): bool => $call[1] === 'livraison.date.modifiee'));
+        static::assertCount(3, $updated);
+        static::assertSame('2026-02-20 09:00:00', $updated[0][3]['previousDeliveryDate'] ?? null);
+    }
+
+    public function testEmitNotificationEventsDispatchesReviewReminderOnTransitionToStatus8Only(): void
+    {
+        $notificationEventService = $this->createMock(NotificationEventService::class);
+        $calls = [];
+        $notificationEventService->method('dispatch')->willReturnCallback(static function (string $eventKey, string $triggerKey) use (&$calls): bool {
+            $calls[] = [$eventKey, $triggerKey];
+
+            return true;
+        });
+
+        $service = $this->createService(notificationEventService: $notificationEventService);
+        $method = new \ReflectionMethod($service, 'emitNotificationEvents');
+        $method->setAccessible(true);
+
+        $method->invoke(
+            $service,
+            'EXT-102',
+            'shopware',
+            [],
+            [],
+            null,
+            7,
+            8,
+            Context::createDefaultContext()
+        );
+
+        $method->invoke(
+            $service,
+            'EXT-103',
+            'shopware',
+            [],
+            [],
+            null,
+            8,
+            8,
+            Context::createDefaultContext()
+        );
+
+        $reviewReminderCalls = array_values(array_filter($calls, static fn (array $call): bool => $call[1] === 'commande.terminee.rappel_evaluation'));
+        static::assertCount(1, $reviewReminderCalls);
+        static::assertStringStartsWith('order-completed-review-reminder:EXT-102:', $reviewReminderCalls[0][0]);
+    }
+
     private function createSearchResult(PaketEntity $entity): EntitySearchResult
     {
         return new EntitySearchResult(
@@ -448,6 +711,7 @@ class LieferzeitenImportServiceTest extends TestCase
         ?HttpClientInterface $httpClient = null,
         ?SystemConfigService $config = null,
         ?Status8TrackingMappingProvider $status8TrackingMappingProvider = null,
+        ?NotificationEventService $notificationEventService = null,
     ): LieferzeitenImportService {
         $config ??= $this->createMock(SystemConfigService::class);
 
@@ -460,12 +724,12 @@ class LieferzeitenImportServiceTest extends TestCase
             $this->createMock(ChannelOrderAdapterRegistry::class),
             $this->createMock(San6Client::class),
             $this->createMock(San6MatchingService::class),
-            $this->createMock(BaseDateResolver::class),
-            $this->createMock(ChannelDateSettingsProvider::class),
-            $this->createMock(BusinessDayDeliveryDateCalculator::class),
+            $baseDateResolver ?? $this->createMock(BaseDateResolver::class),
+            $settingsProvider ?? $this->createMock(ChannelDateSettingsProvider::class),
+            $deliveryDateCalculator ?? $this->createMock(BusinessDayDeliveryDateCalculator::class),
             $status8TrackingMappingProvider ?? new Status8TrackingMappingProvider($config),
             $this->createMock(LockFactory::class),
-            $this->createMock(NotificationEventService::class),
+            $notificationEventService ?? $this->createMock(NotificationEventService::class),
             $this->createMock(IntegrationReliabilityService::class),
             $this->createMock(IntegrationContractValidator::class),
             $auditLogService ?? $this->createMock(AuditLogService::class),

@@ -22,10 +22,19 @@ class NotificationTemplateResolver
     {
         $template = $this->findTemplate($triggerKey, $salesChannelId, $languageId, $context);
         if ($template === null) {
+            $defaultTemplate = $this->defaultTemplateForTrigger($triggerKey);
+            if ($defaultTemplate === null) {
+                return [
+                    'subject' => sprintf('[%s] Notification %s', (string) ($variables['sourceSystem'] ?? 'lieferzeiten'), $triggerKey),
+                    'contentHtml' => sprintf('<p>Order: %s</p><p>Trigger: %s</p><p>Event: %s</p>', (string) ($variables['externalOrderId'] ?? '-'), $triggerKey, (string) ($variables['eventKey'] ?? '-')),
+                    'contentPlain' => sprintf("Order: %s\nTrigger: %s\nEvent: %s", (string) ($variables['externalOrderId'] ?? '-'), $triggerKey, (string) ($variables['eventKey'] ?? '-')),
+                ];
+            }
+
             return [
-                'subject' => sprintf('[%s] Notification %s', (string) ($variables['sourceSystem'] ?? 'lieferzeiten'), $triggerKey),
-                'contentHtml' => sprintf('<p>Order: %s</p><p>Trigger: %s</p><p>Event: %s</p>', (string) ($variables['externalOrderId'] ?? '-'), $triggerKey, (string) ($variables['eventKey'] ?? '-')),
-                'contentPlain' => sprintf("Order: %s\nTrigger: %s\nEvent: %s", (string) ($variables['externalOrderId'] ?? '-'), $triggerKey, (string) ($variables['eventKey'] ?? '-')),
+                'subject' => $this->render($defaultTemplate['subject'], $variables),
+                'contentHtml' => $this->render($defaultTemplate['contentHtml'], $variables),
+                'contentPlain' => $this->render($defaultTemplate['contentPlain'], $variables),
             ];
         }
 
@@ -33,6 +42,51 @@ class NotificationTemplateResolver
             'subject' => $this->render($template->getSubject(), $variables),
             'contentHtml' => $this->render($template->getContentHtml(), $variables),
             'contentPlain' => $this->render($template->getContentPlain(), $variables),
+        ];
+    }
+
+    /**
+     * @param array<string,mixed> $variables
+     * @return array{subject:string,contentHtml:string,contentPlain:string}
+     */
+    private function resolveDefaultTemplate(string $triggerKey, array $variables): array
+    {
+        $sourceSystem = (string) ($variables['sourceSystem'] ?? 'lieferzeiten');
+        $externalOrderId = (string) ($variables['externalOrderId'] ?? '-');
+
+        $defaults = [
+            NotificationTriggerCatalog::PAYMENT_RECEIVED_VORKASSE => [
+                'subject' => sprintf('[%s] Paiement reçu pour la commande %s', $sourceSystem, $externalOrderId),
+                'contentHtml' => sprintf('<p>Le paiement Vorkasse est confirmé pour la commande <strong>%s</strong>.</p><p>Date de paiement: %s</p>', $externalOrderId, (string) ($variables['paymentDate'] ?? '-')),
+                'contentPlain' => sprintf("Le paiement Vorkasse est confirmé pour la commande %s.
+Date de paiement: %s", $externalOrderId, (string) ($variables['paymentDate'] ?? '-')),
+            ],
+            NotificationTriggerCatalog::ORDER_COMPLETED_REVIEW_REMINDER => [
+                'subject' => sprintf("[%s] Commande %s terminée - rappel d'évaluation", $sourceSystem, $externalOrderId),
+                'contentHtml' => sprintf('<p>La commande <strong>%s</strong> est terminée.</p><p>Vous pouvez demander un avis client.</p>', $externalOrderId),
+                'contentPlain' => sprintf("La commande %s est terminée.
+Vous pouvez demander un avis client.", $externalOrderId),
+            ],
+            NotificationTriggerCatalog::DELIVERY_DATE_ASSIGNED => [
+                'subject' => sprintf('[%s] Date de livraison attribuée - %s', $sourceSystem, $externalOrderId),
+                'contentHtml' => sprintf('<p>Une date de livraison a été attribuée pour la commande <strong>%s</strong>.</p><p>Date: %s</p>', $externalOrderId, (string) ($variables['deliveryDate'] ?? '-')),
+                'contentPlain' => sprintf("Une date de livraison a été attribuée pour la commande %s.
+Date: %s", $externalOrderId, (string) ($variables['deliveryDate'] ?? '-')),
+            ],
+            NotificationTriggerCatalog::DELIVERY_DATE_UPDATED => [
+                'subject' => sprintf('[%s] Date de livraison modifiée - %s', $sourceSystem, $externalOrderId),
+                'contentHtml' => sprintf('<p>La date de livraison a été modifiée pour la commande <strong>%s</strong>.</p><p>Nouvelle date: %s</p>', $externalOrderId, (string) ($variables['deliveryDate'] ?? '-')),
+                'contentPlain' => sprintf("La date de livraison a été modifiée pour la commande %s.
+Nouvelle date: %s", $externalOrderId, (string) ($variables['deliveryDate'] ?? '-')),
+            ],
+        ];
+
+        return $defaults[$triggerKey] ?? [
+            'subject' => sprintf('[%s] Notification %s', $sourceSystem, $triggerKey),
+            'contentHtml' => sprintf('<p>Order: %s</p><p>Trigger: %s</p><p>Event: %s</p>', $externalOrderId, $triggerKey, (string) ($variables['eventKey'] ?? '-')),
+            'contentPlain' => sprintf("Order: %s
+Trigger: %s
+Event: %s", $externalOrderId, $triggerKey, (string) ($variables['eventKey'] ?? '-')),
         ];
     }
 
@@ -59,6 +113,37 @@ class NotificationTemplateResolver
         }
 
         return null;
+    }
+
+
+    /**
+     * @return array{subject:string,contentHtml:string,contentPlain:string}|null
+     */
+    private function defaultTemplateForTrigger(string $triggerKey): ?array
+    {
+        return match ($triggerKey) {
+            NotificationTriggerCatalog::PAYMENT_RECEIVED_VORKASSE => [
+                'subject' => '[{{ sourceSystem }}] Paiement reçu pour la commande {{ externalOrderId }}',
+                'contentHtml' => '<p>Le paiement Vorkasse est confirmé pour la commande <strong>{{ externalOrderId }}</strong>.</p><p>Date de paiement: {{ paymentDate }}</p>',
+                'contentPlain' => "Le paiement Vorkasse est confirmé pour la commande {{ externalOrderId }}.\nDate de paiement: {{ paymentDate }}",
+            ],
+            NotificationTriggerCatalog::ORDER_COMPLETED_REVIEW_REMINDER => [
+                'subject' => '[{{ sourceSystem }}] Commande {{ externalOrderId }} terminée - rappel d\'évaluation',
+                'contentHtml' => '<p>La commande <strong>{{ externalOrderId }}</strong> est terminée.</p><p>Vous pouvez demander un avis client.</p>',
+                'contentPlain' => "La commande {{ externalOrderId }} est terminée.\nVous pouvez demander un avis client.",
+            ],
+            NotificationTriggerCatalog::DELIVERY_DATE_ASSIGNED => [
+                'subject' => '[{{ sourceSystem }}] Date de livraison attribuée - {{ externalOrderId }}',
+                'contentHtml' => '<p>Une date de livraison a été attribuée pour la commande <strong>{{ externalOrderId }}</strong>.</p><p>Date: {{ deliveryDate }}</p>',
+                'contentPlain' => "Une date de livraison a été attribuée pour la commande {{ externalOrderId }}.\nDate: {{ deliveryDate }}",
+            ],
+            NotificationTriggerCatalog::DELIVERY_DATE_UPDATED => [
+                'subject' => '[{{ sourceSystem }}] Date de livraison modifiée - {{ externalOrderId }}',
+                'contentHtml' => '<p>La date de livraison a été modifiée pour la commande <strong>{{ externalOrderId }}</strong>.</p><p>Ancienne date: {{ previousDeliveryDate }}</p><p>Nouvelle date: {{ deliveryDate }}</p>',
+                'contentPlain' => "La date de livraison a été modifiée pour la commande {{ externalOrderId }}.\nAncienne date: {{ previousDeliveryDate }}\nNouvelle date: {{ deliveryDate }}",
+            ],
+            default => null,
+        };
     }
 
     /** @param array<string,mixed> $variables */

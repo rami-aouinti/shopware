@@ -31,7 +31,7 @@ class IntegrationContractValidatorTest extends TestCase
 
         static::assertCount(2, $violations);
         static::assertSame('Missing required field: orderNumber', $violations[0]);
-        static::assertSame('Missing required field: shippingDate|deliveryDate', $violations[1]);
+        static::assertSame('Missing required field: shippingDate|deliveryDate|parcels', $violations[1]);
     }
 
     public function testValidatePersistencePayloadRequiresPaketMinimumFields(): void
