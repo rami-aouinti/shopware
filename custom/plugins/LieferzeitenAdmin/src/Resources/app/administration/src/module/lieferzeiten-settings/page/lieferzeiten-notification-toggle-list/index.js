@@ -23,6 +23,8 @@ Component.register('lieferzeiten-notification-toggle-list', {
                 'tracking.mis_a_jour',
                 'expedition.confirmee',
                 'changements.date_livraison',
+                'date_livraison.attribuee',
+                'date_livraison.modifiee',
                 'douane.requise',
                 'commande.storno',
                 'livraison.impossible',

@@ -17,6 +17,25 @@
                     <p>{{ $t('lieferzeiten.general.openDefinition') }}</p>
                 </sw-card>
 
+                <sw-container
+                    columns="repeat(auto-fit, minmax(220px, 1fr))"
+                    gap="16px"
+                    class="lieferzeiten-index__metrics"
+                >
+                    <sw-card class="lieferzeiten-kpi" :is-loading="isStatisticsLoading">
+                        <p class="lieferzeiten-kpi__label">{{ $t('lieferzeiten.statistics.open') }}</p>
+                        <p class="lieferzeiten-kpi__value">{{ statisticsMetrics.openOrders }}</p>
+                    </sw-card>
+                    <sw-card class="lieferzeiten-kpi" :is-loading="isStatisticsLoading">
+                        <p class="lieferzeiten-kpi__label">{{ $t('lieferzeiten.statistics.overdueShipping') }}</p>
+                        <p class="lieferzeiten-kpi__value">{{ statisticsMetrics.overdueShipping }}</p>
+                    </sw-card>
+                    <sw-card class="lieferzeiten-kpi" :is-loading="isStatisticsLoading">
+                        <p class="lieferzeiten-kpi__label">{{ $t('lieferzeiten.statistics.overdueDelivery') }}</p>
+                        <p class="lieferzeiten-kpi__value">{{ statisticsMetrics.overdueDelivery }}</p>
+                    </sw-card>
+                </sw-container>
+
                 <sw-card class="lieferzeiten-index__tabs">
                     <sw-loader v-if="isLoading" />
 
@@ -26,7 +45,7 @@
                         :subline="$t('lieferzeiten.loading.errorDescription')"
                     >
                         <template #actions>
-                            <sw-button variant="primary" @click="loadOrders">
+                            <sw-button variant="primary" @click="reloadData">
                                 {{ $t('lieferzeiten.loading.retry') }}
                             </sw-button>
                         </template>
@@ -58,7 +77,7 @@
                         <router-view
                             :orders="filteredOrders"
                             :selected-domain="selectedDomain"
-                            :on-reload-order="loadOrders"
+                            :on-reload-order="reloadData"
                         />
                     </template>
                 </sw-card>

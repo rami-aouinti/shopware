@@ -121,7 +121,7 @@
         "overdue": "Overdue"
       },
       "overdueShipping": "Overdue shipping",
-      "overdueDelivery": "Overdue delivery",
+      "overdueDelivery": "Overdue deliveries (completed)",
       "activityDate": "Activity at"
     },
     "loading": {
@@ -154,6 +154,12 @@
       "shipped": "Shipped",
       "closed": "Closed",
       "unknown": "Unknown"
+    },
+    "statusChange": {
+      "placeholder": "Select status 7/8",
+      "save": "Save status",
+      "saved": "Status updated and queued for push.",
+      "invalidSelection": "Please select status 7 or 8."
     }
   }
 }

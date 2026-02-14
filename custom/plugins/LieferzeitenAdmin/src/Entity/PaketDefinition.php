@@ -60,6 +60,7 @@ class PaketDefinition extends EntityDefinition
             new StringField('last_changed_by', 'lastChangedBy'),
             new DateTimeField('last_changed_at', 'lastChangedAt'),
             new OneToManyAssociationField('positions', PositionDefinition::class, 'paket_id'),
+            new OneToManyAssociationField('neuerLieferterminPaketHistory', NeuerLieferterminPaketHistoryDefinition::class, 'paket_id'),
             new CreatedAtField(),
             new UpdatedAtField(),
         ]);

@@ -19,6 +19,7 @@
                     <th>{{ $t('lieferzeiten.table.domain') }}</th>
                     <th>{{ $t('lieferzeiten.table.positions') }}</th>
                     <th>{{ $t('lieferzeiten.table.parcels') }}</th>
+                    <th>Tracking</th>
                     <th>{{ $t('lieferzeiten.fields.supplierDate') }}</th>
                     <th>{{ $t('lieferzeiten.fields.supplierWeek') }}</th>
                     <th>{{ $t('lieferzeiten.fields.newDate') }}</th>
@@ -26,15 +27,14 @@
                     <th>{{ $t('lieferzeiten.fields.latestDelivery') }}</th>
                     <th>{{ $t('lieferzeiten.fields.comment') }}</th>
                     <th>{{ $t('lieferzeiten.fields.history') }}</th>
-                    <th>{{ $t('lieferzeiten.table.businessStatus') }}</th>
-                    <th>{{ $t('lieferzeiten.table.status') }}</th>
                     <th>Paket-Status</th>
                     <th>spätester Versandzeitpunkt</th>
                     <th>Versand-Datum</th>
                     <th>spätester Lieferzeitpunkt</th>
                     <th>Liefer-Datum</th>
                     <th>{{ $t('lieferzeiten.fields.shippingType') }}</th>
-                    <th>{{ $t('lieferzeiten.fields.audit') }}</th>
+                    <th>Änderung durch User</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,6 +56,7 @@
                         <td>{{ displayOrDash(order.domain) }}</td>
                         <td>{{ displayOrDash(order.positionsCountDisplay) }}</td>
                         <td>{{ parcelSummary(order) }}</td>
+                        <td>{{ displayOrDash(order.trackingSummary) }}</td>
                         <td>-</td>
                         <td>-</td>
                         <td>-</td>
@@ -75,7 +76,25 @@
                                 <li v-for="entry in order.commentHistory" :key="entry">{{ entry }}</li>
                             </ul>
                         </td>
-                        <td>{{ businessStatusLabel(order) }}</td>
+                        <td>
+                            <sw-single-select
+                                v-model:value="order.selectedBusinessStatus"
+                                :options="editableBusinessStatuses"
+                                :disabled="!hasEditAccess()"
+                                size="small"
+                                :placeholder="$t('lieferzeiten.statusChange.placeholder')"
+                            />
+                            <sw-button
+                                v-if="hasEditAccess()"
+                                size="small"
+                                variant="primary"
+                                :disabled="!canSaveBusinessStatus(order)"
+                                @click="saveBusinessStatus(order)"
+                            >
+                                {{ $t('lieferzeiten.statusChange.save') }}
+                            </sw-button>
+                            <div class="lieferzeiten-order-table__business-status-current">{{ businessStatusLabel(order) }}</div>
+                        </td>
                         <td>
                             <sw-label :variant="isOrderOpen(order) ? 'warning' : 'success'">
                                 {{ isOrderOpen(order) ? $t('lieferzeiten.status.open') : $t('lieferzeiten.status.closed') }}
@@ -87,10 +106,11 @@
                         <td>{{ displayOrDash(order.latestDeliveryAtDisplay) }}</td>
                         <td>{{ displayOrDash(order.deliveryDateDisplay) }}</td>
                         <td>{{ shippingLabel(order) }}</td>
-                        <td>{{ order.audit || '-' }}</td>
+                        <td>{{ displayOrDash(order.lastChangedByDisplay) }}</td>
+                        <td>{{ displayOrDash(order.businessStatusDisplay) }}</td>
                     </tr>
                     <tr v-if="isExpanded(order.id)" :key="`${order.id}-positions`">
-                        <td colspan="24">
+                        <td colspan="25">
                             <table class="sw-data-grid__table">
                                 <thead>
                                     <tr>
@@ -135,6 +155,7 @@
                                 <thead>
                                     <tr>
                                         <th>{{ $t('lieferzeiten.table.parcels') }}</th>
+                                        <th>Paket-Status</th>
                                         <th>{{ $t('lieferzeiten.fields.newDate') }}</th>
                                         <th>{{ $t('lieferzeiten.fields.supplierWeek') }}</th>
                                     </tr>
@@ -142,9 +163,10 @@
                                 <tbody>
                                     <tr v-for="parcel in order.parcels" :key="parcel.id">
                                         <td>{{ parcel.id }}</td>
+                                        <td>{{ displayOrDash(parcel.statusDisplay) }}</td>
                                         <td>
-                                            <sw-datepicker v-model:value="parcel.neuerLieferterminRange.from" :disabled="!hasEditAccess() || !parcel.supplierRange.from" size="small" />
-                                            <sw-datepicker v-model:value="parcel.neuerLieferterminRange.to" :disabled="!hasEditAccess() || !parcel.supplierRange.to" size="small" />
+                                            <sw-datepicker v-model:value="parcel.neuerLieferterminRange.from" :disabled="!hasEditAccess() || !parcel.supplierRange.from || !isParcelEditableByStatus(parcel)" size="small" />
+                                            <sw-datepicker v-model:value="parcel.neuerLieferterminRange.to" :disabled="!hasEditAccess() || !parcel.supplierRange.to || !isParcelEditableByStatus(parcel)" size="small" />
                                             <sw-button v-if="hasEditAccess()" size="small" variant="primary" :disabled="!canSaveNeuerLiefertermin(parcel)" @click="saveNeuerLiefertermin(order, parcel)">
                                                 {{ $t('global.default.save') }}
                                             </sw-button>

@@ -4,6 +4,12 @@ namespace LieferzeitenAdmin\Sync\San6;
 
 class San6MatchingService
 {
+    public const INTERNAL_DELIVERY_COMPLETED_FLAG = 'internalDeliveryCompleted';
+
+    public const INTERNAL_DELIVERY_STATE = 'internalDeliveryStatus';
+
+    public const INTERNAL_DELIVERY_COMPLETED_STATE = 'completed';
+
     /**
      * @param array<string,mixed> $order
      * @param array<string,mixed> $san6
@@ -28,9 +34,15 @@ class San6MatchingService
             }
         }
 
+        $normalizedParcels = $this->normalizeParcels($san6, $order);
+
         $order['shippingDate'] = $san6['shippingDate'] ?? ($order['shippingDate'] ?? null);
         $order['deliveryDate'] = $san6['deliveryDate'] ?? ($order['deliveryDate'] ?? null);
-        $order['parcels'] = is_array($san6['parcels'] ?? null) ? $san6['parcels'] : ($order['parcels'] ?? []);
+        $order['parcels'] = $normalizedParcels;
+
+        if ($normalizedParcels !== []) {
+            $order['parcelRows'] = $normalizedParcels;
+        }
 
         if ($conflicts !== []) {
             $order['syncBadge'] = 'conflict';
@@ -39,5 +51,40 @@ class San6MatchingService
         }
 
         return $order;
+    }
+
+    /**
+     * @param array<string,mixed> $san6
+     * @param array<string,mixed> $order
+     * @return array<int,array<string,mixed>>
+     */
+    private function normalizeParcels(array $san6, array $order): array
+    {
+        $rawParcels = $san6['parcels'] ?? ($order['parcels'] ?? []);
+        if (!is_array($rawParcels)) {
+            return [];
+        }
+
+        $rows = [];
+        foreach ($rawParcels as $index => $parcel) {
+            if (!is_array($parcel)) {
+                continue;
+            }
+
+            $trackingNumber = (string) ($parcel['trackingNumber'] ?? $parcel['sendenummer'] ?? '');
+            $parcelNumber = (string) ($parcel['paketNumber'] ?? $parcel['packageNumber'] ?? $parcel['parcelNumber'] ?? $trackingNumber);
+
+            $rows[] = [
+                'parcelIndex' => $index,
+                'paketNumber' => $parcelNumber !== '' ? $parcelNumber : null,
+                'trackingNumber' => $trackingNumber !== '' ? $trackingNumber : null,
+                'status' => $parcel['status'] ?? $parcel['trackingStatus'] ?? $parcel['state'] ?? null,
+                'shippingDate' => $parcel['shippingDate'] ?? $parcel['shipping_date'] ?? ($san6['shippingDate'] ?? null),
+                'deliveryDate' => $parcel['deliveryDate'] ?? $parcel['delivery_date'] ?? ($san6['deliveryDate'] ?? null),
+                'carrier' => $parcel['carrier'] ?? null,
+            ] + $parcel;
+        }
+
+        return $rows;
     }
 }

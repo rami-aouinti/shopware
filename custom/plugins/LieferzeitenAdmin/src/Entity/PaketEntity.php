@@ -55,6 +55,8 @@ class PaketEntity extends Entity
 
     protected ?PositionCollection $positions = null;
 
+    protected ?NeuerLieferterminPaketHistoryCollection $neuerLieferterminPaketHistory = null;
+
     public function getPaketNumber(): ?string
     {
         return $this->paketNumber;
@@ -279,4 +281,15 @@ class PaketEntity extends Entity
     {
         $this->positions = $positions;
     }
+
+    public function getNeuerLieferterminPaketHistory(): ?NeuerLieferterminPaketHistoryCollection
+    {
+        return $this->neuerLieferterminPaketHistory;
+    }
+
+    public function setNeuerLieferterminPaketHistory(?NeuerLieferterminPaketHistoryCollection $neuerLieferterminPaketHistory): void
+    {
+        $this->neuerLieferterminPaketHistory = $neuerLieferterminPaketHistory;
+    }
 }
+
