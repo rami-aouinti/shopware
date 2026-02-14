@@ -29,6 +29,7 @@ Component.register('lieferzeiten-channel-settings-list', {
             isSaving: false,
             isSeedingDemoData: false,
             hasDemoData: false,
+            pdmsPayload: null,
         };
     },
 

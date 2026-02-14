@@ -52,6 +52,14 @@ class LieferzeitenOrdersService extends ApiService {
         return ApiService.handleResponse(response) ?? response?.data ?? {};
     }
 
+    async getSalesChannelLieferzeiten(salesChannelId) {
+        const response = await this.httpClient.get(`_action/${this.getApiBasePath()}/sales-channel/${encodeURIComponent(salesChannelId)}/lieferzeiten`, {
+            headers: this.getBasicHeaders(),
+        });
+
+        return ApiService.handleResponse(response) ?? response?.data ?? {};
+    }
+
     async updateLieferterminLieferant(positionId, payload) {
         return this.post(`position/${positionId}/liefertermin-lieferant`, payload);
     }
