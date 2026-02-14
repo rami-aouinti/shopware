@@ -1,4 +1,5 @@
 import template from './lieferzeiten-channel-settings-list.html.twig';
+import { DOMAIN_GROUPS, normalizeDomainKey } from '../../../lieferzeiten/utils/domain-source-mapping';
 
 const { Component } = Shopware;
 const { Criteria } = Shopware.Data;
@@ -9,6 +10,17 @@ const DEFAULT_PDMS_LIEFERZEITEN = [
     { key: 'PDMS_3', label: 'PDMS 3' },
     { key: 'PDMS_4', label: 'PDMS 4' },
 ];
+
+const CHANNEL_GROUPS = DOMAIN_GROUPS.map((group, index) => ({
+    id: group.id,
+    title: `Gruppe ${index + 1}`,
+    domainKeys: group.channels.map((channel) => channel.value),
+}));
+
+const OTHER_CHANNELS_GROUP = {
+    id: 'other-channels',
+    title: 'Weitere Kanäle',
+};
 
 Component.register('lieferzeiten-channel-settings-list', {
     template,
@@ -34,6 +46,38 @@ Component.register('lieferzeiten-channel-settings-list', {
     },
 
     computed: {
+        groupedChannels() {
+            const groupedEntries = CHANNEL_GROUPS.map((group) => ({
+                ...group,
+                channels: [],
+            }));
+
+            const channelsWithoutMapping = [];
+
+            this.channels.forEach((channel) => {
+                const domainKey = this.resolveChannelDomainKey(channel);
+                const matchingGroup = groupedEntries.find((group) => group.domainKeys.includes(domainKey));
+
+                if (matchingGroup) {
+                    matchingGroup.channels.push(channel);
+                    return;
+                }
+
+                channelsWithoutMapping.push(channel);
+            });
+
+            const visibleGroups = groupedEntries.filter((group) => group.channels.length > 0);
+
+            if (channelsWithoutMapping.length > 0) {
+                visibleGroups.push({
+                    ...OTHER_CHANNELS_GROUP,
+                    channels: channelsWithoutMapping,
+                });
+            }
+
+            return visibleGroups;
+        },
+
         hasEditAccess() {
             if (typeof this.acl?.can !== 'function') {
                 return false;
@@ -55,6 +99,31 @@ Component.register('lieferzeiten-channel-settings-list', {
     },
 
     methods: {
+        resolveChannelDomainKey(channel) {
+            const domainFromChannelDomain = channel?.domains
+                ?.map((domain) => this.normalizeDomainFromUrl(domain?.url))
+                .find((domainKey) => domainKey !== null);
+
+            if (domainFromChannelDomain) {
+                return domainFromChannelDomain;
+            }
+
+            return normalizeDomainKey(channel?.name);
+        },
+
+        normalizeDomainFromUrl(url) {
+            if (!url) {
+                return null;
+            }
+
+            try {
+                const parsedUrl = new URL(url);
+                return normalizeDomainKey(parsedUrl.hostname);
+            } catch (error) {
+                return normalizeDomainKey(url);
+            }
+        },
+
         extractErrorMessage(error) {
             return error?.response?.data?.errors?.[0]?.detail
                 || error?.response?.data?.message
@@ -162,6 +231,7 @@ Component.register('lieferzeiten-channel-settings-list', {
             const thresholdCriteria = new Criteria(1, 500);
             const salesChannelCriteria = new Criteria(1, 500);
             salesChannelCriteria.addSorting(Criteria.sort('name', 'ASC'));
+            salesChannelCriteria.addAssociation('domains');
 
             try {
                 const [thresholds, salesChannels] = await Promise.all([

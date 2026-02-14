@@ -18,46 +18,50 @@
                 {{ $tc('lieferzeiten.lms.dashboard.validationError') }}
             </sw-alert>
 
-            <div v-for="channel in channels" :key="channel.id" class="sw-mt-24">
-                <h3>{{ channel.name || channel.id }}</h3>
+            <div v-for="group in groupedChannels" :key="group.id" class="sw-mt-24">
+                <h3>{{ group.title }}</h3>
 
-                <sw-data-grid
-                    :dataSource="getChannelPdmsLieferzeiten(channel.id)"
-                    :columns="[
-                        { property: 'label', label: $tc('lieferzeiten.lms.dashboard.columns.pdmsLieferzeit'), width: '160px' },
-                        { property: 'shippingOverdueWorkingDays', label: $tc('lieferzeiten.lms.dashboard.columns.shippingOverdueWorkingDays') },
-                        { property: 'deliveryOverdueWorkingDays', label: $tc('lieferzeiten.lms.dashboard.columns.deliveryOverdueWorkingDays') }
-                    ]"
-                    :showSelection="false"
-                    :showActions="false"
-                    :allowColumnEdit="false"
-                >
-                    <template #column-label="{ item }">
-                        {{ item.label }}
-                    </template>
+                <div v-for="channel in group.channels" :key="channel.id" class="sw-mt-16">
+                    <h4>{{ channel.name || channel.id }}</h4>
 
-                    <template #column-shippingOverdueWorkingDays="{ item }">
-                        <sw-number-field
-                            numberType="int"
-                            :min="0"
-                            :disabled="!hasEditAccess"
-                            :value="matrixValues[channel.id][item.key].shippingOverdueWorkingDays"
-                            :error="getFieldError(channel.id, item.key, 'shippingOverdueWorkingDays')"
-                            @input="onChangeNumberField(channel.id, item.key, 'shippingOverdueWorkingDays', $event)"
-                        />
-                    </template>
+                    <sw-data-grid
+                        :dataSource="getChannelPdmsLieferzeiten(channel.id)"
+                        :columns="[
+                            { property: 'label', label: $tc('lieferzeiten.lms.dashboard.columns.pdmsLieferzeit'), width: '160px' },
+                            { property: 'shippingOverdueWorkingDays', label: $tc('lieferzeiten.lms.dashboard.columns.shippingOverdueWorkingDays') },
+                            { property: 'deliveryOverdueWorkingDays', label: $tc('lieferzeiten.lms.dashboard.columns.deliveryOverdueWorkingDays') }
+                        ]"
+                        :showSelection="false"
+                        :showActions="false"
+                        :allowColumnEdit="false"
+                    >
+                        <template #column-label="{ item }">
+                            {{ item.label }}
+                        </template>
 
-                    <template #column-deliveryOverdueWorkingDays="{ item }">
-                        <sw-number-field
-                            numberType="int"
-                            :min="0"
-                            :disabled="!hasEditAccess"
-                            :value="matrixValues[channel.id][item.key].deliveryOverdueWorkingDays"
-                            :error="getFieldError(channel.id, item.key, 'deliveryOverdueWorkingDays')"
-                            @input="onChangeNumberField(channel.id, item.key, 'deliveryOverdueWorkingDays', $event)"
-                        />
-                    </template>
-                </sw-data-grid>
+                        <template #column-shippingOverdueWorkingDays="{ item }">
+                            <sw-number-field
+                                numberType="int"
+                                :min="0"
+                                :disabled="!hasEditAccess"
+                                :value="matrixValues[channel.id][item.key].shippingOverdueWorkingDays"
+                                :error="getFieldError(channel.id, item.key, 'shippingOverdueWorkingDays')"
+                                @input="onChangeNumberField(channel.id, item.key, 'shippingOverdueWorkingDays', $event)"
+                            />
+                        </template>
+
+                        <template #column-deliveryOverdueWorkingDays="{ item }">
+                            <sw-number-field
+                                numberType="int"
+                                :min="0"
+                                :disabled="!hasEditAccess"
+                                :value="matrixValues[channel.id][item.key].deliveryOverdueWorkingDays"
+                                :error="getFieldError(channel.id, item.key, 'deliveryOverdueWorkingDays')"
+                                @input="onChangeNumberField(channel.id, item.key, 'deliveryOverdueWorkingDays', $event)"
+                            />
+                        </template>
+                    </sw-data-grid>
+                </div>
             </div>
         </sw-card>
     </template>
