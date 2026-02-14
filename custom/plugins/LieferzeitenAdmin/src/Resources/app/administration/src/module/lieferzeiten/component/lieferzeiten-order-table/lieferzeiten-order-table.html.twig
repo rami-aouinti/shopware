@@ -19,6 +19,7 @@
                     <th>{{ $t('lieferzeiten.table.domain') }}</th>
                     <th>{{ $t('lieferzeiten.table.positions') }}</th>
                     <th>{{ $t('lieferzeiten.table.parcels') }}</th>
+                    <th>Tracking</th>
                     <th>{{ $t('lieferzeiten.fields.supplierDate') }}</th>
                     <th>{{ $t('lieferzeiten.fields.supplierWeek') }}</th>
                     <th>{{ $t('lieferzeiten.fields.newDate') }}</th>
@@ -26,15 +27,14 @@
                     <th>{{ $t('lieferzeiten.fields.latestDelivery') }}</th>
                     <th>{{ $t('lieferzeiten.fields.comment') }}</th>
                     <th>{{ $t('lieferzeiten.fields.history') }}</th>
-                    <th>{{ $t('lieferzeiten.table.businessStatus') }}</th>
-                    <th>{{ $t('lieferzeiten.table.status') }}</th>
                     <th>Paket-Status</th>
                     <th>spätester Versandzeitpunkt</th>
                     <th>Versand-Datum</th>
                     <th>spätester Lieferzeitpunkt</th>
                     <th>Liefer-Datum</th>
                     <th>{{ $t('lieferzeiten.fields.shippingType') }}</th>
-                    <th>{{ $t('lieferzeiten.fields.audit') }}</th>
+                    <th>Änderung durch User</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,6 +56,7 @@
                         <td>{{ displayOrDash(order.domain) }}</td>
                         <td>{{ displayOrDash(order.positionsCountDisplay) }}</td>
                         <td>{{ parcelSummary(order) }}</td>
+                        <td>{{ displayOrDash(order.trackingSummary) }}</td>
                         <td>-</td>
                         <td>-</td>
                         <td>-</td>
@@ -75,22 +76,17 @@
                                 <li v-for="entry in order.commentHistory" :key="entry">{{ entry }}</li>
                             </ul>
                         </td>
-                        <td>{{ businessStatusLabel(order) }}</td>
-                        <td>
-                            <sw-label :variant="isOrderOpen(order) ? 'warning' : 'success'">
-                                {{ isOrderOpen(order) ? $t('lieferzeiten.status.open') : $t('lieferzeiten.status.closed') }}
-                            </sw-label>
-                        </td>
                         <td>{{ displayOrDash(order.packageStatusDisplay) }}</td>
                         <td>{{ displayOrDash(order.latestShippingAtDisplay) }}</td>
                         <td>{{ displayOrDash(order.shippingDateDisplay) }}</td>
                         <td>{{ displayOrDash(order.latestDeliveryAtDisplay) }}</td>
                         <td>{{ displayOrDash(order.deliveryDateDisplay) }}</td>
                         <td>{{ shippingLabel(order) }}</td>
-                        <td>{{ order.audit || '-' }}</td>
+                        <td>{{ displayOrDash(order.lastChangedByDisplay) }}</td>
+                        <td>{{ displayOrDash(order.businessStatusDisplay) }}</td>
                     </tr>
                     <tr v-if="isExpanded(order.id)" :key="`${order.id}-positions`">
-                        <td colspan="24">
+                        <td colspan="25">
                             <table class="sw-data-grid__table">
                                 <thead>
                                     <tr>

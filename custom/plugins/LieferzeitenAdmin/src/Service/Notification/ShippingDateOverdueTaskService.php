@@ -15,6 +15,7 @@ class ShippingDateOverdueTaskService
         private readonly EntityRepository $positionRepository,
         private readonly TaskAssignmentRuleResolver $taskAssignmentRuleResolver,
         private readonly EntityRepository $taskRepository,
+        private readonly ChannelDateSettingsProvider $channelDateSettingsProvider,
     ) {
     }
 
@@ -28,7 +29,7 @@ class ShippingDateOverdueTaskService
         $criteria = new Criteria();
         $criteria->addAssociation('paket');
         $criteria->addFilter(new EqualsFilter('paket.shippingDate', null));
-        $criteria->addFilter(new RangeFilter('paket.businessDateTo', [RangeFilter::LT => $now->format(DATE_ATOM)]));
+        $criteria->addFilter(new RangeFilter('paket.businessDateTo', [RangeFilter::LT => $now->modify('+1 day')->format(DATE_ATOM)]));
 
         /** @var iterable<PositionEntity> $positions */
         $positions = $this->positionRepository->search($criteria, $context)->getEntities();
@@ -36,6 +37,17 @@ class ShippingDateOverdueTaskService
         foreach ($positions as $position) {
             $paket = $position->getPaket();
             if ($paket === null) {
+                continue;
+            }
+
+            $businessDateTo = $paket->getBusinessDateTo();
+            if (!$businessDateTo instanceof \DateTimeInterface) {
+                continue;
+            }
+
+            $settings = $this->channelDateSettingsProvider->getForChannel((string) ($paket->getSourceSystem() ?? 'shopware'));
+            $thresholdDate = $this->buildThresholdDate($now, $settings['shipping']);
+            if (\DateTimeImmutable::createFromInterface($businessDateTo) >= $thresholdDate) {
                 continue;
             }
 
@@ -88,5 +100,27 @@ class ShippingDateOverdueTaskService
         }
 
         return $date;
+    }
+
+    /**
+     * @param array{workingDays:int,cutoff:string} $settings
+     */
+    private function buildThresholdDate(\DateTimeImmutable $now, array $settings): \DateTimeImmutable
+    {
+        [$hour, $minute] = array_map('intval', explode(':', $settings['cutoff']));
+        $threshold = $now->setTime($hour, $minute);
+
+        $remaining = max(0, (int) ($settings['workingDays'] ?? 0));
+        while ($remaining > 0) {
+            $threshold = $threshold->modify('-1 day');
+            $weekday = (int) $threshold->format('N');
+            if ($weekday >= 6) {
+                continue;
+            }
+
+            --$remaining;
+        }
+
+        return $threshold;
     }
 }

@@ -3,6 +3,7 @@
 namespace LieferzeitenAdmin\Subscriber;
 
 use LieferzeitenAdmin\Entity\PaketDefinition;
+use LieferzeitenAdmin\Entity\ChannelSettingsDefinition;
 use LieferzeitenAdmin\Service\PaketDeliveryDateRecalculationService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
@@ -21,8 +22,31 @@ class DeliveryDateRecalculationSubscriber implements EventSubscriberInterface
     {
         return [
             PaketDefinition::ENTITY_NAME . '.written' => 'onPaketWritten',
+            ChannelSettingsDefinition::ENTITY_NAME . '.written' => 'onChannelSettingsWritten',
             SystemConfigChangedEvent::class => 'onSystemConfigChanged',
         ];
+    }
+
+    public function onChannelSettingsWritten(EntityWrittenEvent $event): void
+    {
+        if ($this->isRunning) {
+            return;
+        }
+
+        $channels = [];
+        foreach ($event->getWriteResults() as $result) {
+            $payload = $result->getPayload();
+            $channel = $payload['sales_channel_id'] ?? null;
+            if (!is_string($channel) || trim($channel) === '') {
+                continue;
+            }
+
+            $channels[] = trim($channel);
+        }
+
+        foreach (array_values(array_unique($channels)) as $channel) {
+            $this->runGuarded(fn () => $this->recalculationService->recalculateForSourceSystem($channel, $event->getContext()));
+        }
     }
 
     public function onPaketWritten(EntityWrittenEvent $event): void
