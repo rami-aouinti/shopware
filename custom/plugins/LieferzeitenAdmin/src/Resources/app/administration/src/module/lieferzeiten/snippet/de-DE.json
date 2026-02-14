@@ -180,6 +180,7 @@
           "deliveryOverdueWorkingDays": "Lieferung überfällig (Arbeitstage)"
         },
         "incompleteMappingBadge": "Unvollständige PDMS-Zuordnung",
+        "incompleteMappingWarning": "Die PDMS-Zuordnung für den Kanal \"{channelName}\" ist unvollständig. Fehlende Slots sind unten markiert, damit Sie die Zuordnung vervollständigen können.",
         "incompleteMappingSlotLabel": "Slot {slot} nicht konfiguriert"
       }
     },

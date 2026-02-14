@@ -180,6 +180,7 @@
           "deliveryOverdueWorkingDays": "Delivery overdue (working days)"
         },
         "incompleteMappingBadge": "Incomplete PDMS mapping",
+        "incompleteMappingWarning": "PDMS mapping for channel \"{channelName}\" is incomplete. Missing slots are marked below so you can complete the mapping.",
         "incompleteMappingSlotLabel": "Slot {slot} not configured"
       }
     },

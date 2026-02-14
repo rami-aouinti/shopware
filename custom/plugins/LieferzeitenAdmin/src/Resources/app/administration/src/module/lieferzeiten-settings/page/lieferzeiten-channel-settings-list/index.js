@@ -9,12 +9,7 @@ import {
 const { Component } = Shopware;
 const { Criteria } = Shopware.Data;
 
-const DEFAULT_PDMS_LIEFERZEITEN = [
-    { key: 'PDMS_1', label: 'PDMS 1', isPlaceholder: true },
-    { key: 'PDMS_2', label: 'PDMS 2', isPlaceholder: true },
-    { key: 'PDMS_3', label: 'PDMS 3', isPlaceholder: true },
-    { key: 'PDMS_4', label: 'PDMS 4', isPlaceholder: true },
-];
+const PDMS_SLOTS = [1, 2, 3, 4];
 
 /**
  * LMS whitelist matching is resolved in lms-target-channel-mapping via:
@@ -180,7 +175,19 @@ Component.register('lieferzeiten-channel-settings-list', {
         },
 
         getChannelPdmsLieferzeiten(channelId) {
-            return this.channelPdmsLieferzeiten[channelId] || DEFAULT_PDMS_LIEFERZEITEN;
+            return this.channelPdmsLieferzeiten[channelId] || this.buildNormalizedPdmsSlots();
+        },
+
+        createMissingSlotEntry(slot) {
+            return {
+                key: `PDMS_${slot}`,
+                label: this.$tc('lieferzeiten.lms.dashboard.incompleteMappingSlotLabel', 0, { slot }),
+                isPlaceholder: true,
+            };
+        },
+
+        buildNormalizedPdmsSlots(entriesBySlot = new Map()) {
+            return PDMS_SLOTS.map((slot) => entriesBySlot.get(slot) || this.createMissingSlotEntry(slot));
         },
 
         getEntryKey(channelId, pdmsKey) {
@@ -231,16 +238,12 @@ Component.register('lieferzeiten-channel-settings-list', {
                     });
                 }
 
-                const normalizedEntries = [1, 2, 3, 4].map((slot) => entriesBySlot.get(slot) || {
-                    key: `PDMS_${slot}`,
-                    label: this.$tc('lieferzeiten.lms.dashboard.incompleteMappingSlotLabel', 0, { slot }),
-                    isPlaceholder: true,
-                });
+                const normalizedEntries = this.buildNormalizedPdmsSlots(entriesBySlot);
 
                 this.$set(this.channelPdmsLieferzeiten, channelId, normalizedEntries);
                 this.$set(this.channelPdmsMappingIncomplete, channelId, normalizedEntries.some((entry) => entry.isPlaceholder));
             } catch (error) {
-                this.$set(this.channelPdmsLieferzeiten, channelId, DEFAULT_PDMS_LIEFERZEITEN);
+                this.$set(this.channelPdmsLieferzeiten, channelId, this.buildNormalizedPdmsSlots());
                 this.$set(this.channelPdmsMappingIncomplete, channelId, true);
                 this.notifyRequestError(error, this.$tc('lieferzeiten.lms.dashboard.title'));
             }

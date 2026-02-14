@@ -29,6 +29,10 @@
                         </sw-label>
                     </div>
 
+                    <sw-alert v-if="hasIncompletePdmsMapping(channel.id)" variant="warning" appearance="default" :showIcon="true" class="sw-mt-8 sw-mb-8">
+                        {{ $tc('lieferzeiten.lms.dashboard.incompleteMappingWarning', 0, { channelName: channel.name || channel.id }) }}
+                    </sw-alert>
+
                     <sw-data-grid
                         :dataSource="getChannelPdmsLieferzeiten(channel.id)"
                         :columns="[
