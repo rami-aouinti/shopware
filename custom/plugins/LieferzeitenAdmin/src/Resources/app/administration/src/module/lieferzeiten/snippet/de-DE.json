@@ -141,6 +141,9 @@
         "title": "LMS · Schwellenwerte je Verkaufskanal",
         "create": "Schwellenwert anlegen"
       }
+    },
+    "validation": {
+      "supplierSaveRequiresCombinedRange": "Der Liefertermin Lieferant kann nur gespeichert werden, wenn die Liefertermin-Änderung gültig ist: Lieferant 1-14 Tage und mindestens ein Neuer Liefertermin 1-4 Tage muss bereits für diese Zeile vorhanden sein."
     }
   }
 }

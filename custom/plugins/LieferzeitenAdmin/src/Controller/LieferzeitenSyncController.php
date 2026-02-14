@@ -347,6 +347,13 @@ class LieferzeitenSyncController extends AbstractController
             return $validationError;
         }
 
+        if (!$this->positionWriteService->hasNeuerLieferterminHistoryForPosition($positionId)) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'Supplier delivery date can only be updated when an initial new delivery date (1-4 days) already exists for this line',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
         try {
             $this->positionWriteService->updateLieferterminLieferant($positionId, $range['from'], $range['to'], $expectedUpdatedAt, $context);
         } catch (WriteEndpointConflictException $e) {

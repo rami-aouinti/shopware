@@ -141,6 +141,9 @@
         "title": "LMS · Thresholds by sales channel",
         "create": "Create threshold"
       }
+    },
+    "validation": {
+      "supplierSaveRequiresCombinedRange": "Supplier delivery date can only be saved when the combined validation is met: supplier range 1-14 days and at least one new delivery date range 1-4 days must already exist for this line."
     }
   }
 }
