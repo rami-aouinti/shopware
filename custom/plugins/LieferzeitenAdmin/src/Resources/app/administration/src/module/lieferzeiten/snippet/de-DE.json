@@ -50,7 +50,7 @@
       "quantity": "Menge",
       "packageNumbers": "Pakete",
       "status": "Status",
-      "businessStatus": "Fachstatus"
+      "businessStatus": "Geschäftsstatus"
     },
     "fields": {
       "supplierDate": "Liefertermin Lieferant (1-14 Tage)",
@@ -143,8 +143,16 @@
         "create": "Schwellenwert anlegen"
       }
     },
-    "validation": {
-      "supplierSaveRequiresCombinedRange": "Der Liefertermin Lieferant kann nur gespeichert werden, wenn die Liefertermin-Änderung gültig ist: Lieferant 1-14 Tage und mindestens ein Neuer Liefertermin 1-4 Tage muss bereits für diese Zeile vorhanden sein."
+    "businessStatus": {
+      "new": "Neu",
+      "inClarification": "In Klärung",
+      "awaitingSupplier": "Warten auf Lieferanten",
+      "partiallyAvailable": "Teilweise verfügbar",
+      "readyForShipping": "Versandbereit",
+      "partiallyShipped": "Teilversendet",
+      "shipped": "Versendet",
+      "closed": "Abgeschlossen",
+      "unknown": "Unbekannt"
     }
   }
 }

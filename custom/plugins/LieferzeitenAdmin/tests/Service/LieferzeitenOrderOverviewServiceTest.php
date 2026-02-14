@@ -130,6 +130,33 @@ class LieferzeitenOrderOverviewServiceTest extends TestCase
         ]);
     }
 
+
+    public function testListOrdersAddsBusinessStatusPayload(): void
+    {
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->once())
+            ->method('fetchOne')
+            ->willReturn('1');
+
+        $connection->expects($this->once())
+            ->method('fetchAllAssociative')
+            ->willReturn([
+                [
+                    'id' => 'abc',
+                    'status' => '2',
+                ],
+            ]);
+
+        $service = new LieferzeitenOrderOverviewService($connection);
+
+        $result = $service->listOrders();
+
+        static::assertSame([
+            'code' => '2',
+            'label' => 'In clarification',
+        ], $result['data'][0]['businessStatus']);
+    }
+
     public function testSortWhitelistFallsBackToOrderDate(): void
     {
         $connection = $this->createMock(Connection::class);

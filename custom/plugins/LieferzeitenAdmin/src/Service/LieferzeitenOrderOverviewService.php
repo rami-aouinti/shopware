@@ -10,33 +10,15 @@ readonly class LieferzeitenOrderOverviewService
     /**
      * @var array<int, string>
      */
-    private const BUSINESS_STATUS_LABEL_KEYS = [
-        1 => 'lieferzeiten.businessStatus.1',
-        2 => 'lieferzeiten.businessStatus.2',
-        3 => 'lieferzeiten.businessStatus.3',
-        4 => 'lieferzeiten.businessStatus.4',
-        5 => 'lieferzeiten.businessStatus.5',
-        6 => 'lieferzeiten.businessStatus.6',
-        7 => 'lieferzeiten.businessStatus.7',
-        8 => 'lieferzeiten.businessStatus.8',
-    ];
-
-    /**
-     * @var array<string, list<string>>
-     */
-    private const DOMAIN_SOURCE_MAPPING = [
-        'first-medical-e-commerce' => ['shopware', 'gambio', 'first medical', 'e-commerce', 'first-medical-e-commerce'],
-        'medical-solutions' => ['medical solutions', 'medical-solutions'],
-    ];
-
-    /**
-     * @var array<string, string>
-     */
-    private const DOMAIN_ALIASES = [
-        'First Medical' => 'first-medical-e-commerce',
-        'E-Commerce' => 'first-medical-e-commerce',
-        'First Medical - E-Commerce' => 'first-medical-e-commerce',
-        'Medical Solutions' => 'medical-solutions',
+    private const BUSINESS_STATUS_MAPPING = [
+        1 => 'New',
+        2 => 'In clarification',
+        3 => 'Awaiting supplier',
+        4 => 'Partially available',
+        5 => 'Ready for shipping',
+        6 => 'Partially shipped',
+        7 => 'Shipped',
+        8 => 'Closed',
     ];
 
     private const FILTERABLE_FIELDS = [
@@ -68,9 +50,22 @@ readonly class LieferzeitenOrderOverviewService
     ];
 
 
+    /**
+     * @var array<string, list<string>>
+     */
     private const DOMAIN_SOURCE_MAPPING = [
         'first-medical-e-commerce' => ['first medical', 'e-commerce', 'shopware', 'gambio'],
         'medical-solutions' => ['medical solutions', 'medical-solutions', 'medical_solutions'],
+    ];
+
+    /**
+     * @var array<string, string>
+     */
+    private const DOMAIN_ALIASES = [
+        'First Medical' => 'first-medical-e-commerce',
+        'E-Commerce' => 'first-medical-e-commerce',
+        'First Medical - E-Commerce' => 'first-medical-e-commerce',
+        'Medical Solutions' => 'medical-solutions',
     ];
 
     private const LEGACY_DOMAIN_MAPPING = [
@@ -168,10 +163,7 @@ readonly class LieferzeitenOrderOverviewService
         $dataParams['offset'] = ($page - 1) * $limit;
 
         $rows = $this->connection->fetchAllAssociative($dataSql, $dataParams, $paramTypes);
-        foreach ($rows as &$row) {
-            $row['business_status'] = $this->buildBusinessStatusPayload($row['status'] ?? null);
-        }
-        unset($row);
+        $rows = array_map(fn (array $row): array => $this->appendBusinessStatus($row), $rows);
 
         return [
             'total' => $total,
@@ -439,4 +431,23 @@ readonly class LieferzeitenOrderOverviewService
             'labelKey' => self::BUSINESS_STATUS_LABEL_KEYS[$statusCode],
         ];
     }
+
+    /**
+     * @param array<string, mixed> $row
+     * @return array<string, mixed>
+     */
+    private function appendBusinessStatus(array $row): array
+    {
+        $statusCode = is_numeric($row['status'] ?? null) ? (int) $row['status'] : null;
+        $statusCodeString = $statusCode !== null ? (string) $statusCode : null;
+        $statusLabel = $statusCode !== null ? (self::BUSINESS_STATUS_MAPPING[$statusCode] ?? 'Unknown') : 'Unknown';
+
+        $row['businessStatus'] = [
+            'code' => $statusCodeString,
+            'label' => $statusLabel,
+        ];
+
+        return $row;
+    }
+
 }

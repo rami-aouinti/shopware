@@ -75,7 +75,7 @@
                                 <li v-for="entry in order.commentHistory" :key="entry">{{ entry }}</li>
                             </ul>
                         </td>
-                        <td>{{ resolveBusinessStatus(order) }}</td>
+                        <td>{{ businessStatusLabel(order) }}</td>
                         <td>
                             <sw-label :variant="isOrderOpen(order) ? 'warning' : 'success'">
                                 {{ isOrderOpen(order) ? $t('lieferzeiten.status.open') : $t('lieferzeiten.status.closed') }}
