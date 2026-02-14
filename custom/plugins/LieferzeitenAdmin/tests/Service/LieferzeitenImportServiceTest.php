@@ -408,6 +408,69 @@ class LieferzeitenImportServiceTest extends TestCase
         ]));
     }
 
+    public function testUpsertPositionAndTrackingHistoryPersistsCarrierFromPayloadFallbacks(): void
+    {
+        $context = Context::createDefaultContext();
+        $positionId = Uuid::randomHex();
+
+        $positionRepository = $this->createMock(EntityRepository::class);
+        $positionRepository->expects($this->exactly(3))
+            ->method('upsert');
+        $positionRepository->method('search')->willReturnOnConsecutiveCalls(
+            $this->createEntitySearchResultWithId($positionId),
+            $this->createEntitySearchResultWithId($positionId),
+            $this->createEntitySearchResultWithId($positionId)
+        );
+
+        $sendenummerHistoryRepository = $this->createMock(EntityRepository::class);
+        $createdPayloads = [];
+        $sendenummerHistoryRepository->expects($this->exactly(3))
+            ->method('create')
+            ->willReturnCallback(static function (array $payload) use (&$createdPayloads): void {
+                $createdPayloads[] = $payload[0];
+            });
+        $sendenummerHistoryRepository->method('search')->willReturn(
+            new EntitySearchResult(
+                'lieferzeiten_sendenummer_history',
+                0,
+                new EntityCollection(),
+                null,
+                new \Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria(),
+                Context::createDefaultContext()
+            )
+        );
+
+        $service = $this->createService(
+            positionRepository: $positionRepository,
+            sendenummerHistoryRepository: $sendenummerHistoryRepository,
+        );
+
+        $method = new \ReflectionMethod($service, 'upsertPositionAndTrackingHistory');
+        $method->setAccessible(true);
+
+        $method->invoke($service, Uuid::randomHex(), [
+            'positionNumber' => '10',
+            'trackingNumbers' => ['TRACK-CARRIER'],
+            'carrier' => 'DHL',
+        ], $context);
+
+        $method->invoke($service, Uuid::randomHex(), [
+            'positionNumber' => '10',
+            'trackingNumbers' => ['TRACK-SHIPPING-PROVIDER'],
+            'shippingProvider' => 'GLS',
+        ], $context);
+
+        $method->invoke($service, Uuid::randomHex(), [
+            'positionNumber' => '10',
+            'trackingNumbers' => ['TRACK-TRACKING-PROVIDER'],
+            'trackingProvider' => 'UPS',
+        ], $context);
+
+        static::assertSame('DHL', $createdPayloads[0]['carrier'] ?? null);
+        static::assertSame('GLS', $createdPayloads[1]['carrier'] ?? null);
+        static::assertSame('UPS', $createdPayloads[2]['carrier'] ?? null);
+    }
+
     public function testEnqueueStatusPushIsIdempotentForSamePendingStatus(): void
     {
         $service = $this->createService();
@@ -793,6 +856,29 @@ class LieferzeitenImportServiceTest extends TestCase
         );
     }
 
+    private function createEntitySearchResultWithId(string $id): EntitySearchResult
+    {
+        $entity = new class ($id) extends \Shopware\Core\Framework\DataAbstractionLayer\Entity {
+            public function __construct(private readonly string $id)
+            {
+            }
+
+            public function getId(): string
+            {
+                return $this->id;
+            }
+        };
+
+        return new EntitySearchResult(
+            'lieferzeiten_position',
+            1,
+            new EntityCollection([$entity]),
+            null,
+            new \Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria(),
+            Context::createDefaultContext()
+        );
+    }
+
     private function createService(
         ?EntityRepository $paketRepository = null,
         ?AuditLogService $auditLogService = null,
@@ -804,13 +890,15 @@ class LieferzeitenImportServiceTest extends TestCase
         ?BaseDateResolver $baseDateResolver = null,
         ?ChannelDateSettingsProvider $settingsProvider = null,
         ?BusinessDayDeliveryDateCalculator $deliveryDateCalculator = null,
+        ?EntityRepository $positionRepository = null,
+        ?EntityRepository $sendenummerHistoryRepository = null,
     ): LieferzeitenImportService {
         $config ??= $this->createMock(SystemConfigService::class);
 
         return new LieferzeitenImportService(
             $paketRepository ?? $this->createMock(EntityRepository::class),
-            $this->createMock(EntityRepository::class),
-            $this->createMock(EntityRepository::class),
+            $positionRepository ?? $this->createMock(EntityRepository::class),
+            $sendenummerHistoryRepository ?? $this->createMock(EntityRepository::class),
             $httpClient ?? $this->createMock(HttpClientInterface::class),
             $config,
             $this->createMock(ChannelOrderAdapterRegistry::class),

@@ -240,6 +240,7 @@ class LieferzeitenOrderOverviewServiceTest extends TestCase
                     return [[
                         'positionId' => 'position-1',
                         'number' => 'TRACK-1',
+                        'carrier' => 'DHL',
                     ]];
                 }
 
@@ -289,5 +290,6 @@ class LieferzeitenOrderOverviewServiceTest extends TestCase
         static::assertArrayHasKey('commentHistory', $result);
         static::assertSame('3', $result['positions'][0]['orderedQuantity']);
         static::assertSame('2', $result['positions'][0]['shippedQuantity']);
+        static::assertSame('DHL', $result['positions'][0]['trackingEntries'][0]['carrier']);
     }
 }
