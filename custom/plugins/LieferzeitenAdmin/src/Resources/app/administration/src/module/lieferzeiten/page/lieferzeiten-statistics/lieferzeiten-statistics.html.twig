@@ -58,6 +58,28 @@
             />
         </sw-card>
 
+        <sw-card :title="$t('lieferzeiten.statistics.timelineTitle')" class="lieferzeiten-statistics__timeline-card">
+            <div v-if="timelineSeries.length > 1" class="lieferzeiten-statistics__timeline-chart">
+                <svg viewBox="0 0 100 60" preserveAspectRatio="none" class="lieferzeiten-statistics__timeline-svg">
+                    <path :d="timelineChartPaths.areaPath" class="lieferzeiten-statistics__timeline-area" />
+                    <path :d="timelineChartPaths.linePath" class="lieferzeiten-statistics__timeline-line" />
+                </svg>
+                <div class="lieferzeiten-statistics__timeline-axis">
+                    <span>{{ formatTimelineLabel(timelineSeries[0].date) }}</span>
+                    <span>{{ formatTimelineLabel(timelineSeries[timelineSeries.length - 1].date) }}</span>
+                </div>
+            </div>
+            <div v-else-if="timelineSeries.length === 1" class="lieferzeiten-statistics__timeline-fallback">
+                <strong>{{ timelineSeries[0].value }}</strong>
+                <span>{{ formatTimelineLabel(timelineSeries[0].date) }}</span>
+            </div>
+            <sw-empty-state
+                v-else
+                :title="$t('lieferzeiten.statistics.timelineEmptyTitle')"
+                :description="$t('lieferzeiten.statistics.timelineEmptyDescription')"
+            />
+        </sw-card>
+
         <sw-card :title="$t('lieferzeiten.statistics.tableTitle')">
             <sw-data-grid
                 :data-source="filteredOrders"

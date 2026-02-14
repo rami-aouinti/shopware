@@ -147,7 +147,10 @@
       },
       "overdueShipping": "Overdue shipping",
       "overdueDelivery": "Overdue deliveries (completed)",
-      "activityDate": "Activity at"
+      "activityDate": "Activity at",
+      "timelineTitle": "Activities over time",
+      "timelineEmptyTitle": "No activities in selected period",
+      "timelineEmptyDescription": "No timeline activity is available for the selected filters."
     },
     "loading": {
       "errorTitle": "Unable to load orders",

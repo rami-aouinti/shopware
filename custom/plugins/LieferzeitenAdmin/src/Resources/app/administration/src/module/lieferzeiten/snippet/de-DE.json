@@ -147,7 +147,10 @@
       },
       "overdueShipping": "Überfälliger Versand",
       "overdueDelivery": "Überfällige Lieferungen (abgeschlossen)",
-      "activityDate": "Aktiv am"
+      "activityDate": "Aktiv am",
+      "timelineTitle": "Aktivitäten über Zeit",
+      "timelineEmptyTitle": "Keine Aktivitäten im Zeitraum",
+      "timelineEmptyDescription": "Für die ausgewählten Filter sind keine zeitlichen Aktivitäten verfügbar."
     },
     "loading": {
       "errorTitle": "Bestellungen konnten nicht geladen werden",

@@ -1,5 +1,6 @@
 import template from './lieferzeiten-statistics.html.twig';
 import './lieferzeiten-statistics.scss';
+import { normalizeTimelinePoints } from './timeline.util';
 
 Shopware.Component.register('lieferzeiten-statistics', {
     template,
@@ -101,6 +102,46 @@ Shopware.Component.register('lieferzeiten-statistics', {
 
             return Math.max(...this.channelChartData.map((item) => item.value));
         },
+
+        timelineSeries() {
+            return normalizeTimelinePoints(this.statistics.timeline, {
+                selectedChannel: this.selectedChannel,
+                selectedDomain: this.selectedDomain,
+            });
+        },
+
+        timelineMaxValue() {
+            if (!this.timelineSeries.length) {
+                return 0;
+            }
+
+            return Math.max(...this.timelineSeries.map((item) => item.value));
+        },
+
+        timelineChartPaths() {
+            if (this.timelineSeries.length < 2) {
+                return null;
+            }
+
+            const width = 100;
+            const height = 60;
+            const maxValue = this.timelineMaxValue || 1;
+            const step = width / (this.timelineSeries.length - 1);
+            const points = this.timelineSeries.map((item, index) => {
+                const x = Number((index * step).toFixed(2));
+                const normalized = Math.min(item.value / maxValue, 1);
+                const y = Number((height - (normalized * height)).toFixed(2));
+
+                return { x, y };
+            });
+
+            const linePath = points
+                .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
+                .join(' ');
+            const areaPath = `${linePath} L ${width} ${height} L 0 ${height} Z`;
+
+            return { linePath, areaPath };
+        },
     },
 
     methods: {
@@ -152,6 +193,10 @@ Shopware.Component.register('lieferzeiten-statistics', {
 
         getChartBarWidth(value) {
             return `${Math.max(Math.round((value / this.maxChartValue) * 100), 6)}%`;
+        },
+
+        formatTimelineLabel(dateString) {
+            return Shopware.Utils.format.date(dateString);
         },
 
         onDrilldown(item) {
