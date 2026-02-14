@@ -49,6 +49,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
             trackingEvents: [],
             activeTracking: null,
             statusUpdateLoadingByOrder: {},
+            detailsLoadingByOrder: {},
         };
     },
 
@@ -244,13 +245,74 @@ Shopware.Component.register('lieferzeiten-order-table', {
             };
         },
 
-        toggleOrder(orderId) {
+        async toggleOrder(orderId) {
             if (this.expandedOrderIds.includes(orderId)) {
                 this.expandedOrderIds = this.expandedOrderIds.filter((id) => id !== orderId);
                 return;
             }
 
+            await this.loadOrderDetails(orderId);
+
             this.expandedOrderIds = [...this.expandedOrderIds, orderId];
+        },
+
+        hasOrderDetails(order) {
+            return Array.isArray(order?.positions)
+                && Array.isArray(order?.parcels)
+                && Array.isArray(order?.lieferterminLieferantHistory)
+                && Array.isArray(order?.neuerLieferterminHistory)
+                && Array.isArray(order?.commentHistory);
+        },
+
+        mergeOrderDetails(orderId, details) {
+            const source = this.editableOrders[orderId] || this.orders.find((item) => item?.id === orderId);
+            if (!source || !details) {
+                return;
+            }
+
+            const mergedOrder = {
+                ...source,
+                ...details,
+            };
+
+            this.$delete(this.editableOrders, orderId);
+            const editable = this.getEditableOrder(mergedOrder);
+
+            this.$set(this.editableOrders, orderId, {
+                ...editable,
+                lieferterminLieferantHistory: details.lieferterminLieferantHistory || [],
+                neuerLieferterminHistory: details.neuerLieferterminHistory || [],
+                commentHistory: details.commentHistory || [],
+                trackingSummaryDisplay: this.resolveTrackingSummaryDisplay(editable),
+            });
+        },
+
+        async loadOrderDetails(orderId) {
+            if (!orderId) {
+                return;
+            }
+
+            const existing = this.editableOrders[orderId] || this.orders.find((order) => order.id === orderId);
+            if (this.hasOrderDetails(existing)) {
+                return;
+            }
+
+            this.$set(this.detailsLoadingByOrder, orderId, true);
+            try {
+                const details = await this.lieferzeitenOrdersService.getOrderDetails(orderId);
+                this.mergeOrderDetails(orderId, details);
+            } catch (error) {
+                this.createNotificationError({
+                    title: this.$t('global.default.error'),
+                    message: error?.response?.data?.message || error?.message || this.$t('global.default.error'),
+                });
+            } finally {
+                this.$set(this.detailsLoadingByOrder, orderId, false);
+            }
+        },
+
+        isDetailsLoading(orderId) {
+            return this.detailsLoadingByOrder[orderId] === true;
         },
 
         isExpanded(orderId) {
@@ -258,8 +320,9 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         parcelSummary(order) {
-            const openParcels = order.parcels.filter((parcel) => !parcel.closed).length;
-            return `${openParcels}/${order.parcels.length}`;
+            const parcels = Array.isArray(order?.parcels) ? order.parcels : [];
+            const openParcels = parcels.filter((parcel) => !parcel.closed).length;
+            return `${openParcels}/${parcels.length}`;
         },
 
         displayOrDash(value) {
@@ -484,6 +547,13 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         resolveTrackingEntries(order, position) {
+            if (Array.isArray(position?.trackingEntries) && position.trackingEntries.length > 0) {
+                return position.trackingEntries.map((entry) => ({
+                    number: String(entry?.number || '').trim(),
+                    carrier: String(entry?.carrier || '').trim().toLowerCase(),
+                })).filter((entry) => entry.number !== '');
+            }
+
             const carrier = String(position.trackingCarrier || order.trackingCarrier || '').toLowerCase();
             const packageEntries = Array.isArray(position.packages) ? position.packages : [];
             const fallbackPackages = packageEntries.length === 0

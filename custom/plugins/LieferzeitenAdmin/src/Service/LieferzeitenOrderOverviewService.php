@@ -108,6 +108,7 @@ readonly class LieferzeitenOrderOverviewService
         ?string $sort = null,
         ?string $order = null,
         array $filters = [],
+        bool $includeDetails = false,
     ): array {
         $page = max(1, (int) $page);
         $limit = max(1, min(200, (int) $limit));
@@ -193,6 +194,9 @@ readonly class LieferzeitenOrderOverviewService
 
         $rows = $this->connection->fetchAllAssociative($dataSql, $dataParams, $paramTypes);
         $rows = array_map(fn (array $row): array => $this->appendBusinessStatus($row), $rows);
+        if ($includeDetails) {
+            $rows = $this->enrichOrdersWithDetails($rows);
+        }
 
         return [
             'total' => $total,
@@ -204,6 +208,43 @@ readonly class LieferzeitenOrderOverviewService
             'sortingFields' => array_keys(self::SORTABLE_FIELDS),
             'data' => $rows,
         ];
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function getOrderDetails(string $paketId): ?array
+    {
+        $row = $this->connection->fetchAssociative(
+            'SELECT
+                LOWER(HEX(p.id)) AS id,
+                p.external_order_id AS bestellnummer,
+                p.external_order_id AS orderNumber,
+                p.paket_number AS san6,
+                p.paket_number AS san6OrderNumber,
+                COUNT(DISTINCT pos.id) AS positionsCount,
+                p.partial_shipment_quantity AS quantity,
+                p.status AS status,
+                p.last_changed_by AS user,
+                p.last_changed_by AS changedBy,
+                p.last_changed_at AS changedAt,
+                p.source_system AS sourceSystem,
+                p.source_system AS domain
+             FROM `lieferzeiten_paket` p
+             LEFT JOIN `lieferzeiten_position` pos ON pos.paket_id = p.id
+             WHERE p.id = :paketId
+             GROUP BY p.id, p.external_order_id, p.paket_number, p.partial_shipment_quantity, p.status, p.last_changed_by, p.last_changed_at, p.source_system
+             LIMIT 1',
+            ['paketId' => hex2bin($paketId)],
+        );
+
+        if (!is_array($row)) {
+            return null;
+        }
+
+        $enrichedRows = $this->enrichOrdersWithDetails([$this->appendBusinessStatus($row)]);
+
+        return $enrichedRows[0] ?? null;
     }
 
     /**
@@ -505,6 +546,260 @@ readonly class LieferzeitenOrderOverviewService
         }
 
         return $row;
+    }
+
+    /**
+     * @param list<array<string, mixed>> $rows
+     * @return list<array<string, mixed>>
+     */
+    private function enrichOrdersWithDetails(array $rows): array
+    {
+        if ($rows === []) {
+            return [];
+        }
+
+        $paketIds = array_values(array_filter(array_map(
+            static fn (array $row): ?string => is_string($row['id'] ?? null) ? $row['id'] : null,
+            $rows,
+        )));
+
+        if ($paketIds === []) {
+            return $rows;
+        }
+
+        $positionsByPaket = $this->fetchPositionsByPaketIds($paketIds);
+        $parcelsByPaket = $this->fetchParcelsByPaketIds($paketIds);
+        $lieferterminHistory = $this->fetchLieferterminLieferantHistoryByPaketIds($paketIds);
+        $neuerLieferterminHistory = $this->fetchNeuerLieferterminHistoryByPaketIds($paketIds);
+
+        foreach ($rows as &$row) {
+            $paketId = (string) ($row['id'] ?? '');
+            $positions = $positionsByPaket[$paketId] ?? [];
+
+            $row['positions'] = $positions;
+            $row['parcels'] = $parcelsByPaket[$paketId] ?? [];
+            $row['lieferterminLieferantHistory'] = $lieferterminHistory[$paketId] ?? [];
+            $row['neuerLieferterminHistory'] = $neuerLieferterminHistory[$paketId] ?? [];
+            $row['commentHistory'] = $this->buildCommentHistoryFromPositions($positions);
+        }
+
+        unset($row);
+
+        return $rows;
+    }
+
+    /**
+     * @param list<string> $paketIds
+     * @return array<string, list<array<string, mixed>>>
+     */
+    private function fetchPositionsByPaketIds(array $paketIds): array
+    {
+        $rows = $this->connection->fetchAllAssociative(
+            'SELECT
+                LOWER(HEX(pos.id)) AS id,
+                LOWER(HEX(pos.paket_id)) AS paketId,
+                pos.position_number AS number,
+                COALESCE(NULLIF(pos.article_number, ""), pos.position_number) AS label,
+                pos.article_number AS article,
+                NULL AS quantity,
+                pos.status AS status,
+                pos.updated_at AS updatedAt,
+                pos.last_changed_by AS lastChangedBy,
+                pos.last_changed_at AS lastChangedAt,
+                pos.comment AS comment,
+                pos.current_comment AS currentComment
+             FROM `lieferzeiten_position` pos
+             WHERE LOWER(HEX(pos.paket_id)) IN (:paketIds)
+             ORDER BY pos.position_number ASC',
+            ['paketIds' => $paketIds],
+            ['paketIds' => ArrayParameterType::STRING],
+        );
+
+        $trackingByPosition = $this->fetchTrackingEntriesByPositionIds(array_values(array_filter(array_map(
+            static fn (array $row): ?string => is_string($row['id'] ?? null) ? $row['id'] : null,
+            $rows,
+        ))));
+
+        $result = [];
+        foreach ($rows as $row) {
+            $positionId = (string) ($row['id'] ?? '');
+            $paketId = (string) ($row['paketId'] ?? '');
+            $row['trackingEntries'] = $trackingByPosition[$positionId] ?? [];
+            $result[$paketId][] = $row;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param list<string> $positionIds
+     * @return array<string, list<array<string, mixed>>>
+     */
+    private function fetchTrackingEntriesByPositionIds(array $positionIds): array
+    {
+        if ($positionIds === []) {
+            return [];
+        }
+
+        $rows = $this->connection->fetchAllAssociative(
+            'SELECT
+                LOWER(HEX(sh.position_id)) AS positionId,
+                sh.sendenummer AS number,
+                sh.last_changed_by AS lastChangedBy,
+                sh.last_changed_at AS lastChangedAt,
+                sh.created_at AS createdAt
+             FROM `lieferzeiten_sendenummer_history` sh
+             WHERE LOWER(HEX(sh.position_id)) IN (:positionIds)
+             ORDER BY sh.created_at DESC',
+            ['positionIds' => $positionIds],
+            ['positionIds' => ArrayParameterType::STRING],
+        );
+
+        $result = [];
+        foreach ($rows as $row) {
+            $positionId = (string) ($row['positionId'] ?? '');
+            $result[$positionId][] = $row;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param list<string> $paketIds
+     * @return array<string, list<array<string, mixed>>>
+     */
+    private function fetchParcelsByPaketIds(array $paketIds): array
+    {
+        $rows = $this->connection->fetchAllAssociative(
+            'SELECT
+                LOWER(HEX(p.id)) AS id,
+                LOWER(HEX(p.id)) AS paketId,
+                p.status AS status,
+                p.updated_at AS updatedAt,
+                p.last_changed_by AS lastChangedBy,
+                p.last_changed_at AS lastChangedAt,
+                CASE
+                    WHEN LOWER(TRIM(COALESCE(p.status, ""))) IN ("closed", "done", "completed", "shipped", "delivered", "8") THEN 1
+                    ELSE 0
+                END AS closed,
+                latest_range.liefertermin_from AS neuerLieferterminFrom,
+                latest_range.liefertermin_to AS neuerLieferterminTo
+             FROM `lieferzeiten_paket` p
+             LEFT JOIN (
+                 SELECT nph.paket_id, nph.liefertermin_from, nph.liefertermin_to
+                 FROM `lieferzeiten_neuer_liefertermin_paket_history` nph
+                 INNER JOIN (
+                     SELECT paket_id, MAX(created_at) AS latestCreatedAt
+                     FROM `lieferzeiten_neuer_liefertermin_paket_history`
+                     GROUP BY paket_id
+                 ) latest
+                    ON latest.paket_id = nph.paket_id
+                   AND latest.latestCreatedAt = nph.created_at
+             ) latest_range ON latest_range.paket_id = p.id
+             WHERE LOWER(HEX(p.id)) IN (:paketIds)',
+            ['paketIds' => $paketIds],
+            ['paketIds' => ArrayParameterType::STRING],
+        );
+
+        $result = [];
+        foreach ($rows as $row) {
+            $paketId = (string) ($row['id'] ?? '');
+            $row['closed'] = (int) ($row['closed'] ?? 0) === 1;
+            $row['neuerLieferterminRange'] = [
+                'from' => $row['neuerLieferterminFrom'] ?? null,
+                'to' => $row['neuerLieferterminTo'] ?? null,
+            ];
+
+            $result[$paketId] = [$row];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param list<string> $paketIds
+     * @return array<string, list<array<string, mixed>>>
+     */
+    private function fetchLieferterminLieferantHistoryByPaketIds(array $paketIds): array
+    {
+        $rows = $this->connection->fetchAllAssociative(
+            'SELECT
+                LOWER(HEX(pos.paket_id)) AS paketId,
+                llh.liefertermin_from AS fromDate,
+                llh.liefertermin_to AS toDate,
+                llh.last_changed_by AS lastChangedBy,
+                llh.last_changed_at AS lastChangedAt,
+                llh.created_at AS createdAt
+             FROM `lieferzeiten_liefertermin_lieferant_history` llh
+             INNER JOIN `lieferzeiten_position` pos ON pos.id = llh.position_id
+             WHERE LOWER(HEX(pos.paket_id)) IN (:paketIds)
+             ORDER BY llh.created_at DESC',
+            ['paketIds' => $paketIds],
+            ['paketIds' => ArrayParameterType::STRING],
+        );
+
+        $result = [];
+        foreach ($rows as $row) {
+            $paketId = (string) ($row['paketId'] ?? '');
+            $result[$paketId][] = $row;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param list<string> $paketIds
+     * @return array<string, list<array<string, mixed>>>
+     */
+    private function fetchNeuerLieferterminHistoryByPaketIds(array $paketIds): array
+    {
+        $rows = $this->connection->fetchAllAssociative(
+            'SELECT
+                LOWER(HEX(nph.paket_id)) AS paketId,
+                nph.liefertermin_from AS fromDate,
+                nph.liefertermin_to AS toDate,
+                nph.last_changed_by AS lastChangedBy,
+                nph.last_changed_at AS lastChangedAt,
+                nph.created_at AS createdAt
+             FROM `lieferzeiten_neuer_liefertermin_paket_history` nph
+             WHERE LOWER(HEX(nph.paket_id)) IN (:paketIds)
+             ORDER BY nph.created_at DESC',
+            ['paketIds' => $paketIds],
+            ['paketIds' => ArrayParameterType::STRING],
+        );
+
+        $result = [];
+        foreach ($rows as $row) {
+            $paketId = (string) ($row['paketId'] ?? '');
+            $result[$paketId][] = $row;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param list<array<string, mixed>> $positions
+     * @return list<array<string, mixed>>
+     */
+    private function buildCommentHistoryFromPositions(array $positions): array
+    {
+        $history = [];
+
+        foreach ($positions as $position) {
+            $comment = trim((string) ($position['currentComment'] ?? $position['comment'] ?? ''));
+            if ($comment === '') {
+                continue;
+            }
+
+            $history[] = [
+                'comment' => $comment,
+                'positionId' => $position['id'] ?? null,
+                'lastChangedBy' => $position['lastChangedBy'] ?? null,
+                'lastChangedAt' => $position['lastChangedAt'] ?? null,
+            ];
+        }
+
+        return $history;
     }
 
 }
