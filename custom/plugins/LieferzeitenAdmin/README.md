@@ -235,6 +235,20 @@ Beispiel-Body (`neuer-liefertermin`):
 
 ACL: Lesen `viewer`, Mutation `editor`.
 
+
+### 7.6 Statistics
+- **GET** `/statistics`
+- **ACL**: `lieferzeiten.viewer`
+- **Query**: `period` (`7|30|90`), `domain`, `channel`
+
+Antwort enthält:
+- `metrics` (`openOrders`, `overdueShipping`, `overdueDelivery`)
+- `channels[]`
+- `timeline[]`
+- `activitiesData[]` mit einheitlichem Schema: `eventType`, `status`, `message`, `eventAt`, `sourceSystem` (+ `orderNumber`, `domain`, `promisedAt`).
+
+Die funktionale KPI-/Aktivitäts-Matrix ist in `docs/statistics-kpi-catalog.md` dokumentiert.
+
 ---
 
 ## 8. Demo-Daten
