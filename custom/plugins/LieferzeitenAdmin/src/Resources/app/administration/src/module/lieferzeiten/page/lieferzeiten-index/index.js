@@ -1,6 +1,18 @@
 import template from './lieferzeiten-index.html.twig';
 import { normalizeDomainKey, resolveDomainKeyForSourceSystem } from '../../utils/domain-source-mapping';
 
+const DOMAIN_SOURCE_MAP = {
+    'first-medical-e-commerce': ['first medical', 'e-commerce', 'shopware', 'gambio', 'first-medical-e-commerce'],
+    'medical-solutions': ['medical solutions', 'medical-solutions'],
+};
+
+const DOMAIN_LABEL_ALIASES = {
+    'First Medical': 'first-medical-e-commerce',
+    'E-Commerce': 'first-medical-e-commerce',
+    'First Medical - E-Commerce': 'first-medical-e-commerce',
+    'Medical Solutions': 'medical-solutions',
+};
+
 Shopware.Component.register('lieferzeiten-index', {
     template,
 
@@ -39,6 +51,24 @@ Shopware.Component.register('lieferzeiten-index', {
     },
 
     methods: {
+
+        resolveOrderDomainKey(order) {
+            const orderDomain = String(order?.domain || order?.sourceSystem || '').trim();
+            if (orderDomain === '') {
+                return null;
+            }
+
+            const aliasMatch = DOMAIN_LABEL_ALIASES[orderDomain];
+            if (aliasMatch) {
+                return aliasMatch;
+            }
+
+            const normalizedOrderDomain = orderDomain.toLowerCase();
+
+            return Object.keys(DOMAIN_SOURCE_MAP).find((domainKey) => DOMAIN_SOURCE_MAP[domainKey]
+                .map((source) => source.toLowerCase())
+                .includes(normalizedOrderDomain)) || null;
+        },
         async loadOrders() {
             this.isLoading = true;
             this.loadError = null;

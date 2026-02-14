@@ -2,10 +2,29 @@
 
 namespace LieferzeitenAdmin\Service;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 
 readonly class LieferzeitenOrderOverviewService
 {
+    /**
+     * @var array<string, list<string>>
+     */
+    private const DOMAIN_SOURCE_MAPPING = [
+        'first-medical-e-commerce' => ['shopware', 'gambio', 'first medical', 'e-commerce', 'first-medical-e-commerce'],
+        'medical-solutions' => ['medical solutions', 'medical-solutions'],
+    ];
+
+    /**
+     * @var array<string, string>
+     */
+    private const DOMAIN_ALIASES = [
+        'First Medical' => 'first-medical-e-commerce',
+        'E-Commerce' => 'first-medical-e-commerce',
+        'First Medical - E-Commerce' => 'first-medical-e-commerce',
+        'Medical Solutions' => 'medical-solutions',
+    ];
+
     private const FILTERABLE_FIELDS = [
         'bestellnummer',
         'san6',
@@ -100,7 +119,11 @@ readonly class LieferzeitenOrderOverviewService
             $where,
         );
 
-        $total = (int) $this->connection->fetchOne($totalSql, $params);
+        $paramTypes = isset($params['sourceSystems'])
+            ? ['sourceSystems' => ArrayParameterType::STRING]
+            : [];
+
+        $total = (int) $this->connection->fetchOne($totalSql, $params, $paramTypes);
 
         $dataSql = sprintf(
             'SELECT
@@ -130,7 +153,7 @@ readonly class LieferzeitenOrderOverviewService
         $dataParams['limit'] = $limit;
         $dataParams['offset'] = ($page - 1) * $limit;
 
-        $rows = $this->connection->fetchAllAssociative($dataSql, $dataParams);
+        $rows = $this->connection->fetchAllAssociative($dataSql, $dataParams, $paramTypes);
 
         return [
             'total' => $total,
@@ -196,6 +219,12 @@ readonly class LieferzeitenOrderOverviewService
         if (($value = trim((string) ($filters['shippingAssignmentType'] ?? ''))) !== '') {
             $conditions[] = 'p.shipping_assignment_type = :shippingAssignmentType';
             $params['shippingAssignmentType'] = $value;
+        }
+
+        $domainSources = $this->resolveDomainSources(trim((string) ($filters['domain'] ?? '')));
+        if ($domainSources !== []) {
+            $conditions[] = 'p.source_system IN (:sourceSystems)';
+            $params['sourceSystems'] = $domainSources;
         }
 
         if (($value = trim((string) ($filters['sendenummer'] ?? ''))) !== '') {
@@ -331,6 +360,20 @@ readonly class LieferzeitenOrderOverviewService
             $alias,
             implode(' AND ', $historyConditions),
         );
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function resolveDomainSources(string $domain): array
+    {
+        if ($domain === '') {
+            return [];
+        }
+
+        $domainKey = self::DOMAIN_ALIASES[$domain] ?? strtolower($domain);
+
+        return self::DOMAIN_SOURCE_MAPPING[$domainKey] ?? [$domain];
     }
 
     private function resolveSortField(?string $sort): string

@@ -3,6 +3,13 @@ import { DOMAIN_OPTIONS, normalizeDomainKey } from '../../utils/domain-source-ma
 
 const STORAGE_KEY = 'lieferzeitenManagementDomain';
 
+const LEGACY_DOMAIN_MAPPING = {
+    'First Medical': 'first-medical-e-commerce',
+    'E-Commerce': 'first-medical-e-commerce',
+    'First Medical - E-Commerce': 'first-medical-e-commerce',
+    'Medical Solutions': 'medical-solutions',
+};
+
 Shopware.Component.register('lieferzeiten-domain-selection', {
     template,
 
@@ -41,6 +48,10 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
     },
 
     methods: {
+
+        normalizeDomainValue(value) {
+            return LEGACY_DOMAIN_MAPPING[value] || value;
+        },
         loadStoredDomain() {
             const localValue = localStorage.getItem(STORAGE_KEY);
             if (localValue) {

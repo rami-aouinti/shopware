@@ -60,6 +60,16 @@ class QueuedNotificationEmailProcessor
             'occurredAt' => $event->getDispatchedAt()?->format(DATE_ATOM),
         ];
 
+        foreach ($payload as $key => $value) {
+            if (!is_string($key) || $key === '' || array_key_exists($key, $variables)) {
+                continue;
+            }
+
+            if (is_scalar($value) || $value === null) {
+                $variables[$key] = $value;
+            }
+        }
+
         try {
             $recipient = (string) ($payload['customerEmail'] ?? '');
             if ($recipient === '') {

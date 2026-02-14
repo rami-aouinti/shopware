@@ -2,6 +2,7 @@
 
 namespace LieferzeitenAdmin\Service;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 
 readonly class LieferzeitenStatisticsService
@@ -56,7 +57,11 @@ readonly class LieferzeitenStatisticsService
             $scopeSql,
         );
 
-        $metrics = $this->connection->fetchAssociative($metricsSql, $params) ?: [];
+        $metricsParamTypes = isset($params['sourceSystems'])
+            ? ['sourceSystems' => ArrayParameterType::STRING]
+            : [];
+
+        $metrics = $this->connection->fetchAssociative($metricsSql, $params, $metricsParamTypes) ?: [];
 
         $channelSql = sprintf(
             'SELECT
@@ -71,7 +76,7 @@ readonly class LieferzeitenStatisticsService
             $scopeSql,
         );
 
-        $channels = $this->connection->fetchAllAssociative($channelSql, $params);
+        $channels = $this->connection->fetchAllAssociative($channelSql, $params, $metricsParamTypes);
 
         $timelineSql = sprintf(
             'SELECT
@@ -112,7 +117,7 @@ readonly class LieferzeitenStatisticsService
             $this->buildSourceScopeCondition('t.source_system', $params, $domain, $channel),
         );
 
-        $timeline = $this->connection->fetchAllAssociative($timelineSql, $params);
+        $timeline = $this->connection->fetchAllAssociative($timelineSql, $params, $metricsParamTypes);
 
         $activitiesSql = sprintf(
             'SELECT
@@ -190,7 +195,7 @@ readonly class LieferzeitenStatisticsService
             $this->buildSourceScopeCondition('t.domain', $params, $domain, $channel),
         );
 
-        $activities = $this->connection->fetchAllAssociative($activitiesSql, $params);
+        $activities = $this->connection->fetchAllAssociative($activitiesSql, $params, $metricsParamTypes);
 
         return [
             'periodDays' => $periodDays,

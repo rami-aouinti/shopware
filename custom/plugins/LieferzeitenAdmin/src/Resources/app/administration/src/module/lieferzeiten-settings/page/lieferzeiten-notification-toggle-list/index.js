@@ -22,12 +22,19 @@ Component.register('lieferzeiten-notification-toggle-list', {
                 'commande.creee',
                 'commande.changement_statut',
                 'tracking.mis_a_jour',
+                'expedition.confirmee',
                 'changements.date_livraison',
                 'douane.requise',
+                'commande.storno',
+                'livraison.impossible',
+                'livraison.retoure',
                 'rappel.vorkasse',
+                'paiement.recu.vorkasse',
+                'commande.terminee.rappel_evaluation',
                 'versand.datum.ueberfaellig',
                 'liefertermin.anfrage.zusaetzlich',
                 'liefertermin.anfrage.geschlossen',
+                'liefertermin.anfrage.wiedereroeffnet',
             ],
             channelOptions: ['email', 'sms', 'webhook'],
         };
@@ -85,7 +92,7 @@ Component.register('lieferzeiten-notification-toggle-list', {
                 this.items = result;
                 this.total = result.total;
             } catch (error) {
-                this.notifyRequestError(error, 'Lieferzeiten Settings');
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.general.mainMenuItem'));
             } finally {
                 this.isLoading = false;
             }
@@ -106,7 +113,7 @@ Component.register('lieferzeiten-notification-toggle-list', {
                 await this.repository.save(item, Shopware.Context.api);
                 await this.getList();
             } catch (error) {
-                this.notifyRequestError(error, 'Lieferzeiten Settings');
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.general.mainMenuItem'));
             }
         },
         async onDelete(item) {
@@ -119,7 +126,7 @@ Component.register('lieferzeiten-notification-toggle-list', {
                 await this.repository.delete(item.id, Shopware.Context.api);
                 await this.getList();
             } catch (error) {
-                this.notifyRequestError(error, 'Lieferzeiten Settings');
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.general.mainMenuItem'));
             }
         },
         async onCreate() {
@@ -137,7 +144,7 @@ Component.register('lieferzeiten-notification-toggle-list', {
                 await this.repository.save(entity, Shopware.Context.api);
                 await this.getList();
             } catch (error) {
-                this.notifyRequestError(error, 'Lieferzeiten Settings');
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.general.mainMenuItem'));
             }
         },
     },
