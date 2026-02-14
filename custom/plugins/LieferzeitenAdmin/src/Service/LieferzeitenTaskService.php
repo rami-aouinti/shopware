@@ -3,6 +3,7 @@
 namespace LieferzeitenAdmin\Service;
 
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Notification\SalesChannelResolver;
 use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
@@ -41,6 +42,7 @@ class LieferzeitenTaskService
     public function __construct(
         private readonly EntityRepository $taskRepository,
         private readonly NotificationEventService $notificationEventService,
+        private readonly SalesChannelResolver $salesChannelResolver,
     ) {
     }
 
@@ -79,6 +81,12 @@ class LieferzeitenTaskService
 
         $payload['initiatorUserId'] = $resolvedInitiatorUserId;
         $payload['initiatorDisplay'] = $resolvedInitiatorDisplay !== '' ? $resolvedInitiatorDisplay : null;
+        $payload['salesChannelId'] = $this->salesChannelResolver->resolve(
+            isset($payload['sourceSystem']) ? (string) $payload['sourceSystem'] : null,
+            isset($payload['externalOrderId']) ? (string) $payload['externalOrderId'] : null,
+            isset($payload['positionNumber']) ? (string) $payload['positionNumber'] : null,
+            isset($payload['salesChannelId']) ? (string) $payload['salesChannelId'] : null,
+        );
 
         $id = Uuid::randomHex();
         $this->taskRepository->create([[
@@ -225,6 +233,12 @@ class LieferzeitenTaskService
             ? $payload['initiatorUserId']
             : (Uuid::isValid($initiator) ? $initiator : null);
         $notificationRecipient = $this->resolveNotificationRecipient($payload, $initiator, $initiatorUserId);
+        $salesChannelId = $this->salesChannelResolver->resolve(
+            isset($payload['sourceSystem']) ? (string) $payload['sourceSystem'] : null,
+            isset($payload['externalOrderId']) ? (string) $payload['externalOrderId'] : null,
+            isset($payload['positionNumber']) ? (string) $payload['positionNumber'] : null,
+            isset($payload['salesChannelId']) ? (string) $payload['salesChannelId'] : null,
+        );
 
         if ($toStatus === self::STATUS_DONE || $toStatus === self::STATUS_CANCELLED) {
             $eventKey = sprintf('task-close:%s:%s', NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUEST_CLOSED, $taskId);
@@ -246,6 +260,7 @@ class LieferzeitenTaskService
                 $context,
                 isset($payload['externalOrderId']) ? (string) $payload['externalOrderId'] : null,
                 isset($payload['sourceSystem']) ? (string) $payload['sourceSystem'] : null,
+                $salesChannelId,
             );
 
             return;
@@ -269,6 +284,7 @@ class LieferzeitenTaskService
                 $context,
                 isset($payload['externalOrderId']) ? (string) $payload['externalOrderId'] : null,
                 isset($payload['sourceSystem']) ? (string) $payload['sourceSystem'] : null,
+                $salesChannelId,
             );
         }
     }

@@ -35,6 +35,10 @@ class NotificationEventService
         ?string $sourceSystem = null,
         ?string $salesChannelId = null,
     ): bool {
+        if ($salesChannelId !== null && $salesChannelId !== '' && !isset($payload['salesChannelId'])) {
+            $payload['salesChannelId'] = $salesChannelId;
+        }
+
         if (!$this->toggleResolver->isEnabled($triggerKey, $channel, $context, $salesChannelId)) {
             return false;
         }

@@ -8,6 +8,7 @@ use LieferzeitenAdmin\Service\AdditionalDeliveryAssigneeMissingException;
 use LieferzeitenAdmin\Service\LieferzeitenPositionWriteService;
 use LieferzeitenAdmin\Service\LieferzeitenTaskService;
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Notification\SalesChannelResolver;
 use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
 use LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver;
 use LieferzeitenAdmin\Service\WriteEndpointConflictException;
@@ -30,6 +31,7 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
             status TEXT NULL,
             external_order_id TEXT NULL,
             source_system TEXT NULL,
+            sales_channel_id TEXT NULL,
             customer_email TEXT NULL,
             updated_at TEXT NOT NULL
         )');
@@ -388,6 +390,7 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
             $this->createMock(NotificationEventService::class),
             $ruleResolver ?? $this->createMock(TaskAssignmentRuleResolver::class),
             $systemConfigService ?? $this->createMock(SystemConfigService::class),
+            $this->createMock(SalesChannelResolver::class),
         );
     }
 }
