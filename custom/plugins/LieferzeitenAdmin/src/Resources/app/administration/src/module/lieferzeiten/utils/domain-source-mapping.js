@@ -42,6 +42,7 @@ export const DOMAIN_GROUPS = [
 ];
 
 export const DEFAULT_DOMAIN_KEY = 'first-medical-shop.de';
+export const DEFAULT_GROUP_ID = 'first-medical-e-commerce';
 
 const DOMAIN_SOURCE_MAPPING = {
     'first-medical-shop.de': ['first-medical-shop.de', 'first medical', 'e-commerce', 'shopware', 'gambio', 'first-medical-e-commerce'],
@@ -61,6 +62,45 @@ const LEGACY_DOMAIN_KEY_MAPPING = {
     'medical solutions': 'medical-solutions-germany.de',
     'medical-solutions': 'medical-solutions-germany.de',
 };
+
+const LEGACY_GROUP_KEY_MAPPING = {
+    'first medical': DEFAULT_GROUP_ID,
+    'e-commerce': DEFAULT_GROUP_ID,
+    'first medical - e-commerce': DEFAULT_GROUP_ID,
+    'first-medical-e-commerce': DEFAULT_GROUP_ID,
+    'medical solutions': 'medical-solutions',
+    'medical-solutions': 'medical-solutions',
+};
+
+export function getChannelsForGroup(groupId) {
+    return DOMAIN_GROUPS.find((group) => group.id === groupId)?.channels || [];
+}
+
+export function getDefaultDomainForGroup(groupId) {
+    return getChannelsForGroup(groupId)[0]?.value || null;
+}
+
+export function normalizeGroupKey(groupId) {
+    const normalized = String(groupId || '').trim().toLowerCase();
+    if (!normalized) {
+        return null;
+    }
+
+    if (LEGACY_GROUP_KEY_MAPPING[normalized]) {
+        return LEGACY_GROUP_KEY_MAPPING[normalized];
+    }
+
+    return DOMAIN_GROUPS.some((group) => group.id === normalized) ? normalized : null;
+}
+
+export function resolveGroupKeyForDomain(domain) {
+    const normalizedDomain = normalizeDomainKey(domain);
+    if (!normalizedDomain) {
+        return null;
+    }
+
+    return DOMAIN_GROUPS.find((group) => group.channels.some((channel) => channel.value === normalizedDomain))?.id || null;
+}
 
 export function normalizeDomainKey(domain) {
     const normalized = String(domain || '').trim().toLowerCase();

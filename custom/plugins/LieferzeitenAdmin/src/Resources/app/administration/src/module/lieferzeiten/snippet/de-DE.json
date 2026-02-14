@@ -21,8 +21,8 @@
     "domainSelection": {
       "placeholder": "Bitte Kanal wählen",
       "reset": "Auswahl zurücksetzen",
-      "modalTitle": "Kanal auswählen",
-      "modalDescription": "Wähle einen Kanal aus, um die Lieferzeiten-Ansichten zu laden.",
+      "modalTitle": "Bereich und Kanal auswählen",
+      "modalDescription": "Schritt 1: Bereich auswählen. Schritt 2: Kanal auswählen, um die Lieferzeiten-Ansichten zu laden.",
       "persistLabel": "Auswahl auf diesem Gerät speichern",
       "confirm": "Auswahl übernehmen",
       "groups": {
@@ -37,6 +37,14 @@
         "peg": "PEG",
         "zonami": "Zonami",
         "medicalSolutionsGermany": "medical-solutions-germany.de"
+      },
+      "groupPlaceholder": "Bitte Bereich wählen",
+      "channelPlaceholder": "Bitte Kanal wählen",
+      "next": "Weiter",
+      "back": "Zurück",
+      "steps": {
+        "group": "Schritt 1 · Bereich",
+        "channel": "Schritt 2 · Kanal"
       }
     },
     "kpi": {
