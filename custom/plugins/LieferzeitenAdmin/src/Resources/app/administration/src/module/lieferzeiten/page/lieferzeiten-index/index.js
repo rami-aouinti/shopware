@@ -28,6 +28,7 @@ Shopware.Component.register('lieferzeiten-index', {
     data() {
         return {
             selectedDomain: null,
+            selectedGroup: null,
             orders: [],
             isLoading: false,
             isStatisticsLoading: false,
@@ -47,12 +48,20 @@ Shopware.Component.register('lieferzeiten-index', {
 
     watch: {
         selectedDomain() {
+            if (!this.canAccessMainViews) {
+                return;
+            }
+
             this.loadOrders();
             this.loadStatistics();
         },
     },
 
     computed: {
+        canAccessMainViews() {
+            return Boolean(this.selectedGroup);
+        },
+
         filteredOrders() {
             const domainKey = normalizeDomainKey(this.selectedDomain);
             if (!domainKey) {
@@ -65,7 +74,32 @@ Shopware.Component.register('lieferzeiten-index', {
 
     methods: {
 
+        onGroupChange(group) {
+            this.selectedGroup = group;
+
+            if (!this.canAccessMainViews) {
+                this.orders = [];
+                this.statisticsMetrics = {
+                    openOrders: 0,
+                    overdueShipping: 0,
+                    overdueDelivery: 0,
+                };
+                return;
+            }
+
+            this.loadOrders();
+            this.loadStatistics();
+        },
+
         async loadStatistics() {
+            if (!this.canAccessMainViews) {
+                this.statisticsMetrics = {
+                    openOrders: 0,
+                    overdueShipping: 0,
+                    overdueDelivery: 0,
+                };
+                return;
+            }
             try {
                 const payload = await this.lieferzeitenOrdersService.getStatistics({
                     period: 30,
@@ -113,6 +147,11 @@ Shopware.Component.register('lieferzeiten-index', {
         },
 
         async loadOrders() {
+            if (!this.canAccessMainViews) {
+                this.orders = [];
+                this.isLoading = false;
+                return;
+            }
             this.isLoading = true;
             this.loadError = null;
 

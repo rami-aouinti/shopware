@@ -21,10 +21,10 @@
     "domainSelection": {
       "placeholder": "Bitte Kanal wählen",
       "reset": "Auswahl zurücksetzen",
-      "modalTitle": "Bereich und Kanal auswählen",
-      "modalDescription": "Schritt 1: Bereich auswählen. Schritt 2: Kanal auswählen, um die Lieferzeiten-Ansichten zu laden.",
+      "modalTitle": "Bereich auswählen",
+      "modalDescription": "Schritt 1: Wähle den Bereich. Danach werden die Lieferzeiten-Ansichten freigeschaltet und der passende Kanal vorausgewählt.",
       "persistLabel": "Auswahl auf diesem Gerät speichern",
-      "confirm": "Auswahl übernehmen",
+      "confirmGroup": "Bereich übernehmen",
       "groups": {
         "firstMedicalECommerce": "First Medical - E-Commerce",
         "medicalSolutions": "Medical Solutions"
@@ -40,12 +40,11 @@
       },
       "groupPlaceholder": "Bitte Bereich wählen",
       "channelPlaceholder": "Bitte Kanal wählen",
-      "next": "Weiter",
-      "back": "Zurück",
       "steps": {
-        "group": "Schritt 1 · Bereich",
-        "channel": "Schritt 2 · Kanal"
-      }
+        "group": "Schritt 1 · Bereich (Pflicht)"
+      },
+      "accessPendingTitle": "Bereich auswählen",
+      "accessPendingDescription": "Bitte zuerst einen Bereich auswählen, damit die Hauptansichten geladen werden."
     },
     "kpi": {
       "totalOrders": "Bestellungen gesamt",
@@ -162,7 +161,7 @@
       "activityDate": "Aktiv am",
       "timelineTitle": "Aktivitäten über Zeit",
       "timelineEmptyTitle": "Keine Aktivitäten im Zeitraum",
-      "timelineEmptyDescription": "Für die ausgewählten Filter sind keine zeitlichen Aktivitäten verfügbar."
+      "timelineEmptyDescription": "Für die ausgewählten Filter sind keine zeitlichen Aktivitäten verfügbar.",
       "actionsColumn": "Aktionen",
       "actionsUnavailable": "Keine Aktion verfügbar",
       "actionUnavailableReason": "Für diese Aktivität ist keine kontextuelle Aktion verfügbar.",

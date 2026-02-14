@@ -21,10 +21,10 @@
     "domainSelection": {
       "placeholder": "Select channel",
       "reset": "Reset selection",
-      "modalTitle": "Select area and channel",
-      "modalDescription": "Step 1: Select an area. Step 2: Select a channel to load delivery-time views.",
+      "modalTitle": "Select area",
+      "modalDescription": "Step 1: Select the area. Delivery-time views will then be enabled and a matching channel will be preselected.",
       "persistLabel": "Persist selection on this device",
-      "confirm": "Apply selection",
+      "confirmGroup": "Apply area",
       "groups": {
         "firstMedicalECommerce": "First Medical - E-Commerce",
         "medicalSolutions": "Medical Solutions"
@@ -40,12 +40,11 @@
       },
       "groupPlaceholder": "Select area",
       "channelPlaceholder": "Select channel",
-      "next": "Next",
-      "back": "Back",
       "steps": {
-        "group": "Step 1 · Area",
-        "channel": "Step 2 · Channel"
-      }
+        "group": "Step 1 · Area (required)"
+      },
+      "accessPendingTitle": "Select area",
+      "accessPendingDescription": "Please select an area first to unlock the main views."
     },
     "kpi": {
       "totalOrders": "Total orders",
@@ -162,7 +161,7 @@
       "activityDate": "Activity at",
       "timelineTitle": "Activities over time",
       "timelineEmptyTitle": "No activities in selected period",
-      "timelineEmptyDescription": "No timeline activity is available for the selected filters."
+      "timelineEmptyDescription": "No timeline activity is available for the selected filters.",
       "actionsColumn": "Actions",
       "actionsUnavailable": "No action available",
       "actionUnavailableReason": "No contextual action is available for this activity.",
