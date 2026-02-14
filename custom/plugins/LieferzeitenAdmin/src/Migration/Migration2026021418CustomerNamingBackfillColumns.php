@@ -26,14 +26,14 @@ class Migration2026021418CustomerNamingBackfillColumns extends MigrationStep
 
     private function addColumnIfMissing(Connection $connection, string $table, string $column, string $definition): void
     {
-        if ($this->columnExists($connection, $table, $column)) {
+        if ($this->hasColumn($connection, $table, $column)) {
             return;
         }
 
         $connection->executeStatement(sprintf('ALTER TABLE `%s` ADD COLUMN `%s` %s', $table, $column, $definition));
     }
 
-    private function columnExists(Connection $connection, string $table, string $column): bool
+    private function hasColumn(Connection $connection, string $table, string $column): bool
     {
         $result = $connection->fetchOne(
             'SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :table AND COLUMN_NAME = :column',
