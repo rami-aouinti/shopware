@@ -10,6 +10,7 @@ use LieferzeitenAdmin\Service\LieferzeitenTaskService;
 use LieferzeitenAdmin\Service\WriteEndpointConflictException;
 use LieferzeitenAdmin\Service\LieferzeitenStatisticsService;
 use LieferzeitenAdmin\Service\DemoDataSeederService;
+use LieferzeitenAdmin\Service\PdmsLieferzeitenMappingService;
 use LieferzeitenAdmin\Service\Tracking\TrackingHistoryService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -33,6 +34,7 @@ class LieferzeitenSyncController extends AbstractController
         private readonly LieferzeitenStatisticsService $statisticsService,
         private readonly DemoDataSeederService $demoDataSeederService,
         private readonly AuditLogService $auditLogService,
+        private readonly PdmsLieferzeitenMappingService $pdmsLieferzeitenMappingService,
     ) {
     }
 
@@ -206,6 +208,22 @@ class LieferzeitenSyncController extends AbstractController
         ], 'shopware');
 
         return new JsonResponse($payload);
+    }
+
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/sales-channel/{salesChannelId}/lieferzeiten',
+        name: 'api.admin.lieferzeiten.sales_channel_lieferzeiten',
+        defaults: ['_acl' => ['lieferzeiten.viewer']],
+        methods: [Request::METHOD_GET]
+    )]
+    public function salesChannelLieferzeiten(string $salesChannelId, Context $context): JsonResponse
+    {
+        if (!Uuid::isValid($salesChannelId)) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Invalid sales channel id'], Response::HTTP_BAD_REQUEST);
+        }
+
+        return new JsonResponse($this->pdmsLieferzeitenMappingService->getForSalesChannel($salesChannelId, $context));
     }
 
     #[Route(

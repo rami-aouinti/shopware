@@ -488,6 +488,12 @@ readonly class LieferzeitenOrderOverviewService
             'code' => $statusCodeString,
             'label' => $statusLabel,
         ];
+        $row['business_status'] = [
+            'code' => $statusCodeString,
+            'label' => $statusLabel,
+        ];
+        $row['business_status_label'] = $statusLabel;
+        $row['last_changed_by'] = $row['last_changed_by'] ?? ($row['user'] ?? null);
 
         $row['positionsCount'] = (int) ($row['positionsCount'] ?? 0);
 
