@@ -657,9 +657,9 @@
                                 <div class="external-orders__detail-card-body">
                                     <div class="external-orders__detail-grid">
                                         <div class="external-orders__detail-section">
-                                            <h4>Kundendetails</h4>
+                                            <h4>Kundendetails (Shopware)</h4>
                                             <dl>
-                                                <dt>Kundenname</dt>
+                                                <dt>Kundenname - Shopware</dt>
                                                 <dd>{{ selectedOrder.customer.firstName }} {{ selectedOrder.customer.lastName }}</dd>
                                                 <dt>Kundennummer</dt>
                                                 <dd>{{ selectedOrder.customer.number }}</dd>
@@ -667,9 +667,9 @@
                                                 <dd>{{ selectedOrder.customer.firstName }}</dd>
                                                 <dt>Nachname</dt>
                                                 <dd>{{ selectedOrder.customer.lastName }}</dd>
-                                                <dt>Kunden-Mail-Adresse</dt>
+                                                <dt>Kunden-Mail-Adresse - Shopware</dt>
                                                 <dd>{{ selectedOrder.customer.email }}</dd>
-                                                <dt>Kundengruppe</dt>
+                                                <dt>Kundengruppe - Shopware</dt>
                                                 <dd>{{ selectedOrder.customer.group }}</dd>
                                             </dl>
                                         </div>
@@ -691,7 +691,7 @@
                                             </dl>
                                         </div>
                                         <div class="external-orders__detail-section">
-                                            <h4>Rechnungsanschrift</h4>
+                                            <h4>Rechnungsanschrift (mit Land) - Shopware</h4>
                                             <dl>
                                                 <dt>Straße</dt>
                                                 <dd>{{ selectedOrder.billingAddress.street }}</dd>
@@ -704,7 +704,7 @@
                                             </dl>
                                         </div>
                                         <div class="external-orders__detail-section">
-                                            <h4>Lieferanschrift</h4>
+                                            <h4>Lieferanschrift - Shopware</h4>
                                             <dl>
                                                 <dt>Lieferadresse</dt>
                                                 <dd>{{ selectedOrder.shippingAddress.name }}</dd>
@@ -727,11 +727,11 @@
                                                 <dd>{{ selectedOrder.additional.orderType }}</dd>
                                                 <dt>Notizen</dt>
                                                 <dd>{{ selectedOrder.additional.notes }}</dd>
-                                                <dt>Fachberater</dt>
+                                                <dt>Fachberater - San6 (ERP)</dt>
                                                 <dd>{{ selectedOrder.additional.consultant }}</dd>
                                                 <dt>Mandant</dt>
                                                 <dd>{{ selectedOrder.additional.tenant }}</dd>
-                                                <dt>San6 Auftragsnummer</dt>
+                                                <dt>San6 Auftragsnummer - San6 (ERP)</dt>
                                                 <dd>{{ selectedOrder.additional.san6OrderNumber }}</dd>
                                             </dl>
                                         </div>
@@ -740,17 +740,17 @@
                                             <dl>
                                                 <dt>Versanddienstleister</dt>
                                                 <dd>{{ selectedOrder.shipping.carrier }}</dd>
-                                                <dt>Trackingnummer(n)</dt>
-                                                <dd>{{ selectedOrder.shipping.trackingNumbers.join(', ') }}</dd>
-                                                <dt>Einträge in Orgas San6</dt>
+                                                <dt>Versanddienstleister Trackingnummer(n) - San6 (ERP)</dt>
+                                                <dd>{{ selectedOrder.shipping.carrier }}: {{ selectedOrder.shipping.trackingNumbers.join(', ') }}</dd>
+                                                <dt>Einträge in Orgas San6 - San6 (ERP)</dt>
                                                 <dd>{{ selectedOrder.additional.orgaEntries.join(', ') }}</dd>
-                                                <dt>Dokumente aus Bildarchiv San6</dt>
+                                                <dt>Dokumente aus Bildarchiv San6 - San6 (ERP)</dt>
                                                 <dd>{{ selectedOrder.additional.documents.join(', ') }}</dd>
-                                                <dt>PDMS ID + Variante</dt>
+                                                <dt>PDMS ID + Variante - Shopware</dt>
                                                 <dd>{{ selectedOrder.additional.pdmsId }} / {{ selectedOrder.additional.pdmsVariant }}</dd>
-                                                <dt>TopM Artikelnummer + Ausführung</dt>
+                                                <dt>TopM Artikelnummer + Ausführung - San6 (ERP)</dt>
                                                 <dd>{{ selectedOrder.additional.topmArticleNumber }} / {{ selectedOrder.additional.topmExecution }}</dd>
-                                                <dt>Bestellstatushistorie Gambio/Shopware</dt>
+                                                <dt>Bestellstatushistorie Gambio/Shopware - Shopware</dt>
                                                 <dd>{{ selectedOrder.additional.statusHistorySource }}</dd>
                                             </dl>
                                         </div>
@@ -769,10 +769,10 @@
                                                 <tr>
                                                     <th>Produktname</th>
                                                     <th>Menge</th>
-                                                    <th>Nettowert</th>
-                                                    <th>Steuersatz</th>
-                                                    <th>Bruttowert</th>
-                                                    <th>Gesamtwert</th>
+                                                    <th>Nettowert des Artikels - Shopware</th>
+                                                    <th>Steuersatz des Artikels - Shopware</th>
+                                                    <th>Bruttowert des Artikels - Shopware</th>
+                                                    <th>Gesamtwert des Artikels - Shopware</th>
                                                 </tr>
                                             </thead>
                                             <tbody>

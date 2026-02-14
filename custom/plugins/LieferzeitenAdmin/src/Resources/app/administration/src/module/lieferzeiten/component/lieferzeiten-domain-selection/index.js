@@ -1,6 +1,14 @@
 import template from './lieferzeiten-domain-selection.html.twig';
+import { DOMAIN_OPTIONS, normalizeDomainKey } from '../../utils/domain-source-mapping';
 
 const STORAGE_KEY = 'lieferzeitenManagementDomain';
+
+const LEGACY_DOMAIN_MAPPING = {
+    'First Medical': 'first-medical-e-commerce',
+    'E-Commerce': 'first-medical-e-commerce',
+    'First Medical - E-Commerce': 'first-medical-e-commerce',
+    'Medical Solutions': 'medical-solutions',
+};
 
 Shopware.Component.register('lieferzeiten-domain-selection', {
     template,
@@ -15,14 +23,10 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
 
     data() {
         return {
-            selectedDomain: this.value,
+            selectedDomain: normalizeDomainKey(this.value),
             persistSelection: false,
             showDomainModal: false,
-            domains: [
-                { value: 'First Medical', label: 'First Medical' },
-                { value: 'E-Commerce', label: 'E-Commerce' },
-                { value: 'Medical Solutions', label: 'Medical Solutions' },
-            ],
+            domains: DOMAIN_OPTIONS,
         };
     },
 
@@ -32,7 +36,7 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
 
     watch: {
         value(newValue) {
-            this.selectedDomain = newValue;
+            this.selectedDomain = normalizeDomainKey(newValue);
         },
         selectedDomain(newValue) {
             this.$emit('input', newValue);
@@ -44,19 +48,29 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
     },
 
     methods: {
+
+        normalizeDomainValue(value) {
+            return LEGACY_DOMAIN_MAPPING[value] || value;
+        },
         loadStoredDomain() {
             const localValue = localStorage.getItem(STORAGE_KEY);
             if (localValue) {
-                this.persistSelection = true;
-                this.selectedDomain = localValue;
-                return;
+                const normalizedValue = normalizeDomainKey(localValue);
+                if (normalizedValue) {
+                    this.persistSelection = true;
+                    this.selectedDomain = normalizedValue;
+                    return;
+                }
             }
 
             const sessionValue = sessionStorage.getItem(STORAGE_KEY);
             if (sessionValue) {
-                this.persistSelection = false;
-                this.selectedDomain = sessionValue;
-                return;
+                const normalizedValue = normalizeDomainKey(sessionValue);
+                if (normalizedValue) {
+                    this.persistSelection = false;
+                    this.selectedDomain = normalizedValue;
+                    return;
+                }
             }
 
             this.showDomainModal = true;

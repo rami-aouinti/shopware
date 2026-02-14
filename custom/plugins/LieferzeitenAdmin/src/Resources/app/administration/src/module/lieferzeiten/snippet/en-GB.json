@@ -59,7 +59,9 @@
       "history": "History",
       "shippingType": "Shipping type",
       "audit": "Audit",
-      "days": "days"
+      "days": "days",
+      "latestShipping": "Latest shipping",
+      "latestDelivery": "Latest delivery"
     },
     "shipping": {
       "unclear": "Unclear",

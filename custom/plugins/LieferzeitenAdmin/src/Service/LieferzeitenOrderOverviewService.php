@@ -2,10 +2,29 @@
 
 namespace LieferzeitenAdmin\Service;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 
 readonly class LieferzeitenOrderOverviewService
 {
+    /**
+     * @var array<string, list<string>>
+     */
+    private const DOMAIN_SOURCE_MAPPING = [
+        'first-medical-e-commerce' => ['shopware', 'gambio', 'first medical', 'e-commerce', 'first-medical-e-commerce'],
+        'medical-solutions' => ['medical solutions', 'medical-solutions'],
+    ];
+
+    /**
+     * @var array<string, string>
+     */
+    private const DOMAIN_ALIASES = [
+        'First Medical' => 'first-medical-e-commerce',
+        'E-Commerce' => 'first-medical-e-commerce',
+        'First Medical - E-Commerce' => 'first-medical-e-commerce',
+        'Medical Solutions' => 'medical-solutions',
+    ];
+
     private const FILTERABLE_FIELDS = [
         'bestellnummer',
         'san6',
@@ -31,6 +50,20 @@ readonly class LieferzeitenOrderOverviewService
         'lieferterminLieferantTo',
         'neuerLieferterminFrom',
         'neuerLieferterminTo',
+        'domain',
+    ];
+
+
+    private const DOMAIN_SOURCE_MAPPING = [
+        'first-medical-e-commerce' => ['first medical', 'e-commerce', 'shopware', 'gambio'],
+        'medical-solutions' => ['medical solutions', 'medical-solutions', 'medical_solutions'],
+    ];
+
+    private const LEGACY_DOMAIN_MAPPING = [
+        'first medical' => 'first-medical-e-commerce',
+        'e-commerce' => 'first-medical-e-commerce',
+        'first medical - e-commerce' => 'first-medical-e-commerce',
+        'medical solutions' => 'medical-solutions',
     ];
 
     private const SORTABLE_FIELDS = [
@@ -86,7 +119,11 @@ readonly class LieferzeitenOrderOverviewService
             $where,
         );
 
-        $total = (int) $this->connection->fetchOne($totalSql, $params);
+        $paramTypes = isset($params['sourceSystems'])
+            ? ['sourceSystems' => ArrayParameterType::STRING]
+            : [];
+
+        $total = (int) $this->connection->fetchOne($totalSql, $params, $paramTypes);
 
         $dataSql = sprintf(
             'SELECT
@@ -99,11 +136,12 @@ readonly class LieferzeitenOrderOverviewService
                 p.last_changed_by AS user,
                 p.status AS status,
                 p.shipping_assignment_type AS shipping_assignment_type,
+                p.source_system AS sourceSystem,
                 MAX(sh.sendenummer) AS sendenummer
              FROM `lieferzeiten_paket` p
              %s
              %s
-             GROUP BY p.id, p.external_order_id, p.paket_number, p.order_date, p.shipping_date, p.delivery_date, p.last_changed_by, p.status, p.shipping_assignment_type
+             GROUP BY p.id, p.external_order_id, p.paket_number, p.order_date, p.shipping_date, p.delivery_date, p.last_changed_by, p.status, p.shipping_assignment_type, p.source_system
              ORDER BY %s
              LIMIT :limit OFFSET :offset',
             $joinSql,
@@ -115,7 +153,7 @@ readonly class LieferzeitenOrderOverviewService
         $dataParams['limit'] = $limit;
         $dataParams['offset'] = ($page - 1) * $limit;
 
-        $rows = $this->connection->fetchAllAssociative($dataSql, $dataParams);
+        $rows = $this->connection->fetchAllAssociative($dataSql, $dataParams, $paramTypes);
 
         return [
             'total' => $total,
@@ -183,6 +221,12 @@ readonly class LieferzeitenOrderOverviewService
             $params['shippingAssignmentType'] = $value;
         }
 
+        $domainSources = $this->resolveDomainSources(trim((string) ($filters['domain'] ?? '')));
+        if ($domainSources !== []) {
+            $conditions[] = 'p.source_system IN (:sourceSystems)';
+            $params['sourceSystems'] = $domainSources;
+        }
+
         if (($value = trim((string) ($filters['sendenummer'] ?? ''))) !== '') {
             $joins[] = 'LEFT JOIN `lieferzeiten_position` pos ON pos.paket_id = p.id';
             $joins[] = 'LEFT JOIN `lieferzeiten_sendenummer_history` sh ON sh.position_id = pos.id';
@@ -219,6 +263,19 @@ readonly class LieferzeitenOrderOverviewService
             $filters,
             'nlh',
         );
+
+
+        $domainFilter = $this->resolveDomainFilter((string) ($filters['domain'] ?? ''));
+        if ($domainFilter !== []) {
+            $placeholders = [];
+            foreach ($domainFilter as $index => $sourceSystem) {
+                $paramName = sprintf('domainSource%d', $index);
+                $params[$paramName] = $sourceSystem;
+                $placeholders[] = ':' . $paramName;
+            }
+
+            $conditions[] = sprintf('LOWER(COALESCE(p.source_system, "")) IN (%s)', implode(', ', $placeholders));
+        }
 
         if ($conditions === []) {
             return '';
@@ -305,6 +362,20 @@ readonly class LieferzeitenOrderOverviewService
         );
     }
 
+    /**
+     * @return list<string>
+     */
+    private function resolveDomainSources(string $domain): array
+    {
+        if ($domain === '') {
+            return [];
+        }
+
+        $domainKey = self::DOMAIN_ALIASES[$domain] ?? strtolower($domain);
+
+        return self::DOMAIN_SOURCE_MAPPING[$domainKey] ?? [$domain];
+    }
+
     private function resolveSortField(?string $sort): string
     {
         if ($sort !== null && $sort !== '') {
@@ -330,4 +401,27 @@ readonly class LieferzeitenOrderOverviewService
     {
         return strtoupper((string) $order) === 'ASC' ? 'ASC' : 'DESC';
     }
+
+    /**
+     * @return array<int, string>
+     */
+    private function resolveDomainFilter(string $domain): array
+    {
+        $domain = $this->normalizeValue($domain);
+        if ($domain === null || $domain === 'all') {
+            return [];
+        }
+
+        $domainKey = self::LEGACY_DOMAIN_MAPPING[$domain] ?? $domain;
+
+        return self::DOMAIN_SOURCE_MAPPING[$domainKey] ?? [$domainKey];
+    }
+
+    private function normalizeValue(string $value): ?string
+    {
+        $value = trim(mb_strtolower($value));
+
+        return $value !== '' ? $value : null;
+    }
+
 }

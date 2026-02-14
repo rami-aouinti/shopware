@@ -3,6 +3,42 @@ const { Component, Mixin } = Shopware;
 import './external-orders-channel-config.scss';
 import channelIllustration from './images/external-orders-hero.svg';
 
+Shopware.Locale.extend('de-DE', {
+    'external-orders-channel-config': {
+        groups: {
+            firstMedicalEcommerce: 'First Medical - E-Commerce',
+            medicalSolutions: 'Medical Solutions',
+        },
+        channels: {
+            b2b: 'first-medical-shop.de',
+            ebayDe: 'ebay.de',
+            kaufland: 'kaufland.de',
+            ebayAt: 'ebay.at',
+            zonami: 'zonami.de',
+            peg: 'pflege-einfach-guenstig.de',
+            bezb: 'medical-solutions-germany.de',
+        },
+    },
+});
+
+Shopware.Locale.extend('en-GB', {
+    'external-orders-channel-config': {
+        groups: {
+            firstMedicalEcommerce: 'First Medical - E-Commerce',
+            medicalSolutions: 'Medical Solutions',
+        },
+        channels: {
+            b2b: 'first-medical-shop.de',
+            ebayDe: 'ebay.de',
+            kaufland: 'kaufland.de',
+            ebayAt: 'ebay.at',
+            zonami: 'zonami.de',
+            peg: 'pflege-einfach-guenstig.de',
+            bezb: 'medical-solutions-germany.de',
+        },
+    },
+});
+
 Component.register('external-orders-channel-config', {
     template: `
         <div class="external-orders-channel-config">
@@ -22,19 +58,26 @@ Component.register('external-orders-channel-config', {
             </div>
 
             <div class="external-orders-channel-config__panel">
-                <div class="external-orders-channel-config__grid">
-                    <button
-                        v-for="channel in channels"
-                        :key="channel.id"
-                        type="button"
-                        class="external-orders-channel-config__item"
-                        @click="openChannelModal(channel)"
-                    >
-                        <span class="external-orders-channel-config__logo">
-                            <img :src="channel.logo" :alt="channel.label" />
-                        </span>
-                        <span class="external-orders-channel-config__title">{{ channel.label }}</span>
-                    </button>
+                <div
+                    v-for="channelGroup in channelGroups"
+                    :key="channelGroup.id"
+                    class="external-orders-channel-config__group"
+                >
+                    <h4 class="external-orders-channel-config__group-title">{{ channelGroup.label }}</h4>
+                    <div class="external-orders-channel-config__grid">
+                        <button
+                            v-for="channel in channelGroup.channels"
+                            :key="channel.id"
+                            type="button"
+                            class="external-orders-channel-config__item"
+                            @click="openChannelModal(channel)"
+                        >
+                            <span class="external-orders-channel-config__logo">
+                                <img :src="channel.logo" :alt="channel.label" />
+                            </span>
+                            <span class="external-orders-channel-config__title">{{ channel.label }}</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -53,38 +96,16 @@ Component.register('external-orders-channel-config', {
                 :title="modalTitle"
                 @modal-close="closeModal"
             >
-                <template v-if="selectedChannel?.id !== 'san6'">
-                    <sw-text-field
-                        v-model="channelForm.apiUrl"
-                        label="API URL"
-                        placeholder="https://..."
-                    />
-                    <sw-text-field
-                        v-model="channelForm.apiToken"
-                        label="API Token"
-                        placeholder="Token"
-                    />
-                </template>
-
-                <template v-if="selectedChannel?.id === 'san6'">
-                    <sw-text-field v-model="channelForm.san6BaseUrl" label="SAN6 Base URL" placeholder="https://...:4443" />
-                    <sw-text-field v-model="channelForm.san6Company" label="SAN6 Company" />
-                    <sw-text-field v-model="channelForm.san6Product" label="SAN6 Product" />
-                    <sw-single-select
-                        v-model:value="channelForm.san6Mandant"
-                        label="SAN6 Mandant"
-                        :options="san6MandantOptions"
-                    />
-                    <sw-text-field v-model="channelForm.san6Sys" label="SAN6 Sys" />
-                    <sw-text-field v-model="channelForm.san6Authentifizierung" label="SAN6 Authentifizierung" />
-                    <sw-text-field v-model="channelForm.san6ReadFunction" label="SAN6 Funktion (Lesen)" placeholder="API-AUFTRAEGE" />
-                    <sw-text-field v-model="channelForm.san6WriteFunction" label="SAN6 Funktion (Schreiben)" placeholder="API-AUFTRAGNEU2" />
-                    <sw-single-select
-                        v-model:value="channelForm.san6SendStrategy"
-                        label="SAN6 Versandstrategie"
-                        :options="san6SendStrategyOptions"
-                    />
-                </template>
+                <sw-text-field
+                    v-model="channelForm.apiUrl"
+                    label="API URL"
+                    placeholder="https://..."
+                />
+                <sw-text-field
+                    v-model="channelForm.apiToken"
+                    label="API Token"
+                    placeholder="Token"
+                />
 
                 <template #modal-footer>
                     <sw-button size="small" @click="closeModal">Schließen</sw-button>
@@ -125,30 +146,26 @@ Component.register('external-orders-channel-config', {
             channelForm: {
                 apiUrl: '',
                 apiToken: '',
-                san6BaseUrl: '',
-                san6Company: '',
-                san6Product: '',
-                san6Mandant: 'Schule',
-                san6Sys: '',
-                san6Authentifizierung: '',
-                san6ReadFunction: 'API-AUFTRAEGE',
-                san6WriteFunction: 'API-AUFTRAGNEU2',
-                san6SendStrategy: 'filetransferurl',
             },
-            channels: [
-                { id: 'b2b', label: 'First-medical-shop.de', logo: 'http://controlling.first-medical.de:8480/assets/images/b2b1.png', urlKey: 'externalOrdersApiUrlB2b', tokenKey: 'externalOrdersApiTokenB2b' },
-                { id: 'ebay_de', label: 'Ebay.DE', logo: 'http://controlling.first-medical.de:8480/assets/images/ebay1.png', urlKey: 'externalOrdersApiUrlEbayDe', tokenKey: 'externalOrdersApiTokenEbayDe' },
-                { id: 'kaufland', label: 'Kaufland', logo: 'http://controlling.first-medical.de:8480/assets/images/kaufland1.png', urlKey: 'externalOrdersApiUrlKaufland', tokenKey: 'externalOrdersApiTokenKaufland' },
-                { id: 'ebay_at', label: 'Ebay.AT', logo: 'http://controlling.first-medical.de:8480/assets/images/ebayAT.png', urlKey: 'externalOrdersApiUrlEbayAt', tokenKey: 'externalOrdersApiTokenEbayAt' },
-                { id: 'zonami', label: 'Zonami', logo: 'http://controlling.first-medical.de:8480/assets/images/zonami1.png', urlKey: 'externalOrdersApiUrlZonami', tokenKey: 'externalOrdersApiTokenZonami' },
-                { id: 'peg', label: 'PEG', logo: 'http://controlling.first-medical.de:8480/assets/images/peg2.png', urlKey: 'externalOrdersApiUrlPeg', tokenKey: 'externalOrdersApiTokenPeg' },
-                { id: 'bezb', label: 'BEZB', logo: 'http://controlling.first-medical.de:8480/assets/images/bezb1.png', urlKey: 'externalOrdersApiUrlBezb', tokenKey: 'externalOrdersApiTokenBezb' },
+            channelGroups: [
                 {
-                    id: 'san6',
-                    label: 'SAN6',
-                    logo: 'http://controlling.first-medical.de:8480/assets/images/bezb1.png',
-                    urlKey: 'externalOrdersSan6BaseUrl',
-                    tokenKey: 'externalOrdersSan6Authentifizierung',
+                    id: 'first-medical-e-commerce',
+                    label: this.$tc('external-orders-channel-config.groups.firstMedicalEcommerce'),
+                    channels: [
+                        { id: 'b2b', label: this.$tc('external-orders-channel-config.channels.b2b'), logo: 'http://controlling.first-medical.de:8480/assets/images/first-medical-shop.png', urlKey: 'externalOrdersApiUrlB2b', tokenKey: 'externalOrdersApiTokenB2b' },
+                        { id: 'ebay_de', label: this.$tc('external-orders-channel-config.channels.ebayDe'), logo: 'http://controlling.first-medical.de:8480/assets/images/ebay1.png', urlKey: 'externalOrdersApiUrlEbayDe', tokenKey: 'externalOrdersApiTokenEbayDe' },
+                        { id: 'kaufland', label: this.$tc('external-orders-channel-config.channels.kaufland'), logo: 'http://controlling.first-medical.de:8480/assets/images/kaufland1.png', urlKey: 'externalOrdersApiUrlKaufland', tokenKey: 'externalOrdersApiTokenKaufland' },
+                        { id: 'ebay_at', label: this.$tc('external-orders-channel-config.channels.ebayAt'), logo: 'http://controlling.first-medical.de:8480/assets/images/ebayAT.png', urlKey: 'externalOrdersApiUrlEbayAt', tokenKey: 'externalOrdersApiTokenEbayAt' },
+                        { id: 'zonami', label: this.$tc('external-orders-channel-config.channels.zonami'), logo: 'http://controlling.first-medical.de:8480/assets/images/zonami1.png', urlKey: 'externalOrdersApiUrlZonami', tokenKey: 'externalOrdersApiTokenZonami' },
+                        { id: 'peg', label: this.$tc('external-orders-channel-config.channels.peg'), logo: 'http://controlling.first-medical.de:8480/assets/images/peg2.png', urlKey: 'externalOrdersApiUrlPeg', tokenKey: 'externalOrdersApiTokenPeg' },
+                    ],
+                },
+                {
+                    id: 'medical-solutions',
+                    label: this.$tc('external-orders-channel-config.groups.medicalSolutions'),
+                    channels: [
+                        { id: 'bezb', label: this.$tc('external-orders-channel-config.channels.bezb'), logo: 'http://controlling.first-medical.de:8480/assets/images/bezb1.png', urlKey: 'externalOrdersApiUrlBezb', tokenKey: 'externalOrdersApiTokenBezb' },
+                    ],
                 },
             ],
         };
@@ -163,18 +180,6 @@ Component.register('external-orders-channel-config', {
         },
         helpText() {
             return this.element?.helpText ?? '';
-        },
-        san6MandantOptions() {
-            return [
-                { value: 'Schule', label: 'Schule' },
-                { value: 'Zentrale', label: 'Zentrale' },
-            ];
-        },
-        san6SendStrategyOptions() {
-            return [
-                { value: 'filetransferurl', label: 'filetransferurl' },
-                { value: 'post-xml', label: 'post-xml' },
-            ];
         },
 
         cronStatusLabel() {
@@ -205,18 +210,6 @@ Component.register('external-orders-channel-config', {
             this.channelForm.apiUrl = values[this.getConfigKey(channel.urlKey)] || '';
             this.channelForm.apiToken = values[this.getConfigKey(channel.tokenKey)] || '';
 
-            if (channel.id === 'san6') {
-                this.channelForm.san6BaseUrl = this.channelForm.apiUrl;
-                this.channelForm.san6Company = values[this.getConfigKey('externalOrdersSan6Company')] || '';
-                this.channelForm.san6Product = values[this.getConfigKey('externalOrdersSan6Product')] || '';
-                this.channelForm.san6Mandant = values[this.getConfigKey('externalOrdersSan6Mandant')] || 'Schule';
-                this.channelForm.san6Sys = values[this.getConfigKey('externalOrdersSan6Sys')] || '';
-                this.channelForm.san6Authentifizierung = this.channelForm.apiToken;
-                this.channelForm.san6ReadFunction = values[this.getConfigKey('externalOrdersSan6ReadFunction')] || 'API-AUFTRAEGE';
-                this.channelForm.san6WriteFunction = values[this.getConfigKey('externalOrdersSan6WriteFunction')] || 'API-AUFTRAGNEU2';
-                this.channelForm.san6SendStrategy = values[this.getConfigKey('externalOrdersSan6SendStrategy')] || 'filetransferurl';
-            }
-
             this.showModal = true;
         },
 
@@ -225,15 +218,6 @@ Component.register('external-orders-channel-config', {
             this.selectedChannel = null;
             this.channelForm.apiUrl = '';
             this.channelForm.apiToken = '';
-            this.channelForm.san6BaseUrl = '';
-            this.channelForm.san6Company = '';
-            this.channelForm.san6Product = '';
-            this.channelForm.san6Mandant = 'Schule';
-            this.channelForm.san6Sys = '';
-            this.channelForm.san6Authentifizierung = '';
-            this.channelForm.san6ReadFunction = 'API-AUFTRAEGE';
-            this.channelForm.san6WriteFunction = 'API-AUFTRAGNEU2';
-            this.channelForm.san6SendStrategy = 'filetransferurl';
         },
 
         async saveChannelConfig() {
@@ -244,27 +228,10 @@ Component.register('external-orders-channel-config', {
             this.isSaving = true;
 
             try {
-                const payload = this.selectedChannel.id === 'san6'
-                    ? {
-                        [this.getConfigKey(this.selectedChannel.urlKey)]: this.channelForm.san6BaseUrl,
-                        [this.getConfigKey(this.selectedChannel.tokenKey)]: this.channelForm.san6Authentifizierung,
-                    }
-                    : {
-                        [this.getConfigKey(this.selectedChannel.urlKey)]: this.channelForm.apiUrl,
-                        [this.getConfigKey(this.selectedChannel.tokenKey)]: this.channelForm.apiToken,
-                    };
-
-                if (this.selectedChannel.id === 'san6') {
-                    payload[this.getConfigKey('externalOrdersSan6BaseUrl')] = this.channelForm.san6BaseUrl;
-                    payload[this.getConfigKey('externalOrdersSan6Company')] = this.channelForm.san6Company;
-                    payload[this.getConfigKey('externalOrdersSan6Product')] = this.channelForm.san6Product;
-                    payload[this.getConfigKey('externalOrdersSan6Mandant')] = this.channelForm.san6Mandant;
-                    payload[this.getConfigKey('externalOrdersSan6Sys')] = this.channelForm.san6Sys;
-                    payload[this.getConfigKey('externalOrdersSan6Authentifizierung')] = this.channelForm.san6Authentifizierung;
-                    payload[this.getConfigKey('externalOrdersSan6ReadFunction')] = this.channelForm.san6ReadFunction;
-                    payload[this.getConfigKey('externalOrdersSan6WriteFunction')] = this.channelForm.san6WriteFunction;
-                    payload[this.getConfigKey('externalOrdersSan6SendStrategy')] = this.channelForm.san6SendStrategy;
-                }
+                const payload = {
+                    [this.getConfigKey(this.selectedChannel.urlKey)]: this.channelForm.apiUrl,
+                    [this.getConfigKey(this.selectedChannel.tokenKey)]: this.channelForm.apiToken,
+                };
 
                 await this.systemConfigApiService.saveValues(payload);
 

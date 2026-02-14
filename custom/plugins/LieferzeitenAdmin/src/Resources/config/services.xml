@@ -80,10 +80,12 @@
 
         <service id="LieferzeitenAdmin\Service\LieferzeitenPositionWriteService">
             <argument type="service" id="lieferzeiten_position.repository" />
+            <argument type="service" id="lieferzeiten_paket.repository" />
             <argument type="service" id="Doctrine\DBAL\Connection" />
             <argument type="service" id="lieferzeiten_liefertermin_lieferant_history.repository" />
             <argument type="service" id="lieferzeiten_neuer_liefertermin_history.repository" />
             <argument type="service" id="LieferzeitenAdmin\Service\LieferzeitenTaskService" />
+            <argument type="service" id="LieferzeitenAdmin\Service\Notification\NotificationEventService" />
         </service>
 
 

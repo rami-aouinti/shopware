@@ -6,8 +6,9 @@ class LieferzeitenOrdersService extends ApiService {
         this.name = 'lieferzeitenOrdersService';
     }
 
-    async getOrders() {
+    async getOrders(params = {}) {
         const response = await this.httpClient.get(`_action/${this.getApiBasePath()}/orders`, {
+            params,
             headers: this.getBasicHeaders(),
         });
 
@@ -57,6 +58,10 @@ class LieferzeitenOrdersService extends ApiService {
 
     async updateNeuerLiefertermin(positionId, payload) {
         return this.post(`position/${positionId}/neuer-liefertermin`, payload);
+    }
+
+    async updateNeuerLieferterminByPaket(paketId, payload) {
+        return this.post(`paket/${paketId}/neuer-liefertermin`, payload);
     }
 
     async updateComment(positionId, payload) {
