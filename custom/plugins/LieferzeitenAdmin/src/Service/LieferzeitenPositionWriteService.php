@@ -325,11 +325,12 @@ class LieferzeitenPositionWriteService
     /** @param array<string, mixed>|null $rule */
     private function resolveAdditionalDeliveryAssignee(?array $rule): string
     {
+        $ruleIsActive = (bool) ($rule['active'] ?? true);
         $ruleAssignee = is_string($rule['assigneeIdentifier'] ?? null)
             ? trim((string) $rule['assigneeIdentifier'])
             : '';
 
-        if ($ruleAssignee !== '') {
+        if ($ruleIsActive && $ruleAssignee !== '') {
             return $ruleAssignee;
         }
 
