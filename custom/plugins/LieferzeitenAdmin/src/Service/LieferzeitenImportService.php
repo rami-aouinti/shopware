@@ -127,11 +127,22 @@ class LieferzeitenImportService
 
                     $resolution = $this->baseDateResolver->resolve($matched);
                     $settings = $this->settingsProvider->getForChannel($channel);
-                    $calculatedDeliveryDate = $this->deliveryDateCalculator->calculate($resolution['baseDate'], $settings);
+                    $calculatedShippingDate = $this->deliveryDateCalculator->calculate($resolution['baseDate'], $settings['shipping']);
+                    $calculatedDeliveryDate = $this->deliveryDateCalculator->calculate($resolution['baseDate'], $settings['delivery']);
 
                     $matched['baseDateType'] = $resolution['baseDateType'];
                     $matched['paymentDate'] = $matched['paymentDate'] ?? null;
+                    $matched['calculatedShippingDate'] = $calculatedShippingDate?->format(DATE_ATOM);
                     $matched['calculatedDeliveryDate'] = $calculatedDeliveryDate?->format(DATE_ATOM);
+
+                    if ($this->parseDate($matched['shippingDate'] ?? null) === null) {
+                        $matched['shippingDate'] = $matched['calculatedShippingDate'];
+                    }
+
+                    if ($this->parseDate($matched['deliveryDate'] ?? null) === null) {
+                        $matched['deliveryDate'] = $matched['calculatedDeliveryDate'];
+                    }
+
                     $matched['sourceSystem'] = $this->contractValidator->resolveValueByPriority(
                         $matched['sourceSystem'] ?? $channel,
                         null,
