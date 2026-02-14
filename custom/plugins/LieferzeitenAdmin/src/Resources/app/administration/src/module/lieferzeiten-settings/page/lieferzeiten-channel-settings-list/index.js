@@ -450,7 +450,8 @@ Component.register('lieferzeiten-channel-settings-list', {
                         shippingOverdueWorkingDays: entry.shippingOverdueWorkingDays,
                         deliveryOverdueWorkingDays: entry.deliveryOverdueWorkingDays,
                     };
-                    this.existingEntryIds[this.getEntryKey(entry.salesChannelId, entry.pdmsLieferzeit)] = entry.id;
+                    const entryKey = this.getEntryKey(entry.salesChannelId, entry.pdmsLieferzeit);
+                    this.existingEntryIds[entryKey] = entry.id;
                 });
             } catch (error) {
                 this.notifyRequestError(error, this.$tc('lieferzeiten.lms.dashboard.title'));
@@ -485,6 +486,27 @@ Component.register('lieferzeiten-channel-settings-list', {
 
             try {
                 const whitelistedChannelIds = this.getWhitelistedChannelIds();
+                const existingEntries = new Map();
+
+                this.channels.forEach((channel) => {
+                    this.getChannelPdmsLieferzeiten(channel.id).forEach(({ key }) => {
+                        const existingEntryId = this.existingEntryIds[this.getEntryKey(channel.id, key)];
+
+                        if (existingEntryId) {
+                            existingEntries.set(this.getEntryKey(channel.id, key), null);
+                        }
+                    });
+                });
+
+                if (existingEntries.size > 0) {
+                    const criteria = new Criteria(1, existingEntries.size);
+                    criteria.setIds(Object.values(this.existingEntryIds));
+                    const persistedEntries = await this.thresholdRepository.search(criteria, Shopware.Context.api);
+
+                    persistedEntries.forEach((entry) => {
+                        existingEntries.set(this.getEntryKey(entry.salesChannelId, entry.pdmsLieferzeit), entry);
+                    });
+                }
 
                 for (const channel of this.channels) {
                     if (!whitelistedChannelIds.has(channel.id)) {
@@ -494,8 +516,14 @@ Component.register('lieferzeiten-channel-settings-list', {
                     this.ensureChannelMatrix(channel.id);
 
                     for (const { key } of this.getChannelPdmsLieferzeiten(channel.id)) {
-                        const entity = this.thresholdRepository.create(Shopware.Context.api);
-                        entity.id = this.existingEntryIds[this.getEntryKey(channel.id, key)] || entity.id;
+                        const entryKey = this.getEntryKey(channel.id, key);
+                        const existingEntity = existingEntries.get(entryKey) || null;
+                        const entity = existingEntity || this.thresholdRepository.create(Shopware.Context.api);
+
+                        if (!existingEntity) {
+                            entity.id = this.existingEntryIds[entryKey] || entity.id;
+                        }
+
                         entity.salesChannelId = channel.id;
                         entity.pdmsLieferzeit = key;
                         entity.shippingOverdueWorkingDays = this.matrixValues[channel.id][key].shippingOverdueWorkingDays;
