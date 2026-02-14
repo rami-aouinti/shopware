@@ -3,12 +3,19 @@
         <table class="sw-data-grid__table">
             <thead>
                 <tr>
-                    <th colspan="4">{{ $t('lieferzeiten.zones.order') }}</th>
+                    <th colspan="11">{{ $t('lieferzeiten.zones.order') }}</th>
                     <th colspan="5">{{ $t('lieferzeiten.zones.delivery') }}</th>
                     <th colspan="3">{{ $t('lieferzeiten.zones.status') }}</th>
                 </tr>
                 <tr>
                     <th>{{ $t('lieferzeiten.table.orderNumber') }}</th>
+                    <th>{{ $t('lieferzeiten.table.san6OrderNumber') }}</th>
+                    <th>{{ $t('lieferzeiten.table.san6Position') }}</th>
+                    <th>{{ $t('lieferzeiten.table.totalQuantity') }}</th>
+                    <th>{{ $t('lieferzeiten.table.orderDate') }}</th>
+                    <th>{{ $t('lieferzeiten.table.paymentMethod') }}</th>
+                    <th>{{ $t('lieferzeiten.table.paymentDate') }}</th>
+                    <th>{{ $t('lieferzeiten.table.customerNames') }}</th>
                     <th>{{ $t('lieferzeiten.table.domain') }}</th>
                     <th>{{ $t('lieferzeiten.table.positions') }}</th>
                     <th>{{ $t('lieferzeiten.table.parcels') }}</th>
@@ -29,10 +36,17 @@
                             <sw-button size="small" variant="ghost" @click="toggleOrder(order.id)">
                                 {{ isExpanded(order.id) ? '-' : '+' }}
                             </sw-button>
-                            {{ order.orderNumber }}
+                            {{ displayOrDash(order.orderNumber) }}
                         </td>
-                        <td>{{ order.domain }}</td>
-                        <td>{{ order.positions.length }}</td>
+                        <td>{{ displayOrDash(order.san6OrderNumberDisplay) }}</td>
+                        <td>{{ displayOrDash(order.san6PositionDisplay) }}</td>
+                        <td>{{ displayOrDash(order.quantityDisplay) }}</td>
+                        <td>{{ displayOrDash(order.orderDateDisplay) }}</td>
+                        <td>{{ displayOrDash(order.paymentMethodDisplay) }}</td>
+                        <td>{{ displayOrDash(order.paymentDateDisplay) }}</td>
+                        <td>{{ displayOrDash(order.customerNamesDisplay) }}</td>
+                        <td>{{ displayOrDash(order.domain) }}</td>
+                        <td>{{ displayOrDash(order.positionsCountDisplay) }}</td>
                         <td>{{ parcelSummary(order) }}</td>
                         <td>
                             <sw-datepicker v-model:value="order.lieferterminLieferantRange.from" :disabled="!hasEditAccess()" size="small" />
@@ -76,7 +90,7 @@
                         <td>{{ order.audit || '-' }}</td>
                     </tr>
                     <tr v-if="isExpanded(order.id)" :key="`${order.id}-positions`">
-                        <td colspan="12">
+                        <td colspan="19">
                             <table class="sw-data-grid__table">
                                 <thead>
                                     <tr>

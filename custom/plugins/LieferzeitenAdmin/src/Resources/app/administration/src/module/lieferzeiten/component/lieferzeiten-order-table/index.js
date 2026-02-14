@@ -72,8 +72,18 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 const supplierRange = this.resolveInitialRange(order, 'lieferterminLieferant', 14);
                 const newRange = this.resolveInitialRange(order, 'neuerLiefertermin', 4);
 
+                const positions = Array.isArray(order.positions) ? order.positions : [];
+
                 this.$set(this.editableOrders, order.id, {
                     ...order,
+                    san6OrderNumberDisplay: this.resolveSan6OrderNumber(order),
+                    san6PositionDisplay: this.resolveSan6Position(positions),
+                    quantityDisplay: this.resolveQuantity(positions),
+                    orderDateDisplay: this.resolveOrderDate(order),
+                    paymentMethodDisplay: this.resolvePaymentMethod(order),
+                    paymentDateDisplay: this.resolvePaymentDate(order),
+                    customerNamesDisplay: this.resolveCustomerNames(order),
+                    positionsCountDisplay: positions.length,
                     lieferterminLieferantRange: supplierRange,
                     neuerLieferterminRange: newRange,
                     originalLieferterminLieferantRange: { ...supplierRange },
@@ -144,6 +154,84 @@ Shopware.Component.register('lieferzeiten-order-table', {
         parcelSummary(order) {
             const openParcels = order.parcels.filter((parcel) => !parcel.closed).length;
             return `${openParcels}/${order.parcels.length}`;
+        },
+
+        displayOrDash(value) {
+            if (value === null || value === undefined) {
+                return '-';
+            }
+
+            if (typeof value === 'string') {
+                const normalized = value.trim();
+                return normalized === '' ? '-' : normalized;
+            }
+
+            return String(value);
+        },
+
+        resolveSan6OrderNumber(order) {
+            return order.san6OrderNumber || order.customFields?.san6OrderNumber || null;
+        },
+
+        resolveSan6Position(positions) {
+            const values = positions
+                .map((position) => position?.san6Position || position?.customFields?.san6Position || null)
+                .filter((value) => value !== null && value !== undefined && `${value}`.trim() !== '');
+
+            return values.length > 0 ? values.join(', ') : null;
+        },
+
+        resolveQuantity(positions) {
+            const total = positions.reduce((sum, position) => {
+                const quantity = Number(position?.quantity);
+                return Number.isFinite(quantity) ? sum + quantity : sum;
+            }, 0);
+
+            return total > 0 ? String(total) : null;
+        },
+
+        resolveOrderDate(order) {
+            return this.formatDate(order.orderDateTime || order.createdAt || null);
+        },
+
+        resolvePaymentMethod(order) {
+            return order.transactions?.[0]?.paymentMethod?.name
+                || order.transactions?.[0]?.paymentMethodName
+                || order.paymentMethod
+                || null;
+        },
+
+        resolvePaymentDate(order) {
+            return this.formatDate(order.transactions?.[0]?.createdAt || order.paymentDate || null);
+        },
+
+        resolveCustomerNames(order) {
+            const customerName = [order.orderCustomer?.firstName, order.orderCustomer?.lastName]
+                .filter((value) => value && String(value).trim() !== '')
+                .join(' ');
+
+            if (customerName) {
+                return customerName;
+            }
+
+            const billingName = [order.billingAddress?.firstName, order.billingAddress?.lastName]
+                .filter((value) => value && String(value).trim() !== '')
+                .join(' ');
+
+            return billingName || null;
+        },
+
+        formatDate(value) {
+            if (!value) {
+                return null;
+            }
+
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) {
+                return null;
+            }
+
+            return date.toLocaleDateString();
         },
 
         resolveTrackingEntries(order, position) {
