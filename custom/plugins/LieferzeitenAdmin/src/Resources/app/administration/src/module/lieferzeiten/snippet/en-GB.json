@@ -64,7 +64,13 @@
       "quantity": "Quantity",
       "packageNumbers": "Parcels",
       "status": "Status",
-      "businessStatus": "Business status"
+      "businessStatus": "Business status",
+      "tracking": "Tracking",
+      "packageStatus": "Parcel status",
+      "latestShippingDeadline": "Latest shipping deadline",
+      "shippingDate": "Shipping date",
+      "latestDeliveryDeadline": "Latest delivery deadline",
+      "deliveryDate": "Delivery date"
     },
     "fields": {
       "supplierDate": "Supplier delivery date (1-14 days)",
