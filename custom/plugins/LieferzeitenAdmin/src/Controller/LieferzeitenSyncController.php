@@ -688,15 +688,12 @@ class LieferzeitenSyncController extends AbstractController
         }
 
         $payload = $request->toArray();
-        $initiator = trim((string) ($payload['initiator'] ?? 'system')) ?: 'system';
+        $rawInitiator = $payload['initiator'] ?? null;
+        $initiator = is_string($rawInitiator) ? trim($rawInitiator) : null;
+        $initiator = $initiator !== '' ? $initiator : null;
 
-        try {
-            $this->positionWriteService->createAdditionalDeliveryRequest($positionId, $initiator, $context);
-        } catch (AdditionalDeliveryAssigneeMissingException $e) {
-            return new JsonResponse(['status' => 'error', 'message' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $this->auditLogService->log('additional_delivery_request_created', 'lieferzeiten_position', $positionId, $context, ['initiator' => $initiator], 'shopware');
+        $resolvedInitiator = $this->positionWriteService->createAdditionalDeliveryRequest($positionId, $initiator, $context);
+        $this->auditLogService->log('additional_delivery_request_created', 'lieferzeiten_position', $positionId, $context, ['initiator' => $resolvedInitiator], 'shopware');
 
         return new JsonResponse(['status' => 'ok']);
     }

@@ -194,7 +194,13 @@ class LieferzeitenTaskService
             return;
         }
 
-        $initiator = (string) ($task->get('initiator') ?? '');
+        $initiatorDisplay = isset($payload['initiatorDisplay']) && is_string($payload['initiatorDisplay'])
+            ? trim($payload['initiatorDisplay'])
+            : '';
+        $initiator = $initiatorDisplay !== ''
+            ? $initiatorDisplay
+            : (string) (($task->get('initiator') ?? $payload['initiator'] ?? ''));
+
         if ($initiator === '') {
             return;
         }

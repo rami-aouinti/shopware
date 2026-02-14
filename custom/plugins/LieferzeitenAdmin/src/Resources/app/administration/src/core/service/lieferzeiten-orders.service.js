@@ -140,8 +140,14 @@ class LieferzeitenOrdersService extends ApiService {
         return this.post(`position/${positionId}/comment`, payload);
     }
 
-    async createAdditionalDeliveryRequest(positionId, initiator) {
-        return this.post(`position/${positionId}/additional-delivery-request`, { initiator });
+    async createAdditionalDeliveryRequest(positionId, initiator = null) {
+        const payload = {};
+
+        if (typeof initiator === 'string' && initiator.trim() !== '') {
+            payload.initiator = initiator.trim();
+        }
+
+        return this.post(`position/${positionId}/additional-delivery-request`, payload);
     }
 
     async updatePaketStatus(paketId, payload) {
