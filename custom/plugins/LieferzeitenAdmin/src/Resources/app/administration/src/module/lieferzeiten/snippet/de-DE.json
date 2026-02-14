@@ -59,7 +59,9 @@
       "history": "Historie",
       "shippingType": "Versandart",
       "audit": "Audit",
-      "days": "Tage"
+      "days": "Tage",
+      "latestShipping": "Spätester Versand",
+      "latestDelivery": "Späteste Lieferung"
     },
     "shipping": {
       "unclear": "Unklar",
