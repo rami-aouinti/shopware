@@ -31,8 +31,18 @@ Component.register('lieferzeiten-channel-settings-list', {
             return this.acl.can('lieferzeiten.editor') || this.acl.can('admin');
         },
 
-        canLoadPdmsLieferzeiten() {
-            return typeof this.selectedSalesChannelId === 'string' && this.selectedSalesChannelId.length > 0;
+        columns() {
+            return [
+                { property: 'salesChannelId', label: 'Sales Channel', inlineEdit: 'string', primary: true },
+                { property: 'defaultStatus', label: 'Default Status', inlineEdit: 'string' },
+                { property: 'enableNotifications', label: 'Notifications (global default)', inlineEdit: 'boolean' },
+                { property: 'shippingWorkingDays', label: 'Shipping working days', inlineEdit: 'number' },
+                { property: 'shippingCutoff', label: 'Shipping cutoff (HH:mm)', inlineEdit: 'string' },
+                { property: 'deliveryWorkingDays', label: 'Delivery working days', inlineEdit: 'number' },
+                { property: 'deliveryCutoff', label: 'Delivery cutoff (HH:mm)', inlineEdit: 'string' },
+                { property: 'lastChangedBy', label: 'Last Changed By', inlineEdit: 'string' },
+                { property: 'lastChangedAt', label: 'Last Changed At', inlineEdit: 'date' },
+            ];
         },
     },
 
@@ -139,6 +149,13 @@ Component.register('lieferzeiten-channel-settings-list', {
 
             this.isLoading = true;
 
+            const entity = this.repository.create(Shopware.Context.api);
+            entity.salesChannelId = '';
+            entity.enableNotifications = false;
+            entity.shippingWorkingDays = 0;
+            entity.shippingCutoff = '14:00';
+            entity.deliveryWorkingDays = 2;
+            entity.deliveryCutoff = '14:00';
             try {
                 this.pdmsPayload = await this.lieferzeitenOrdersService.getSalesChannelLieferzeiten(this.selectedSalesChannelId);
             } catch (error) {

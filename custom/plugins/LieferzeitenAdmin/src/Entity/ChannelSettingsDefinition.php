@@ -6,6 +6,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\CreatedAtField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
@@ -39,6 +40,10 @@ class ChannelSettingsDefinition extends EntityDefinition
             (new StringField('sales_channel_id', 'salesChannelId'))->addFlags(new Required()),
             new StringField('default_status', 'defaultStatus'),
             (new BoolField('enable_notifications', 'enableNotifications'))->addFlags(new Required()),
+            new IntField('shipping_working_days', 'shippingWorkingDays'),
+            new StringField('shipping_cutoff', 'shippingCutoff'),
+            new IntField('delivery_working_days', 'deliveryWorkingDays'),
+            new StringField('delivery_cutoff', 'deliveryCutoff'),
             new StringField('last_changed_by', 'lastChangedBy'),
             new DateTimeField('last_changed_at', 'lastChangedAt'),
             new CreatedAtField(),
