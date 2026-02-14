@@ -26,16 +26,23 @@ Shopware.Component.register('lieferzeiten-index', {
             orders: [],
             isLoading: false,
             loadError: null,
+            statisticsMetrics: {
+                openOrders: 0,
+                overdueShipping: 0,
+                overdueDelivery: 0,
+            },
         };
     },
 
     created() {
         this.loadOrders();
+        this.loadStatistics();
     },
 
     watch: {
         selectedDomain() {
             this.loadOrders();
+            this.loadStatistics();
         },
     },
 
@@ -51,6 +58,28 @@ Shopware.Component.register('lieferzeiten-index', {
     },
 
     methods: {
+
+        async loadStatistics() {
+            try {
+                const payload = await this.lieferzeitenOrdersService.getStatistics({
+                    period: 30,
+                    domain: normalizeDomainKey(this.selectedDomain),
+                    channel: 'all',
+                });
+
+                this.statisticsMetrics = {
+                    openOrders: payload?.metrics?.openOrders ?? 0,
+                    overdueShipping: payload?.metrics?.overdueShipping ?? 0,
+                    overdueDelivery: payload?.metrics?.overdueDelivery ?? 0,
+                };
+            } catch (error) {
+                this.statisticsMetrics = {
+                    openOrders: 0,
+                    overdueShipping: 0,
+                    overdueDelivery: 0,
+                };
+            }
+        },
 
         resolveOrderDomainKey(order) {
             const orderDomain = String(order?.domain || order?.sourceSystem || '').trim();
