@@ -3,9 +3,25 @@
 namespace LieferzeitenAdmin\Service;
 
 use Doctrine\DBAL\Connection;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 class ChannelPdmsThresholdResolver
 {
+    /**
+     * @var list<string>
+     */
+    private const ORDER_EXTERNAL_ID_FIELD_CANDIDATES = [
+        'external_order_id',
+        'externalOrderId',
+        'order_reference',
+        'orderReference',
+        'integration_order_id',
+        'integrationOrderId',
+        'source_order_id',
+        'sourceOrderId',
+    ];
+
     /**
      * @var list<string>
      */
@@ -34,8 +50,12 @@ class ChannelPdmsThresholdResolver
     public function __construct(
         private readonly Connection $connection,
         private readonly ChannelDateSettingsProvider $channelDateSettingsProvider,
+        ?LoggerInterface $logger = null,
     ) {
+        $this->logger = $logger ?? new NullLogger();
     }
+
+    private readonly LoggerInterface $logger;
 
     /**
      * @return array{shipping:array{workingDays:int,cutoff:string},delivery:array{workingDays:int,cutoff:string}}
@@ -45,14 +65,28 @@ class ChannelPdmsThresholdResolver
         $defaults = $this->channelDateSettingsProvider->getForChannel($sourceSystem);
 
         if (!is_string($externalOrderId) || trim($externalOrderId) === '') {
+            $this->logger->warning('PDMS threshold resolution fell back to channel defaults: missing external order id.', [
+                'sourceSystem' => $sourceSystem,
+                'externalOrderId' => $externalOrderId,
+                'reason' => 'missing_external_order_id',
+            ]);
+
             return $defaults;
         }
 
-        $salesChannelId = $this->resolveSalesChannelId($externalOrderId);
-        $pdmsSlotRaw = $this->resolvePdmsSlotRaw($externalOrderId, $positionNumber);
+        $orderContext = $this->resolveOrderContext($sourceSystem, $externalOrderId);
+        $salesChannelId = $orderContext['salesChannelId'];
+        $pdmsSlotRaw = $this->resolvePdmsSlotRaw($orderContext['orderId'], $orderContext['orderCustomFields'], $positionNumber);
         $pdmsLieferzeit = $this->resolvePdmsLieferzeitKey($salesChannelId, $pdmsSlotRaw);
 
         if ($salesChannelId === null || $pdmsLieferzeit === null) {
+            $this->logger->warning('PDMS threshold resolution fell back to channel defaults.', [
+                'sourceSystem' => $sourceSystem,
+                'externalOrderId' => $externalOrderId,
+                'orderLookupStrategy' => $orderContext['strategy'],
+                'reason' => $salesChannelId === null ? 'sales_channel_not_resolved' : 'pdms_slot_or_mapping_not_resolved',
+            ]);
+
             return $defaults;
         }
 
@@ -106,44 +140,162 @@ class ChannelPdmsThresholdResolver
         ];
     }
 
-    private function resolveSalesChannelId(string $externalOrderId): ?string
+    /**
+     * @return array{orderId:?string,salesChannelId:?string,orderCustomFields:?array<string,mixed>,strategy:string}
+     */
+    private function resolveOrderContext(string $sourceSystem, string $externalOrderId): array
     {
-        try {
-            $value = $this->connection->fetchOne(
-                'SELECT sales_channel_id
-                 FROM `order`
-                 WHERE order_number = :orderNumber
-                 ORDER BY created_at DESC
-                 LIMIT 1',
-                ['orderNumber' => $externalOrderId],
-            );
-        } catch (\Throwable) {
-            return null;
+        $externalOrderId = trim($externalOrderId);
+
+        $primaryMatch = $this->fetchOrderByOrderNumber($externalOrderId);
+        if ($primaryMatch !== null) {
+            return [
+                'orderId' => $primaryMatch['id'],
+                'salesChannelId' => $primaryMatch['sales_channel_id'],
+                'orderCustomFields' => $primaryMatch['custom_fields'],
+                'strategy' => 'order_number',
+            ];
         }
 
-        return is_string($value) && $value !== '' ? $value : null;
+        $customFieldMatch = $this->fetchOrderByExternalIdCustomField($externalOrderId);
+        if ($customFieldMatch !== null) {
+            $this->logger->info('PDMS threshold resolver order lookup used fallback strategy.', [
+                'externalOrderId' => $externalOrderId,
+                'sourceSystem' => $sourceSystem,
+                'strategy' => 'order_custom_field_external_id',
+            ]);
+
+            return [
+                'orderId' => $customFieldMatch['id'],
+                'salesChannelId' => $customFieldMatch['sales_channel_id'],
+                'orderCustomFields' => $customFieldMatch['custom_fields'],
+                'strategy' => 'order_custom_field_external_id',
+            ];
+        }
+
+        $paketJoinMatch = $this->fetchOrderViaPaketExternalId($sourceSystem, $externalOrderId);
+        if ($paketJoinMatch !== null) {
+            $this->logger->info('PDMS threshold resolver order lookup used fallback strategy.', [
+                'externalOrderId' => $externalOrderId,
+                'sourceSystem' => $sourceSystem,
+                'strategy' => 'lieferzeiten_paket_external_id_join',
+            ]);
+
+            return [
+                'orderId' => $paketJoinMatch['id'],
+                'salesChannelId' => $paketJoinMatch['sales_channel_id'],
+                'orderCustomFields' => $paketJoinMatch['custom_fields'],
+                'strategy' => 'lieferzeiten_paket_external_id_join',
+            ];
+        }
+
+        return [
+            'orderId' => null,
+            'salesChannelId' => null,
+            'orderCustomFields' => null,
+            'strategy' => 'not_found',
+        ];
     }
 
-    private function resolvePdmsSlotRaw(string $externalOrderId, ?string $positionNumber): mixed
+    /**
+     * @return array{id:string,sales_channel_id:string,custom_fields:?array<string,mixed>}|null
+     */
+    private function fetchOrderByOrderNumber(string $orderNumber): ?array
     {
         try {
-            $orderRow = $this->connection->fetchAssociative(
-                'SELECT id, custom_fields
+            $row = $this->connection->fetchAssociative(
+                'SELECT id, sales_channel_id, custom_fields
                  FROM `order`
                  WHERE order_number = :orderNumber
                  ORDER BY created_at DESC
                  LIMIT 1',
-                ['orderNumber' => $externalOrderId],
+                ['orderNumber' => $orderNumber],
             );
         } catch (\Throwable) {
             return null;
         }
 
-        if (!is_array($orderRow) || !is_string($orderRow['id'] ?? null) || $orderRow['id'] === '') {
+        return $this->normalizeOrderRow($row);
+    }
+
+    /**
+     * @return array{id:string,sales_channel_id:string,custom_fields:?array<string,mixed>}|null
+     */
+    private function fetchOrderByExternalIdCustomField(string $externalOrderId): ?array
+    {
+        try {
+            $orderRows = $this->connection->fetchAllAssociative(
+                'SELECT id, sales_channel_id, custom_fields
+                 FROM `order`
+                 ORDER BY created_at DESC
+                 LIMIT 250'
+            );
+        } catch (\Throwable) {
             return null;
         }
 
-        $orderId = $orderRow['id'];
+        foreach ($orderRows as $orderRow) {
+            $normalized = $this->normalizeOrderRow($orderRow);
+            if ($normalized === null) {
+                continue;
+            }
+
+            if ($this->externalOrderIdMatchesCustomFields($externalOrderId, $normalized['custom_fields'])) {
+                return $normalized;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array{id:string,sales_channel_id:string,custom_fields:?array<string,mixed>}|null
+     */
+    private function fetchOrderViaPaketExternalId(string $sourceSystem, string $externalOrderId): ?array
+    {
+        try {
+            $paketRows = $this->connection->fetchAllAssociative(
+                'SELECT paket_number, external_order_id
+                 FROM `lieferzeiten_paket`
+                 WHERE external_order_id = :externalOrderId
+                   AND (source_system = :sourceSystem OR source_system IS NULL)
+                 ORDER BY created_at DESC
+                 LIMIT 25',
+                [
+                    'externalOrderId' => $externalOrderId,
+                    'sourceSystem' => $sourceSystem,
+                ],
+            );
+        } catch (\Throwable) {
+            return null;
+        }
+
+        foreach ($paketRows as $paketRow) {
+            $paketNumber = is_scalar($paketRow['paket_number'] ?? null) ? trim((string) $paketRow['paket_number']) : '';
+            if ($paketNumber === '') {
+                continue;
+            }
+
+            $orderByPaketNumber = $this->fetchOrderByOrderNumber($paketNumber);
+            if ($orderByPaketNumber !== null) {
+                return $orderByPaketNumber;
+            }
+
+            $orderByPaketRef = $this->fetchOrderByExternalIdCustomField($paketNumber);
+            if ($orderByPaketRef !== null) {
+                return $orderByPaketRef;
+            }
+        }
+
+        return null;
+    }
+
+    private function resolvePdmsSlotRaw(?string $orderId, ?array $orderCustomFields, ?string $positionNumber): mixed
+    {
+        if (!is_string($orderId) || $orderId === '') {
+            return null;
+        }
+
         if (is_string($positionNumber) && trim($positionNumber) !== '') {
             $matchedLineItemSlot = $this->resolveLineItemPdmsSlot($orderId, $positionNumber);
             if ($matchedLineItemSlot !== null) {
@@ -151,9 +303,57 @@ class ChannelPdmsThresholdResolver
             }
         }
 
-        $orderCustomFields = $this->decodeJsonObject($orderRow['custom_fields'] ?? null);
-
         return $this->findFirstValue($orderCustomFields, self::PDMS_SLOT_FIELD_CANDIDATES);
+    }
+
+    /**
+     * @param array<string,mixed>|null $customFields
+     */
+    private function externalOrderIdMatchesCustomFields(string $externalOrderId, ?array $customFields): bool
+    {
+        if ($customFields === null) {
+            return false;
+        }
+
+        $expected = trim($externalOrderId);
+        if ($expected === '') {
+            return false;
+        }
+
+        foreach (self::ORDER_EXTERNAL_ID_FIELD_CANDIDATES as $field) {
+            $value = $customFields[$field] ?? null;
+            if (!is_scalar($value)) {
+                continue;
+            }
+
+            if (trim((string) $value) === $expected) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array{id:string,sales_channel_id:string,custom_fields:?array<string,mixed>}|null
+     */
+    private function normalizeOrderRow(mixed $row): ?array
+    {
+        if (!is_array($row)) {
+            return null;
+        }
+
+        $id = is_string($row['id'] ?? null) ? $row['id'] : '';
+        $salesChannelId = is_string($row['sales_channel_id'] ?? null) ? $row['sales_channel_id'] : '';
+        if ($id === '' || $salesChannelId === '') {
+            return null;
+        }
+
+        return [
+            'id' => $id,
+            'sales_channel_id' => $salesChannelId,
+            'custom_fields' => $this->decodeJsonObject($row['custom_fields'] ?? null),
+        ];
     }
 
     private function resolveLineItemPdmsSlot(string $orderId, string $positionNumber): mixed
