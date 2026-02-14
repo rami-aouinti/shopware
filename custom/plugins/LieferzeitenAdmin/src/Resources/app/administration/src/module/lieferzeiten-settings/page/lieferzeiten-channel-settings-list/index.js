@@ -3,7 +3,7 @@ import template from './lieferzeiten-channel-settings-list.html.twig';
 const { Component } = Shopware;
 const { Criteria } = Shopware.Data;
 
-const PDMS_LIEFERZEITEN = [
+const DEFAULT_PDMS_LIEFERZEITEN = [
     { key: 'PDMS_1', label: 'PDMS 1' },
     { key: 'PDMS_2', label: 'PDMS 2' },
     { key: 'PDMS_3', label: 'PDMS 3' },
@@ -29,15 +29,11 @@ Component.register('lieferzeiten-channel-settings-list', {
             isSaving: false,
             isSeedingDemoData: false,
             hasDemoData: false,
-            pdmsPayload: null,
+            channelPdmsLieferzeiten: {},
         };
     },
 
     computed: {
-        pdmsLieferzeiten() {
-            return PDMS_LIEFERZEITEN;
-        },
-
         hasEditAccess() {
             if (typeof this.acl?.can !== 'function') {
                 return false;
@@ -73,6 +69,10 @@ Component.register('lieferzeiten-channel-settings-list', {
             });
         },
 
+        getChannelPdmsLieferzeiten(channelId) {
+            return this.channelPdmsLieferzeiten[channelId] || DEFAULT_PDMS_LIEFERZEITEN;
+        },
+
         getEntryKey(channelId, pdmsKey) {
             return `${channelId}.${pdmsKey}`;
         },
@@ -86,7 +86,7 @@ Component.register('lieferzeiten-channel-settings-list', {
                 this.$set(this.matrixValues, channelId, {});
             }
 
-            this.pdmsLieferzeiten.forEach(({ key }) => {
+            this.getChannelPdmsLieferzeiten(channelId).forEach(({ key }) => {
                 if (!this.matrixValues[channelId][key]) {
                     this.$set(this.matrixValues[channelId], key, {
                         shippingOverdueWorkingDays: 0,
@@ -94,6 +94,27 @@ Component.register('lieferzeiten-channel-settings-list', {
                     });
                 }
             });
+        },
+
+        async loadChannelPdmsLieferzeiten(channelId) {
+            try {
+                const response = await this.lieferzeitenOrdersService.getSalesChannelLieferzeiten(channelId);
+                const entries = Array.isArray(response?.lieferzeiten)
+                    ? response.lieferzeiten.map((entry) => ({
+                        key: `PDMS_${entry?.slot ?? 0}`,
+                        label: entry?.lieferzeit?.name || `PDMS ${entry?.slot ?? ''}`,
+                    })).filter((entry) => /^PDMS_[1-4]$/.test(entry.key))
+                    : [];
+
+                const normalizedEntries = entries.length === 4
+                    ? entries
+                    : DEFAULT_PDMS_LIEFERZEITEN;
+
+                this.$set(this.channelPdmsLieferzeiten, channelId, normalizedEntries);
+            } catch (error) {
+                this.$set(this.channelPdmsLieferzeiten, channelId, DEFAULT_PDMS_LIEFERZEITEN);
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.dashboard.title'));
+            }
         },
 
         validateValue(channelId, pdmsKey, fieldName) {
@@ -135,6 +156,9 @@ Component.register('lieferzeiten-channel-settings-list', {
                 this.channels = salesChannels;
                 this.matrixValues = {};
                 this.existingEntryIds = {};
+                this.channelPdmsLieferzeiten = {};
+
+                await Promise.all(this.channels.map((channel) => this.loadChannelPdmsLieferzeiten(channel.id)));
 
                 this.channels.forEach((channel) => {
                     this.ensureChannelMatrix(channel.id);
@@ -162,7 +186,7 @@ Component.register('lieferzeiten-channel-settings-list', {
 
             this.validationErrors = {};
             this.channels.forEach((channel) => {
-                this.pdmsLieferzeiten.forEach(({ key }) => {
+                this.getChannelPdmsLieferzeiten(channel.id).forEach(({ key }) => {
                     this.validateValue(channel.id, key, 'shippingOverdueWorkingDays');
                     this.validateValue(channel.id, key, 'deliveryOverdueWorkingDays');
                 });
@@ -181,7 +205,7 @@ Component.register('lieferzeiten-channel-settings-list', {
 
             try {
                 for (const channel of this.channels) {
-                    for (const { key } of this.pdmsLieferzeiten) {
+                    for (const { key } of this.getChannelPdmsLieferzeiten(channel.id)) {
                         const entity = this.thresholdRepository.create(Shopware.Context.api);
                         entity.id = this.existingEntryIds[this.getEntryKey(channel.id, key)] || entity.id;
                         entity.salesChannelId = channel.id;

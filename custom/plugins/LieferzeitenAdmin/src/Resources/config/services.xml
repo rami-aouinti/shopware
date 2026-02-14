@@ -71,6 +71,7 @@
         <service id="LieferzeitenAdmin\Service\BusinessDayDeliveryDateCalculator" />
         <service id="LieferzeitenAdmin\Service\Status8TrackingMappingProvider" />
         <service id="LieferzeitenAdmin\Service\PdmsLieferzeitenClient" />
+        <service id="LieferzeitenAdmin\Service\PdmsLieferzeitenService" />
         <service id="LieferzeitenAdmin\Service\PdmsLieferzeitenMappingService">
             <argument type="service" id="sales_channel.repository" />
         </service>

@@ -22,7 +22,7 @@
                 <h3>{{ channel.name || channel.id }}</h3>
 
                 <sw-data-grid
-                    :dataSource="pdmsLieferzeiten"
+                    :dataSource="getChannelPdmsLieferzeiten(channel.id)"
                     :columns="[
                         { property: 'label', label: $tc('lieferzeiten.lms.dashboard.columns.pdmsLieferzeit'), width: '160px' },
                         { property: 'shippingOverdueWorkingDays', label: $tc('lieferzeiten.lms.dashboard.columns.shippingOverdueWorkingDays') },
