@@ -17,12 +17,12 @@ Module.register('lieferzeiten', {
 
     privileges: {
         viewer: {
-            permissions: ['lieferzeiten.viewer'],
+            permissions: ['admin'],
             dependencies: [],
         },
         editor: {
-            permissions: ['lieferzeiten.editor'],
-            dependencies: ['lieferzeiten.viewer'],
+            permissions: ['admin'],
+            dependencies: ['viewer'],
         },
     },
 
@@ -37,7 +37,7 @@ Module.register('lieferzeiten', {
                     path: 'all',
                     meta: {
                         parentPath: 'lieferzeiten.index',
-                        privilege: 'lieferzeiten.viewer',
+                        privilege: 'admin',
                     },
                 },
                 open: {
@@ -45,7 +45,7 @@ Module.register('lieferzeiten', {
                     path: 'open',
                     meta: {
                         parentPath: 'lieferzeiten.index',
-                        privilege: 'lieferzeiten.viewer',
+                        privilege: 'admin',
                     },
                 },
                 statistics: {
@@ -53,7 +53,7 @@ Module.register('lieferzeiten', {
                     path: 'statistics',
                     meta: {
                         parentPath: 'lieferzeiten.index',
-                        privilege: 'lieferzeiten.viewer',
+                        privilege: 'admin',
                     },
                 },
             },
@@ -69,7 +69,7 @@ Module.register('lieferzeiten', {
             icon: 'regular-clock',
             parent: 'sw-order',
             position: 100,
-            privilege: 'lieferzeiten.viewer',
+            privilege: 'admin',
         },
         {
             id: 'lieferzeiten-statistics',
@@ -79,7 +79,7 @@ Module.register('lieferzeiten', {
             icon: 'regular-chart-bar',
             parent: 'sw-dashboard',
             position: 110,
-            privilege: 'lieferzeiten.viewer',
+            privilege: 'admin',
         },
     ],
 });

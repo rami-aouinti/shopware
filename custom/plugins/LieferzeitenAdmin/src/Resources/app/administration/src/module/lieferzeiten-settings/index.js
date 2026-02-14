@@ -54,6 +54,14 @@ Module.register('lieferzeiten-settings', {
             position: 90,
         },
         {
+            id: 'lieferzeiten-settings-main-list',
+            label: 'lieferzeiten.general.mainMenuItemGeneral',
+            color: '#009ee3',
+            path: 'lieferzeiten.index',
+            parent: 'lieferzeiten-settings',
+            position: 5,
+        },
+        {
             id: 'lieferzeiten-settings-channel',
             label: 'lieferzeiten.lms.navigation.thresholdsByChannel',
             color: '#009ee3',
