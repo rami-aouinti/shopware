@@ -4,6 +4,12 @@ namespace LieferzeitenAdmin\Sync\San6;
 
 class San6MatchingService
 {
+    public const INTERNAL_DELIVERY_COMPLETED_FLAG = 'internalDeliveryCompleted';
+
+    public const INTERNAL_DELIVERY_STATE = 'internalDeliveryStatus';
+
+    public const INTERNAL_DELIVERY_COMPLETED_STATE = 'completed';
+
     /**
      * @param array<string,mixed> $order
      * @param array<string,mixed> $san6

@@ -528,22 +528,33 @@ class LieferzeitenImportService
         }
 
         $parcels = $order['parcels'] ?? $san6Payload['parcels'] ?? [];
-        if (!is_array($parcels) || $parcels === []) {
-            return false;
-        }
+        if (is_array($parcels) && $parcels !== []) {
+            $closedParcels = 0;
+            foreach ($parcels as $parcel) {
+                if (!is_array($parcel)) {
+                    continue;
+                }
 
-        $closedParcels = 0;
-        foreach ($parcels as $parcel) {
-            if (!is_array($parcel)) {
-                continue;
+                if ($this->isClosedParcelStatusForStatus8($parcel, $order)) {
+                    ++$closedParcels;
+                }
             }
 
-            if ($this->isClosedParcelStatusForStatus8($parcel, $order)) {
-                ++$closedParcels;
-            }
+            return $closedParcels > 0 && $closedParcels === count($parcels);
         }
 
-        return $closedParcels > 0 && $closedParcels === count($parcels);
+        return $this->isSan6InternalDeliveryCompleted($order, $san6Payload);
+    }
+
+    /** @param array<string,mixed> $order */
+    private function isSan6InternalDeliveryCompleted(array $order, array $san6Payload): bool
+    {
+        $state = (string) ($order[San6MatchingService::INTERNAL_DELIVERY_STATE] ?? $san6Payload[San6MatchingService::INTERNAL_DELIVERY_STATE] ?? '');
+        if ($state !== '' && strtolower(trim($state)) === San6MatchingService::INTERNAL_DELIVERY_COMPLETED_STATE) {
+            return true;
+        }
+
+        return $this->toBool($order[San6MatchingService::INTERNAL_DELIVERY_COMPLETED_FLAG] ?? $san6Payload[San6MatchingService::INTERNAL_DELIVERY_COMPLETED_FLAG] ?? null);
     }
 
     /**

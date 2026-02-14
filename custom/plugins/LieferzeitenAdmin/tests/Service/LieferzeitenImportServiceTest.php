@@ -237,6 +237,54 @@ class LieferzeitenImportServiceTest extends TestCase
         ], []));
     }
 
+    public function testIsCompletedStatus8RecognizesAllParcelsDelivered(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'isCompletedStatus8');
+        $method->setAccessible(true);
+
+        static::assertTrue($method->invoke($service, [
+            'parcels' => [
+                ['trackingStatus' => 'zugestellt'],
+                ['trackingStatus' => 'delivered'],
+            ],
+        ], []));
+    }
+
+    public function testIsCompletedStatus8RejectsWhenAnyParcelNotDelivered(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'isCompletedStatus8');
+        $method->setAccessible(true);
+
+        static::assertFalse($method->invoke($service, [
+            'parcels' => [
+                ['trackingStatus' => 'zugestellt'],
+                ['trackingStatus' => 'in_transit'],
+            ],
+        ], []));
+    }
+
+    public function testIsCompletedStatus8SupportsSan6InternalDeliveryCompletedWithoutTracking(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'isCompletedStatus8');
+        $method->setAccessible(true);
+
+        static::assertTrue($method->invoke($service, [], [
+            San6MatchingService::INTERNAL_DELIVERY_COMPLETED_FLAG => true,
+        ]));
+
+        static::assertTrue($method->invoke($service, [], [
+            San6MatchingService::INTERNAL_DELIVERY_STATE => San6MatchingService::INTERNAL_DELIVERY_COMPLETED_STATE,
+        ]));
+
+        static::assertFalse($method->invoke($service, [], [
+            San6MatchingService::INTERNAL_DELIVERY_COMPLETED_FLAG => false,
+            San6MatchingService::INTERNAL_DELIVERY_STATE => 'open',
+        ]));
+    }
+
     public function testIsCompletedStatus8UsesCarrierSpecificMappingForDhlAndGls(): void
     {
         $service = $this->createService();
