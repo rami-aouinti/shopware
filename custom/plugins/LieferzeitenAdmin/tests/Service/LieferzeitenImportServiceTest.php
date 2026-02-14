@@ -237,6 +237,53 @@ class LieferzeitenImportServiceTest extends TestCase
         ], []));
     }
 
+    public function testIsCompletedStatus8ReturnsTrueWhenAllParcelsDelivered(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'isCompletedStatus8');
+        $method->setAccessible(true);
+
+        static::assertTrue($method->invoke($service, [
+            'parcels' => [
+                ['trackingStatus' => 'zugestellt'],
+                ['trackingStatus' => 'delivered'],
+            ],
+        ], []));
+    }
+
+    public function testIsCompletedStatus8ReturnsFalseWhenAtLeastOneParcelNotDelivered(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'isCompletedStatus8');
+        $method->setAccessible(true);
+
+        static::assertFalse($method->invoke($service, [
+            'parcels' => [
+                ['trackingStatus' => 'zugestellt'],
+                ['trackingStatus' => 'unterwegs'],
+            ],
+        ], []));
+    }
+
+    public function testIsCompletedStatus8SupportsInternalDeliveryWithoutTrackingViaSan6Flag(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'isCompletedStatus8');
+        $method->setAccessible(true);
+
+        static::assertTrue($method->invoke($service, [], [
+            'internalDeliveryCompleted' => true,
+        ]));
+
+        static::assertTrue($method->invoke($service, [], [
+            'deliveryCompletionState' => 'internal_completed',
+        ]));
+
+        static::assertFalse($method->invoke($service, [], [
+            'internalDeliveryCompleted' => false,
+        ]));
+    }
+
     public function testIsCompletedStatus8UsesCarrierSpecificMappingForDhlAndGls(): void
     {
         $service = $this->createService();

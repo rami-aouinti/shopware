@@ -23,6 +23,26 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class LieferzeitenImportService
 {
+    /**
+     * SAN6 payload contract for internal deliveries without tracking.
+     *
+     * Supported inputs:
+     * - san6.internalDeliveryCompleted: bool|string|int (truthy values mean completed)
+     * - san6.deliveryCompletionState: "completed"|"done"|"internal_completed"|"terminated"
+     */
+    private const SAN6_INTERNAL_DELIVERY_COMPLETED_FLAG_KEYS = [
+        'internalDeliveryCompleted',
+        'deliveryCompletedWithoutTracking',
+        'completedWithoutTracking',
+    ];
+
+    private const SAN6_INTERNAL_DELIVERY_COMPLETED_STATES = [
+        'completed',
+        'done',
+        'internal_completed',
+        'terminated',
+    ];
+
     public function __construct(
         private readonly EntityRepository $paketRepository,
         private readonly EntityRepository $positionRepository,
@@ -522,6 +542,10 @@ class LieferzeitenImportService
             return true;
         }
 
+        if ($this->isSan6InternalDeliveryCompleted($order, $san6Payload)) {
+            return true;
+        }
+
         $specialCase = (string) ($order['specialCompletionCase'] ?? $san6Payload['specialCompletionCase'] ?? '');
         if ($specialCase !== '' && in_array(strtolower($specialCase), ['manual_complete', 'digital_only', 'pickup_done', 'special_case'], true)) {
             return true;
@@ -544,6 +568,35 @@ class LieferzeitenImportService
         }
 
         return $closedParcels > 0 && $closedParcels === count($parcels);
+    }
+
+    /** @param array<string,mixed> $order */
+    private function isSan6InternalDeliveryCompleted(array $order, array $san6Payload): bool
+    {
+        foreach (self::SAN6_INTERNAL_DELIVERY_COMPLETED_FLAG_KEYS as $key) {
+            $value = $san6Payload[$key] ?? $order[$key] ?? null;
+            if (is_bool($value)) {
+                return $value;
+            }
+
+            if (is_string($value) || is_int($value)) {
+                $normalized = strtolower(trim((string) $value));
+                if (in_array($normalized, ['1', 'true', 'yes', 'ja', 'y', 'x'], true)) {
+                    return true;
+                }
+
+                if (in_array($normalized, ['0', 'false', 'no', 'nein', 'n'], true)) {
+                    return false;
+                }
+            }
+        }
+
+        $state = strtolower(trim((string) ($san6Payload['deliveryCompletionState'] ?? $order['deliveryCompletionState'] ?? '')));
+        if ($state === '') {
+            return false;
+        }
+
+        return in_array($state, self::SAN6_INTERNAL_DELIVERY_COMPLETED_STATES, true);
     }
 
     /**
