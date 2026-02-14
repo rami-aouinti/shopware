@@ -85,10 +85,14 @@
       "latestDelivery": "Latest delivery"
     },
     "shipping": {
-      "unclear": "Unclear",
+      "unclear": "Unklar",
       "complete": "Complete",
       "partial": "Partial",
-      "split": "Split"
+      "split": "Split",
+      "completeShipment": "Gesamt-Versand",
+      "partialShipment": "Teillieferung",
+      "splitPosition": "Trennung Auftragsposition",
+      "pieces": "Stück"
     },
     "audit": {
       "savedSupplierDate": "Supplier date saved",

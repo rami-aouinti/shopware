@@ -88,7 +88,11 @@
       "unclear": "Unklar",
       "complete": "Gesamt",
       "partial": "Teil",
-      "split": "Trennung"
+      "split": "Trennung",
+      "completeShipment": "Gesamt-Versand",
+      "partialShipment": "Teillieferung",
+      "splitPosition": "Trennung Auftragsposition",
+      "pieces": "Stück"
     },
     "audit": {
       "savedSupplierDate": "Liefertermin Lieferant gespeichert",
