@@ -27,5 +27,6 @@
 | Task abbrechen | `POST /api/_action/lieferzeiten/tasks/{taskId}/cancel` | ❌ | ✅ |
 
 ## Hinweise
+- Die Notification `liefertermin.anfrage.geschlossen` ist **geschäftskritisch** und wird beim Schließen/Abbrechen einer Zusatzliefertermin-Anfrage trotz deaktivierter Toggles erzwungen gequeued (`forceIfCritical`).
 - Fehlende Berechtigung führt typischerweise zu HTTP `403`.
 - Rollen müssen dem Admin-Benutzer explizit zugewiesen werden.

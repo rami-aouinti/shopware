@@ -112,6 +112,8 @@ class LieferzeitenTaskServiceTest extends TestCase
                 $context,
                 'EXT-100',
                 'shopware',
+                null,
+                true,
             );
 
         $service = new LieferzeitenTaskService($taskRepository, $notificationService);

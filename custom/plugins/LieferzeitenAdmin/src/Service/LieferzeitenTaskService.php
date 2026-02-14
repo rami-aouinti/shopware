@@ -246,6 +246,8 @@ class LieferzeitenTaskService
                 $context,
                 isset($payload['externalOrderId']) ? (string) $payload['externalOrderId'] : null,
                 isset($payload['sourceSystem']) ? (string) $payload['sourceSystem'] : null,
+                null,
+                true,
             );
 
             return;
