@@ -5,7 +5,7 @@
                 <tr>
                     <th colspan="11">{{ $t('lieferzeiten.zones.order') }}</th>
                     <th colspan="5">{{ $t('lieferzeiten.zones.delivery') }}</th>
-                    <th colspan="3">{{ $t('lieferzeiten.zones.status') }}</th>
+                    <th colspan="8">{{ $t('lieferzeiten.zones.status') }}</th>
                 </tr>
                 <tr>
                     <th>{{ $t('lieferzeiten.table.orderNumber') }}</th>
@@ -25,6 +25,11 @@
                     <th>{{ $t('lieferzeiten.fields.comment') }}</th>
                     <th>{{ $t('lieferzeiten.fields.history') }}</th>
                     <th>{{ $t('lieferzeiten.table.status') }}</th>
+                    <th>Paket-Status</th>
+                    <th>spätester Versandzeitpunkt</th>
+                    <th>Versand-Datum</th>
+                    <th>spätester Lieferzeitpunkt</th>
+                    <th>Liefer-Datum</th>
                     <th>{{ $t('lieferzeiten.fields.shippingType') }}</th>
                     <th>{{ $t('lieferzeiten.fields.audit') }}</th>
                 </tr>
@@ -86,11 +91,16 @@
                                 {{ isOrderOpen(order) ? $t('lieferzeiten.status.open') : $t('lieferzeiten.status.closed') }}
                             </sw-label>
                         </td>
+                        <td>{{ displayOrDash(order.packageStatusDisplay) }}</td>
+                        <td>{{ displayOrDash(order.latestShippingAtDisplay) }}</td>
+                        <td>{{ displayOrDash(order.shippingDateDisplay) }}</td>
+                        <td>{{ displayOrDash(order.latestDeliveryAtDisplay) }}</td>
+                        <td>{{ displayOrDash(order.deliveryDateDisplay) }}</td>
                         <td>{{ shippingLabel(order) }}</td>
                         <td>{{ order.audit || '-' }}</td>
                     </tr>
                     <tr v-if="isExpanded(order.id)" :key="`${order.id}-positions`">
-                        <td colspan="19">
+                        <td colspan="24">
                             <table class="sw-data-grid__table">
                                 <thead>
                                     <tr>

@@ -84,6 +84,11 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     paymentDateDisplay: this.resolvePaymentDate(order),
                     customerNamesDisplay: this.resolveCustomerNames(order),
                     positionsCountDisplay: positions.length,
+                    packageStatusDisplay: this.resolvePackageStatus(order),
+                    latestShippingAtDisplay: this.resolveLatestShippingAt(order),
+                    shippingDateDisplay: this.resolveShippingDate(order),
+                    latestDeliveryAtDisplay: this.resolveLatestDeliveryAt(order),
+                    deliveryDateDisplay: this.resolveDeliveryDate(order),
                     lieferterminLieferantRange: supplierRange,
                     neuerLieferterminRange: newRange,
                     originalLieferterminLieferantRange: { ...supplierRange },
@@ -221,6 +226,90 @@ Shopware.Component.register('lieferzeiten-order-table', {
             return billingName || null;
         },
 
+        resolvePackageStatus(order) {
+            const rawStatus = this.pickFirstDefined(order, [
+                'packageStatus',
+                'paketStatus',
+                'paket_status',
+                'status',
+            ]);
+
+            if (!rawStatus || String(rawStatus).trim() === '') {
+                return null;
+            }
+
+            const normalized = String(rawStatus).trim();
+            const labels = {
+                open: this.$t('lieferzeiten.status.open'),
+                closed: this.$t('lieferzeiten.status.closed'),
+                pending: 'Pending',
+                shipped: 'Shipped',
+                delivered: 'Delivered',
+            };
+
+            return labels[normalized.toLowerCase()] || normalized;
+        },
+
+        resolveLatestShippingAt(order) {
+            return this.formatDateTime(this.pickFirstDefined(order, [
+                'latestShippingDate',
+                'spaetesterVersand',
+                'spaetester_versand',
+                'shippingDateTo',
+                'shipping_date_to',
+            ]));
+        },
+
+        resolveShippingDate(order) {
+            return this.formatDate(this.pickFirstDefined(order, [
+                'shippingDate',
+                'shipping_date',
+                'versandDatum',
+                'versand_datum',
+                'businessDateFrom',
+                'business_date_from',
+                'shippedAt',
+            ]));
+        },
+
+        resolveLatestDeliveryAt(order) {
+            return this.formatDateTime(this.pickFirstDefined(order, [
+                'latestDeliveryDate',
+                'spaetesteLieferung',
+                'spaeteste_lieferung',
+                'deliveryDateTo',
+                'delivery_date_to',
+            ]));
+        },
+
+        resolveDeliveryDate(order) {
+            return this.formatDate(this.pickFirstDefined(order, [
+                'deliveryDate',
+                'delivery_date',
+                'lieferDatum',
+                'liefer_datum',
+                'businessDateTo',
+                'business_date_to',
+                'deliveredAt',
+                'calculatedDeliveryDate',
+                'calculated_delivery_date',
+            ]));
+        },
+
+        pickFirstDefined(source, keys) {
+            if (!source || !Array.isArray(keys)) {
+                return null;
+            }
+
+            for (const key of keys) {
+                if (Object.prototype.hasOwnProperty.call(source, key) && source[key] !== null && source[key] !== undefined) {
+                    return source[key];
+                }
+            }
+
+            return null;
+        },
+
         formatDate(value) {
             if (!value) {
                 return null;
@@ -231,7 +320,27 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 return null;
             }
 
-            return date.toLocaleDateString();
+            return date.toLocaleDateString('de-DE', { timeZone: 'Europe/Berlin' });
+        },
+
+        formatDateTime(value) {
+            if (!value) {
+                return null;
+            }
+
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) {
+                return null;
+            }
+
+            return date.toLocaleString('de-DE', {
+                timeZone: 'Europe/Berlin',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+            });
         },
 
         resolveTrackingEntries(order, position) {
