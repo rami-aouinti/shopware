@@ -2,7 +2,7 @@
 
 namespace LieferzeitenAdmin\Tests\Service;
 
-use LieferzeitenAdmin\Service\PdmsLieferzeitenClient;
+use LieferzeitenAdmin\Service\PdmsLieferzeitenService;
 use LieferzeitenAdmin\Service\PdmsLieferzeitenMappingService;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
@@ -19,8 +19,8 @@ class PdmsLieferzeitenMappingServiceTest extends TestCase
         $salesChannelId = '018f4f79a07f7a1f8f66f5af4823fcb1';
         $context = Context::createDefaultContext();
 
-        $pdmsClient = $this->createMock(PdmsLieferzeitenClient::class);
-        $pdmsClient->method('fetchLieferzeiten')->willReturn([
+        $pdmsService = $this->createMock(PdmsLieferzeitenService::class);
+        $pdmsService->method('getNormalizedLieferzeiten')->willReturn([
             ['id' => 'lz-a', 'name' => '1-2', 'minDays' => 1, 'maxDays' => 2],
             ['id' => 'lz-b', 'name' => '2-4', 'minDays' => 2, 'maxDays' => 4],
             ['id' => 'lz-c', 'name' => '4-6', 'minDays' => 4, 'maxDays' => 6],
@@ -47,7 +47,7 @@ class PdmsLieferzeitenMappingServiceTest extends TestCase
         $repository = $this->createMock(EntityRepository::class);
         $repository->method('search')->willReturn($searchResult);
 
-        $service = new PdmsLieferzeitenMappingService($pdmsClient, $repository);
+        $service = new PdmsLieferzeitenMappingService($pdmsService, $repository);
 
         $result = $service->getForSalesChannel($salesChannelId, $context);
 

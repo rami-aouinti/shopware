@@ -9,7 +9,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 class PdmsLieferzeitenMappingService
 {
     public function __construct(
-        private readonly PdmsLieferzeitenClient $pdmsClient,
+        private readonly PdmsLieferzeitenService $pdmsLieferzeitenService,
         private readonly EntityRepository $salesChannelRepository,
     ) {
     }
@@ -27,7 +27,7 @@ class PdmsLieferzeitenMappingService
             $salesChannelName = $salesChannelId;
         }
 
-        $lieferzeiten = $this->pdmsClient->fetchLieferzeiten();
+        $lieferzeiten = $this->pdmsLieferzeitenService->getNormalizedLieferzeiten();
 
         $mapping = json_decode((string) ($salesChannel?->get('customFields')['pdms_lieferzeiten_mapping'] ?? ''), true);
         if (!is_array($mapping)) {
@@ -60,7 +60,7 @@ class PdmsLieferzeitenMappingService
     {
         if (is_string($mappingValue) && $mappingValue !== '') {
             foreach ($lieferzeiten as $candidate) {
-                $id = $candidate['id'] ?? $candidate['uuid'] ?? null;
+                $id = $candidate['id'] ?? null;
                 if ((string) $id === $mappingValue) {
                     return $candidate;
                 }
