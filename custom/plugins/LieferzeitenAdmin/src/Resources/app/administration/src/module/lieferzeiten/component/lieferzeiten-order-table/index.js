@@ -1140,7 +1140,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 this.createNotificationSuccess({
                     title: this.$t('lieferzeiten.additionalRequest.notificationTitle'),
                     message: this.$t('lieferzeiten.additionalRequest.notificationRequested', {
-                        initiator: initiator.display || this.$t('lieferzeiten.additionalRequest.defaultInitiator'),
+                        initiator: initiator?.display || this.$t('lieferzeiten.additionalRequest.defaultInitiator'),
                     }),
                 });
 
@@ -1224,6 +1224,10 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 .join(' ')
                 .trim();
             const readableName = fullName || String(user?.username || user?.email || '').trim();
+
+            if (!userId && !readableName) {
+                return null;
+            }
 
             return {
                 userId: userId || null,

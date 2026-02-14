@@ -27,6 +27,36 @@ class LieferzeitenTaskServiceTest extends TestCase
         static::assertSame('user-123', $service->resolveActor($context));
     }
 
+
+    public function testCreateTaskPrioritizesContextUserAsInitiatorAndPersistsInitiatorFields(): void
+    {
+        $contextUserId = 'd2f0c2db4cfe4fd39189a8f5d13d54d1';
+        $context = new Context(new AdminApiSource($contextUserId));
+
+        $taskRepository = $this->createMock(EntityRepository::class);
+        $taskRepository->expects($this->once())->method('search')->willReturn(new EntitySearchResult('lieferzeiten_task', 0, new EntityCollection(), null, new Criteria(), $context));
+        $taskRepository->expects($this->once())
+            ->method('create')
+            ->with($this->callback(static function (array $payload) use ($contextUserId): bool {
+                $task = $payload[0] ?? [];
+                $taskPayload = $task['payload'] ?? [];
+
+                return ($task['initiator'] ?? null) === 'UI User'
+                    && ($taskPayload['initiatorUserId'] ?? null) === $contextUserId
+                    && ($taskPayload['initiatorDisplay'] ?? null) === 'UI User';
+            }), $context);
+
+        $notificationService = $this->createMock(NotificationEventService::class);
+        $service = new LieferzeitenTaskService($taskRepository, $notificationService);
+
+        $service->createTask([
+            'positionId' => 'pos-1',
+            'triggerKey' => 'additional-delivery-request',
+            'initiatorDisplay' => 'UI User',
+            'initiatorUserId' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        ], $context);
+    }
+
     public function testAssignTaskMovesTaskToInProgress(): void
     {
         $context = Context::createDefaultContext();

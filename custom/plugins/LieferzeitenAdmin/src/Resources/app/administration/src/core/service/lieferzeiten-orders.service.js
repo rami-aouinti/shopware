@@ -143,10 +143,6 @@ class LieferzeitenOrdersService extends ApiService {
     async createAdditionalDeliveryRequest(positionId, initiator = null) {
         const payload = {};
 
-        if (typeof initiator === 'string' && initiator.trim() !== '') {
-            payload.initiator = initiator.trim();
-        }
-
         if (initiator && typeof initiator === 'object') {
             if (typeof initiator.display === 'string' && initiator.display.trim() !== '') {
                 payload.initiatorDisplay = initiator.display.trim();
@@ -155,6 +151,8 @@ class LieferzeitenOrdersService extends ApiService {
             if (typeof initiator.userId === 'string' && initiator.userId.trim() !== '') {
                 payload.initiatorUserId = initiator.userId.trim();
             }
+        } else if (typeof initiator === 'string' && initiator.trim() !== '') {
+            payload.initiator = initiator.trim();
         }
 
         return this.post(`position/${positionId}/additional-delivery-request`, payload);
