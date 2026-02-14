@@ -85,6 +85,23 @@
         </input-field>
 
         <input-field type="text">
+            <name>pdmsApiUrl</name>
+            <label lang="en-GB">PDMS API URL</label>
+            <label lang="de-DE">PDMS API-URL</label>
+        </input-field>
+        <input-field type="text">
+            <name>pdmsApiToken</name>
+            <label lang="en-GB">PDMS API token</label>
+            <label lang="de-DE">PDMS API-Token</label>
+        </input-field>
+        <input-field type="text">
+            <name>pdmsLieferzeitenPath</name>
+            <label lang="en-GB">PDMS Lieferzeiten path</label>
+            <label lang="de-DE">PDMS-Lieferzeiten-Pfad</label>
+            <defaultValue>/lieferzeiten</defaultValue>
+        </input-field>
+
+        <input-field type="text">
             <name>san6ApiUrl</name>
             <label lang="en-GB">San6 API URL</label>
             <label lang="de-DE">San6 API-URL</label>

@@ -37,12 +37,15 @@ class PaketDeliveryDateRecalculationService
 
             $resolution = $this->baseDateResolver->resolve($payload);
             $settings = $this->settingsProvider->getForChannel((string) ($paket->get('sourceSystem') ?? 'shopware'));
-            $calculated = $this->calculator->calculate($resolution['baseDate'], $settings['delivery']);
+            $calculatedShippingDate = $this->calculator->calculate($resolution['baseDate'], $settings['shipping']);
+            $calculatedDeliveryDate = $this->calculator->calculate($resolution['baseDate'], $settings['delivery']);
 
             $updates[] = [
                 'id' => $paket->getId(),
                 'baseDateType' => $resolution['baseDateType'],
-                'calculatedDeliveryDate' => $calculated?->format('Y-m-d H:i:s'),
+                'shippingDate' => $calculatedShippingDate?->format('Y-m-d H:i:s'),
+                'deliveryDate' => $calculatedDeliveryDate?->format('Y-m-d H:i:s'),
+                'calculatedDeliveryDate' => $calculatedDeliveryDate?->format('Y-m-d H:i:s'),
             ];
         }
 
