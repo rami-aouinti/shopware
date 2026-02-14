@@ -57,6 +57,8 @@ class LieferzeitenTaskServiceTest extends TestCase
             'taskType' => 'additional-delivery-request',
             'externalOrderId' => 'EXT-100',
             'sourceSystem' => 'shopware',
+            'initiatorDisplay' => 'Buyer Name',
+            'initiatorUserId' => 'd2f0c2db4cfe4fd39189a8f5d13d54d1',
         ], 'buyer@example.test');
 
         $searchResult = new EntitySearchResult('lieferzeiten_task', 1, new EntityCollection([$taskEntity]), null, new Criteria([$taskId]), $context);
@@ -74,7 +76,9 @@ class LieferzeitenTaskServiceTest extends TestCase
                 $this->stringStartsWith('task-close:'),
                 NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUEST_CLOSED,
                 'email',
-                $this->callback(static fn (array $payload): bool => ($payload['taskId'] ?? null) === $taskId),
+                $this->callback(static fn (array $payload): bool => ($payload['taskId'] ?? null) === $taskId
+                    && ($payload['recipientUserId'] ?? null) === 'd2f0c2db4cfe4fd39189a8f5d13d54d1'
+                    && ($payload['initiator'] ?? null) === 'Buyer Name'),
                 $context,
                 'EXT-100',
                 'shopware',
