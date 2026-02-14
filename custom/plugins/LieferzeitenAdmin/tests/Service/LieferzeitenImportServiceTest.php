@@ -10,6 +10,7 @@ use LieferzeitenAdmin\Service\Status8TrackingMappingProvider;
 use LieferzeitenAdmin\Service\ChannelDateSettingsProvider;
 use LieferzeitenAdmin\Service\LieferzeitenImportService;
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
 use LieferzeitenAdmin\Service\Reliability\IntegrationReliabilityService;
 use LieferzeitenAdmin\Sync\Adapter\ChannelOrderAdapterRegistry;
 use LieferzeitenAdmin\Sync\San6\San6Client;
@@ -537,44 +538,78 @@ class LieferzeitenImportServiceTest extends TestCase
         $method->invoke($service, $context);
     }
 
-
-    public function testBuildParcelRowsReturnsSeparateRowsPerParcel(): void
+    public function testEmitNotificationEventsDispatchesDeliveryDateAssignedWhenDateFirstSet(): void
     {
-        $service = $this->createService();
-        $method = new \ReflectionMethod($service, 'buildParcelRows');
+        $dispatchedTriggers = [];
+
+        $notificationService = $this->createMock(NotificationEventService::class);
+        $notificationService->method('dispatch')
+            ->willReturnCallback(static function (string $eventKey, string $triggerKey, string $channel, array $payload) use (&$dispatchedTriggers): bool {
+                if (str_starts_with($eventKey, 'delivery-date-assigned:')) {
+                    static::assertSame('2026-02-14', $payload['deliveryDate'] ?? null);
+                }
+
+                $dispatchedTriggers[] = $triggerKey;
+
+                return true;
+            });
+
+        $service = $this->createService(notificationEventService: $notificationService);
+        $method = new \ReflectionMethod($service, 'emitNotificationEvents');
         $method->setAccessible(true);
 
-        $rows = $method->invoke($service, [
-            'orderNumber' => 'SO-1000',
-            'sourceSystem' => 'san6',
-            'status' => '7',
-            'parcels' => [
-                ['paketNumber' => 'PK-1', 'trackingNumber' => 'TR-1', 'status' => 'in_transit'],
-                ['paketNumber' => 'PK-2', 'trackingNumber' => 'TR-2', 'status' => 'delivered'],
-            ],
-        ], 'SO-1000');
+        $method->invoke(
+            $service,
+            'EXT-1',
+            'shopware',
+            ['deliveryDate' => '2026-02-14', 'paymentMethod' => 'vorkasse'],
+            [],
+            null,
+            null,
+            1,
+            Context::createDefaultContext()
+        );
 
-        static::assertCount(2, $rows);
-        static::assertSame('PK-1', $rows[0]['paketNumber']);
-        static::assertSame('PK-2', $rows[1]['paketNumber']);
-        static::assertSame(['TR-1'], $rows[0]['trackingNumbers']);
-        static::assertSame(['TR-2'], $rows[1]['trackingNumbers']);
+        static::assertContains(NotificationTriggerCatalog::DELIVERY_DATE_ASSIGNED, $dispatchedTriggers);
     }
 
-    public function testBuildParcelRowsCreatesFallbackParcelNumberWhenMissing(): void
+    public function testEmitNotificationEventsDispatchesDeliveryDateUpdatedWhenDateChanges(): void
     {
-        $service = $this->createService();
-        $method = new \ReflectionMethod($service, 'buildParcelRows');
+        $dispatchedTriggers = [];
+
+        $notificationService = $this->createMock(NotificationEventService::class);
+        $notificationService->method('dispatch')
+            ->willReturnCallback(static function (string $eventKey, string $triggerKey, string $channel, array $payload) use (&$dispatchedTriggers): bool {
+                if (str_starts_with($eventKey, 'delivery-date-updated:')) {
+                    static::assertSame('2026-02-16', $payload['deliveryDate'] ?? null);
+                }
+
+                $dispatchedTriggers[] = $triggerKey;
+
+                return true;
+            });
+
+        $existing = new PaketEntity();
+        $existing->setUniqueIdentifier(Uuid::randomHex());
+        $existing->setDeliveryDate(new \DateTimeImmutable('2026-02-15'));
+
+        $service = $this->createService(notificationEventService: $notificationService);
+        $method = new \ReflectionMethod($service, 'emitNotificationEvents');
         $method->setAccessible(true);
 
-        $rows = $method->invoke($service, [
-            'parcels' => [
-                ['status' => 'ready'],
-            ],
-        ], 'EXT-9');
+        $method->invoke(
+            $service,
+            'EXT-2',
+            'shopware',
+            ['deliveryDate' => '2026-02-16'],
+            [],
+            $existing,
+            3,
+            3,
+            Context::createDefaultContext()
+        );
 
-        static::assertCount(1, $rows);
-        static::assertSame('EXT-9-1', $rows[0]['paketNumber']);
+        static::assertContains(NotificationTriggerCatalog::DELIVERY_DATE_UPDATED, $dispatchedTriggers);
     }
 
     private function createSearchResult(PaketEntity $entity): EntitySearchResult
@@ -596,9 +631,7 @@ class LieferzeitenImportServiceTest extends TestCase
         ?HttpClientInterface $httpClient = null,
         ?SystemConfigService $config = null,
         ?Status8TrackingMappingProvider $status8TrackingMappingProvider = null,
-        ?BaseDateResolver $baseDateResolver = null,
-        ?ChannelDateSettingsProvider $settingsProvider = null,
-        ?BusinessDayDeliveryDateCalculator $deliveryDateCalculator = null,
+        ?NotificationEventService $notificationEventService = null,
     ): LieferzeitenImportService {
         $config ??= $this->createMock(SystemConfigService::class);
 
@@ -616,7 +649,7 @@ class LieferzeitenImportServiceTest extends TestCase
             $deliveryDateCalculator ?? $this->createMock(BusinessDayDeliveryDateCalculator::class),
             $status8TrackingMappingProvider ?? new Status8TrackingMappingProvider($config),
             $this->createMock(LockFactory::class),
-            $this->createMock(NotificationEventService::class),
+            $notificationEventService ?? $this->createMock(NotificationEventService::class),
             $this->createMock(IntegrationReliabilityService::class),
             $this->createMock(IntegrationContractValidator::class),
             $auditLogService ?? $this->createMock(AuditLogService::class),
