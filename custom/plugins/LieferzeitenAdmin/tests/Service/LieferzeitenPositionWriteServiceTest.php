@@ -6,10 +6,10 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use LieferzeitenAdmin\Service\LieferzeitenPositionWriteService;
 use LieferzeitenAdmin\Service\LieferzeitenTaskService;
+use LieferzeitenAdmin\Service\Notification\NotificationEventService;
 use LieferzeitenAdmin\Service\WriteEndpointConflictException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 
@@ -80,11 +80,11 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
             $this->createMock(EntityRepository::class),
             $this->createMock(EntityRepository::class),
             $this->createMock(LieferzeitenTaskService::class),
-            $this->createMock(\LieferzeitenAdmin\Service\Notification\NotificationEventService::class),
+            $this->createMock(NotificationEventService::class),
         );
 
-        $contextUserA = new Context(new AdminApiSource('user-a'));
-        $contextUserB = new Context(new AdminApiSource('user-b'));
+        $contextUserA = Context::createDefaultContext();
+        $contextUserB = Context::createDefaultContext();
 
         $service->updateComment($positionId, 'Comment from user A', $initialUpdatedAt, $contextUserA);
 
@@ -95,7 +95,7 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
             $refresh = $e->getRefresh();
             static::assertTrue(($refresh['exists'] ?? false) === true);
             static::assertSame('Comment from user A', $refresh['comment'] ?? null);
-            static::assertSame('user-a', $refresh['lastChangedBy'] ?? null);
+            static::assertSame('system', $refresh['lastChangedBy'] ?? null);
             static::assertIsString($refresh['updatedAt'] ?? null);
 
             throw $e;

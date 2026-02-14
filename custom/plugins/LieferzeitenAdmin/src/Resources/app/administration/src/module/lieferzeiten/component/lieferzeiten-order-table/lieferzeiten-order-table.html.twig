@@ -68,9 +68,9 @@
                         </td>
                         <td>
                             <ul>
-                                <li v-for="entry in order.lieferterminLieferantHistory" :key="entry">{{ entry }}</li>
-                                <li v-for="entry in order.neuerLieferterminHistory" :key="entry">{{ entry }}</li>
-                                <li v-for="entry in order.commentHistory" :key="entry">{{ entry }}</li>
+                                <li v-for="(entry, index) in order.lieferterminLieferantHistory" :key="`liefertermin-${order.id}-${index}`">{{ formatHistoryEntry(entry) }}</li>
+                                <li v-for="(entry, index) in order.neuerLieferterminHistory" :key="`neuer-liefertermin-${order.id}-${index}`">{{ formatHistoryEntry(entry) }}</li>
+                                <li v-for="(entry, index) in order.commentHistory" :key="`comment-${order.id}-${index}`">{{ formatHistoryEntry(entry) }}</li>
                             </ul>
                         </td>
                         <td>
@@ -103,8 +103,7 @@
                         <td>{{ displayOrDash(order.latestDeliveryAtDisplay) }}</td>
                         <td>{{ displayOrDash(order.deliveryDateDisplay) }}</td>
                         <td>{{ shippingLabel(order) }}</td>
-                        <td>{{ displayOrDash(order.lastChangedByDisplay) }}</td>
-                        <td>{{ displayOrDash(order.businessStatusDisplay) }}</td>
+                        <td>{{ resolveAuditDisplay(order) }}</td>
                     </tr>
                     <tr v-if="isExpanded(order.id)" :key="`${order.id}-positions`">
                         <td colspan="25">

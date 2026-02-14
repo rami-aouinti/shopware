@@ -10,7 +10,9 @@ use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\User\UserEntity;
 
 class LieferzeitenPositionWriteService
 {
@@ -20,7 +22,7 @@ class LieferzeitenPositionWriteService
         private readonly Connection $connection,
         private readonly EntityRepository $lieferterminLieferantHistoryRepository,
         private readonly EntityRepository $neuerLieferterminHistoryRepository,
-        private readonly EntityRepository $neuerLieferterminPaketHistoryRepository,
+        private readonly EntityRepository $userRepository,
         private readonly LieferzeitenTaskService $taskService,
         private readonly NotificationEventService $notificationEventService,
         private readonly TaskAssignmentRuleResolver $taskAssignmentRuleResolver,
@@ -442,11 +444,28 @@ class LieferzeitenPositionWriteService
     private function resolveActor(Context $context): string
     {
         $source = $context->getSource();
-        if ($source instanceof AdminApiSource && $source->getUserId() !== null) {
-            return $source->getUserId();
+        if (!($source instanceof AdminApiSource)) {
+            return 'system';
         }
 
-        return 'system';
+        $userId = $source->getUserId();
+        if ($userId === null) {
+            return 'system';
+        }
+
+        $user = $this->userRepository->search(new Criteria([$userId]), $context)->first();
+        if (!($user instanceof UserEntity)) {
+            return 'system';
+        }
+
+        $fullName = trim(sprintf('%s %s', (string) ($user->getFirstName() ?? ''), (string) ($user->getLastName() ?? '')));
+        if ($fullName !== '') {
+            return $fullName;
+        }
+
+        $username = trim((string) ($user->getUsername() ?? ''));
+
+        return $username !== '' ? $username : 'system';
     }
 
     /** @return array{externalOrderId:?string,sourceSystem:?string,customerEmail:?string,positionNumber:?string} */
