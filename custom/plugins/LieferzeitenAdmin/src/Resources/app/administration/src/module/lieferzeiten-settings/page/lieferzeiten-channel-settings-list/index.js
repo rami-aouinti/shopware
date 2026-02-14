@@ -210,15 +210,15 @@ Component.register('lieferzeiten-channel-settings-list', {
 
         ensureChannelMatrix(channelId) {
             if (!this.matrixValues[channelId]) {
-                this.$set(this.matrixValues, channelId, {});
+                this.matrixValues[channelId] = {};
             }
 
             this.getChannelPdmsLieferzeiten(channelId).forEach(({ key }) => {
                 if (!this.matrixValues[channelId][key]) {
-                    this.$set(this.matrixValues[channelId], key, {
+                    this.matrixValues[channelId][key] = {
                         shippingOverdueWorkingDays: 0,
                         deliveryOverdueWorkingDays: 0,
-                    });
+                    };
                 }
             });
         },
@@ -246,11 +246,11 @@ Component.register('lieferzeiten-channel-settings-list', {
 
                 const normalizedEntries = this.buildNormalizedPdmsSlots(entriesBySlot);
 
-                this.$set(this.channelPdmsLieferzeiten, channelId, normalizedEntries);
-                this.$set(this.channelPdmsMappingIncomplete, channelId, normalizedEntries.some((entry) => entry.isPlaceholder));
+                this.channelPdmsLieferzeiten[channelId] = normalizedEntries;
+                this.channelPdmsMappingIncomplete[channelId] = normalizedEntries.some((entry) => entry.isPlaceholder);
             } catch (error) {
-                this.$set(this.channelPdmsLieferzeiten, channelId, this.buildNormalizedPdmsSlots());
-                this.$set(this.channelPdmsMappingIncomplete, channelId, true);
+                this.channelPdmsLieferzeiten[channelId] = this.buildNormalizedPdmsSlots();
+                this.channelPdmsMappingIncomplete[channelId] = true;
                 this.notifyRequestError(error, this.$tc('lieferzeiten.lms.dashboard.title'));
             }
         },
@@ -278,11 +278,11 @@ Component.register('lieferzeiten-channel-settings-list', {
             const isValid = Number.isInteger(value) && value >= 0;
 
             if (!isValid) {
-                this.$set(this.validationErrors, fieldKey, this.$tc('lieferzeiten.lms.dashboard.inlineValidationError'));
+                this.validationErrors[fieldKey] = this.$tc('lieferzeiten.lms.dashboard.inlineValidationError');
                 return;
             }
 
-            this.$delete(this.validationErrors, fieldKey);
+            delete this.validationErrors[fieldKey];
         },
 
         onChangeNumberField(channelId, pdmsKey, fieldName, rawValue) {
@@ -333,11 +333,11 @@ Component.register('lieferzeiten-channel-settings-list', {
                     }
 
                     this.ensureChannelMatrix(entry.salesChannelId);
-                    this.$set(this.matrixValues[entry.salesChannelId], entry.pdmsLieferzeit, {
+                    this.matrixValues[entry.salesChannelId][entry.pdmsLieferzeit] = {
                         shippingOverdueWorkingDays: entry.shippingOverdueWorkingDays,
                         deliveryOverdueWorkingDays: entry.deliveryOverdueWorkingDays,
-                    });
-                    this.$set(this.existingEntryIds, this.getEntryKey(entry.salesChannelId, entry.pdmsLieferzeit), entry.id);
+                    };
+                    this.existingEntryIds[this.getEntryKey(entry.salesChannelId, entry.pdmsLieferzeit)] = entry.id;
                 });
             } catch (error) {
                 this.notifyRequestError(error, this.$tc('lieferzeiten.lms.dashboard.title'));
