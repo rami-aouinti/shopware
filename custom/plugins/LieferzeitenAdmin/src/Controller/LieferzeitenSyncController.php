@@ -2,6 +2,7 @@
 
 namespace LieferzeitenAdmin\Controller;
 
+use LieferzeitenAdmin\Service\AdditionalDeliveryAssigneeMissingException;
 use LieferzeitenAdmin\Service\Audit\AuditLogService;
 use LieferzeitenAdmin\Service\LieferzeitenImportService;
 use LieferzeitenAdmin\Service\LieferzeitenOrderOverviewService;
@@ -669,7 +670,12 @@ class LieferzeitenSyncController extends AbstractController
         $payload = $request->toArray();
         $initiator = trim((string) ($payload['initiator'] ?? 'system')) ?: 'system';
 
-        $this->positionWriteService->createAdditionalDeliveryRequest($positionId, $initiator, $context);
+        try {
+            $this->positionWriteService->createAdditionalDeliveryRequest($positionId, $initiator, $context);
+        } catch (AdditionalDeliveryAssigneeMissingException $e) {
+            return new JsonResponse(['status' => 'error', 'message' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         $this->auditLogService->log('additional_delivery_request_created', 'lieferzeiten_position', $positionId, $context, ['initiator' => $initiator], 'shopware');
 
         return new JsonResponse(['status' => 'ok']);
