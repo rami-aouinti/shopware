@@ -242,14 +242,14 @@
       }
     },
     "businessStatus": {
-      "new": "Neu",
-      "inClarification": "In Klärung",
-      "awaitingSupplier": "Warten auf Lieferanten",
-      "partiallyAvailable": "Teilweise verfügbar",
-      "readyForShipping": "Versandbereit",
-      "partiallyShipped": "Teilversendet",
-      "shipped": "Versendet",
-      "closed": "Abgeschlossen",
+      "1": "Neu",
+      "2": "In Klärung",
+      "3": "Warten auf Lieferanten",
+      "4": "Teilweise verfügbar",
+      "5": "Versandbereit",
+      "6": "Teilversendet",
+      "7": "Versendet",
+      "8": "Abgeschlossen",
       "unknown": "Unbekannt"
     },
     "statusChange": {
