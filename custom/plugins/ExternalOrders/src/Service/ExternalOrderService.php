@@ -243,7 +243,10 @@ readonly class ExternalOrderService
     private function mapExternalPayloadToDetail(array $payload, string $externalId): array
     {
         if (isset($payload['detail']) && is_array($payload['detail'])) {
-            return $payload['detail'];
+            $detail = $payload['detail'];
+            $detail['items'] = $this->normalizeDetailItems($detail['items'] ?? []);
+
+            return $detail;
         }
 
         return $this->buildDetailFallback($payload, $externalId);
@@ -308,7 +311,7 @@ readonly class ExternalOrderService
                 'topmExecution' => 'N/A',
                 'statusHistorySource' => 'Database',
             ],
-            'items' => [],
+            'items' => $this->normalizeDetailItems([]),
             'statusHistory' => [
                 [
                     'status' => $payload['statusLabel'] ?? 'Processing',
@@ -324,6 +327,38 @@ readonly class ExternalOrderService
                 'net' => 0.0,
             ],
         ];
+    }
+
+
+    /**
+     * @param mixed $items
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private function normalizeDetailItems(mixed $items): array
+    {
+        if (!is_array($items)) {
+            return [];
+        }
+
+        $normalizedItems = [];
+
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            $orderedQuantity = (int) ($item['orderedQuantity'] ?? $item['quantity'] ?? 0);
+            $shippedQuantity = (int) ($item['shippedQuantity'] ?? $orderedQuantity);
+
+            $item['quantity'] = $orderedQuantity;
+            $item['orderedQuantity'] = $orderedQuantity;
+            $item['shippedQuantity'] = $shippedQuantity;
+
+            $normalizedItems[] = $item;
+        }
+
+        return $normalizedItems;
     }
 
     private function countDetailItems(?array $detail): int

@@ -769,6 +769,8 @@
                                                 <tr>
                                                     <th>Produktname</th>
                                                     <th>Menge</th>
+                                                    <th>Status Position</th>
+                                                    <th>Expédié/Commandé</th>
                                                     <th>Nettowert des Artikels - Shopware</th>
                                                     <th>Steuersatz des Artikels - Shopware</th>
                                                     <th>Bruttowert des Artikels - Shopware</th>
@@ -778,7 +780,9 @@
                                             <tbody>
                                                 <tr v-for="(item, index) in selectedOrder.items" :key="`detail-item-${index}`">
                                                     <td>{{ item.name }}</td>
-                                                    <td>{{ item.quantity }}</td>
+                                                    <td>{{ item.orderedQuantity ?? item.quantity }}</td>
+                                                    <td>{{ itemDisplayStatus(item, selectedOrder.items) }}</td>
+                                                    <td>{{ itemShipmentRatio(item) }}</td>
                                                     <td>{{ formatCurrency(item.netPrice) }}</td>
                                                     <td>{{ item.taxRate }}%</td>
                                                     <td>{{ formatCurrency(item.grossPrice) }}</td>

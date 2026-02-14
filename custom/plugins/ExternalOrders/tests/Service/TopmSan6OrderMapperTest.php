@@ -93,4 +93,74 @@ class TopmSan6OrderMapperTest extends TestCase
         static::assertCount(1, $mapped['detail']['additional']['attachments']);
         static::assertCount(1, $mapped['attachmentPayload']);
     }
+
+    public function testMapsCompleteDeliveryWithExplicitQuantities(): void
+    {
+        $mapper = new TopmSan6OrderMapper();
+
+        $mapped = $mapper->mapOrder([
+            'Auftragsnummer' => 'A-COMPLETE-1',
+            'Positionen' => [
+                [
+                    'Artikelnummer' => 'COMPLETE.01',
+                    'MengeBestellt' => '4',
+                    'MengeGeliefert' => '4',
+                    'Preis' => '10.00',
+                ],
+            ],
+        ]);
+
+        static::assertSame(4, $mapped['detail']['items'][0]['orderedQuantity']);
+        static::assertSame(4, $mapped['detail']['items'][0]['shippedQuantity']);
+        static::assertSame(4, $mapped['detail']['items'][0]['quantity']);
+    }
+
+    public function testMapsPartialDeliveryWithDistinctOrderedAndShippedQuantities(): void
+    {
+        $mapper = new TopmSan6OrderMapper();
+
+        $mapped = $mapper->mapOrder([
+            'Auftragsnummer' => 'A-PARTIAL-1',
+            'Positionen' => [
+                [
+                    'Artikelnummer' => 'PARTIAL.01',
+                    'Bestellmenge' => '5',
+                    'GelieferteMenge' => '2',
+                    'Preis' => '10.00',
+                ],
+            ],
+        ]);
+
+        static::assertSame(5, $mapped['detail']['items'][0]['orderedQuantity']);
+        static::assertSame(2, $mapped['detail']['items'][0]['shippedQuantity']);
+    }
+
+    public function testMapsMultiParcelSplitLinesForSamePosition(): void
+    {
+        $mapper = new TopmSan6OrderMapper();
+
+        $mapped = $mapper->mapOrder([
+            'Auftragsnummer' => 'A-MULTI-1',
+            'Positionen' => [
+                [
+                    'Referenz' => 'SPLIT 100 1',
+                    'Bestellmenge' => '3',
+                    'Versandmenge' => '1',
+                    'Preis' => '10.00',
+                ],
+                [
+                    'Referenz' => 'SPLIT 100 1',
+                    'Bestellmenge' => '3',
+                    'Versandmenge' => '2',
+                    'Preis' => '10.00',
+                ],
+            ],
+        ]);
+
+        static::assertCount(2, $mapped['detail']['items']);
+        static::assertSame('SPLIT 100.01', $mapped['detail']['items'][0]['productNumber']);
+        static::assertSame(1, $mapped['detail']['items'][0]['shippedQuantity']);
+        static::assertSame(2, $mapped['detail']['items'][1]['shippedQuantity']);
+    }
+
 }

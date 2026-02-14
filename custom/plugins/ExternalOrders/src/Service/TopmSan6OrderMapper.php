@@ -112,7 +112,24 @@ class TopmSan6OrderMapper
 
             $skuRaw = $this->pickFirstString($position, ['Artikel', 'Artikelnummer', 'Referenz', 'article', 'sku']) ?? '';
             $normalizedReference = $this->normalizeArticleReference($skuRaw);
-            $quantity = (int) ($this->pickFirstString($position, ['Menge', 'menge', 'Anzahl']) ?? 1);
+            $orderedQuantity = $this->pickFirstInt($position, [
+                'Bestellmenge',
+                'MengeBestellt',
+                'OrderedQuantity',
+                'orderedQuantity',
+                'Menge',
+                'menge',
+                'Anzahl',
+            ]) ?? 1;
+            $shippedQuantity = $this->pickFirstInt($position, [
+                'GelieferteMenge',
+                'MengeGeliefert',
+                'Versandmenge',
+                'ShippedQuantity',
+                'shippedQuantity',
+                'Geliefert',
+                'Versendet',
+            ]) ?? $orderedQuantity;
             $price = (float) str_replace(',', '.', (string) ($this->pickFirstString($position, ['Preis', 'Einzelpreis']) ?? '0'));
 
             $items[] = [
@@ -120,13 +137,47 @@ class TopmSan6OrderMapper
                 'sku' => $normalizedReference['reference'],
                 'variant' => $normalizedReference['variant'],
                 'name' => $this->pickFirstString($position, ['Bezeichnung', 'Name']) ?? $normalizedReference['reference'],
-                'quantity' => $quantity,
+                'quantity' => $orderedQuantity,
+                'orderedQuantity' => $orderedQuantity,
+                'shippedQuantity' => $shippedQuantity,
                 'price' => $price,
-                'total' => (float) ($quantity * $price),
+                'total' => (float) ($orderedQuantity * $price),
             ];
         }
 
         return $items;
+    }
+
+    /**
+     * @param array<string, mixed> $source
+     * @param array<int, string> $keys
+     */
+    private function pickFirstInt(array $source, array $keys): ?int
+    {
+        foreach ($keys as $key) {
+            if (!array_key_exists($key, $source)) {
+                continue;
+            }
+
+            $value = $source[$key];
+            if (!is_scalar($value)) {
+                continue;
+            }
+
+            $value = trim((string) $value);
+            if ($value === '') {
+                continue;
+            }
+
+            $normalized = preg_replace('/[^\d\-]/', '', $value);
+            if ($normalized === null || $normalized === '' || !is_numeric($normalized)) {
+                continue;
+            }
+
+            return (int) $normalized;
+        }
+
+        return null;
     }
 
     /**
