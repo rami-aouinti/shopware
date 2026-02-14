@@ -134,7 +134,7 @@ describe('lieferzeiten/component/lieferzeiten-order-table', () => {
         expect(methods.positionQuantityDisplay.call(context, { quantity: 5 })).toBe('5');
     });
 
-    it('returns expected shipping labels per position state', () => {
+    it('returns expected package status labels per position state', () => {
         const context = {
             $t: (key) => ({
                 'lieferzeiten.shipping.unclear': 'Unklar',
@@ -148,11 +148,30 @@ describe('lieferzeiten/component/lieferzeiten-order-table', () => {
             positionQuantitySuffix: methods.positionQuantitySuffix,
         };
 
-        expect(methods.shippingLabelForPosition.call(context, {}, null)).toBe('Unklar');
-        expect(methods.shippingLabelForPosition.call(context, { shippingAssignmentType: 'gesamt' }, {})).toBe('Gesamt-Versand');
-        expect(methods.shippingLabelForPosition.call(context, { shippingAssignmentType: 'teil' }, { orderedQuantity: 3, shippedQuantity: 3 })).toBe('Teillieferung 3/3 Stück');
-        expect(methods.shippingLabelForPosition.call(context, { shippingAssignmentType: 'teil' }, { orderedQuantity: 3, shippedQuantity: 2 })).toBe('Teillieferung 2/3 Stück');
-        expect(methods.shippingLabelForPosition.call(context, { shippingAssignmentType: 'trennung' }, { orderedQuantity: 5, shippedQuantity: 2 })).toBe('Trennung Auftragsposition 2/5 Stück');
+        expect(methods.resolvePackageStatusField.call(context, {}, null)).toBe('Unklar');
+        expect(methods.resolvePackageStatusField.call(context, { shippingAssignmentType: 'gesamt' }, {})).toBe('Gesamt-Versand');
+        expect(methods.resolvePackageStatusField.call(context, { shippingAssignmentType: 'teil' }, { orderedQuantity: 3, shippedQuantity: 3 })).toBe('Teillieferung 3/3 Stück');
+        expect(methods.resolvePackageStatusField.call(context, { shippingAssignmentType: 'teil' }, { orderedQuantity: 3, shippedQuantity: 2 })).toBe('Teillieferung 2/3 Stück');
+        expect(methods.resolvePackageStatusField.call(context, { shippingAssignmentType: 'trennung' }, { orderedQuantity: 5, shippedQuantity: 2 })).toBe('Trennung Auftragsposition 2/5 Stück');
+    });
+
+
+
+    it('returns simplified shipping type labels for shipping column', () => {
+        const context = {
+            $t: (key) => ({
+                'lieferzeiten.shipping.unclear': 'Unklar',
+                'lieferzeiten.shipping.complete': 'Gesamt',
+                'lieferzeiten.shipping.partial': 'Teil',
+                'lieferzeiten.shipping.split': 'Trennung',
+            }[key] || key),
+            normalizeShippingType: methods.normalizeShippingType,
+        };
+
+        expect(methods.shippingLabel.call(context, {})).toBe('Unklar');
+        expect(methods.shippingLabel.call(context, { shippingAssignmentType: 'gesamt' })).toBe('Gesamt');
+        expect(methods.shippingLabel.call(context, { shippingAssignmentType: 'teil' })).toBe('Teil');
+        expect(methods.shippingLabel.call(context, { shippingAssignmentType: 'trennung' })).toBe('Trennung');
     });
 
     it('does not notify on initial task snapshot to avoid false positives on reload', () => {
