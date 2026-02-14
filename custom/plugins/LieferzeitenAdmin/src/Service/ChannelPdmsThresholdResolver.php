@@ -11,6 +11,16 @@ class ChannelPdmsThresholdResolver
     /**
      * @var list<string>
      */
+    private const ORDER_LOOKUP_STRATEGY_ORDER = [
+        'order_number',
+        'order_custom_field_external_id',
+        'lieferzeiten_paket_external_id_join',
+        'lieferzeiten_paket_number_join',
+    ];
+
+    /**
+     * @var list<string>
+     */
     private const ORDER_EXTERNAL_ID_FIELD_CANDIDATES = [
         'external_order_id',
         'externalOrderId',
@@ -84,6 +94,7 @@ class ChannelPdmsThresholdResolver
                 'sourceSystem' => $sourceSystem,
                 'externalOrderId' => $externalOrderId,
                 'orderLookupStrategy' => $orderContext['strategy'],
+                'orderLookupAttempts' => $orderContext['lookupAttempts'],
                 'reason' => $salesChannelId === null ? 'sales_channel_not_resolved' : 'pdms_slot_or_mapping_not_resolved',
             ]);
 
@@ -141,28 +152,34 @@ class ChannelPdmsThresholdResolver
     }
 
     /**
-     * @return array{orderId:?string,salesChannelId:?string,orderCustomFields:?array<string,mixed>,strategy:string}
+     * @return array{orderId:?string,salesChannelId:?string,orderCustomFields:?array<string,mixed>,strategy:string,lookupAttempts:list<array{strategy:string,matched:bool}>}
      */
     private function resolveOrderContext(string $sourceSystem, string $externalOrderId): array
     {
         $externalOrderId = trim($externalOrderId);
+        $lookupAttempts = [];
 
         $primaryMatch = $this->fetchOrderByOrderNumber($externalOrderId);
+        $lookupAttempts[] = ['strategy' => 'order_number', 'matched' => $primaryMatch !== null];
         if ($primaryMatch !== null) {
             return [
                 'orderId' => $primaryMatch['id'],
                 'salesChannelId' => $primaryMatch['sales_channel_id'],
                 'orderCustomFields' => $primaryMatch['custom_fields'],
                 'strategy' => 'order_number',
+                'lookupAttempts' => $lookupAttempts,
             ];
         }
 
         $customFieldMatch = $this->fetchOrderByExternalIdCustomField($externalOrderId);
+        $lookupAttempts[] = ['strategy' => 'order_custom_field_external_id', 'matched' => $customFieldMatch !== null];
         if ($customFieldMatch !== null) {
             $this->logger->info('PDMS threshold resolver order lookup used fallback strategy.', [
                 'externalOrderId' => $externalOrderId,
                 'sourceSystem' => $sourceSystem,
                 'strategy' => 'order_custom_field_external_id',
+                'lookupStrategyOrder' => self::ORDER_LOOKUP_STRATEGY_ORDER,
+                'lookupAttempts' => $lookupAttempts,
             ]);
 
             return [
@@ -170,15 +187,19 @@ class ChannelPdmsThresholdResolver
                 'salesChannelId' => $customFieldMatch['sales_channel_id'],
                 'orderCustomFields' => $customFieldMatch['custom_fields'],
                 'strategy' => 'order_custom_field_external_id',
+                'lookupAttempts' => $lookupAttempts,
             ];
         }
 
         $paketJoinMatch = $this->fetchOrderViaPaketExternalId($sourceSystem, $externalOrderId);
+        $lookupAttempts[] = ['strategy' => 'lieferzeiten_paket_external_id_join', 'matched' => $paketJoinMatch !== null];
         if ($paketJoinMatch !== null) {
             $this->logger->info('PDMS threshold resolver order lookup used fallback strategy.', [
                 'externalOrderId' => $externalOrderId,
                 'sourceSystem' => $sourceSystem,
                 'strategy' => 'lieferzeiten_paket_external_id_join',
+                'lookupStrategyOrder' => self::ORDER_LOOKUP_STRATEGY_ORDER,
+                'lookupAttempts' => $lookupAttempts,
             ]);
 
             return [
@@ -186,6 +207,27 @@ class ChannelPdmsThresholdResolver
                 'salesChannelId' => $paketJoinMatch['sales_channel_id'],
                 'orderCustomFields' => $paketJoinMatch['custom_fields'],
                 'strategy' => 'lieferzeiten_paket_external_id_join',
+                'lookupAttempts' => $lookupAttempts,
+            ];
+        }
+
+        $paketNumberJoinMatch = $this->fetchOrderViaPaketNumber($sourceSystem, $externalOrderId);
+        $lookupAttempts[] = ['strategy' => 'lieferzeiten_paket_number_join', 'matched' => $paketNumberJoinMatch !== null];
+        if ($paketNumberJoinMatch !== null) {
+            $this->logger->info('PDMS threshold resolver order lookup used fallback strategy.', [
+                'externalOrderId' => $externalOrderId,
+                'sourceSystem' => $sourceSystem,
+                'strategy' => 'lieferzeiten_paket_number_join',
+                'lookupStrategyOrder' => self::ORDER_LOOKUP_STRATEGY_ORDER,
+                'lookupAttempts' => $lookupAttempts,
+            ]);
+
+            return [
+                'orderId' => $paketNumberJoinMatch['id'],
+                'salesChannelId' => $paketNumberJoinMatch['sales_channel_id'],
+                'orderCustomFields' => $paketNumberJoinMatch['custom_fields'],
+                'strategy' => 'lieferzeiten_paket_number_join',
+                'lookupAttempts' => $lookupAttempts,
             ];
         }
 
@@ -194,6 +236,7 @@ class ChannelPdmsThresholdResolver
             'salesChannelId' => null,
             'orderCustomFields' => null,
             'strategy' => 'not_found',
+            'lookupAttempts' => $lookupAttempts,
         ];
     }
 
@@ -290,6 +333,48 @@ class ChannelPdmsThresholdResolver
         return null;
     }
 
+    /**
+     * @return array{id:string,sales_channel_id:string,custom_fields:?array<string,mixed>}|null
+     */
+    private function fetchOrderViaPaketNumber(string $sourceSystem, string $externalOrderId): ?array
+    {
+        try {
+            $paketRows = $this->connection->fetchAllAssociative(
+                'SELECT paket_number
+                 FROM `lieferzeiten_paket`
+                 WHERE paket_number = :paketNumber
+                   AND (source_system = :sourceSystem OR source_system IS NULL)
+                 ORDER BY created_at DESC
+                 LIMIT 25',
+                [
+                    'paketNumber' => $externalOrderId,
+                    'sourceSystem' => $sourceSystem,
+                ],
+            );
+        } catch (\Throwable) {
+            return null;
+        }
+
+        foreach ($paketRows as $paketRow) {
+            $paketNumber = is_scalar($paketRow['paket_number'] ?? null) ? trim((string) $paketRow['paket_number']) : '';
+            if ($paketNumber === '') {
+                continue;
+            }
+
+            $orderByPaketNumber = $this->fetchOrderByOrderNumber($paketNumber);
+            if ($orderByPaketNumber !== null) {
+                return $orderByPaketNumber;
+            }
+
+            $orderByPaketRef = $this->fetchOrderByExternalIdCustomField($paketNumber);
+            if ($orderByPaketRef !== null) {
+                return $orderByPaketRef;
+            }
+        }
+
+        return null;
+    }
+
     private function resolvePdmsSlotRaw(?string $orderId, ?array $orderCustomFields, ?string $positionNumber): mixed
     {
         if (!is_string($orderId) || $orderId === '') {
@@ -321,17 +406,36 @@ class ChannelPdmsThresholdResolver
         }
 
         foreach (self::ORDER_EXTERNAL_ID_FIELD_CANDIDATES as $field) {
-            $value = $customFields[$field] ?? null;
-            if (!is_scalar($value)) {
-                continue;
-            }
-
-            if (trim((string) $value) === $expected) {
-                return true;
+            foreach ($this->findValuesForField($customFields, $field) as $value) {
+                if (trim($value) === $expected) {
+                    return true;
+                }
             }
         }
 
         return false;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function findValuesForField(array $payload, string $field): array
+    {
+        $values = [];
+
+        foreach ($payload as $key => $value) {
+            if ((string) $key === $field && is_scalar($value)) {
+                $values[] = (string) $value;
+            }
+
+            if (is_array($value)) {
+                foreach ($this->findValuesForField($value, $field) as $nestedValue) {
+                    $values[] = $nestedValue;
+                }
+            }
+        }
+
+        return $values;
     }
 
     /**
