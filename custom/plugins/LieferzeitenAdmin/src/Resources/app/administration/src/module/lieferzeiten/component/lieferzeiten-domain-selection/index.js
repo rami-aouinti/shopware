@@ -1,14 +1,7 @@
 import template from './lieferzeiten-domain-selection.html.twig';
-import { DOMAIN_OPTIONS, normalizeDomainKey } from '../../utils/domain-source-mapping';
+import { DEFAULT_DOMAIN_KEY, DOMAIN_GROUPS, normalizeDomainKey } from '../../utils/domain-source-mapping';
 
 const STORAGE_KEY = 'lieferzeitenManagementDomain';
-
-const LEGACY_DOMAIN_MAPPING = {
-    'First Medical': 'first-medical-e-commerce',
-    'E-Commerce': 'first-medical-e-commerce',
-    'First Medical - E-Commerce': 'first-medical-e-commerce',
-    'Medical Solutions': 'medical-solutions',
-};
 
 Shopware.Component.register('lieferzeiten-domain-selection', {
     template,
@@ -26,7 +19,7 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
             selectedDomain: normalizeDomainKey(this.value),
             persistSelection: false,
             showDomainModal: false,
-            domains: DOMAIN_OPTIONS,
+            domains: this.buildDomainOptions(),
         };
     },
 
@@ -48,10 +41,16 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
     },
 
     methods: {
-
-        normalizeDomainValue(value) {
-            return LEGACY_DOMAIN_MAPPING[value] || value;
+        buildDomainOptions() {
+            return DOMAIN_GROUPS.map((group) => ({
+                label: this.$t(group.labelSnippet),
+                options: group.channels.map((channel) => ({
+                    value: channel.value,
+                    label: this.$t(channel.labelSnippet),
+                })),
+            }));
         },
+
         loadStoredDomain() {
             const localValue = localStorage.getItem(STORAGE_KEY);
             if (localValue) {
@@ -73,6 +72,7 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
                 }
             }
 
+            this.selectedDomain = DEFAULT_DOMAIN_KEY;
             this.showDomainModal = true;
         },
 
@@ -102,7 +102,7 @@ Shopware.Component.register('lieferzeiten-domain-selection', {
         resetDomainSelection() {
             localStorage.removeItem(STORAGE_KEY);
             sessionStorage.removeItem(STORAGE_KEY);
-            this.selectedDomain = null;
+            this.selectedDomain = DEFAULT_DOMAIN_KEY;
             this.showDomainModal = true;
         },
     },
