@@ -434,6 +434,70 @@ class LieferzeitenSyncController extends AbstractController
         return new JsonResponse(['status' => 'ok']);
     }
 
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/paket/{paketId}/neuer-liefertermin',
+        name: 'api.admin.lieferzeiten.paket.neuer_liefertermin',
+        defaults: ['_acl' => ['lieferzeiten.editor']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function updateNeuerLieferterminByPaket(string $paketId, Request $request, Context $context): JsonResponse
+    {
+        $validationError = $this->validatePaketId($paketId);
+        if ($validationError !== null) {
+            return $validationError;
+        }
+
+        $payload = $request->toArray();
+        $expectedUpdatedAt = trim((string) ($payload['updatedAt'] ?? ''));
+        if ($expectedUpdatedAt === '') {
+            return new JsonResponse(['status' => 'error', 'message' => 'updatedAt is required for optimistic concurrency control'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $range = $this->extractDateRange($payload);
+        if ($range === null) {
+            return new JsonResponse(['status' => 'error', 'message' => 'from/to are required date values'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $validationError = $this->validateRange($range['from'], $range['to'], 1, 4);
+        if ($validationError !== null) {
+            return $validationError;
+        }
+
+        $supplierRange = $this->positionWriteService->getSupplierRangeBoundsByPaketId($paketId);
+        if ($supplierRange === null) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Supplier delivery date range must be saved first for all positions of this paket'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($range['from'] < $supplierRange['from'] || $range['to'] > $supplierRange['to']) {
+            return new JsonResponse(['status' => 'error', 'message' => 'New delivery date range must be inside supplier delivery range'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $this->positionWriteService->updateNeuerLieferterminByPaket($paketId, $range['from'], $range['to'], $expectedUpdatedAt, $context);
+        } catch (WriteEndpointConflictException $e) {
+            $this->auditLogService->log('neuer_liefertermin_paket_update_conflict', 'lieferzeiten_paket', $paketId, $context, [
+                'expectedUpdatedAt' => $expectedUpdatedAt,
+                'refresh' => $e->getRefresh(),
+            ], 'shopware');
+
+            return new JsonResponse([
+                'status' => 'error',
+                'code' => 'CONCURRENT_MODIFICATION',
+                'message' => $e->getMessage(),
+                'refresh' => $e->getRefresh(),
+            ], Response::HTTP_CONFLICT);
+        }
+
+        $this->auditLogService->log('neuer_liefertermin_paket_updated', 'lieferzeiten_paket', $paketId, $context, [
+            'from' => $range['from']->format('Y-m-d'),
+            'to' => $range['to']->format('Y-m-d'),
+            'expectedUpdatedAt' => $expectedUpdatedAt,
+        ], 'shopware');
+
+        return new JsonResponse(['status' => 'ok']);
+    }
+
     #[Route(
         path: '/api/_action/lieferzeiten/position/{positionId}/comment',
         name: 'api.admin.lieferzeiten.position.comment',
@@ -548,6 +612,15 @@ class LieferzeitenSyncController extends AbstractController
     {
         if (!Uuid::isValid($positionId)) {
             return new JsonResponse(['status' => 'error', 'message' => 'Invalid position id'], Response::HTTP_BAD_REQUEST);
+        }
+
+        return null;
+    }
+
+    private function validatePaketId(string $paketId): ?JsonResponse
+    {
+        if (!Uuid::isValid($paketId)) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Invalid paket id'], Response::HTTP_BAD_REQUEST);
         }
 
         return null;
