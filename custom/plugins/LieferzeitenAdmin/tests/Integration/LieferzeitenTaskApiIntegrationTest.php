@@ -88,6 +88,37 @@ class LieferzeitenTaskApiIntegrationTest extends TestCase
         static::assertSame('{"status":"ok"}', $response->getContent());
     }
 
+
+    public function testUpdateNeuerLieferterminByPaketEndpointReturnsBadRequestWhenStatusDoesNotAllowEdit(): void
+    {
+        $paketId = 'f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1';
+        $positionWriteService = $this->createMock(LieferzeitenPositionWriteService::class);
+
+        $positionWriteService->expects($this->once())
+            ->method('canUpdateNeuerLieferterminForPaket')
+            ->with($paketId)
+            ->willReturn(false);
+
+        $positionWriteService->expects($this->never())
+            ->method('updateNeuerLieferterminByPaket');
+
+        $controller = $this->buildController(
+            $this->createMock(LieferzeitenTaskService::class),
+            $positionWriteService,
+        );
+
+        $request = new Request(content: json_encode([
+            'updatedAt' => '2026-02-14 12:00:00.000',
+            'from' => '2026-03-11',
+            'to' => '2026-03-14',
+        ], \JSON_THROW_ON_ERROR));
+
+        $response = $controller->updateNeuerLieferterminByPaket($paketId, $request, Context::createDefaultContext());
+
+        static::assertSame(400, $response->getStatusCode());
+        static::assertSame('{"status":"error","message":"Paket status does not allow editing the new delivery date"}', $response->getContent());
+    }
+
     private function buildController(
         LieferzeitenTaskService $taskService,
         ?LieferzeitenPositionWriteService $positionWriteService = null,
