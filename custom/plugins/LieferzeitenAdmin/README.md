@@ -235,6 +235,28 @@ Beispiel-Body (`neuer-liefertermin`):
 
 ACL: Lesen `viewer`, Mutation `editor`.
 
+
+### 7.6 Statistik-Endpunkt (v1)
+- **GET** `/v1/statistics` (**neu, bevorzugt**)
+- **GET** `/statistics` (**deprecated, kompatibel bis Abschluss der Migration**)
+- **ACL**: `lieferzeiten.viewer`
+- **Parameter-Prio für Zeitfenster**:
+  1. `from`/`to` (ISO-Datetime)
+  2. `period` (`7|30|90`)
+  3. Fallback: 30 Tage
+
+Die Antwort enthält ein stabiles Fenster-Metadatenobjekt `window`:
+```json
+{
+  "window": {
+    "mode": "custom|period",
+    "from": "2026-02-01T00:00:00+01:00",
+    "to": "2026-02-14T10:15:22+01:00",
+    "timezone": "Europe/Berlin"
+  }
+}
+```
+
 ---
 
 ## 8. Demo-Daten

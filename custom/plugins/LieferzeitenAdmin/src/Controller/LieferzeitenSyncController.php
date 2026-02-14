@@ -222,14 +222,34 @@ class LieferzeitenSyncController extends AbstractController
     )]
     public function statistics(Request $request, Context $context): JsonResponse
     {
-        $period = (int) $request->query->get('period', 30);
+        return $this->statisticsByVersion($request, $context);
+    }
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/v1/statistics',
+        name: 'api.admin.lieferzeiten.statistics.v1',
+        defaults: ['_acl' => ['lieferzeiten.viewer']],
+        methods: [Request::METHOD_GET]
+    )]
+    public function statisticsV1(Request $request, Context $context): JsonResponse
+    {
+        return $this->statisticsByVersion($request, $context);
+    }
+
+    private function statisticsByVersion(Request $request, Context $context): JsonResponse
+    {
+        $period = $request->query->has('period') ? (int) $request->query->get('period', 30) : null;
         $domain = $request->query->get('domain') ? (string) $request->query->get('domain') : null;
         $channel = $request->query->get('channel') ? (string) $request->query->get('channel') : null;
+        $from = $request->query->get('from') ? (string) $request->query->get('from') : null;
+        $to = $request->query->get('to') ? (string) $request->query->get('to') : null;
 
-        $payload = $this->statisticsService->getStatistics($period, $domain, $channel);
+        $payload = $this->statisticsService->getStatistics($period, $domain, $channel, $from, $to);
 
         $this->auditLogService->log('statistics_viewed', 'lieferzeiten_statistics', null, $context, [
             'period' => $period,
+            'from' => $from,
+            'to' => $to,
             'domain' => $domain,
             'channel' => $channel,
         ], 'shopware');

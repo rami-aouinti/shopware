@@ -29,16 +29,19 @@ readonly class LieferzeitenStatisticsService
     /**
      * @return array<string, mixed>
      */
-    public function getStatistics(int $periodDays, ?string $domain, ?string $channel): array
+    public function getStatistics(?int $periodDays, ?string $domain, ?string $channel, ?string $from = null, ?string $to = null): array
     {
-        $periodDays = $this->sanitizePeriod($periodDays);
-        $periodStart = (new \DateTimeImmutable('now'))->setTime(0, 0)->modify(sprintf('-%d days', $periodDays - 1));
-        $periodStartSql = $periodStart->format('Y-m-d H:i:s');
-        $now = new \DateTimeImmutable('now');
+        $window = $this->resolveWindow($periodDays, $from, $to);
+        $periodStartSql = $window['from']->format('Y-m-d H:i:s');
+        $periodEndSql = $window['to']->format('Y-m-d H:i:s');
+        $now = new \DateTimeImmutable('now', $window['timezone']);
+
+        $effectiveNow = $now <= $window['to'] ? $now : $window['to'];
 
         $params = [
             'periodStart' => $periodStartSql,
-            'now' => $now->format('Y-m-d H:i:s'),
+            'periodEnd' => $periodEndSql,
+            'now' => $effectiveNow->format('Y-m-d H:i:s'),
         ];
 
         $scopeSql = $this->buildScopeCondition($params, $domain, $channel);
@@ -59,6 +62,7 @@ readonly class LieferzeitenStatisticsService
             ) pos_stats ON pos_stats.paket_id = p.id
             WHERE COALESCE(p.is_test_order, 0) = 0
               AND p.created_at >= :periodStart
+              AND p.created_at <= :periodEnd
               %s',
             $scopeSql,
         );
@@ -68,7 +72,7 @@ readonly class LieferzeitenStatisticsService
             : [];
 
         $metrics = $this->connection->fetchAssociative($metricsSql, $params, $metricsParamTypes) ?: [];
-        $overdueCounts = $this->calculateOverdueCounts($periodStartSql, $domain, $channel, $now);
+        $overdueCounts = $this->calculateOverdueCounts($periodStartSql, $periodEndSql, $domain, $channel, $effectiveNow);
 
         $channelSql = sprintf(
             'SELECT
@@ -77,6 +81,7 @@ readonly class LieferzeitenStatisticsService
             FROM `lieferzeiten_paket` p
             WHERE COALESCE(p.is_test_order, 0) = 0
               AND p.created_at >= :periodStart
+              AND p.created_at <= :periodEnd
               %s
             GROUP BY COALESCE(NULLIF(p.source_system, ""), "Unknown")
             ORDER BY value DESC, channel ASC',
@@ -93,12 +98,14 @@ readonly class LieferzeitenStatisticsService
                 SELECT a.created_at AS occurred_at, a.source_system AS source_system
                 FROM `lieferzeiten_audit_log` a
                 WHERE a.created_at >= :periodStart
+                  AND a.created_at <= :periodEnd
 
                 UNION ALL
 
                 SELECT t.created_at AS occurred_at, JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.sourceSystem")) AS source_system
                 FROM `lieferzeiten_task` t
                 WHERE t.created_at >= :periodStart
+                  AND t.created_at <= :periodEnd
 
                 UNION ALL
 
@@ -107,6 +114,7 @@ readonly class LieferzeitenStatisticsService
                 INNER JOIN `lieferzeiten_paket` p ON p.id = pos.paket_id
                 WHERE pos.last_changed_at IS NOT NULL
                   AND pos.last_changed_at >= :periodStart
+                  AND pos.last_changed_at <= :periodEnd
                   AND COALESCE(p.is_test_order, 0) = 0
 
                 UNION ALL
@@ -115,6 +123,7 @@ readonly class LieferzeitenStatisticsService
                 FROM `lieferzeiten_paket` p
                 WHERE p.last_changed_at IS NOT NULL
                   AND p.last_changed_at >= :periodStart
+                  AND p.last_changed_at <= :periodEnd
                   AND COALESCE(p.is_test_order, 0) = 0
             ) t
             WHERE 1=1
@@ -148,6 +157,7 @@ readonly class LieferzeitenStatisticsService
                 FROM `lieferzeiten_audit_log` a
                 LEFT JOIN `lieferzeiten_paket` p ON p.external_order_id = JSON_UNQUOTE(JSON_EXTRACT(a.payload, "$.externalOrderId"))
                 WHERE a.created_at >= :periodStart
+                  AND a.created_at <= :periodEnd
 
                 UNION ALL
 
@@ -162,6 +172,7 @@ readonly class LieferzeitenStatisticsService
                 FROM `lieferzeiten_task` t
                 LEFT JOIN `lieferzeiten_paket` p ON p.external_order_id = JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.externalOrderId"))
                 WHERE t.created_at >= :periodStart
+                  AND t.created_at <= :periodEnd
 
                 UNION ALL
 
@@ -177,6 +188,7 @@ readonly class LieferzeitenStatisticsService
                 INNER JOIN `lieferzeiten_paket` p ON p.id = pos.paket_id
                 WHERE pos.last_changed_at IS NOT NULL
                   AND pos.last_changed_at >= :periodStart
+                  AND pos.last_changed_at <= :periodEnd
                   AND COALESCE(p.is_test_order, 0) = 0
 
                 UNION ALL
@@ -192,6 +204,7 @@ readonly class LieferzeitenStatisticsService
                 FROM `lieferzeiten_paket` p
                 WHERE p.last_changed_at IS NOT NULL
                   AND p.last_changed_at >= :periodStart
+                  AND p.last_changed_at <= :periodEnd
                   AND COALESCE(p.is_test_order, 0) = 0
             ) t
             LEFT JOIN `lieferzeiten_paket` p ON p.external_order_id = t.order_number
@@ -205,7 +218,13 @@ readonly class LieferzeitenStatisticsService
         $activities = $this->connection->fetchAllAssociative($activitiesSql, $params, $metricsParamTypes);
 
         return [
-            'periodDays' => $periodDays,
+            'periodDays' => $window['periodDays'],
+            'window' => [
+                'mode' => $window['mode'],
+                'from' => $window['from']->format(DATE_ATOM),
+                'to' => $window['to']->format(DATE_ATOM),
+                'timezone' => $window['timezone']->getName(),
+            ],
             'metrics' => [
                 'openOrders' => (int) ($metrics['open_orders'] ?? 0),
                 'overdueShipping' => $overdueCounts['shipping'],
@@ -235,10 +254,11 @@ readonly class LieferzeitenStatisticsService
     /**
      * @return array{shipping:int,delivery:int}
      */
-    private function calculateOverdueCounts(string $periodStartSql, ?string $domain, ?string $channel, \DateTimeImmutable $now): array
+    private function calculateOverdueCounts(string $periodStartSql, string $periodEndSql, ?string $domain, ?string $channel, \DateTimeImmutable $now): array
     {
         $params = [
             'periodStart' => $periodStartSql,
+            'periodEnd' => $periodEndSql,
         ];
         $scopeSql = $this->buildScopeCondition($params, $domain, $channel);
 
@@ -261,6 +281,7 @@ readonly class LieferzeitenStatisticsService
             ) pos_stats ON pos_stats.paket_id = p.id
             WHERE COALESCE(p.is_test_order, 0) = 0
               AND p.created_at >= :periodStart
+              AND p.created_at <= :periodEnd
               %s',
             $scopeSql,
         ), $params);
@@ -380,6 +401,46 @@ readonly class LieferzeitenStatisticsService
         }
 
         return 30;
+    }
+
+    /**
+     * @return array{mode:string,from:\DateTimeImmutable,to:\DateTimeImmutable,timezone:\DateTimeZone,periodDays:int}
+     */
+    private function resolveWindow(?int $periodDays, ?string $from, ?string $to): array
+    {
+        $timezone = new \DateTimeZone(date_default_timezone_get());
+        $now = new \DateTimeImmutable('now', $timezone);
+        $normalizedPeriod = $this->sanitizePeriod($periodDays ?? 30);
+
+        $fromDate = $this->parseDateValue($from);
+        $toDate = $this->parseDateValue($to);
+
+        if ($fromDate !== null || $toDate !== null) {
+            $resolvedTo = $toDate ?? $now;
+            $resolvedFrom = $fromDate ?? $resolvedTo->setTime(0, 0)->modify(sprintf('-%d days', $normalizedPeriod - 1));
+
+            if ($resolvedFrom > $resolvedTo) {
+                [$resolvedFrom, $resolvedTo] = [$resolvedTo, $resolvedFrom];
+            }
+
+            return [
+                'mode' => 'custom',
+                'from' => $resolvedFrom,
+                'to' => $resolvedTo,
+                'timezone' => new \DateTimeZone($resolvedFrom->getTimezone()->getName()),
+                'periodDays' => max(1, (int) $resolvedFrom->diff($resolvedTo)->days + 1),
+            ];
+        }
+
+        $resolvedFrom = $now->setTime(0, 0)->modify(sprintf('-%d days', $normalizedPeriod - 1));
+
+        return [
+            'mode' => 'period',
+            'from' => $resolvedFrom,
+            'to' => $now,
+            'timezone' => $timezone,
+            'periodDays' => $normalizedPeriod,
+        ];
     }
 
     /**
