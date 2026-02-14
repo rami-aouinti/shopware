@@ -14,6 +14,8 @@ class NotificationTriggerCatalog
     public const DELIVERY_IMPOSSIBLE = 'livraison.impossible';
     public const RETURN_TO_SENDER = 'livraison.retoure';
     public const PAYMENT_REMINDER_VORKASSE = 'rappel.vorkasse';
+    public const PAYMENT_RECEIVED_VORKASSE = 'paiement.recu.vorkasse';
+    public const ORDER_COMPLETED_REVIEW_REMINDER = 'commande.terminee.rappel_evaluation';
     public const SHIPPING_DATE_OVERDUE = 'versand.datum.ueberfaellig';
     public const ADDITIONAL_DELIVERY_DATE_REQUESTED = 'liefertermin.anfrage.zusaetzlich';
     public const ADDITIONAL_DELIVERY_DATE_REQUEST_CLOSED = 'liefertermin.anfrage.geschlossen';
@@ -33,6 +35,8 @@ class NotificationTriggerCatalog
             self::DELIVERY_IMPOSSIBLE,
             self::RETURN_TO_SENDER,
             self::PAYMENT_REMINDER_VORKASSE,
+            self::PAYMENT_RECEIVED_VORKASSE,
+            self::ORDER_COMPLETED_REVIEW_REMINDER,
             self::SHIPPING_DATE_OVERDUE,
             self::ADDITIONAL_DELIVERY_DATE_REQUESTED,
             self::ADDITIONAL_DELIVERY_DATE_REQUEST_CLOSED,
