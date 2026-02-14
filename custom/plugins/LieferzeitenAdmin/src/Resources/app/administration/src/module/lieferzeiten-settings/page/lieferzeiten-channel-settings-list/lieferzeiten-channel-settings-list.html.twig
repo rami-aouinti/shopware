@@ -5,57 +5,59 @@
 
     <template #smart-bar-actions>
         <sw-button v-if="hasEditAccess" :isLoading="isSeedingDemoData" :variant="hasDemoData ? 'danger' : 'default'" @click="onToggleDemoData">{{ hasDemoData ? 'DemoDaten entfernen' : 'DemoDaten speichern' }}</sw-button>
+        <sw-button-process v-if="hasEditAccess" variant="primary" :isLoading="isSaving" @click="onSave">{{ $tc('global.default.save') }}</sw-button-process>
     </template>
 
     <template #content>
-        <sw-card>
+        <sw-card :isLoading="isLoading">
             <sw-alert variant="info" appearance="default" :showIcon="true">
-                Affiche les 4 Lieferzeiten PDMS mappées pour le canal sélectionné.
+                Configuration par canal et Lieferzeit PDMS : 4 Lieferzeiten × 2 seuils (jours ouvrés).
             </sw-alert>
 
-            <sw-single-select
-                v-model:value="selectedSalesChannelId"
-                label="Verkaufskanal"
-                :options="salesChannels"
-                labelProperty="name"
-                valueProperty="id"
-                :disabled="isLoading"
-                @update:value="onSalesChannelChange"
-            />
+            <sw-alert v-if="hasValidationErrors" variant="error" appearance="default" :showIcon="true" class="sw-mt-16">
+                Veuillez corriger les valeurs invalides. Seules les valeurs entières ≥ 0 sont autorisées.
+            </sw-alert>
 
-            <sw-loader v-if="isLoading" />
+            <div v-for="channel in channels" :key="channel.id" class="sw-mt-24">
+                <h3>{{ channel.name || channel.id }}</h3>
 
-            <sw-empty-state
-                v-else-if="!pdmsPayload || !pdmsPayload.lieferzeiten || pdmsPayload.lieferzeiten.length === 0"
-                title="Keine Lieferzeiten"
-                subline="Für den gewählten Kanal konnten keine PDMS Lieferzeiten geladen werden."
-            />
+                <sw-data-grid
+                    :dataSource="pdmsLieferzeiten"
+                    :columns="[
+                        { property: 'label', label: 'Lieferzeit PDMS', width: '160px' },
+                        { property: 'shippingOverdueWorkingDays', label: 'shippingOverdueWorkingDays' },
+                        { property: 'deliveryOverdueWorkingDays', label: 'deliveryOverdueWorkingDays' }
+                    ]"
+                    :showSelection="false"
+                    :showActions="false"
+                    :allowColumnEdit="false"
+                >
+                    <template #column-label="{ item }">
+                        {{ item.label }}
+                    </template>
 
-            <div v-else class="sw-data-grid sw-data-grid--small">
-                <div class="sw-data-grid__wrapper">
-                    <table class="sw-data-grid__table">
-                        <thead class="sw-data-grid__header">
-                            <tr class="sw-data-grid__row">
-                                <th class="sw-data-grid__cell">Slot</th>
-                                <th class="sw-data-grid__cell">Mapping</th>
-                                <th class="sw-data-grid__cell">PDMS ID</th>
-                                <th class="sw-data-grid__cell">Name</th>
-                                <th class="sw-data-grid__cell">Tage min</th>
-                                <th class="sw-data-grid__cell">Tage max</th>
-                            </tr>
-                        </thead>
-                        <tbody class="sw-data-grid__body">
-                            <tr v-for="entry in pdmsPayload.lieferzeiten" :key="entry.slot" class="sw-data-grid__row">
-                                <td class="sw-data-grid__cell">{{ entry.slot }}</td>
-                                <td class="sw-data-grid__cell">{{ entry.mapping || '-' }}</td>
-                                <td class="sw-data-grid__cell">{{ entry.lieferzeit && (entry.lieferzeit.id || entry.lieferzeit.uuid) ? (entry.lieferzeit.id || entry.lieferzeit.uuid) : '-' }}</td>
-                                <td class="sw-data-grid__cell">{{ entry.lieferzeit && (entry.lieferzeit.name || entry.lieferzeit.label) ? (entry.lieferzeit.name || entry.lieferzeit.label) : '-' }}</td>
-                                <td class="sw-data-grid__cell">{{ entry.lieferzeit && entry.lieferzeit.minDays !== undefined ? entry.lieferzeit.minDays : '-' }}</td>
-                                <td class="sw-data-grid__cell">{{ entry.lieferzeit && entry.lieferzeit.maxDays !== undefined ? entry.lieferzeit.maxDays : '-' }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                    <template #column-shippingOverdueWorkingDays="{ item }">
+                        <sw-number-field
+                            numberType="int"
+                            :min="0"
+                            :disabled="!hasEditAccess"
+                            :value="matrixValues[channel.id][item.key].shippingOverdueWorkingDays"
+                            :error="getFieldError(channel.id, item.key, 'shippingOverdueWorkingDays')"
+                            @input="onChangeNumberField(channel.id, item.key, 'shippingOverdueWorkingDays', $event)"
+                        />
+                    </template>
+
+                    <template #column-deliveryOverdueWorkingDays="{ item }">
+                        <sw-number-field
+                            numberType="int"
+                            :min="0"
+                            :disabled="!hasEditAccess"
+                            :value="matrixValues[channel.id][item.key].deliveryOverdueWorkingDays"
+                            :error="getFieldError(channel.id, item.key, 'deliveryOverdueWorkingDays')"
+                            @input="onChangeNumberField(channel.id, item.key, 'deliveryOverdueWorkingDays', $event)"
+                        />
+                    </template>
+                </sw-data-grid>
             </div>
         </sw-card>
     </template>

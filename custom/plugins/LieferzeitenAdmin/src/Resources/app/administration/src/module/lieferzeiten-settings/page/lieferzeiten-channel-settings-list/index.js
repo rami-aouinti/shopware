@@ -3,6 +3,13 @@ import template from './lieferzeiten-channel-settings-list.html.twig';
 const { Component } = Shopware;
 const { Criteria } = Shopware.Data;
 
+const PDMS_LIEFERZEITEN = [
+    { key: 'PDMS_1', label: 'PDMS 1' },
+    { key: 'PDMS_2', label: 'PDMS 2' },
+    { key: 'PDMS_3', label: 'PDMS 3' },
+    { key: 'PDMS_4', label: 'PDMS 4' },
+];
+
 Component.register('lieferzeiten-channel-settings-list', {
     template,
 
@@ -12,10 +19,14 @@ Component.register('lieferzeiten-channel-settings-list', {
 
     data() {
         return {
+            thresholdRepository: null,
             salesChannelRepository: null,
-            salesChannels: [],
-            selectedSalesChannelId: null,
+            channels: [],
+            matrixValues: {},
+            existingEntryIds: {},
+            validationErrors: {},
             isLoading: false,
+            isSaving: false,
             isSeedingDemoData: false,
             hasDemoData: false,
             pdmsPayload: null,
@@ -23,6 +34,10 @@ Component.register('lieferzeiten-channel-settings-list', {
     },
 
     computed: {
+        pdmsLieferzeiten() {
+            return PDMS_LIEFERZEITEN;
+        },
+
         hasEditAccess() {
             if (typeof this.acl?.can !== 'function') {
                 return false;
@@ -31,24 +46,15 @@ Component.register('lieferzeiten-channel-settings-list', {
             return this.acl.can('lieferzeiten.editor') || this.acl.can('admin');
         },
 
-        columns() {
-            return [
-                { property: 'salesChannelId', label: 'Sales Channel', inlineEdit: 'string', primary: true },
-                { property: 'defaultStatus', label: 'Default Status', inlineEdit: 'string' },
-                { property: 'enableNotifications', label: 'Notifications (global default)', inlineEdit: 'boolean' },
-                { property: 'shippingWorkingDays', label: 'Shipping working days', inlineEdit: 'number' },
-                { property: 'shippingCutoff', label: 'Shipping cutoff (HH:mm)', inlineEdit: 'string' },
-                { property: 'deliveryWorkingDays', label: 'Delivery working days', inlineEdit: 'number' },
-                { property: 'deliveryCutoff', label: 'Delivery cutoff (HH:mm)', inlineEdit: 'string' },
-                { property: 'lastChangedBy', label: 'Last Changed By', inlineEdit: 'string' },
-                { property: 'lastChangedAt', label: 'Last Changed At', inlineEdit: 'date' },
-            ];
+        hasValidationErrors() {
+            return Object.keys(this.validationErrors).length > 0;
         },
     },
 
     created() {
+        this.thresholdRepository = this.repositoryFactory.create('lieferzeiten_channel_pdms_threshold');
         this.salesChannelRepository = this.repositoryFactory.create('sales_channel');
-        this.loadSalesChannels();
+        this.loadData();
         this.loadDemoDataStatus();
     },
 
@@ -67,24 +73,136 @@ Component.register('lieferzeiten-channel-settings-list', {
             });
         },
 
-        async loadSalesChannels() {
+        getEntryKey(channelId, pdmsKey) {
+            return `${channelId}.${pdmsKey}`;
+        },
+
+        getFieldKey(channelId, pdmsKey, fieldName) {
+            return `${channelId}.${pdmsKey}.${fieldName}`;
+        },
+
+        ensureChannelMatrix(channelId) {
+            if (!this.matrixValues[channelId]) {
+                this.$set(this.matrixValues, channelId, {});
+            }
+
+            this.pdmsLieferzeiten.forEach(({ key }) => {
+                if (!this.matrixValues[channelId][key]) {
+                    this.$set(this.matrixValues[channelId], key, {
+                        shippingOverdueWorkingDays: 0,
+                        deliveryOverdueWorkingDays: 0,
+                    });
+                }
+            });
+        },
+
+        validateValue(channelId, pdmsKey, fieldName) {
+            const fieldKey = this.getFieldKey(channelId, pdmsKey, fieldName);
+            const value = this.matrixValues[channelId]?.[pdmsKey]?.[fieldName];
+            const isValid = Number.isInteger(value) && value >= 0;
+
+            if (!isValid) {
+                this.$set(this.validationErrors, fieldKey, 'Bitte eine ganze Zahl >= 0 eingeben.');
+                return;
+            }
+
+            this.$delete(this.validationErrors, fieldKey);
+        },
+
+        onChangeNumberField(channelId, pdmsKey, fieldName, rawValue) {
+            const normalized = Number.parseInt(rawValue, 10);
+            this.matrixValues[channelId][pdmsKey][fieldName] = Number.isNaN(normalized) ? rawValue : normalized;
+            this.validateValue(channelId, pdmsKey, fieldName);
+        },
+
+        getFieldError(channelId, pdmsKey, fieldName) {
+            return this.validationErrors[this.getFieldKey(channelId, pdmsKey, fieldName)] || null;
+        },
+
+        async loadData() {
             this.isLoading = true;
 
+            const thresholdCriteria = new Criteria(1, 500);
+            const salesChannelCriteria = new Criteria(1, 500);
+            salesChannelCriteria.addSorting(Criteria.sort('name', 'ASC'));
+
             try {
-                const criteria = new Criteria(1, 250);
-                criteria.addSorting(Criteria.sort('name', 'ASC'));
+                const [thresholds, salesChannels] = await Promise.all([
+                    this.thresholdRepository.search(thresholdCriteria, Shopware.Context.api),
+                    this.salesChannelRepository.search(salesChannelCriteria, Shopware.Context.api),
+                ]);
 
-                const result = await this.salesChannelRepository.search(criteria, Shopware.Context.api);
-                this.salesChannels = result;
+                this.channels = salesChannels;
+                this.matrixValues = {};
+                this.existingEntryIds = {};
 
-                if (!this.selectedSalesChannelId && this.salesChannels.length > 0) {
-                    this.selectedSalesChannelId = this.salesChannels[0].id;
-                    await this.loadPdmsLieferzeiten();
-                }
+                this.channels.forEach((channel) => {
+                    this.ensureChannelMatrix(channel.id);
+                });
+
+                thresholds.forEach((entry) => {
+                    this.ensureChannelMatrix(entry.salesChannelId);
+                    this.$set(this.matrixValues[entry.salesChannelId], entry.pdmsLieferzeit, {
+                        shippingOverdueWorkingDays: entry.shippingOverdueWorkingDays,
+                        deliveryOverdueWorkingDays: entry.deliveryOverdueWorkingDays,
+                    });
+                    this.$set(this.existingEntryIds, this.getEntryKey(entry.salesChannelId, entry.pdmsLieferzeit), entry.id);
+                });
             } catch (error) {
-                this.notifyRequestError(error, 'Sales Channels');
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.channelSettings.title'));
             } finally {
                 this.isLoading = false;
+            }
+        },
+
+        async onSave() {
+            if (!this.hasEditAccess) {
+                return;
+            }
+
+            this.validationErrors = {};
+            this.channels.forEach((channel) => {
+                this.pdmsLieferzeiten.forEach(({ key }) => {
+                    this.validateValue(channel.id, key, 'shippingOverdueWorkingDays');
+                    this.validateValue(channel.id, key, 'deliveryOverdueWorkingDays');
+                });
+            });
+
+            if (this.hasValidationErrors) {
+                this.createNotificationError({
+                    title: this.$tc('lieferzeiten.lms.channelSettings.title'),
+                    message: 'Bitte ungültige Werte korrigieren (nur ganze Zahlen >= 0).',
+                });
+
+                return;
+            }
+
+            this.isSaving = true;
+
+            try {
+                for (const channel of this.channels) {
+                    for (const { key } of this.pdmsLieferzeiten) {
+                        const entity = this.thresholdRepository.create(Shopware.Context.api);
+                        entity.id = this.existingEntryIds[this.getEntryKey(channel.id, key)] || entity.id;
+                        entity.salesChannelId = channel.id;
+                        entity.pdmsLieferzeit = key;
+                        entity.shippingOverdueWorkingDays = this.matrixValues[channel.id][key].shippingOverdueWorkingDays;
+                        entity.deliveryOverdueWorkingDays = this.matrixValues[channel.id][key].deliveryOverdueWorkingDays;
+
+                        await this.thresholdRepository.save(entity, Shopware.Context.api);
+                    }
+                }
+
+                this.createNotificationSuccess({
+                    title: this.$tc('lieferzeiten.lms.channelSettings.title'),
+                    message: 'PDMS-Schwellenwerte gespeichert.',
+                });
+
+                await this.loadData();
+            } catch (error) {
+                this.notifyRequestError(error, this.$tc('lieferzeiten.lms.channelSettings.title'));
+            } finally {
+                this.isSaving = false;
             }
         },
 
@@ -107,62 +225,16 @@ Component.register('lieferzeiten-channel-settings-list', {
             try {
                 const response = await this.lieferzeitenOrdersService.toggleDemoData();
                 this.hasDemoData = Boolean(response?.hasDemoData);
-
-                if (response?.action === 'removed') {
-                    const deleted = response?.deleted || {};
-                    const totalDeleted = Object.values(deleted).reduce((sum, value) => sum + Number(value || 0), 0);
-                    this.createNotificationSuccess({
-                        title: 'DemoDaten',
-                        message: totalDeleted > 0 ? `Entfernt (${totalDeleted} Datensätze).` : 'Keine Demo-Daten vorhanden.',
-                    });
-
-                    return;
-                }
-
-                const created = response?.created || {};
-                const totalCreated = Object.values(created).reduce((sum, value) => sum + Number(value || 0), 0);
+                await this.loadData();
 
                 this.createNotificationSuccess({
                     title: 'DemoDaten',
-                    message: `Erfolgreich generiert (${totalCreated} Datensätze).`,
+                    message: response?.action === 'removed' ? 'Demo-Daten entfernt.' : 'Demo-Daten gespeichert.',
                 });
             } catch (error) {
-                const message = error?.response?.data?.message || error?.message || 'DemoDaten konnten nicht verarbeitet werden.';
-                this.createNotificationError({
-                    title: 'DemoDaten',
-                    message,
-                });
+                this.notifyRequestError(error, 'DemoDaten');
             } finally {
                 this.isSeedingDemoData = false;
-            }
-        },
-
-        async onSalesChannelChange() {
-            await this.loadPdmsLieferzeiten();
-        },
-
-        async loadPdmsLieferzeiten() {
-            if (!this.canLoadPdmsLieferzeiten) {
-                this.pdmsPayload = null;
-                return;
-            }
-
-            this.isLoading = true;
-
-            const entity = this.repository.create(Shopware.Context.api);
-            entity.salesChannelId = '';
-            entity.enableNotifications = false;
-            entity.shippingWorkingDays = 0;
-            entity.shippingCutoff = '14:00';
-            entity.deliveryWorkingDays = 2;
-            entity.deliveryCutoff = '14:00';
-            try {
-                this.pdmsPayload = await this.lieferzeitenOrdersService.getSalesChannelLieferzeiten(this.selectedSalesChannelId);
-            } catch (error) {
-                this.pdmsPayload = null;
-                this.notifyRequestError(error, 'PDMS Lieferzeiten');
-            } finally {
-                this.isLoading = false;
             }
         },
     },
