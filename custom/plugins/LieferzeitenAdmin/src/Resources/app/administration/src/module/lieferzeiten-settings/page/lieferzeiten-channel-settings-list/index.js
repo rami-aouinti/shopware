@@ -25,6 +25,16 @@ const CHANNEL_GROUP_TITLES = {
     'medical-solutions': 'Medical Solutions',
 };
 
+const LMS_FALLBACK_CHANNEL_IDS = Object.freeze({
+    'first-medical-shop.de': '11111111-1111-4111-8111-111111111111',
+    'ebay.de': '22222222-2222-4222-8222-222222222222',
+    'ebay.at': '33333333-3333-4333-8333-333333333333',
+    kaufland: '44444444-4444-4444-8444-444444444444',
+    peg: '55555555-5555-4555-8555-555555555555',
+    zonami: '66666666-6666-4666-8666-666666666666',
+    'medical-solutions-germany.de': '77777777-7777-4777-8777-777777777777',
+});
+
 const CHANNEL_GROUPS = Object.entries(CHANNEL_GROUP_TITLES)
     .map(([groupId, groupTitle]) => {
         const sourceGroup = DOMAIN_GROUPS.find((group) => group.id === groupId);
@@ -121,14 +131,38 @@ Component.register('lieferzeiten-channel-settings-list', {
     },
 
     methods: {
+        createSyntheticLmsChannel(domainKey) {
+            return {
+                id: LMS_FALLBACK_CHANNEL_IDS[domainKey] || Shopware.Utils.createId(),
+                name: domainKey,
+                technicalName: domainKey,
+                domains: [{ url: `https://${domainKey}` }],
+                _isSyntheticLmsChannel: true,
+            };
+        },
+
+        appendMissingLmsTargetChannels(channels) {
+            const resolvedDomainKeys = new Set(channels
+                .map((channel) => this.resolveChannelDomainKey(channel))
+                .filter((domainKey) => domainKey !== null));
+
+            const mergedChannels = [...channels];
+
+            LMS_TARGET_DOMAIN_KEYS.forEach((domainKey) => {
+                if (resolvedDomainKeys.has(domainKey)) {
+                    return;
+                }
+
+                mergedChannels.push(this.createSyntheticLmsChannel(domainKey));
+            });
+
+            return mergedChannels;
+        },
+
         getWhitelistedChannels(salesChannels) {
             const whitelistedChannels = salesChannels.filter((channel) => isLmsTargetChannel(channel));
 
-            if (whitelistedChannels.length > 0) {
-                return whitelistedChannels;
-            }
-
-            return salesChannels;
+            return this.appendMissingLmsTargetChannels(whitelistedChannels);
         },
 
         getWhitelistedChannelIds() {
