@@ -50,6 +50,7 @@ readonly class LieferzeitenOrderOverviewService
         'neuerLieferterminFrom',
         'neuerLieferterminTo',
         'domain',
+        'rowMode',
     ];
 
 
@@ -115,6 +116,7 @@ readonly class LieferzeitenOrderOverviewService
         $orderBy = $this->buildOrderBySql($sortField, $sortDirection);
 
         $filters = $this->sanitizeFilters($filters);
+        $linePerParcel = mb_strtolower(trim((string) ($filters['rowMode'] ?? ''))) === 'parcel';
 
         $params = [];
         $joins = [];
@@ -197,7 +199,8 @@ readonly class LieferzeitenOrderOverviewService
             'page' => $page,
             'limit' => $limit,
             'filterableFields' => self::FILTERABLE_FIELDS,
-            'nonFilterableFields' => ['comment'],
+            'nonFilterableFields' => ['san6Pos', 'comment'],
+            'rowModeApplied' => $linePerParcel ? 'parcel' : 'default',
             'sortingFields' => array_keys(self::SORTABLE_FIELDS),
             'data' => $rows,
         ];

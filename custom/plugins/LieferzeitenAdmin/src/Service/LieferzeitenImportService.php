@@ -147,17 +147,6 @@ class LieferzeitenImportService
                         ]);
                     }
 
-
-                    $paketContractViolations = $this->contractValidator->validatePersistencePayload('paket', $matched);
-                    if ($paketContractViolations !== []) {
-                        $this->logger->warning('Payload rejected: persistence contract violation.', [
-                            'externalOrderId' => $externalId,
-                            'violations' => $paketContractViolations,
-                            'payload' => $matched,
-                        ]);
-                        continue;
-                    }
-
                     $existingPaket = $this->findPaketByNumber((string) ($matched['paketNumber'] ?? $matched['packageNumber'] ?? $matched['orderNumber'] ?? $externalId), $context);
                     $existingStatus = $this->normalizeStatusInt($existingPaket?->getStatus());
 
@@ -175,13 +164,41 @@ class LieferzeitenImportService
                     $matched['status'] = (string) $mappedStatus;
                     $matched['statusPushQueue'] = $queue;
 
-                    $paketId = $this->upsertPaket($externalId, $matched, $context, $existingPaket);
-                    $trackingNumbers = $this->upsertPositionAndTrackingHistory($paketId, $matched, $context);
-                    $this->auditLogService->log('order_synced', 'paket', $paketId, $context, [
-                        'externalOrderId' => $externalId,
-                        'channel' => $channel,
-                        'status' => $mappedStatus,
-                    ], 'shopware');
+                    $parcelRows = $this->buildParcelRows($matched, $externalId);
+                    if ($parcelRows === []) {
+                        $parcelRows = [$matched];
+                    }
+
+                    $allTrackingNumbers = [];
+                    $useExternalFallback = count($parcelRows) === 1;
+                    foreach ($parcelRows as $parcelRow) {
+                        $paketContractViolations = $this->contractValidator->validatePersistencePayload('paket', $parcelRow);
+                        if ($paketContractViolations !== []) {
+                            $this->logger->warning('Payload rejected: persistence contract violation.', [
+                                'externalOrderId' => $externalId,
+                                'violations' => $paketContractViolations,
+                                'payload' => $parcelRow,
+                            ]);
+                            continue;
+                        }
+
+                        $parcelPaketNumber = (string) ($parcelRow['paketNumber'] ?? $parcelRow['packageNumber'] ?? $parcelRow['orderNumber'] ?? $externalId);
+                        $parcelExistingPaket = $this->findPaketByNumber($parcelPaketNumber, $context);
+                        if ($parcelExistingPaket === null && $useExternalFallback) {
+                            $parcelExistingPaket = $this->findPaketByExternalOrderId($externalId, $context);
+                        }
+                        $paketId = $this->upsertPaket($externalId, $parcelRow, $context, $parcelExistingPaket);
+                        $allTrackingNumbers = array_merge($allTrackingNumbers, $this->upsertPositionAndTrackingHistory($paketId, $parcelRow, $context));
+
+                        $this->auditLogService->log('order_synced', 'paket', $paketId, $context, [
+                            'externalOrderId' => $externalId,
+                            'channel' => $channel,
+                            'status' => $mappedStatus,
+                            'paketNumber' => $parcelPaketNumber,
+                        ], 'shopware');
+                    }
+
+                    $trackingNumbers = array_values(array_unique($allTrackingNumbers));
                     $this->emitNotificationEvents($externalId, $channel, $matched, $trackingNumbers, $existingPaket, $existingStatus, $mappedStatus, $context);
                 }
             }
@@ -356,6 +373,55 @@ class LieferzeitenImportService
         $criteria->addFilter(new EqualsFilter('sendenummer', $trackingNumber));
 
         return $this->sendenummerHistoryRepository->search($criteria, $context)->first() !== null;
+    }
+
+    /**
+     * @param array<string,mixed> $payload
+     * @return array<int, array<string,mixed>>
+     */
+    private function buildParcelRows(array $payload, string $externalId): array
+    {
+        $parcels = $payload['parcelRows'] ?? $payload['parcels'] ?? [];
+        if (!is_array($parcels) || $parcels === []) {
+            return [];
+        }
+
+        $rows = [];
+        foreach ($parcels as $index => $parcel) {
+            if (!is_array($parcel)) {
+                continue;
+            }
+
+            $parcelNumber = (string) ($parcel['paketNumber'] ?? $parcel['packageNumber'] ?? $parcel['parcelNumber'] ?? $payload['paketNumber'] ?? $payload['orderNumber'] ?? '');
+            $trackingNumber = (string) ($parcel['trackingNumber'] ?? $parcel['sendenummer'] ?? '');
+
+            $rows[] = [
+                'externalOrderId' => $externalId,
+                'externalId' => $externalId,
+                'orderNumber' => $payload['orderNumber'] ?? $externalId,
+                'paketNumber' => $parcelNumber !== '' ? $parcelNumber : ($trackingNumber !== '' ? $trackingNumber : ($externalId . '-' . ($index + 1))),
+                'status' => $parcel['status'] ?? $parcel['trackingStatus'] ?? $parcel['state'] ?? ($payload['status'] ?? null),
+                'shippingDate' => $parcel['shippingDate'] ?? $parcel['shipping_date'] ?? ($payload['shippingDate'] ?? null),
+                'deliveryDate' => $parcel['deliveryDate'] ?? $parcel['delivery_date'] ?? ($payload['deliveryDate'] ?? null),
+                'sourceSystem' => $payload['sourceSystem'] ?? 'san6',
+                'customerEmail' => $payload['customerEmail'] ?? null,
+                'paymentMethod' => $payload['paymentMethod'] ?? null,
+                'paymentDate' => $payload['paymentDate'] ?? null,
+                'baseDateType' => $payload['baseDateType'] ?? null,
+                'shippingAssignmentType' => $payload['shippingAssignmentType'] ?? null,
+                'partialShipmentQuantity' => $payload['partialShipmentQuantity'] ?? null,
+                'businessDateFrom' => $payload['businessDateFrom'] ?? null,
+                'businessDateTo' => $payload['businessDateTo'] ?? null,
+                'calculatedDeliveryDate' => $payload['calculatedDeliveryDate'] ?? null,
+                'syncBadge' => $payload['syncBadge'] ?? null,
+                'isTestOrder' => $payload['isTestOrder'] ?? false,
+                'statusPushQueue' => $payload['statusPushQueue'] ?? [],
+                'parcels' => [$parcel],
+                'trackingNumbers' => $trackingNumber !== '' ? [$trackingNumber] : [],
+            ];
+        }
+
+        return $rows;
     }
 
     /** @param array<string,mixed> $payload
