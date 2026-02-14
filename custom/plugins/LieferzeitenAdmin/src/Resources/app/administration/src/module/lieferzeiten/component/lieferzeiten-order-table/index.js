@@ -832,17 +832,77 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         shippingLabel(order) {
-            if (order.versandart === 'teil') {
-                return `${this.$t('lieferzeiten.shipping.partial')} (${order.partialShipment})`;
+            return this.shippingLabelForPosition(order, null);
+        },
+
+        shippingLabelForPosition(order, position) {
+            const shippingType = this.normalizeShippingType(order?.shippingAssignmentType || order?.versandart);
+            const orderedQuantity = this.parseQuantity(position?.orderedQuantity);
+            const shippedQuantity = this.parseQuantity(position?.shippedQuantity);
+
+            if (shippingType === 'unknown') {
+                return this.$t('lieferzeiten.shipping.unclear');
             }
 
-            const labels = {
-                unklar: this.$t('lieferzeiten.shipping.unclear'),
-                gesamt: this.$t('lieferzeiten.shipping.complete'),
-                trennung: this.$t('lieferzeiten.shipping.split'),
-            };
+            if (shippingType === 'gesamt') {
+                return this.$t('lieferzeiten.shipping.completeShipment');
+            }
 
-            return labels[order.versandart] || this.$t('lieferzeiten.shipping.unclear');
+            if (shippingType === 'teil') {
+                if (orderedQuantity !== null && shippedQuantity !== null && shippedQuantity >= orderedQuantity) {
+                    return this.$t('lieferzeiten.shipping.partialShipment');
+                }
+
+                return `${this.$t('lieferzeiten.shipping.splitPosition')} ${this.positionQuantitySuffix(shippedQuantity, orderedQuantity)}`;
+            }
+
+            if (shippingType === 'trennung') {
+                return `${this.$t('lieferzeiten.shipping.splitPosition')} ${this.positionQuantitySuffix(shippedQuantity, orderedQuantity)}`;
+            }
+
+            return this.$t('lieferzeiten.shipping.unclear');
+        },
+
+        normalizeShippingType(value) {
+            const normalized = String(value || '').trim().toLowerCase();
+
+            if (normalized === '') {
+                return 'unknown';
+            }
+
+            if (['gesamt', 'complete', 'all_in_one', 'full'].includes(normalized)) {
+                return 'gesamt';
+            }
+
+            if (['teil', 'partial', 'teillieferung', 'partial_shipment'].includes(normalized)) {
+                return 'teil';
+            }
+
+            if (['trennung', 'split', 'split_position'].includes(normalized)) {
+                return 'trennung';
+            }
+
+            return normalized;
+        },
+
+        parseQuantity(value) {
+            if (value === null || value === undefined || value === '') {
+                return null;
+            }
+
+            const numeric = Number(value);
+            if (!Number.isFinite(numeric) || numeric < 0) {
+                return null;
+            }
+
+            return Math.round(numeric);
+        },
+
+        positionQuantitySuffix(shippedQuantity, orderedQuantity) {
+            const shipped = shippedQuantity ?? 0;
+            const ordered = orderedQuantity ?? 0;
+
+            return `${shipped}/${ordered} ${this.$t('lieferzeiten.shipping.pieces')}`;
         },
 
         rangeToDays(range) {

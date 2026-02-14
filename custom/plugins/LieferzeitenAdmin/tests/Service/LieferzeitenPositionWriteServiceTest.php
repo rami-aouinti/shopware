@@ -4,15 +4,18 @@ namespace LieferzeitenAdmin\Tests\Service;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use LieferzeitenAdmin\Service\AdditionalDeliveryAssigneeMissingException;
 use LieferzeitenAdmin\Service\LieferzeitenPositionWriteService;
 use LieferzeitenAdmin\Service\LieferzeitenTaskService;
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
 use LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver;
 use LieferzeitenAdmin\Service\WriteEndpointConflictException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class LieferzeitenPositionWriteServiceTest extends TestCase
 {
@@ -24,13 +27,19 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
         $this->connection->executeStatement('CREATE TABLE lieferzeiten_paket (
             id BLOB PRIMARY KEY,
             status TEXT NULL,
+            external_order_id TEXT NULL,
+            source_system TEXT NULL,
+            customer_email TEXT NULL,
             updated_at TEXT NOT NULL
         )');
         $this->connection->executeStatement('CREATE TABLE lieferzeiten_position (
             id BLOB PRIMARY KEY,
             paket_id BLOB NULL,
+            position_number TEXT NULL,
             comment TEXT NULL,
             current_comment TEXT NULL,
+            additional_delivery_request_at TEXT NULL,
+            additional_delivery_request_initiator TEXT NULL,
             last_changed_by TEXT NULL,
             last_changed_at TEXT NULL,
             updated_at TEXT NOT NULL
@@ -73,18 +82,7 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
         ]);
 
         $positionRepository = $this->createPositionRepositoryMock();
-        $service = new LieferzeitenPositionWriteService(
-            $positionRepository,
-            $this->createMock(EntityRepository::class),
-            $this->connection,
-            $this->createMock(EntityRepository::class),
-            $this->createMock(EntityRepository::class),
-            $this->createMock(EntityRepository::class),
-            $this->createMock(EntityRepository::class),
-            $this->createMock(LieferzeitenTaskService::class),
-            $this->createMock(NotificationEventService::class),
-            $this->createMock(TaskAssignmentRuleResolver::class),
-        );
+        $service = $this->createService(positionRepository: $positionRepository);
 
         $contextUserA = Context::createDefaultContext();
         $contextUserB = Context::createDefaultContext();
@@ -103,6 +101,101 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
 
             throw $e;
         }
+    }
+
+    public function testCreateAdditionalDeliveryRequestUsesRuleAssigneeWhenConfigured(): void
+    {
+        $positionId = '74a417b9a3244e3d873dad86c64dd341';
+        $this->connection->insert('lieferzeiten_position', [
+            'id' => hex2bin($positionId),
+            'updated_at' => '2026-02-10 09:00:00.000',
+        ]);
+
+        $taskService = $this->createMock(LieferzeitenTaskService::class);
+        $taskService
+            ->expects(static::once())
+            ->method('createTask')
+            ->with(
+                static::isArray(),
+                'manual',
+                'rule-assignee',
+                static::isInstanceOf(\DateTimeInterface::class),
+                static::isInstanceOf(Context::class),
+            );
+
+        $ruleResolver = $this->createMock(TaskAssignmentRuleResolver::class);
+        $ruleResolver->method('resolve')->with(NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED, static::isInstanceOf(Context::class))
+            ->willReturn(['assigneeIdentifier' => 'rule-assignee']);
+
+        $service = $this->createService(
+            positionRepository: $this->createNoOpPositionRepository(),
+            taskService: $taskService,
+            ruleResolver: $ruleResolver,
+            systemConfigService: $this->createMock(SystemConfigService::class),
+        );
+
+        $service->createAdditionalDeliveryRequest($positionId, 'manual', Context::createDefaultContext());
+    }
+
+    public function testCreateAdditionalDeliveryRequestFallsBackToConfiguredAssigneeWhenRuleMissing(): void
+    {
+        $positionId = 'f29fe9c6b24c4dbc87642744c935e5bc';
+        $this->connection->insert('lieferzeiten_position', [
+            'id' => hex2bin($positionId),
+            'updated_at' => '2026-02-10 09:00:00.000',
+        ]);
+
+        $taskService = $this->createMock(LieferzeitenTaskService::class);
+        $taskService
+            ->expects(static::once())
+            ->method('createTask')
+            ->with(
+                static::isArray(),
+                'manual',
+                'fallback-assignee',
+                static::isInstanceOf(\DateTimeInterface::class),
+                static::isInstanceOf(Context::class),
+            );
+
+        $ruleResolver = $this->createMock(TaskAssignmentRuleResolver::class);
+        $ruleResolver->method('resolve')->willReturn(null);
+
+        $systemConfig = $this->createMock(SystemConfigService::class);
+        $systemConfig->method('get')->with('LieferzeitenAdmin.config.defaultAdditionalDeliveryAssignee')->willReturn(' fallback-assignee ');
+
+        $service = $this->createService(
+            positionRepository: $this->createNoOpPositionRepository(),
+            taskService: $taskService,
+            ruleResolver: $ruleResolver,
+            systemConfigService: $systemConfig,
+        );
+
+        $service->createAdditionalDeliveryRequest($positionId, 'manual', Context::createDefaultContext());
+    }
+
+    public function testCreateAdditionalDeliveryRequestThrowsWhenRuleAndFallbackAssigneeAreMissing(): void
+    {
+        $positionId = '7e3f2a13f95f4707b1ef7fd4f02d1292';
+        $this->connection->insert('lieferzeiten_position', [
+            'id' => hex2bin($positionId),
+            'updated_at' => '2026-02-10 09:00:00.000',
+        ]);
+
+        $ruleResolver = $this->createMock(TaskAssignmentRuleResolver::class);
+        $ruleResolver->method('resolve')->willReturn(['assigneeIdentifier' => '']);
+
+        $systemConfig = $this->createMock(SystemConfigService::class);
+        $systemConfig->method('get')->willReturn('  ');
+
+        $service = $this->createService(
+            positionRepository: $this->createNoOpPositionRepository(),
+            taskService: $this->createMock(LieferzeitenTaskService::class),
+            ruleResolver: $ruleResolver,
+            systemConfigService: $systemConfig,
+        );
+
+        $this->expectException(AdditionalDeliveryAssigneeMissingException::class);
+        $service->createAdditionalDeliveryRequest($positionId, 'manual', Context::createDefaultContext());
     }
 
     /** @return EntityRepository&MockObject */
@@ -134,5 +227,35 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
         });
 
         return $repository;
+    }
+
+    /** @return EntityRepository&MockObject */
+    private function createNoOpPositionRepository(): EntityRepository
+    {
+        $repository = $this->createMock(EntityRepository::class);
+        $repository->method('upsert')->willReturn(null);
+
+        return $repository;
+    }
+
+    private function createService(
+        ?EntityRepository $positionRepository = null,
+        ?LieferzeitenTaskService $taskService = null,
+        ?TaskAssignmentRuleResolver $ruleResolver = null,
+        ?SystemConfigService $systemConfigService = null,
+    ): LieferzeitenPositionWriteService {
+        return new LieferzeitenPositionWriteService(
+            $positionRepository ?? $this->createPositionRepositoryMock(),
+            $this->createMock(EntityRepository::class),
+            $this->connection,
+            $this->createMock(EntityRepository::class),
+            $this->createMock(EntityRepository::class),
+            $this->createMock(EntityRepository::class),
+            $this->createMock(EntityRepository::class),
+            $taskService ?? $this->createMock(LieferzeitenTaskService::class),
+            $this->createMock(NotificationEventService::class),
+            $ruleResolver ?? $this->createMock(TaskAssignmentRuleResolver::class),
+            $systemConfigService ?? $this->createMock(SystemConfigService::class),
+        );
     }
 }

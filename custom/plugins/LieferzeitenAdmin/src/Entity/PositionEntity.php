@@ -17,6 +17,10 @@ class PositionEntity extends Entity
 
     protected ?\DateTimeInterface $orderedAt = null;
 
+    protected ?int $orderedQuantity = null;
+
+    protected ?int $shippedQuantity = null;
+
     protected ?string $comment = null;
 
     protected ?string $currentComment = null;
@@ -77,6 +81,26 @@ class PositionEntity extends Entity
     public function setOrderedAt(?\DateTimeInterface $orderedAt): void
     {
         $this->orderedAt = $orderedAt;
+    }
+
+    public function getOrderedQuantity(): ?int
+    {
+        return $this->orderedQuantity;
+    }
+
+    public function setOrderedQuantity(?int $orderedQuantity): void
+    {
+        $this->orderedQuantity = $orderedQuantity;
+    }
+
+    public function getShippedQuantity(): ?int
+    {
+        return $this->shippedQuantity;
+    }
+
+    public function setShippedQuantity(?int $shippedQuantity): void
+    {
+        $this->shippedQuantity = $shippedQuantity;
     }
 
 
