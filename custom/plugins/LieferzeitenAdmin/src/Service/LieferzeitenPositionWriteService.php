@@ -146,6 +146,18 @@ class LieferzeitenPositionWriteService
         return ['from' => $from, 'to' => $to];
     }
 
+    public function hasNeuerLieferterminHistoryForPosition(string $positionId): bool
+    {
+        $count = $this->connection->fetchOne(
+            'SELECT COUNT(*)
+             FROM lieferzeiten_neuer_liefertermin_history
+             WHERE position_id = :positionId',
+            ['positionId' => hex2bin($positionId)],
+        );
+
+        return (int) $count > 0;
+    }
+
     /** @return array{from: \DateTimeImmutable, to: \DateTimeImmutable}|null */
     public function getSupplierRangeBoundsByPaketId(string $paketId): ?array
     {

@@ -413,25 +413,23 @@ readonly class LieferzeitenOrderOverviewService
     }
 
     /**
-     * @return array<int, string>
+     * @return array{code: int|null, labelKey: string|null}
      */
-    private function resolveDomainFilter(string $domain): array
+    private function buildBusinessStatusPayload(mixed $status): array
     {
-        $domain = $this->normalizeValue($domain);
-        if ($domain === null || $domain === 'all') {
-            return [];
+        $statusCode = is_numeric($status) ? (int) $status : null;
+
+        if ($statusCode === null || !isset(self::BUSINESS_STATUS_LABEL_KEYS[$statusCode])) {
+            return [
+                'code' => $statusCode,
+                'labelKey' => null,
+            ];
         }
 
-        $domainKey = self::LEGACY_DOMAIN_MAPPING[$domain] ?? $domain;
-
-        return self::DOMAIN_SOURCE_MAPPING[$domainKey] ?? [$domainKey];
-    }
-
-    private function normalizeValue(string $value): ?string
-    {
-        $value = trim(mb_strtolower($value));
-
-        return $value !== '' ? $value : null;
+        return [
+            'code' => $statusCode,
+            'labelKey' => self::BUSINESS_STATUS_LABEL_KEYS[$statusCode],
+        ];
     }
 
     /**

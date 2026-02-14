@@ -10,6 +10,9 @@
 
     <template #content>
         <sw-card>
+            <sw-alert variant="info" appearance="default" :showIcon="true">
+                Ce booléen reste un paramètre global par canal de vente et ne remplace pas la granularité de la matrice des Notification toggles.
+            </sw-alert>
             <sw-entity-listing
                 v-if="items"
                 :items="items"

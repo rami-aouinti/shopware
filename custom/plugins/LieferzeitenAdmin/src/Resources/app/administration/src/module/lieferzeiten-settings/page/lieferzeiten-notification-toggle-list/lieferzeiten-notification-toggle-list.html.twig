@@ -3,29 +3,60 @@
         <h2>{{ $tc('lieferzeiten.lms.navigation.notificationToggles') }}</h2>
     </template>
 
-    <template #smart-bar-actions>
-        <sw-button v-if="hasEditAccess" variant="primary" @click="onCreate">Create</sw-button>
-    </template>
-
     <template #content>
-        <sw-card>
-            <sw-entity-listing
-                v-if="items"
-                :items="items"
-                :repository="repository"
-                :columns="columns"
-                :isLoading="isLoading"
-                :showSelection="false"
-                :allowInlineEdit="hasEditAccess"
-                :allowDelete="hasEditAccess"
-                :total="total"
-                :page="page"
-                :limit="limit"
-                @page-change="onPageChange"
-                @inline-edit-save="onInlineEditSave"
-                @inline-edit-cancel="getList"
-                @delete="onDelete"
-            />
+        <sw-card :isLoading="isLoading" title="Matrice des notifications">
+            <sw-alert variant="info" appearance="default" :showIcon="true">
+                Source: <code>lieferzeiten_notification_toggle</code> avec clé logique
+                <code>(triggerKey, channel, salesChannelId)</code>.
+            </sw-alert>
+
+            <sw-alert v-if="invalidEntries.length" variant="warning" appearance="default" :showIcon="true">
+                {{ invalidEntries.length }} entrée(s) incohérente(s) détectée(s) (triggerKey/channel/code). Elles sont verrouillées dans la matrice.
+            </sw-alert>
+
+            <div class="sw-data-grid sw-data-grid--compact">
+                <table class="sw-data-grid__table">
+                    <thead class="sw-data-grid__header">
+                        <tr class="sw-data-grid__row">
+                            <th class="sw-data-grid__cell">Type de notification</th>
+                            <th
+                                v-for="scope in salesChannelColumns"
+                                :key="scope.id"
+                                class="sw-data-grid__cell"
+                            >
+                                {{ scope.name }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="sw-data-grid__body">
+                        <tr
+                            v-for="triggerKey in triggerOptions"
+                            :key="triggerKey"
+                            class="sw-data-grid__row"
+                        >
+                            <td class="sw-data-grid__cell"><strong>{{ triggerKey }}</strong></td>
+                            <td
+                                v-for="scope in salesChannelColumns"
+                                :key="`${triggerKey}-${scope.id}`"
+                                class="sw-data-grid__cell"
+                            >
+                                <div
+                                    v-for="channel in channelOptions"
+                                    :key="`${triggerKey}-${scope.id}-${channel}`"
+                                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;"
+                                >
+                                    <span>{{ channel }}</span>
+                                    <sw-switch-field
+                                        :value="getToggleValue(triggerKey, channel, scope.id === 'global' ? null : scope.id)"
+                                        :disabled="!hasEditAccess || isCellDisabled(triggerKey, channel, scope.id === 'global' ? null : scope.id)"
+                                        @update:value="onToggleChanged(triggerKey, channel, scope.id === 'global' ? null : scope.id, $event)"
+                                    />
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </sw-card>
     </template>
 </sw-page>
