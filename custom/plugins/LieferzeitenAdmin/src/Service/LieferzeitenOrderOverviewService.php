@@ -8,6 +8,20 @@ use Doctrine\DBAL\Connection;
 readonly class LieferzeitenOrderOverviewService
 {
     /**
+     * @var array<int, string>
+     */
+    private const BUSINESS_STATUS_LABEL_KEYS = [
+        1 => 'lieferzeiten.businessStatus.1',
+        2 => 'lieferzeiten.businessStatus.2',
+        3 => 'lieferzeiten.businessStatus.3',
+        4 => 'lieferzeiten.businessStatus.4',
+        5 => 'lieferzeiten.businessStatus.5',
+        6 => 'lieferzeiten.businessStatus.6',
+        7 => 'lieferzeiten.businessStatus.7',
+        8 => 'lieferzeiten.businessStatus.8',
+    ];
+
+    /**
      * @var array<string, list<string>>
      */
     private const DOMAIN_SOURCE_MAPPING = [
@@ -51,6 +65,19 @@ readonly class LieferzeitenOrderOverviewService
         'neuerLieferterminFrom',
         'neuerLieferterminTo',
         'domain',
+    ];
+
+
+    private const DOMAIN_SOURCE_MAPPING = [
+        'first-medical-e-commerce' => ['first medical', 'e-commerce', 'shopware', 'gambio'],
+        'medical-solutions' => ['medical solutions', 'medical-solutions', 'medical_solutions'],
+    ];
+
+    private const LEGACY_DOMAIN_MAPPING = [
+        'first medical' => 'first-medical-e-commerce',
+        'e-commerce' => 'first-medical-e-commerce',
+        'first medical - e-commerce' => 'first-medical-e-commerce',
+        'medical solutions' => 'medical-solutions',
     ];
 
     private const SORTABLE_FIELDS = [
@@ -123,11 +150,12 @@ readonly class LieferzeitenOrderOverviewService
                 p.last_changed_by AS user,
                 p.status AS status,
                 p.shipping_assignment_type AS shipping_assignment_type,
+                p.source_system AS sourceSystem,
                 MAX(sh.sendenummer) AS sendenummer
              FROM `lieferzeiten_paket` p
              %s
              %s
-             GROUP BY p.id, p.external_order_id, p.paket_number, p.order_date, p.shipping_date, p.delivery_date, p.last_changed_by, p.status, p.shipping_assignment_type
+             GROUP BY p.id, p.external_order_id, p.paket_number, p.order_date, p.shipping_date, p.delivery_date, p.last_changed_by, p.status, p.shipping_assignment_type, p.source_system
              ORDER BY %s
              LIMIT :limit OFFSET :offset',
             $joinSql,
@@ -140,6 +168,10 @@ readonly class LieferzeitenOrderOverviewService
         $dataParams['offset'] = ($page - 1) * $limit;
 
         $rows = $this->connection->fetchAllAssociative($dataSql, $dataParams, $paramTypes);
+        foreach ($rows as &$row) {
+            $row['business_status'] = $this->buildBusinessStatusPayload($row['status'] ?? null);
+        }
+        unset($row);
 
         return [
             'total' => $total,
@@ -249,6 +281,19 @@ readonly class LieferzeitenOrderOverviewService
             $filters,
             'nlh',
         );
+
+
+        $domainFilter = $this->resolveDomainFilter((string) ($filters['domain'] ?? ''));
+        if ($domainFilter !== []) {
+            $placeholders = [];
+            foreach ($domainFilter as $index => $sourceSystem) {
+                $paramName = sprintf('domainSource%d', $index);
+                $params[$paramName] = $sourceSystem;
+                $placeholders[] = ':' . $paramName;
+            }
+
+            $conditions[] = sprintf('LOWER(COALESCE(p.source_system, "")) IN (%s)', implode(', ', $placeholders));
+        }
 
         if ($conditions === []) {
             return '';
@@ -373,5 +418,25 @@ readonly class LieferzeitenOrderOverviewService
     private function resolveSortDirection(?string $order): string
     {
         return strtoupper((string) $order) === 'ASC' ? 'ASC' : 'DESC';
+    }
+
+    /**
+     * @return array{code: int|null, labelKey: string|null}
+     */
+    private function buildBusinessStatusPayload(mixed $status): array
+    {
+        $statusCode = is_numeric($status) ? (int) $status : null;
+
+        if ($statusCode === null || !isset(self::BUSINESS_STATUS_LABEL_KEYS[$statusCode])) {
+            return [
+                'code' => $statusCode,
+                'labelKey' => null,
+            ];
+        }
+
+        return [
+            'code' => $statusCode,
+            'labelKey' => self::BUSINESS_STATUS_LABEL_KEYS[$statusCode],
+        ];
     }
 }

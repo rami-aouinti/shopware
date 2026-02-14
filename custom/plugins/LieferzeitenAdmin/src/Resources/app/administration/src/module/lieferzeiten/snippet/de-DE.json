@@ -49,7 +49,8 @@
       "article": "Artikel",
       "quantity": "Menge",
       "packageNumbers": "Pakete",
-      "status": "Status"
+      "status": "Status",
+      "businessStatus": "Fachstatus"
     },
     "fields": {
       "supplierDate": "Liefertermin Lieferant (1-14 Tage)",

@@ -127,11 +127,22 @@ class LieferzeitenImportService
 
                     $resolution = $this->baseDateResolver->resolve($matched);
                     $settings = $this->settingsProvider->getForChannel($channel);
-                    $calculatedDeliveryDate = $this->deliveryDateCalculator->calculate($resolution['baseDate'], $settings);
+                    $calculatedShippingDate = $this->deliveryDateCalculator->calculate($resolution['baseDate'], $settings['shipping']);
+                    $calculatedDeliveryDate = $this->deliveryDateCalculator->calculate($resolution['baseDate'], $settings['delivery']);
 
                     $matched['baseDateType'] = $resolution['baseDateType'];
                     $matched['paymentDate'] = $matched['paymentDate'] ?? null;
+                    $matched['calculatedShippingDate'] = $calculatedShippingDate?->format(DATE_ATOM);
                     $matched['calculatedDeliveryDate'] = $calculatedDeliveryDate?->format(DATE_ATOM);
+
+                    if ($this->parseDate($matched['shippingDate'] ?? null) === null) {
+                        $matched['shippingDate'] = $matched['calculatedShippingDate'];
+                    }
+
+                    if ($this->parseDate($matched['deliveryDate'] ?? null) === null) {
+                        $matched['deliveryDate'] = $matched['calculatedDeliveryDate'];
+                    }
+
                     $matched['sourceSystem'] = $this->contractValidator->resolveValueByPriority(
                         $matched['sourceSystem'] ?? $channel,
                         null,
@@ -187,7 +198,7 @@ class LieferzeitenImportService
                         'channel' => $channel,
                         'status' => $mappedStatus,
                     ], 'shopware');
-                    $this->emitNotificationEvents($externalId, $channel, $matched, $trackingNumbers, $existingStatus, $mappedStatus, $context);
+                    $this->emitNotificationEvents($externalId, $channel, $matched, $trackingNumbers, $existingPaket, $existingStatus, $mappedStatus, $context);
                 }
             }
         } finally {
@@ -766,7 +777,7 @@ class LieferzeitenImportService
      * @param array<string,mixed> $payload
      * @param array<int,string> $trackingNumbers
      */
-    private function emitNotificationEvents(string $externalOrderId, string $sourceSystem, array $payload, array $trackingNumbers, ?int $existingStatus, int $mappedStatus, Context $context): void
+    private function emitNotificationEvents(string $externalOrderId, string $sourceSystem, array $payload, array $trackingNumbers, ?PaketEntity $existingPaket, ?int $existingStatus, int $mappedStatus, Context $context): void
     {
         foreach (NotificationTriggerCatalog::channels() as $channel) {
             $this->notificationEventService->dispatch(
@@ -877,6 +888,39 @@ class LieferzeitenImportService
                 );
             }
 
+
+
+            if ($this->isPrepaymentOrder($payload) && ($payload['paymentDate'] ?? null) !== null && $existingPaket?->getPaymentDate() === null) {
+                $this->notificationEventService->dispatch(
+                    sprintf('vorkasse-payment-received:%s:%s', $externalOrderId, $channel),
+                    NotificationTriggerCatalog::PAYMENT_RECEIVED_VORKASSE,
+                    $channel,
+                    [
+                        'externalOrderId' => $externalOrderId,
+                        'paymentDate' => $payload['paymentDate'],
+                        'paymentMethod' => $payload['paymentMethod'] ?? null,
+                    ],
+                    $context,
+                    $externalOrderId,
+                    $sourceSystem,
+                );
+            }
+
+            if ($existingStatus !== 8 && $mappedStatus === 8) {
+                $this->notificationEventService->dispatch(
+                    sprintf('order-completed-review-reminder:%s:%s', $externalOrderId, $channel),
+                    NotificationTriggerCatalog::ORDER_COMPLETED_REVIEW_REMINDER,
+                    $channel,
+                    [
+                        'externalOrderId' => $externalOrderId,
+                        'completedAt' => (new \DateTimeImmutable())->format(DATE_ATOM),
+                        'status' => $mappedStatus,
+                    ],
+                    $context,
+                    $externalOrderId,
+                    $sourceSystem,
+                );
+            }
             if ($this->hasParcelState($payload, 'retoure')) {
                 $this->notificationEventService->dispatch(
                     sprintf('return-to-sender:%s:%s', $externalOrderId, $channel),
@@ -912,6 +956,15 @@ class LieferzeitenImportService
         return false;
     }
 
+
+
+    /** @param array<string,mixed> $payload */
+    private function isPrepaymentOrder(array $payload): bool
+    {
+        $paymentMethod = mb_strtolower((string) ($payload['paymentMethod'] ?? ''));
+
+        return str_contains($paymentMethod, 'vorkasse') || str_contains($paymentMethod, 'prepayment');
+    }
 
     private function normalizeStatusInt(mixed $value): ?int
     {

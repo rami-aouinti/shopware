@@ -3,6 +3,8 @@
 namespace LieferzeitenAdmin\Service;
 
 use Doctrine\DBAL\Connection;
+use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -17,6 +19,7 @@ class LieferzeitenPositionWriteService
         private readonly EntityRepository $lieferterminLieferantHistoryRepository,
         private readonly EntityRepository $neuerLieferterminHistoryRepository,
         private readonly LieferzeitenTaskService $taskService,
+        private readonly NotificationEventService $notificationEventService,
     ) {
     }
 
@@ -210,6 +213,7 @@ class LieferzeitenPositionWriteService
     {
         $actor = $this->resolveActor($context);
         $changedAt = new \DateTimeImmutable();
+        $notificationContext = $this->fetchNotificationContext($positionId);
 
         $this->positionRepository->upsert([
             [
@@ -221,22 +225,39 @@ class LieferzeitenPositionWriteService
             ],
         ], $context);
 
+        $taskPayload = [
+            'taskType' => 'additional-delivery-request',
+            'triggerKey' => NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED,
+            'positionId' => $positionId,
+            'createdBy' => $actor,
+            'createdAt' => $changedAt->format(DATE_ATOM),
+            'initiator' => $initiator,
+            'customerEmail' => $notificationContext['customerEmail'],
+            'externalOrderId' => $notificationContext['externalOrderId'],
+            'sourceSystem' => $notificationContext['sourceSystem'],
+            'positionNumber' => $notificationContext['positionNumber'],
+        ];
+
         $this->taskService->createTask(
-            [
-                'taskType' => 'additional-delivery-request',
-                'triggerKey' => 'additional-delivery-request',
-                'positionId' => $positionId,
-                'createdBy' => $actor,
-                'createdAt' => $changedAt->format(DATE_ATOM),
-            ],
+            $taskPayload,
             $initiator,
             null,
             null,
             $context,
         );
+
+        foreach (NotificationTriggerCatalog::channels() as $channel) {
+            $this->notificationEventService->dispatch(
+                sprintf('additional-request:%s:%s', $positionId, $channel),
+                NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED,
+                $channel,
+                array_merge($taskPayload, ['requestedAt' => $changedAt->format(DATE_ATOM)]),
+                $context,
+                $notificationContext['externalOrderId'],
+                $notificationContext['sourceSystem'],
+            );
+        }
     }
-
-
 
     private function assertOptimisticLockOrThrow(string $positionId, string $expectedUpdatedAt): void
     {
@@ -391,5 +412,34 @@ class LieferzeitenPositionWriteService
         }
 
         return 'system';
+    }
+
+    /** @return array{externalOrderId:?string,sourceSystem:?string,customerEmail:?string,positionNumber:?string} */
+    private function fetchNotificationContext(string $positionId): array
+    {
+        $row = $this->connection->fetchAssociative(
+            'SELECT p.position_number, paket.external_order_id, paket.source_system, paket.customer_email
+             FROM lieferzeiten_position p
+             LEFT JOIN lieferzeiten_paket paket ON paket.id = p.paket_id
+             WHERE p.id = :positionId
+             LIMIT 1',
+            ['positionId' => hex2bin($positionId)],
+        );
+
+        if (!is_array($row)) {
+            return [
+                'externalOrderId' => null,
+                'sourceSystem' => null,
+                'customerEmail' => null,
+                'positionNumber' => null,
+            ];
+        }
+
+        return [
+            'externalOrderId' => isset($row['external_order_id']) ? (string) $row['external_order_id'] : null,
+            'sourceSystem' => isset($row['source_system']) ? (string) $row['source_system'] : null,
+            'customerEmail' => isset($row['customer_email']) ? (string) $row['customer_email'] : null,
+            'positionNumber' => isset($row['position_number']) ? (string) $row['position_number'] : null,
+        ];
     }
 }
