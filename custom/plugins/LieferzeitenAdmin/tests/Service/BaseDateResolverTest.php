@@ -22,7 +22,7 @@ class BaseDateResolverTest extends TestCase
         static::assertSame('2026-02-03 11:00:00', $result['baseDate']?->format('Y-m-d H:i:s'));
     }
 
-    public function testResolveFallsBackToOrderDateForPrepaymentWithoutPaymentDate(): void
+    public function testResolveReturnsMissingPaymentDateForPrepaymentWithoutPaymentDate(): void
     {
         $resolver = new BaseDateResolver();
 
@@ -32,9 +32,9 @@ class BaseDateResolverTest extends TestCase
             'paymentDate' => null,
         ]);
 
-        static::assertSame('order_date_fallback', $result['baseDateType']);
+        static::assertSame('payment_date_missing', $result['baseDateType']);
         static::assertTrue($result['missingPaymentDate']);
-        static::assertSame('2026-02-01T09:30:00+00:00', $result['baseDate']?->format(DATE_ATOM));
+        static::assertNull($result['baseDate']);
     }
 
     public function testResolveUsesOrderDateForNonPrepayment(): void
@@ -63,9 +63,9 @@ class BaseDateResolverTest extends TestCase
             'paymentDate' => ' ',
         ]);
 
-        static::assertSame('order_date_fallback', $result['baseDateType']);
+        static::assertSame('payment_date_missing', $result['baseDateType']);
         static::assertTrue($result['missingPaymentDate']);
-        static::assertSame('2026-02-07 12:00:00', $result['baseDate']?->format('Y-m-d H:i:s'));
+        static::assertNull($result['baseDate']);
     }
 
     public function testResolveReturnsNullWhenDatesAreInvalid(): void
@@ -79,7 +79,7 @@ class BaseDateResolverTest extends TestCase
         ]);
 
         static::assertNull($result['baseDate']);
-        static::assertSame('order_date_fallback', $result['baseDateType']);
+        static::assertSame('payment_date_missing', $result['baseDateType']);
         static::assertTrue($result['missingPaymentDate']);
     }
 }

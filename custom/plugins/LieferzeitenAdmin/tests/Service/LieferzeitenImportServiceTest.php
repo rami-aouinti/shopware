@@ -515,7 +515,7 @@ class LieferzeitenImportServiceTest extends TestCase
         static::assertSame($result['calculatedDeliveryDate'], $result['deliveryDate']);
     }
 
-    public function testResolveAndApplyBusinessDatesFallsBackToOrderDateForPrepaymentWithoutPaymentDate(): void
+    public function testResolveAndApplyBusinessDatesKeepsDatesUnsetForPrepaymentWithoutPaymentDate(): void
     {
         $settingsProvider = $this->createMock(ChannelDateSettingsProvider::class);
         $settingsProvider->method('getForChannel')->with('shopware')->willReturn([
@@ -539,10 +539,12 @@ class LieferzeitenImportServiceTest extends TestCase
             'paymentDate' => null,
         ], 'shopware');
 
-        static::assertSame('order_date_fallback', $resolution['baseDateType']);
+        static::assertSame('payment_date_missing', $resolution['baseDateType']);
         static::assertTrue($resolution['missingPaymentDate']);
-        static::assertSame('2026-02-03T09:00:00+00:00', $result['shippingDate']);
-        static::assertSame('2026-02-04T09:00:00+00:00', $result['deliveryDate']);
+        static::assertArrayNotHasKey('shippingDate', $result);
+        static::assertArrayNotHasKey('deliveryDate', $result);
+        static::assertNull($result['calculatedShippingDate']);
+        static::assertNull($result['calculatedDeliveryDate']);
     }
     public function testProcessPendingStatusPushQueueAppliesRetryBackoffOnFailure(): void
     {
