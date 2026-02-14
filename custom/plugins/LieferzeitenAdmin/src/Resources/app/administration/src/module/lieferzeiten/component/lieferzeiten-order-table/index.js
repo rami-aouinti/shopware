@@ -122,6 +122,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     customerNamesDisplay: this.resolveCustomerNames(order),
                     positionsCountDisplay: positions.length,
                     packageStatusDisplay: this.resolvePackageStatus(order),
+                    trackingSummaryDisplay: this.resolveTrackingSummaryDisplay(order),
                     latestShippingAtDisplay: this.resolveLatestShippingAt(order),
                     shippingDateDisplay: this.resolveShippingDate(order),
                     latestDeliveryAtDisplay: this.resolveLatestDeliveryAt(order),
@@ -133,6 +134,8 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     additionalDeliveryRequest: order.additionalDeliveryRequest || null,
                     latestShippingDeadline: this.resolveDeadlineValue(order, ['spaetester_versand', 'spaetesterVersand', 'latestShippingDeadline']),
                     latestDeliveryDeadline: this.resolveDeadlineValue(order, ['spaeteste_lieferung', 'spaetesteLieferung', 'latestDeliveryDeadline']),
+                    lastChangedByDisplay: this.resolveLastChangedBy(order),
+                    businessStatusDisplay: this.resolveBusinessStatusDisplay(order),
                 });
             }
 
@@ -196,6 +199,53 @@ Shopware.Component.register('lieferzeiten-order-table', {
         parcelSummary(order) {
             const openParcels = order.parcels.filter((parcel) => !parcel.closed).length;
             return `${openParcels}/${order.parcels.length}`;
+        },
+
+        displayOrDash(value) {
+            if (value === null || value === undefined) {
+                return '-';
+            }
+
+            const normalized = String(value).trim();
+            return normalized === '' ? '-' : normalized;
+        },
+
+        resolveSan6OrderNumber(order) {
+            return this.pickFirstDefined(order, ['san6OrderNumber', 'san6', 'paketNumber', 'paket_number']);
+        },
+
+        resolveSan6Position(positions) {
+            const values = positions
+                .map((position) => this.pickFirstDefined(position, ['positionNumber', 'number', 'position_number']))
+                .filter((value) => value !== null && value !== undefined && String(value).trim() !== '');
+
+            return values.length ? values.join(', ') : '-';
+        },
+
+        resolveQuantity(positions) {
+            const total = positions.reduce((acc, position) => {
+                const raw = this.pickFirstDefined(position, ['quantity', 'orderedQuantity', 'menge']);
+                const numeric = Number(raw);
+                return Number.isFinite(numeric) ? acc + numeric : acc;
+            }, 0);
+
+            return total > 0 ? String(total) : '-';
+        },
+
+        resolveOrderDate(order) {
+            return this.formatDate(this.pickFirstDefined(order, ['orderDate', 'bestelldatum', 'createdAt']));
+        },
+
+        resolvePaymentMethod(order) {
+            return this.pickFirstDefined(order, ['paymentMethod', 'zahlart', 'payment_method']) || '-';
+        },
+
+        resolvePaymentDate(order) {
+            return this.formatDate(this.pickFirstDefined(order, ['paymentDate', 'payment_date']));
+        },
+
+        resolveCustomerNames(order) {
+            return this.pickFirstDefined(order, ['customerNames', 'customerEmail', 'customer_email']) || '-';
         },
 
         resolveDeadlineValue(order, keys) {
@@ -331,17 +381,90 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         resolveTrackingEntries(order, position) {
-            const carrier = String(position.trackingCarrier || order.trackingCarrier || '').toLowerCase();
-            return (position.packages || []).map((pkg) => {
+            const carrier = String(position?.trackingCarrier || order?.trackingCarrier || '').toLowerCase();
+            return this.normalizeTrackingEntries(position?.packages, carrier);
+        },
+
+        resolveOrderTrackingEntries(order) {
+            const positions = Array.isArray(order?.positions) ? order.positions : [];
+            const parcels = Array.isArray(order?.parcels) ? order.parcels : [];
+            const entries = [];
+
+            positions.forEach((position) => {
+                const carrier = String(position?.trackingCarrier || order?.trackingCarrier || '').toLowerCase();
+                entries.push(...this.normalizeTrackingEntries(position?.packages, carrier));
+            });
+
+            parcels.forEach((parcel) => {
+                const carrier = String(parcel?.trackingCarrier || order?.trackingCarrier || '').toLowerCase();
+                entries.push(...this.normalizeTrackingEntries(parcel?.packages, carrier));
+            });
+
+            const seen = new Set();
+            return entries.filter((entry) => {
+                const dedupeKey = `${entry.carrier}:${entry.number}`;
+                if (seen.has(dedupeKey)) {
+                    return false;
+                }
+                seen.add(dedupeKey);
+                return true;
+            });
+        },
+
+        normalizeTrackingEntries(packages, fallbackCarrier = '') {
+            const normalizedPackages = Array.isArray(packages) ? packages : [];
+
+            return normalizedPackages.map((pkg) => {
                 if (typeof pkg === 'string') {
-                    return { number: pkg, carrier };
+                    return { number: pkg.trim(), carrier: fallbackCarrier };
                 }
 
                 return {
-                    number: String(pkg?.number || ''),
-                    carrier: String(pkg?.carrier || carrier).toLowerCase(),
+                    number: String(pkg?.number || '').trim(),
+                    carrier: String(pkg?.carrier || fallbackCarrier || '').toLowerCase().trim(),
                 };
             }).filter((entry) => entry.number !== '');
+        },
+
+        resolveTrackingSummaryDisplay(order) {
+            const entries = this.resolveOrderTrackingEntries(order)
+                .filter((entry) => ['dhl', 'gls'].includes(entry.carrier));
+
+            if (entries.length > 0) {
+                return entries.map((entry) => entry.number).join(', ');
+            }
+
+            if (this.isInternalShippingMode(order)) {
+                return 'Versand durch First Medical';
+            }
+
+            return '-';
+        },
+
+        isInternalShippingMode(order) {
+            const candidates = [
+                order?.shippingMode,
+                order?.shipping_mode,
+                order?.shippingType,
+                order?.shipping_type,
+                order?.shippingMethod,
+                order?.shipping_method,
+                order?.versandart,
+                order?.versandArt,
+                order?.versand_art,
+            ].filter((value) => value !== null && value !== undefined);
+
+            if (order?.internalShipping === true || order?.isInternalShipping === true) {
+                return true;
+            }
+
+            return candidates.some((value) => {
+                const normalized = String(value).toLowerCase();
+                return normalized.includes('internal')
+                    || normalized.includes('intern')
+                    || normalized.includes('first medical')
+                    || normalized.includes('hausversand');
+            });
         },
 
         async openTrackingHistory(entry) {
@@ -377,6 +500,38 @@ Shopware.Component.register('lieferzeiten-order-table', {
             this.trackingError = '';
             this.trackingEvents = [];
             this.activeTracking = null;
+        },
+
+
+        resolveLastChangedBy(order) {
+            const changedBy = this.pickFirstDefined(order, ['last_changed_by', 'lastChangedBy', 'user']);
+
+            return changedBy ? String(changedBy).trim() : null;
+        },
+
+        resolveBusinessStatusDisplay(order) {
+            const businessStatus = order?.business_status || order?.businessStatus || null;
+            const statusCode = String(businessStatus?.code || order?.status || '').trim();
+            const statusLabel = String(
+                businessStatus?.label
+                || order?.business_status_label
+                || order?.statusLabel
+                || '',
+            ).trim();
+
+            if (!statusCode && !statusLabel) {
+                return null;
+            }
+
+            if (!statusCode) {
+                return statusLabel;
+            }
+
+            if (!statusLabel) {
+                return statusCode;
+            }
+
+            return `${statusCode} · ${statusLabel}`;
         },
 
         businessStatusLabel(order) {
@@ -662,7 +817,6 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 return;
             }
 
-            this.updateAudit(order, this.$t('lieferzeiten.audit.savedComment'));
         },
     },
 });
