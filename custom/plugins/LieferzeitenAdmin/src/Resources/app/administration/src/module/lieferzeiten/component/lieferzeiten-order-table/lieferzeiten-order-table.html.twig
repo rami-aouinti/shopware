@@ -57,7 +57,7 @@
                         <td>{{ displayOrDash(order.domain) }}</td>
                         <td>{{ displayOrDash(order.positionsCountDisplay) }}</td>
                         <td>{{ parcelSummary(order) }}</td>
-                        <td>{{ displayOrDash(order.trackingSummary) }}</td>
+                        <td>{{ displayOrDash(order.trackingSummaryDisplay || order.trackingSummary) }}</td>
                         <td>-</td>
                         <td>-</td>
                         <td>-</td>
@@ -124,7 +124,10 @@
                         <td>{{ resolveAuditDisplay(order) }}</td>
                     </tr>
                     <tr v-if="isExpanded(order.id)" :key="`${order.id}-positions`">
-                        <td colspan="26">
+                        <td colspan="25">
+                            <sw-loader v-if="isDetailsLoading(order.id)" />
+
+                            <template v-else>
                             <table class="sw-data-grid__table">
                                 <thead>
                                     <tr>
@@ -138,9 +141,9 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="position in order.positions" :key="position.id">
-                                        <td>{{ position.number }}</td>
-                                        <td>{{ position.label }}</td>
-                                        <td>{{ position.quantity }}</td>
+                                        <td>{{ displayOrDash(position.number || position.positionNumber) }}</td>
+                                        <td>{{ displayOrDash(position.label || position.article) }}</td>
+                                        <td>{{ displayOrDash(position.quantity) }}</td>
                                         <td>
                                             <template v-for="entry in resolveTrackingEntries(order, position)">
                                                 <button
@@ -179,7 +182,7 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="parcel in order.parcels" :key="parcel.id">
-                                        <td>{{ parcel.id }}</td>
+                                        <td>{{ displayOrDash(parcel.paketId || parcel.id) }}</td>
                                         <td>{{ displayOrDash(parcel.statusDisplay) }}</td>
                                         <td>
                                             <sw-datepicker v-model:value="parcel.neuerLieferterminRange.from" :disabled="!hasEditAccess() || !parcel.supplierRange.from || !isParcelEditableByStatus(parcel)" size="small" />
@@ -192,6 +195,7 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            </template>
                         </td>
                     </tr>
                 </template>

@@ -205,4 +205,84 @@ class LieferzeitenOrderOverviewServiceTest extends TestCase
         static::assertContains('lieferterminLieferantFrom', $result['filterableFields']);
         static::assertContains('neuerLieferterminTo', $result['filterableFields']);
     }
+
+    public function testListOrdersCanIncludeStructuredDetails(): void
+    {
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->once())
+            ->method('fetchOne')
+            ->willReturn('1');
+
+        $connection->expects($this->exactly(6))
+            ->method('fetchAllAssociative')
+            ->willReturnCallback(static function (string $sql): array {
+                if (str_contains($sql, 'FROM `lieferzeiten_paket` p')) {
+                    return [[
+                        'id' => 'paket-1',
+                        'status' => '2',
+                    ]];
+                }
+
+                if (str_contains($sql, 'FROM `lieferzeiten_position` pos')) {
+                    return [[
+                        'id' => 'position-1',
+                        'paketId' => 'paket-1',
+                        'number' => '10',
+                        'label' => 'ART-1',
+                        'quantity' => '1',
+                        'status' => 'open',
+                        'updatedAt' => '2026-01-01 10:00:00',
+                    ]];
+                }
+
+                if (str_contains($sql, 'FROM `lieferzeiten_sendenummer_history` sh')) {
+                    return [[
+                        'positionId' => 'position-1',
+                        'number' => 'TRACK-1',
+                    ]];
+                }
+
+                if (str_contains($sql, 'FROM `lieferzeiten_neuer_liefertermin_paket_history` nph')) {
+                    return [[
+                        'paketId' => 'paket-1',
+                        'fromDate' => '2026-01-02 00:00:00',
+                        'toDate' => '2026-01-03 00:00:00',
+                        'lastChangedBy' => 'tester',
+                        'lastChangedAt' => '2026-01-01 12:00:00',
+                    ]];
+                }
+
+                if (str_contains($sql, 'FROM `lieferzeiten_liefertermin_lieferant_history` llh')) {
+                    return [[
+                        'paketId' => 'paket-1',
+                        'fromDate' => '2026-01-01 00:00:00',
+                        'toDate' => '2026-01-05 00:00:00',
+                        'lastChangedBy' => 'tester',
+                        'lastChangedAt' => '2026-01-01 11:00:00',
+                    ]];
+                }
+
+                if (str_contains($sql, 'latest_range.liefertermin_from')) {
+                    return [[
+                        'id' => 'paket-1',
+                        'paketId' => 'paket-1',
+                        'status' => '2',
+                        'closed' => 0,
+                        'neuerLieferterminFrom' => '2026-01-02 00:00:00',
+                        'neuerLieferterminTo' => '2026-01-03 00:00:00',
+                    ]];
+                }
+
+                return [];
+            });
+
+        $service = new LieferzeitenOrderOverviewService($connection);
+
+        $result = $service->listOrders(1, 25, null, null, [], true);
+
+        static::assertArrayHasKey('positions', $result['data'][0]);
+        static::assertArrayHasKey('parcels', $result['data'][0]);
+        static::assertArrayHasKey('lieferterminLieferantHistory', $result['data'][0]);
+        static::assertArrayHasKey('neuerLieferterminHistory', $result['data'][0]);
+    }
 }

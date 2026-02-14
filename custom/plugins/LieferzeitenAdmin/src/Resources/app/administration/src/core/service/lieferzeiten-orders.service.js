@@ -34,6 +34,16 @@ class LieferzeitenOrdersService extends ApiService {
         }));
     }
 
+    async getOrderDetails(paketId) {
+        const response = await this.httpClient.get(`_action/${this.getApiBasePath()}/orders/${encodeURIComponent(paketId)}/details`, {
+            headers: this.getBasicHeaders(),
+        });
+
+        const data = ApiService.handleResponse(response) ?? response?.data ?? {};
+
+        return data?.data || data;
+    }
+
 
     async getStatistics(params = {}) {
         const response = await this.httpClient.get(`_action/${this.getApiBasePath()}/statistics`, {

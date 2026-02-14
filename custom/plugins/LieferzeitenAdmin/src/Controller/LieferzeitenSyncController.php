@@ -145,6 +145,8 @@ class LieferzeitenSyncController extends AbstractController
     )]
     public function orders(Request $request, Context $context): JsonResponse
     {
+        $includeDetails = filter_var($request->query->get('includeDetails', 'false'), FILTER_VALIDATE_BOOL);
+
         $payload = $this->orderOverviewService->listOrders(
             (int) $request->query->get('page', 1),
             (int) $request->query->get('limit', 25),
@@ -181,6 +183,7 @@ class LieferzeitenSyncController extends AbstractController
                 'domain' => $request->query->get('domain'),
                 'rowMode' => $request->query->get('rowMode'),
             ],
+            $includeDetails,
         );
 
         $this->auditLogService->log('orders_viewed', 'lieferzeiten_orders', null, $context, [
@@ -189,6 +192,28 @@ class LieferzeitenSyncController extends AbstractController
         ], 'shopware');
 
         return new JsonResponse($payload);
+    }
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/orders/{paketId}/details',
+        name: 'api.admin.lieferzeiten.orders.details',
+        defaults: ['_acl' => ['lieferzeiten.viewer']],
+        methods: [Request::METHOD_GET]
+    )]
+    public function orderDetails(string $paketId, Context $context): JsonResponse
+    {
+        if (!Uuid::isValid($paketId)) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Invalid order id'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $details = $this->orderOverviewService->getOrderDetails($paketId);
+        if ($details === null) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Order not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $this->auditLogService->log('order_details_viewed', 'lieferzeiten_orders', $paketId, $context, [], 'shopware');
+
+        return new JsonResponse(['status' => 'ok', 'data' => $details]);
     }
 
 
