@@ -714,6 +714,73 @@ class LieferzeitenImportServiceTest extends TestCase
         static::assertStringStartsWith('order-completed-review-reminder:EXT-102:', $reviewReminderCalls[0][0]);
     }
 
+
+    public function testResolveOrderedAndShippedQuantityFromSingleParcelPositionPayload(): void
+    {
+        $service = $this->createService();
+
+        $orderedMethod = new \ReflectionMethod($service, 'resolveOrderedQuantity');
+        $orderedMethod->setAccessible(true);
+        $shippedMethod = new \ReflectionMethod($service, 'resolveShippedQuantity');
+        $shippedMethod->setAccessible(true);
+
+        $payload = [
+            'parcels' => [[
+                'positions' => [[
+                    'positionNumber' => '10',
+                    'bestellmenge' => '4',
+                    'versandmenge' => '4',
+                ]],
+            ]],
+        ];
+
+        static::assertSame(4, $orderedMethod->invoke($service, $payload, '10'));
+        static::assertSame(4, $shippedMethod->invoke($service, $payload, '10'));
+    }
+
+    public function testResolveOrderedAndShippedQuantityFromMultiParcelPayload(): void
+    {
+        $service = $this->createService();
+
+        $orderedMethod = new \ReflectionMethod($service, 'resolveOrderedQuantity');
+        $orderedMethod->setAccessible(true);
+        $shippedMethod = new \ReflectionMethod($service, 'resolveShippedQuantity');
+        $shippedMethod->setAccessible(true);
+
+        $payload = [
+            'orderedQuantity' => 9,
+            'shippedQuantity' => 1,
+            'parcels' => [
+                ['positions' => [['positionNumber' => '11', 'orderedQuantity' => 2, 'shippedQuantity' => 2]]],
+                ['positions' => [['positionNumber' => '12', 'orderedQuantity' => 7, 'shippedQuantity' => 4]]],
+            ],
+        ];
+
+        static::assertSame(7, $orderedMethod->invoke($service, $payload, '12'));
+        static::assertSame(4, $shippedMethod->invoke($service, $payload, '12'));
+    }
+
+    public function testResolveOrderedAndShippedQuantityFallsBackToRootPayloadWhenPositionNotFound(): void
+    {
+        $service = $this->createService();
+
+        $orderedMethod = new \ReflectionMethod($service, 'resolveOrderedQuantity');
+        $orderedMethod->setAccessible(true);
+        $shippedMethod = new \ReflectionMethod($service, 'resolveShippedQuantity');
+        $shippedMethod->setAccessible(true);
+
+        $payload = [
+            'orderedQuantity' => 6,
+            'shippedQuantity' => 2,
+            'parcels' => [
+                ['positions' => [['positionNumber' => '55', 'orderedQuantity' => 1, 'shippedQuantity' => 1]]],
+            ],
+        ];
+
+        static::assertSame(6, $orderedMethod->invoke($service, $payload, '99'));
+        static::assertSame(2, $shippedMethod->invoke($service, $payload, '99'));
+    }
+
     private function createSearchResult(PaketEntity $entity): EntitySearchResult
     {
         return new EntitySearchResult(
@@ -734,6 +801,9 @@ class LieferzeitenImportServiceTest extends TestCase
         ?SystemConfigService $config = null,
         ?Status8TrackingMappingProvider $status8TrackingMappingProvider = null,
         ?NotificationEventService $notificationEventService = null,
+        ?BaseDateResolver $baseDateResolver = null,
+        ?ChannelDateSettingsProvider $settingsProvider = null,
+        ?BusinessDayDeliveryDateCalculator $deliveryDateCalculator = null,
     ): LieferzeitenImportService {
         $config ??= $this->createMock(SystemConfigService::class);
 

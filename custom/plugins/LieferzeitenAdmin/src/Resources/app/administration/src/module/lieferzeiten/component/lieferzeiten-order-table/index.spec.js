@@ -129,7 +129,8 @@ describe('lieferzeiten/component/lieferzeiten-order-table', () => {
 
         expect(methods.shippingLabelForPosition.call(context, {}, null)).toBe('Unklar');
         expect(methods.shippingLabelForPosition.call(context, { shippingAssignmentType: 'gesamt' }, {})).toBe('Gesamt-Versand');
-        expect(methods.shippingLabelForPosition.call(context, { shippingAssignmentType: 'teil' }, { orderedQuantity: 3, shippedQuantity: 3 })).toBe('Teillieferung');
+        expect(methods.shippingLabelForPosition.call(context, { shippingAssignmentType: 'teil' }, { orderedQuantity: 3, shippedQuantity: 3 })).toBe('Teillieferung 3/3 Stück');
+        expect(methods.shippingLabelForPosition.call(context, { shippingAssignmentType: 'teil' }, { orderedQuantity: 3, shippedQuantity: 2 })).toBe('Teillieferung 2/3 Stück');
         expect(methods.shippingLabelForPosition.call(context, { shippingAssignmentType: 'trennung' }, { orderedQuantity: 5, shippedQuantity: 2 })).toBe('Trennung Auftragsposition 2/5 Stück');
     });
 

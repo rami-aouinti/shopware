@@ -118,8 +118,28 @@ class QueuedNotificationEmailProcessor
     /** @param array<string,mixed> $payload */
     private function resolveRecipientEmail(array $payload): ?string
     {
+        $recipientEmail = isset($payload['recipientEmail']) && is_string($payload['recipientEmail'])
+            ? trim($payload['recipientEmail'])
+            : '';
+        if ($recipientEmail !== '') {
+            return $recipientEmail;
+        }
+
+        $recipientUserId = isset($payload['recipientUserId']) && is_string($payload['recipientUserId'])
+            ? trim($payload['recipientUserId'])
+            : '';
+        if ($recipientUserId !== '' && Uuid::isValid($recipientUserId)) {
+            $email = $this->connection->fetchOne(
+                'SELECT `email` FROM `user` WHERE `id` = :id LIMIT 1',
+                ['id' => hex2bin($recipientUserId)],
+            );
+
+            if (is_string($email) && trim($email) !== '') {
+                return trim($email);
+            }
+        }
+
         $candidates = [
-            isset($payload['recipientEmail']) && is_string($payload['recipientEmail']) ? trim($payload['recipientEmail']) : '',
             isset($payload['customerEmail']) && is_string($payload['customerEmail']) ? trim($payload['customerEmail']) : '',
             isset($payload['initiatorEmail']) && is_string($payload['initiatorEmail']) ? trim($payload['initiatorEmail']) : '',
         ];
@@ -130,23 +150,7 @@ class QueuedNotificationEmailProcessor
             }
         }
 
-        $recipientUserId = isset($payload['recipientUserId']) && is_string($payload['recipientUserId'])
-            ? trim($payload['recipientUserId'])
-            : '';
-        if ($recipientUserId === '' || !Uuid::isValid($recipientUserId)) {
-            return null;
-        }
-
-        $email = $this->connection->fetchOne(
-            'SELECT `email` FROM `user` WHERE `id` = :id LIMIT 1',
-            ['id' => hex2bin($recipientUserId)],
-        );
-
-        if (!is_string($email) || trim($email) === '') {
-            return null;
-        }
-
-        return trim($email);
+        return null;
     }
 
     private function claimQueuedEvent(string $id): bool

@@ -144,6 +144,8 @@ class LieferzeitenOrderOverviewServiceTest extends TestCase
                 [
                     'id' => 'abc',
                     'status' => '2',
+                    'orderedQuantityTotal' => '5',
+                    'shippedQuantityTotal' => '3',
                 ],
             ]);
 
@@ -155,6 +157,8 @@ class LieferzeitenOrderOverviewServiceTest extends TestCase
             'code' => '2',
             'label' => 'In clarification',
         ], $result['data'][0]['businessStatus']);
+        static::assertSame('5', $result['data'][0]['orderedQuantityTotal']);
+        static::assertSame('3', $result['data'][0]['shippedQuantityTotal']);
     }
 
 

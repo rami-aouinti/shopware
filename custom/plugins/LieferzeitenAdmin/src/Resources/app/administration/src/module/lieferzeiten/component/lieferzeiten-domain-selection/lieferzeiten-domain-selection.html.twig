@@ -1,7 +1,7 @@
 {% block lieferzeiten_domain_selection %}
     <div class="lieferzeiten-domain-selection">
         <sw-single-select
-            v-model="selectedDomain"
+            v-model="selectedChannel"
             :options="channelOptions"
             :placeholder="$t('lieferzeiten.domainSelection.channelPlaceholder')"
             :clearable="false"
@@ -20,7 +20,7 @@
         <sw-modal
             v-if="showDomainModal"
             :title="$t('lieferzeiten.domainSelection.modalTitle')"
-            @modal-close="confirmDomainSelection"
+            @modal-close="confirmGroupSelection"
         >
             <p>{{ $t('lieferzeiten.domainSelection.modalDescription') }}</p>
 
@@ -28,25 +28,12 @@
                 {{ $t('lieferzeiten.domainSelection.steps.group') }}
             </sw-label>
             <sw-single-select
-                v-model="selectedGroup"
+                v-model="draftGroup"
                 :options="groupOptions"
                 :placeholder="$t('lieferzeiten.domainSelection.groupPlaceholder')"
                 :clearable="false"
                 required
             />
-
-            <template v-if="modalStep === 2">
-                <sw-label>
-                    {{ $t('lieferzeiten.domainSelection.steps.channel') }}
-                </sw-label>
-                <sw-single-select
-                    v-model="selectedDomain"
-                    :options="channelOptions"
-                    :placeholder="$t('lieferzeiten.domainSelection.channelPlaceholder')"
-                    :clearable="false"
-                    required
-                />
-            </template>
 
             <sw-switch-field
                 v-model="persistSelection"
@@ -55,32 +42,12 @@
 
             <template #modal-footer>
                 <sw-button
-                    v-if="modalStep === 2"
-                    size="small"
-                    variant="ghost"
-                    @click="goToGroupStep"
-                >
-                    {{ $t('lieferzeiten.domainSelection.back') }}
-                </sw-button>
-
-                <sw-button
-                    v-if="modalStep === 1"
                     size="small"
                     variant="primary"
-                    :disabled="!canGoToChannelStep"
-                    @click="goToChannelStep"
+                    :disabled="!canConfirmGroupSelection"
+                    @click="confirmGroupSelection"
                 >
-                    {{ $t('lieferzeiten.domainSelection.next') }}
-                </sw-button>
-
-                <sw-button
-                    v-else
-                    size="small"
-                    variant="primary"
-                    :disabled="!canConfirmSelection"
-                    @click="confirmDomainSelection"
-                >
-                    {{ $t('lieferzeiten.domainSelection.confirm') }}
+                    {{ $t('lieferzeiten.domainSelection.confirmGroup') }}
                 </sw-button>
             </template>
         </sw-modal>

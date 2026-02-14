@@ -17,7 +17,8 @@ use Shopware\Core\System\User\UserEntity;
 
 class LieferzeitenPositionWriteService
 {
-    private const DEFAULT_ADDITIONAL_DELIVERY_ASSIGNEE_CONFIG_KEY = 'LieferzeitenAdmin.config.defaultAdditionalDeliveryAssignee';
+    private const DEFAULT_ADDITIONAL_DELIVERY_ASSIGNEE_CONFIG_KEY = 'LieferzeitenAdmin.config.defaultAssigneeLieferterminAnfrageZusaetzlich';
+    private const LEGACY_DEFAULT_ADDITIONAL_DELIVERY_ASSIGNEE_CONFIG_KEY = 'LieferzeitenAdmin.config.defaultAdditionalDeliveryAssignee';
 
     public function __construct(
         private readonly EntityRepository $positionRepository,
@@ -244,14 +245,35 @@ class LieferzeitenPositionWriteService
         ], $context);
     }
 
-    public function createAdditionalDeliveryRequest(string $positionId, ?string $initiator, Context $context): string
-    {
+    public function createAdditionalDeliveryRequest(
+        string $positionId,
+        ?string $initiator,
+        Context $context,
+        ?string $initiatorUserId = null,
+        ?string $initiatorDisplay = null,
+    ): string {
         $actor = $this->resolveActor($context);
         $changedAt = new \DateTimeImmutable();
         $notificationContext = $this->fetchNotificationContext($positionId);
 
-        $initiatorDisplay = is_string($initiator) && trim($initiator) !== '' ? trim($initiator) : $actor;
-        $initiatorUserId = $this->resolveActorUserId($context);
+        $resolvedContextUserId = $this->resolveActorUserId($context);
+        $resolvedInitiatorUserId = $resolvedContextUserId
+            ?? ((is_string($initiatorUserId) && Uuid::isValid($initiatorUserId)) ? $initiatorUserId : null);
+
+        $resolvedInitiatorDisplay = is_string($initiatorDisplay) && trim($initiatorDisplay) !== ''
+            ? trim($initiatorDisplay)
+            : null;
+        if ($resolvedInitiatorDisplay === null && is_string($initiator) && trim($initiator) !== '') {
+            $resolvedInitiatorDisplay = trim($initiator);
+        }
+
+        $initiatorDisplay = $resolvedInitiatorDisplay ?? $actor;
+        $initiatorUserId = $resolvedInitiatorUserId;
+
+        $triggerKey = NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED;
+        $rule = $this->taskAssignmentRuleResolver->resolve($triggerKey, $context);
+        $assigneeIdentifier = $this->resolveAdditionalDeliveryAssignee($rule);
+        $dueDate = ShippingDateOverdueTaskService::nextBusinessDay($changedAt);
 
         $this->positionRepository->upsert([
             [
@@ -262,11 +284,6 @@ class LieferzeitenPositionWriteService
                 'lastChangedAt' => $changedAt,
             ],
         ], $context);
-
-        $triggerKey = NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED;
-        $rule = $this->taskAssignmentRuleResolver->resolve($triggerKey, $context);
-        $assigneeIdentifier = $this->resolveAdditionalDeliveryAssignee($rule);
-        $dueDate = ShippingDateOverdueTaskService::nextBusinessDay($changedAt);
 
         $taskPayload = [
             'taskType' => 'additional-delivery-request',
@@ -285,7 +302,7 @@ class LieferzeitenPositionWriteService
         $this->taskService->createTask(
             $taskPayload,
             $initiatorDisplay,
-            is_array($rule) ? ($rule['assigneeIdentifier'] ?? null) : null,
+            $assigneeIdentifier,
             $dueDate,
             $context,
         );
@@ -317,11 +334,15 @@ class LieferzeitenPositionWriteService
         }
 
         $defaultAssignee = trim((string) $this->systemConfigService->get(self::DEFAULT_ADDITIONAL_DELIVERY_ASSIGNEE_CONFIG_KEY));
+        if ($defaultAssignee === '') {
+            $defaultAssignee = trim((string) $this->systemConfigService->get(self::LEGACY_DEFAULT_ADDITIONAL_DELIVERY_ASSIGNEE_CONFIG_KEY));
+        }
+
         if ($defaultAssignee !== '') {
             return $defaultAssignee;
         }
 
-        throw new AdditionalDeliveryAssigneeMissingException('No assignee available for additional delivery request task. Configure a task assignment rule or set LieferzeitenAdmin.config.defaultAdditionalDeliveryAssignee.');
+        throw new AdditionalDeliveryAssigneeMissingException('No assignee available for additional delivery request task. Configure an active assignment rule or set LieferzeitenAdmin.config.defaultAssigneeLieferterminAnfrageZusaetzlich.');
     }
 
     private function assertOptimisticLockOrThrow(string $positionId, string $expectedUpdatedAt): void

@@ -19,6 +19,88 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 class QueuedNotificationEmailProcessorTest extends TestCase
 {
+
+    public function testRunPrioritizesRecipientUserIdEmailOverCustomerEmail(): void
+    {
+        $recipientUserId = 'd2f0c2db4cfe4fd39189a8f5d13d54d1';
+
+        $event = new NotificationEventEntity();
+        $event->setId(Uuid::randomHex());
+        $event->setEventKey('task-close:liefertermin.anfrage.geschlossen:email');
+        $event->setTriggerKey('liefertermin.anfrage.geschlossen');
+        $event->setChannel('email');
+        $event->setStatus('queued');
+        $event->setPayload([
+            'recipientUserId' => $recipientUserId,
+            'customerEmail' => 'customer@example.com',
+        ]);
+
+        $notificationEventRepository = $this->createMock(EntityRepository::class);
+        $notificationEventRepository->method('search')->willReturn(new EntitySearchResult(
+            'lieferzeiten_notification_event',
+            1,
+            new EntityCollection([$event]),
+            null,
+            new Criteria(),
+            Context::createDefaultContext()
+        ));
+
+        $templateRepository = $this->createMock(EntityRepository::class);
+        $templateRepository->method('search')->willReturn(new EntitySearchResult(
+            'lieferzeiten_notification_template',
+            0,
+            new EntityCollection([]),
+            null,
+            new Criteria(),
+            Context::createDefaultContext()
+        ));
+
+        $templateResolver = new NotificationTemplateResolver($templateRepository);
+
+        $mailService = $this->createMock(AbstractMailService::class);
+        $mailService->expects($this->once())
+            ->method('send')
+            ->with(
+                $this->callback(static function (array $data): bool {
+                    return ($data['recipients']['resolved-user@example.com'] ?? null) === 'resolved-user@example.com';
+                }),
+                $this->isInstanceOf(Context::class),
+                $this->isType('array')
+            );
+
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->exactly(2))
+            ->method('executeStatement')
+            ->willReturnCallback(static function (string $sql): int {
+                if (str_contains($sql, 'WHERE `id` = :id AND `status` = :queued')) {
+                    return 1;
+                }
+
+                if (str_contains($sql, 'SET `status` = :status, `updated_at` = :updatedAt')) {
+                    return 1;
+                }
+
+                return 0;
+            });
+        $connection->expects($this->once())
+            ->method('fetchOne')
+            ->with(
+                'SELECT `email` FROM `user` WHERE `id` = :id LIMIT 1',
+                ['id' => hex2bin($recipientUserId)],
+            )
+            ->willReturn('resolved-user@example.com');
+
+        $processor = new QueuedNotificationEmailProcessor(
+            $notificationEventRepository,
+            $templateResolver,
+            $mailService,
+            $connection,
+            $this->createMock(LoggerInterface::class),
+            $this->createMock(AuditLogService::class),
+        );
+
+        $processor->run(Context::createDefaultContext(), 10);
+    }
     public function testRunSendsQueuedEmailWithDefaultTriggerTemplateAndMarksSent(): void
     {
         $event = new NotificationEventEntity();

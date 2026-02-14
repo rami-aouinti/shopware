@@ -114,9 +114,9 @@
 
 
         <input-field type="text">
-            <name>defaultAdditionalDeliveryAssignee</name>
-            <label lang="en-GB">Default assignee for additional delivery requests</label>
-            <label lang="de-DE">Standard-Zuweisung für zusätzliche Lieferterminanfragen</label>
+            <name>defaultAssigneeLieferterminAnfrageZusaetzlich</name>
+            <label lang="en-GB">Default assignee for trigger liefertermin.anfrage.zusaetzlich</label>
+            <label lang="de-DE">Standard-Zuweisung für Trigger liefertermin.anfrage.zusaetzlich</label>
             <helpText lang="en-GB">Fallback assignee used when no assignment rule resolves an assignee.</helpText>
             <helpText lang="de-DE">Fallback-Zuweisung, wenn keine Regel eine verantwortliche Person ermittelt.</helpText>
         </input-field>
