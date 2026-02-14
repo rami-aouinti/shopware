@@ -3,95 +3,98 @@
 namespace LieferzeitenAdmin\Service;
 
 use Doctrine\DBAL\Connection;
-use LieferzeitenAdmin\Entity\PaketEntity;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 
 class LieferzeitenOrderStatusWriteService
 {
-    private const TRIGGER_SOURCE_LMS_USER = 'lms_user';
-
     public function __construct(
         private readonly EntityRepository $paketRepository,
         private readonly Connection $connection,
     ) {
     }
 
-    /** @return array<string, mixed> */
-    public function updateOrderStatus(string $paketId, int $targetStatus, Context $context): array
+    public function updateOrderStatus(string $paketId, int $status, string $expectedUpdatedAt, Context $context): void
     {
-        if (!in_array($targetStatus, [7, 8], true)) {
+        if (!in_array($status, [7, 8], true)) {
             throw new \InvalidArgumentException('Only statuses 7 and 8 are allowed.');
         }
 
-        $paket = $this->findPaketById($paketId, $context);
-        if (!$paket instanceof PaketEntity) {
-            throw new \RuntimeException('Order not found.');
-        }
+        $this->assertPaketOptimisticLockOrThrow($paketId, $expectedUpdatedAt);
 
         $actor = $this->resolveActor($context);
-        $now = new \DateTimeImmutable();
-        $queue = is_array($paket->getStatusPushQueue()) ? $paket->getStatusPushQueue() : [];
-        $queue = $this->enqueueStatusPush($queue, $targetStatus, 'lms_user_status_change');
+        $changedAt = new \DateTimeImmutable();
+        $queue = $this->loadStatusPushQueue($paketId);
+
+        $queue[] = [
+            'targetStatus' => $status,
+            'reason' => sprintf('lms_user_status_%d', $status),
+            'triggerSource' => 'user_lms',
+            'attempts' => 0,
+            'state' => 'pending',
+            'nextAttemptAt' => $changedAt->format(DATE_ATOM),
+            'createdAt' => $changedAt->format(DATE_ATOM),
+            'requestedBy' => $actor,
+        ];
 
         $this->paketRepository->upsert([[
             'id' => $paketId,
-            'status' => (string) $targetStatus,
+            'status' => (string) $status,
             'lastChangedBy' => $actor,
-            'lastChangedAt' => $now,
+            'lastChangedAt' => $changedAt,
             'statusPushQueue' => $queue,
         ]], $context);
+    }
 
-        $updatedAt = $this->connection->fetchOne(
+    /** @return array<int, array<string, mixed>> */
+    private function loadStatusPushQueue(string $paketId): array
+    {
+        $raw = $this->connection->fetchOne(
+            'SELECT status_push_queue FROM lieferzeiten_paket WHERE id = :id LIMIT 1',
+            ['id' => hex2bin($paketId)],
+        );
+
+        if (!is_string($raw) || $raw === '') {
+            return [];
+        }
+
+        $decoded = json_decode($raw, true);
+
+        return is_array($decoded) ? array_values(array_filter($decoded, 'is_array')) : [];
+    }
+
+    private function assertPaketOptimisticLockOrThrow(string $paketId, string $expectedUpdatedAt): void
+    {
+        $normalizedExpected = $this->normalizeDateTime($expectedUpdatedAt);
+
+        $currentUpdatedAt = $this->connection->fetchOne(
             'SELECT updated_at FROM lieferzeiten_paket WHERE id = :id LIMIT 1',
             ['id' => hex2bin($paketId)],
         );
 
-        return [
-            'id' => $paketId,
-            'status' => (string) $targetStatus,
-            'lastChangedBy' => $actor,
-            'lastChangedAt' => $now->format(DATE_ATOM),
-            'updatedAt' => $updatedAt ? (new \DateTimeImmutable((string) $updatedAt))->format(DATE_ATOM) : null,
-        ];
-    }
-
-    /** @return array<int, array<string,mixed>> */
-    private function enqueueStatusPush(array $queue, int $targetStatus, string $reason): array
-    {
-        foreach ($queue as $item) {
-            if (!is_array($item)) {
-                continue;
-            }
-
-            if ((int) ($item['targetStatus'] ?? 0) === $targetStatus && (string) ($item['state'] ?? '') === 'pending') {
-                return $queue;
-            }
+        if ($currentUpdatedAt === false) {
+            throw new WriteEndpointConflictException([
+                'paketId' => $paketId,
+                'exists' => false,
+            ], 'The paket no longer exists. Refresh the row.');
         }
 
-        $queue[] = [
-            'targetStatus' => $targetStatus,
-            'reason' => $reason,
-            'triggerSource' => self::TRIGGER_SOURCE_LMS_USER,
-            'attempts' => 0,
-            'state' => 'pending',
-            'nextAttemptAt' => date(DATE_ATOM),
-            'createdAt' => date(DATE_ATOM),
-        ];
+        $normalizedCurrent = $this->normalizeDateTime((string) $currentUpdatedAt);
+        if ($normalizedExpected === $normalizedCurrent) {
+            return;
+        }
 
-        return $queue;
+        throw new WriteEndpointConflictException([
+            'paketId' => $paketId,
+            'exists' => true,
+            'updatedAt' => $normalizedCurrent,
+        ], 'Concurrent update detected. Refresh the row and retry your edit.');
     }
 
-    private function findPaketById(string $paketId, Context $context): ?PaketEntity
+    private function normalizeDateTime(string $value): string
     {
-        $criteria = new Criteria([$paketId]);
-
-        /** @var PaketEntity|null $entity */
-        $entity = $this->paketRepository->search($criteria, $context)->first();
-
-        return $entity;
+        return (new \DateTimeImmutable($value))->format('Y-m-d H:i:s.v');
     }
 
     private function resolveActor(Context $context): string

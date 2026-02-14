@@ -88,7 +88,12 @@
     },
     "status": {
       "open": "Open",
-      "closed": "Closed"
+      "closed": "Closed",
+      "manual": {
+        "save": "Set status",
+        "updated": "Status {status} added to push queue",
+        "invalid": "Only status 7 or 8 is allowed"
+      }
     },
     "emptyState": {
       "title": "No open orders",

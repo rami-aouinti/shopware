@@ -7,6 +7,7 @@ use LieferzeitenAdmin\Service\LieferzeitenImportService;
 use LieferzeitenAdmin\Service\LieferzeitenOrderOverviewService;
 use LieferzeitenAdmin\Service\LieferzeitenPositionWriteService;
 use LieferzeitenAdmin\Service\LieferzeitenTaskService;
+use LieferzeitenAdmin\Service\LieferzeitenOrderStatusWriteService;
 use LieferzeitenAdmin\Service\WriteEndpointConflictException;
 use LieferzeitenAdmin\Service\LieferzeitenStatisticsService;
 use LieferzeitenAdmin\Service\DemoDataSeederService;
@@ -32,6 +33,7 @@ class LieferzeitenSyncController extends AbstractController
         private readonly LieferzeitenOrderOverviewService $orderOverviewService,
         private readonly LieferzeitenPositionWriteService $positionWriteService,
         private readonly LieferzeitenTaskService $taskService,
+        private readonly LieferzeitenOrderStatusWriteService $orderStatusWriteService,
         private readonly LieferzeitenStatisticsService $statisticsService,
         private readonly DemoDataSeederService $demoDataSeederService,
         private readonly AuditLogService $auditLogService,
@@ -340,6 +342,56 @@ class LieferzeitenSyncController extends AbstractController
         };
 
         return new JsonResponse($response, $httpCode);
+    }
+
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/paket/{paketId}/status',
+        name: 'api.admin.lieferzeiten.paket.status',
+        defaults: ['_acl' => ['lieferzeiten.editor']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function updatePaketStatus(string $paketId, Request $request, Context $context): JsonResponse
+    {
+        $validationError = $this->validatePaketId($paketId);
+        if ($validationError !== null) {
+            return $validationError;
+        }
+
+        $payload = $request->toArray();
+        $status = (int) ($payload['status'] ?? 0);
+        if (!in_array($status, [7, 8], true)) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Only status 7 or 8 can be set manually'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $expectedUpdatedAt = trim((string) ($payload['updatedAt'] ?? ''));
+        if ($expectedUpdatedAt === '') {
+            return new JsonResponse(['status' => 'error', 'message' => 'updatedAt is required for optimistic concurrency control'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $this->orderStatusWriteService->updateOrderStatus($paketId, $status, $expectedUpdatedAt, $context);
+        } catch (WriteEndpointConflictException $e) {
+            $this->auditLogService->log('paket_status_update_conflict', 'lieferzeiten_paket', $paketId, $context, [
+                'expectedUpdatedAt' => $expectedUpdatedAt,
+                'refresh' => $e->getRefresh(),
+            ], 'shopware');
+
+            return new JsonResponse([
+                'status' => 'error',
+                'code' => 'CONCURRENT_MODIFICATION',
+                'message' => $e->getMessage(),
+                'refresh' => $e->getRefresh(),
+            ], Response::HTTP_CONFLICT);
+        }
+
+        $this->auditLogService->log('paket_status_updated_by_lms_user', 'lieferzeiten_paket', $paketId, $context, [
+            'status' => $status,
+            'expectedUpdatedAt' => $expectedUpdatedAt,
+            'triggerSource' => 'user_lms',
+        ], 'shopware');
+
+        return new JsonResponse(['status' => 'ok']);
     }
 
     #[Route(

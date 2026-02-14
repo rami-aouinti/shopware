@@ -98,8 +98,8 @@ class LieferzeitenOrdersService extends ApiService {
         return this.post(`position/${positionId}/additional-delivery-request`, { initiator });
     }
 
-    async updateOrderStatus(paketId, status) {
-        return this.post(`orders/${paketId}/status`, { status });
+    async updatePaketStatus(paketId, payload) {
+        return this.post(`paket/${paketId}/status`, payload);
     }
 
     async post(path, payload) {

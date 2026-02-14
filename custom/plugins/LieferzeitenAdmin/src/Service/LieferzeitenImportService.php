@@ -171,11 +171,9 @@ class LieferzeitenImportService
                     $existingStatus = $this->normalizeStatusInt($existingPaket?->getStatus());
 
                     $mappedStatus = $this->resolveMappedStatus($matched, $san6, $existingStatus);
-                    $queue = is_array($existingPaket?->getStatusPushQueue()) ? $existingPaket->getStatusPushQueue() : [];
-
 
                     $matched['status'] = (string) $mappedStatus;
-                    $matched['statusPushQueue'] = $queue;
+                    $matched['statusPushQueue'] = is_array($existingPaket?->getStatusPushQueue()) ? $existingPaket->getStatusPushQueue() : [];
 
                     $parcelRows = $this->buildParcelRows($matched, $externalId);
                     if ($parcelRows === []) {
@@ -805,6 +803,7 @@ class LieferzeitenImportService
         return str_replace([' ', '-', '/'], '_', $state);
     }
 
+
     private function processPendingStatusPushQueue(Context $context): void
     {
         $criteria = new Criteria();
@@ -827,6 +826,10 @@ class LieferzeitenImportService
             $changed = false;
             foreach ($queue as $index => $item) {
                 if (!is_array($item) || (string) ($item['state'] ?? '') !== 'pending') {
+                    continue;
+                }
+
+                if (($item['triggerSource'] ?? null) !== 'user_lms') {
                     continue;
                 }
 
