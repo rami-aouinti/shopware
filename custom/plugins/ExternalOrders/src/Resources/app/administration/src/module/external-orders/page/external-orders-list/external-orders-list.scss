@@ -315,9 +315,7 @@
     }
 
     &__table th:nth-child(5),
-    &__table td:nth-child(5),
-    &__table th:nth-child(6),
-    &__table td:nth-child(6) {
+    &__table td:nth-child(5) {
         overflow-wrap: anywhere;
     }
 
@@ -343,7 +341,10 @@
         }
 
         &--date {
-            width: 170px;
+            width: 190px;
+            white-space: nowrap;
+            overflow-wrap: normal;
+            word-break: normal;
         }
     }
 
