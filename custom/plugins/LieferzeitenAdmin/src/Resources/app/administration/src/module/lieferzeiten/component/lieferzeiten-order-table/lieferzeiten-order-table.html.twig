@@ -50,25 +50,9 @@
                         <td>{{ displayOrDash(order.domain) }}</td>
                         <td>{{ displayOrDash(order.positionsCountDisplay) }}</td>
                         <td>{{ parcelSummary(order) }}</td>
-                        <td>
-                            <sw-datepicker v-model:value="order.lieferterminLieferantRange.from" :disabled="!hasEditAccess()" size="small" />
-                            <sw-datepicker v-model:value="order.lieferterminLieferantRange.to" :disabled="!hasEditAccess()" size="small" />
-                            <div>KW Preview: {{ weekLabelFromDate(order.lieferterminLieferantRange.to) }}</div>
-                            <sw-button v-if="hasEditAccess()" size="small" variant="primary" :disabled="!canSaveLiefertermin(order)" @click="saveLiefertermin(order)">
-                                {{ $t('global.default.save') }}
-                            </sw-button>
-                        </td>
-                        <td>{{ weekLabelFromDate(order.lieferterminLieferantRange.to) }}</td>
-                        <td>
-                            <sw-datepicker v-model:value="order.neuerLieferterminRange.from" :disabled="!hasEditAccess() || !order.lieferterminLieferantRange.from" size="small" />
-                            <sw-datepicker v-model:value="order.neuerLieferterminRange.to" :disabled="!hasEditAccess() || !order.lieferterminLieferantRange.to" size="small" />
-                            <div>KW Preview: {{ weekLabelFromDate(order.neuerLieferterminRange.to) }}</div>
-                            <sw-button v-if="hasEditAccess()" size="small" variant="primary" :disabled="!canSaveNeuerLiefertermin(order)" @click="saveNeuerLiefertermin(order)">
-                                {{ $t('global.default.save') }}
-                            </sw-button>
-                        </td>
-                        <td>{{ formatDateTime(order.latestShippingDeadline) }}</td>
-                        <td>{{ formatDateTime(order.latestDeliveryDeadline) }}</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
                         <td>
                             <sw-text-field v-model:value="order.comment" :disabled="!hasEditAccess()" size="small" />
                             <sw-button v-if="hasEditAccess()" size="small" @click="saveComment(order)">
@@ -102,6 +86,8 @@
                                         <th>{{ $t('lieferzeiten.table.article') }}</th>
                                         <th>{{ $t('lieferzeiten.table.quantity') }}</th>
                                         <th>{{ $t('lieferzeiten.table.packageNumbers') }}</th>
+                                        <th>{{ $t('lieferzeiten.fields.supplierDate') }}</th>
+                                        <th>{{ $t('lieferzeiten.fields.supplierWeek') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -121,6 +107,37 @@
                                                 </button>
                                             </template>
                                         </td>
+                                        <td>
+                                            <sw-datepicker v-model:value="position.lieferterminLieferantRange.from" :disabled="!hasEditAccess()" size="small" />
+                                            <sw-datepicker v-model:value="position.lieferterminLieferantRange.to" :disabled="!hasEditAccess()" size="small" />
+                                            <sw-button v-if="hasEditAccess()" size="small" variant="primary" :disabled="!canSaveLiefertermin(position)" @click="saveLiefertermin(order, position)">
+                                                {{ $t('global.default.save') }}
+                                            </sw-button>
+                                        </td>
+                                        <td>{{ weekLabelFromDate(position.lieferterminLieferantRange.to) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <table class="sw-data-grid__table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ $t('lieferzeiten.table.parcels') }}</th>
+                                        <th>{{ $t('lieferzeiten.fields.newDate') }}</th>
+                                        <th>{{ $t('lieferzeiten.fields.supplierWeek') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="parcel in order.parcels" :key="parcel.id">
+                                        <td>{{ parcel.id }}</td>
+                                        <td>
+                                            <sw-datepicker v-model:value="parcel.neuerLieferterminRange.from" :disabled="!hasEditAccess() || !parcel.supplierRange.from" size="small" />
+                                            <sw-datepicker v-model:value="parcel.neuerLieferterminRange.to" :disabled="!hasEditAccess() || !parcel.supplierRange.to" size="small" />
+                                            <sw-button v-if="hasEditAccess()" size="small" variant="primary" :disabled="!canSaveNeuerLiefertermin(parcel)" @click="saveNeuerLiefertermin(order, parcel)">
+                                                {{ $t('global.default.save') }}
+                                            </sw-button>
+                                        </td>
+                                        <td>{{ weekLabelFromDate(parcel.neuerLieferterminRange.to) }}</td>
                                     </tr>
                                 </tbody>
                             </table>
