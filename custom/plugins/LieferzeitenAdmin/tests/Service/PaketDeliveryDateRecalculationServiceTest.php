@@ -58,7 +58,7 @@ class PaketDeliveryDateRecalculationServiceTest extends TestCase
         $service->recalculateByIds([$entity->getId()], $context);
     }
 
-    public function testRecalculateByIdsFallsBackToOrderDateForPrepaymentWithoutPaymentDate(): void
+    public function testRecalculateByIdsLeavesDatesUnsetForPrepaymentWithoutPaymentDate(): void
     {
         $context = Context::createDefaultContext();
         $entity = new PaketEntity();
@@ -77,10 +77,11 @@ class PaketDeliveryDateRecalculationServiceTest extends TestCase
             ->with($this->callback(static function (array $payload): bool {
                 $update = $payload[0] ?? [];
 
-                return ($update['baseDateType'] ?? null) === 'order_date_fallback'
-                    && ($update['shippingDate'] ?? null) === '2026-02-03 09:00:00'
-                    && ($update['deliveryDate'] ?? null) === '2026-02-04 09:00:00'
-                    && ($update['calculatedDeliveryDate'] ?? null) === '2026-02-04 09:00:00';
+                return ($update['baseDateType'] ?? null) === 'payment_date_missing'
+                    && !array_key_exists('shippingDate', $update)
+                    && !array_key_exists('deliveryDate', $update)
+                    && array_key_exists('calculatedDeliveryDate', $update)
+                    && $update['calculatedDeliveryDate'] === null;
             }), $context);
 
         $settingsProvider = $this->createMock(ChannelDateSettingsProvider::class);
