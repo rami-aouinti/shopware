@@ -157,6 +157,30 @@ class LieferzeitenOrderOverviewServiceTest extends TestCase
         ], $result['data'][0]['businessStatus']);
     }
 
+
+    public function testListOrdersSelectsCustomerNameColumns(): void
+    {
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->once())
+            ->method('fetchOne')
+            ->willReturn('0');
+
+        $connection->expects($this->once())
+            ->method('fetchAllAssociative')
+            ->with(
+                $this->callback(static function (string $sql): bool {
+                    return str_contains($sql, 'p.customer_first_name AS customerFirstName')
+                        && str_contains($sql, 'p.customer_last_name AS customerLastName')
+                        && str_contains($sql, 'p.customer_additional_name AS customerAdditionalName');
+                }),
+                $this->anything()
+            )
+            ->willReturn([]);
+
+        $service = new LieferzeitenOrderOverviewService($connection);
+        $service->listOrders();
+    }
+
     public function testSortWhitelistFallsBackToOrderDate(): void
     {
         $connection = $this->createMock(Connection::class);

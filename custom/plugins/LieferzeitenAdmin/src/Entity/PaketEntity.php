@@ -23,6 +23,12 @@ class PaketEntity extends Entity
 
     protected ?string $customerEmail = null;
 
+    protected ?string $customerFirstName = null;
+
+    protected ?string $customerLastName = null;
+
+    protected ?string $customerAdditionalName = null;
+
     protected ?string $paymentMethod = null;
 
     protected ?\DateTimeInterface $paymentDate = null;
@@ -126,6 +132,36 @@ class PaketEntity extends Entity
     public function setCustomerEmail(?string $customerEmail): void
     {
         $this->customerEmail = $customerEmail;
+    }
+
+    public function getCustomerFirstName(): ?string
+    {
+        return $this->customerFirstName;
+    }
+
+    public function setCustomerFirstName(?string $customerFirstName): void
+    {
+        $this->customerFirstName = $customerFirstName;
+    }
+
+    public function getCustomerLastName(): ?string
+    {
+        return $this->customerLastName;
+    }
+
+    public function setCustomerLastName(?string $customerLastName): void
+    {
+        $this->customerLastName = $customerLastName;
+    }
+
+    public function getCustomerAdditionalName(): ?string
+    {
+        return $this->customerAdditionalName;
+    }
+
+    public function setCustomerAdditionalName(?string $customerAdditionalName): void
+    {
+        $this->customerAdditionalName = $customerAdditionalName;
     }
 
     public function getPaymentMethod(): ?string

@@ -306,6 +306,18 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         resolveCustomerNames(order) {
+            const nameParts = [
+                this.pickFirstDefined(order, ['customerFirstName', 'customer_first_name']),
+                this.pickFirstDefined(order, ['customerAdditionalName', 'customer_additional_name']),
+                this.pickFirstDefined(order, ['customerLastName', 'customer_last_name']),
+            ]
+                .map((value) => (value === null || value === undefined ? '' : String(value).trim()))
+                .filter((value) => value !== '');
+
+            if (nameParts.length > 0) {
+                return nameParts.join(' ');
+            }
+
             return this.pickFirstDefined(order, ['customerNames', 'customerEmail', 'customer_email']) || '-';
         },
 
