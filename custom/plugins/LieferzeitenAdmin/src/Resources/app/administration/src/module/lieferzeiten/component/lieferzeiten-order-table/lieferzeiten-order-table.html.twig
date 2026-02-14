@@ -62,7 +62,7 @@
                         <td>-</td>
                         <td>
                             <sw-text-field v-model:value="order.comment" :disabled="!hasEditAccess()" size="small" />
-                            <sw-button v-if="hasEditAccess()" size="small" @click="saveComment(order)">
+                            <sw-button v-if="hasEditAccess()" size="small" :disabled="!canSaveComment(order)" @click="saveComment(order)">
                                 {{ $t('global.default.save') }}
                             </sw-button>
                         </td>

@@ -141,6 +141,8 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     };
                 });
 
+                const commentTargetPositionId = this.resolveCommentTargetPositionId(positions);
+
                 this.$set(this.editableOrders, order.id, {
                     ...order,
                     san6OrderNumberDisplay: this.resolveSan6OrderNumber(order),
@@ -161,6 +163,8 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     neuerLieferterminRange: newRange,
                     originalLieferterminLieferantRange: { ...supplierRange },
                     originalNeuerLieferterminRange: { ...newRange },
+                    comment: this.resolveInitialComment(order),
+                    commentTargetPositionId,
                     additionalDeliveryRequest: order.additionalDeliveryRequest || null,
                     latestShippingDeadline: this.resolveDeadlineValue(order, ['spaetester_versand', 'spaetesterVersand', 'latestShippingDeadline']),
                     latestDeliveryDeadline: this.resolveDeadlineValue(order, ['spaeteste_lieferung', 'spaetesteLieferung', 'latestDeliveryDeadline']),
@@ -169,6 +173,43 @@ Shopware.Component.register('lieferzeiten-order-table', {
             }
 
             return this.editableOrders[order.id];
+        },
+
+        resolveInitialComment(order) {
+            const rawComment = this.pickFirstDefined(order, ['currentComment', 'comment']);
+
+            if (rawComment === null || rawComment === undefined) {
+                return '';
+            }
+
+            return String(rawComment);
+        },
+
+        isOpenPosition(position) {
+            const normalized = String(position?.status || '').trim().toLowerCase();
+
+            if (position?.closed === true) {
+                return false;
+            }
+
+            return !['closed', 'done', 'completed', 'shipped', 'delivered', '8'].includes(normalized);
+        },
+
+        resolveCommentTargetPositionId(positions) {
+            if (!Array.isArray(positions) || positions.length === 0) {
+                return null;
+            }
+
+            const firstOpenPosition = positions.find((position) => this.isOpenPosition(position) && position?.id);
+            if (firstOpenPosition?.id) {
+                return firstOpenPosition.id;
+            }
+
+            return positions.find((position) => !!position?.id)?.id || null;
+        },
+
+        canSaveComment(order) {
+            return this.hasEditAccess() && !!order?.commentTargetPositionId;
         },
 
 
@@ -901,7 +942,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         async saveComment(order) {
-            if (!this.hasEditAccess()) {
+            if (!this.canSaveComment(order)) {
                 return;
             }
 
