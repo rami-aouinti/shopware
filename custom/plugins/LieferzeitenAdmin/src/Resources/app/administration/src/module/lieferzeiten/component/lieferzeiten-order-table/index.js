@@ -601,6 +601,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
             }
 
             const positionId = order.commentTargetPositionId;
+
             if (!positionId) {
                 this.createNotificationError({ title: this.$t('global.default.error'), message: 'Missing position id' });
                 return;
@@ -625,12 +626,11 @@ Shopware.Component.register('lieferzeiten-order-table', {
             }
         },
 
-        async requestAdditionalDeliveryDate(order) {
+        async requestAdditionalDeliveryDate(order, positionId) {
             if (!this.hasEditAccess()) {
                 return;
             }
 
-            const positionId = order.commentTargetPositionId;
             if (!positionId) {
                 this.createNotificationError({ title: this.$t('global.default.error'), message: 'Missing position id' });
                 return;
