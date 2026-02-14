@@ -198,6 +198,8 @@ Shopware.Component.register('lieferzeiten-order-table', {
                         neuerLieferterminRange: { ...parcelNewRange },
                         originalNeuerLieferterminRange: { ...parcelNewRange },
                         statusDisplay: this.resolveParcelStatus(parcel),
+                        shippingDateDisplay: this.resolveParcelShippingDate(parcel),
+                        deliveryDateDisplay: this.resolveParcelDeliveryDate(parcel),
                     };
                 });
 
@@ -577,12 +579,20 @@ Shopware.Component.register('lieferzeiten-order-table', {
             return this.formatDate(this.pickFirstDefined(order, ['shippingDate', 'businessDateFrom']));
         },
 
+        resolveParcelShippingDate(parcel) {
+            return this.formatDate(this.pickFirstDefined(parcel, ['shippingDate', 'shipping_date']));
+        },
+
         resolveLatestDeliveryAt(order) {
             return this.formatDateTime(this.pickFirstDefined(order, ['latestDeliveryDate']));
         },
 
         resolveDeliveryDate(order) {
             return this.formatDate(this.pickFirstDefined(order, ['deliveryDate', 'businessDateTo', 'calculatedDeliveryDate']));
+        },
+
+        resolveParcelDeliveryDate(parcel) {
+            return this.formatDate(this.pickFirstDefined(parcel, ['deliveryDate', 'delivery_date']));
         },
 
         pickFirstDefined(source, keys) {
