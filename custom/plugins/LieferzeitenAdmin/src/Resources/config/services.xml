@@ -74,7 +74,7 @@
         <service id="LieferzeitenAdmin\Service\PdmsLieferzeitenClient" />
         <service id="LieferzeitenAdmin\Service\PdmsLieferzeitenService" />
         <service id="LieferzeitenAdmin\Service\PdmsLieferzeitenMappingService">
-            <argument type="service" id="sales_channel.repository" />
+            <argument key="$salesChannelRepository" type="service" id="sales_channel.repository" />
         </service>
         <service id="LieferzeitenAdmin\Service\PaketDeliveryDateRecalculationService">
             <argument type="service" id="lieferzeiten_paket.repository" />
