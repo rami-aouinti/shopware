@@ -29,6 +29,25 @@ Shopware.Component.register('lieferzeiten-index', {
         return {
             selectedDomain: null,
             selectedBereich: null,
+            filters: {
+                bestellnummer: "",
+                san6: "",
+                shippingDateFrom: null,
+                shippingDateTo: null,
+                businessDateFrom: null,
+                businessDateTo: null,
+                deliveryDateFrom: null,
+                deliveryDateTo: null,
+                businessDateEndFrom: null,
+                businessDateEndTo: null,
+                lieferterminLieferantFrom: null,
+                lieferterminLieferantTo: null,
+                neuerLieferterminFrom: null,
+                neuerLieferterminTo: null,
+                user: "",
+                sendenummer: "",
+                status: "",
+            },
             orders: [],
             isLoading: false,
             isStatisticsLoading: false,
@@ -59,7 +78,7 @@ Shopware.Component.register('lieferzeiten-index', {
 
     computed: {
         canAccessMainViews() {
-            return Boolean(this.selectedBereich);
+            return Boolean(this.selectedBereich) && Boolean(normalizeDomainKey(this.selectedDomain));
         },
 
         filteredOrders() {

@@ -45,7 +45,7 @@
         "channel": "Schritt 2 · Kanal"
       },
       "accessPendingTitle": "Bereich auswählen",
-      "accessPendingDescription": "Bitte zuerst einen Bereich auswählen, damit die Hauptansichten geladen werden."
+      "accessPendingDescription": "Bitte zuerst Bereich (Schritt 1) und danach Kanal (Schritt 2) auswählen, damit die Hauptansichten und Filter geladen werden."
     },
     "kpi": {
       "totalOrders": "Bestellungen gesamt",
