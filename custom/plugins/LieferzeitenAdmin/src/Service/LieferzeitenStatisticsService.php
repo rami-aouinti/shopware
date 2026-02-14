@@ -7,22 +7,16 @@ use Doctrine\DBAL\Connection;
 
 readonly class LieferzeitenStatisticsService
 {
-    /**
-     * @var array<string, list<string>>
-     */
     private const DOMAIN_SOURCE_MAPPING = [
-        'first-medical-e-commerce' => ['shopware', 'gambio', 'first medical', 'e-commerce', 'first-medical-e-commerce'],
-        'medical-solutions' => ['medical solutions', 'medical-solutions'],
+        'first-medical-e-commerce' => ['first medical', 'e-commerce', 'shopware', 'gambio'],
+        'medical-solutions' => ['medical solutions', 'medical-solutions', 'medical_solutions'],
     ];
 
-    /**
-     * @var array<string, string>
-     */
-    private const DOMAIN_ALIASES = [
-        'First Medical' => 'first-medical-e-commerce',
-        'E-Commerce' => 'first-medical-e-commerce',
-        'First Medical - E-Commerce' => 'first-medical-e-commerce',
-        'Medical Solutions' => 'medical-solutions',
+    private const LEGACY_DOMAIN_MAPPING = [
+        'first medical' => 'first-medical-e-commerce',
+        'e-commerce' => 'first-medical-e-commerce',
+        'first medical - e-commerce' => 'first-medical-e-commerce',
+        'medical solutions' => 'medical-solutions',
     ];
 
     public function __construct(private Connection $connection)
@@ -242,9 +236,14 @@ readonly class LieferzeitenStatisticsService
             return '';
         }
 
-        $params['sourceSystems'] = $filter;
+        $placeholders = [];
+        foreach ($filter as $index => $sourceSystem) {
+            $paramName = sprintf('sourceSystem%d', $index);
+            $params[$paramName] = $sourceSystem;
+            $placeholders[] = ':' . $paramName;
+        }
 
-        return ' AND p.source_system IN (:sourceSystems)';
+        return sprintf(' AND p.source_system IN (%s)', implode(', ', $placeholders));
     }
 
     /**
@@ -257,9 +256,14 @@ readonly class LieferzeitenStatisticsService
             return '';
         }
 
-        $params['sourceSystems'] = $filter;
+        $placeholders = [];
+        foreach ($filter as $index => $sourceSystem) {
+            $paramName = sprintf('sourceSystem%d', $index);
+            $params[$paramName] = $sourceSystem;
+            $placeholders[] = ':' . $paramName;
+        }
 
-        return sprintf(' AND %s IN (:sourceSystems)', $column);
+        return sprintf(' AND %s IN (%s)', $column, implode(', ', $placeholders));
     }
 
     private function sanitizePeriod(int $periodDays): int
@@ -272,32 +276,38 @@ readonly class LieferzeitenStatisticsService
     }
 
     /**
-     * @return list<string>
+     * @return array<int, string>
      */
-    private function resolveSourceFilter(?string $domain, ?string $channel): array
+    public function resolveSourceFilter(?string $domain, ?string $channel): array
     {
-        $domain = trim((string) $domain);
-        $channel = trim((string) $channel);
+        $channel = $this->normalizeSource((string) $channel);
+        $domainKey = $this->normalizeDomainKey((string) $domain);
 
-        if ($channel !== '' && $channel !== 'all') {
+        if ($channel !== null && $channel !== 'all') {
             return [$channel];
         }
 
-        if ($domain === '') {
-            return [];
+        if ($domainKey !== null) {
+            return self::DOMAIN_SOURCE_MAPPING[$domainKey] ?? [$domainKey];
         }
 
-        return $this->resolveDomainSources($domain);
+        return [];
     }
 
-    /**
-     * @return list<string>
-     */
-    private function resolveDomainSources(string $domain): array
+    private function normalizeDomainKey(string $domain): ?string
     {
-        $domainKey = self::DOMAIN_ALIASES[$domain] ?? strtolower($domain);
+        $domain = $this->normalizeSource($domain);
+        if ($domain === null) {
+            return null;
+        }
 
-        return self::DOMAIN_SOURCE_MAPPING[$domainKey] ?? [$domain];
+        return self::LEGACY_DOMAIN_MAPPING[$domain] ?? $domain;
+    }
+
+    private function normalizeSource(string $value): ?string
+    {
+        $value = trim(mb_strtolower($value));
+
+        return $value !== '' ? $value : null;
     }
 }
-

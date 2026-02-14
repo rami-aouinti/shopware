@@ -1,4 +1,5 @@
 import template from './lieferzeiten-index.html.twig';
+import { normalizeDomainKey, resolveDomainKeyForSourceSystem } from '../../utils/domain-source-mapping';
 
 const DOMAIN_SOURCE_MAP = {
     'first-medical-e-commerce': ['first medical', 'e-commerce', 'shopware', 'gambio', 'first-medical-e-commerce'],
@@ -40,11 +41,12 @@ Shopware.Component.register('lieferzeiten-index', {
 
     computed: {
         filteredOrders() {
-            if (!this.selectedDomain) {
-                return this.orders;
+            const domainKey = normalizeDomainKey(this.selectedDomain);
+            if (!domainKey) {
+                return [];
             }
 
-            return this.orders.filter((order) => this.resolveOrderDomainKey(order) === this.selectedDomain);
+            return this.orders.filter((order) => order.domainKey === domainKey);
         },
     },
 
@@ -72,10 +74,14 @@ Shopware.Component.register('lieferzeiten-index', {
             this.loadError = null;
 
             try {
-                const result = await this.lieferzeitenOrdersService.getOrders({
-                    domain: this.selectedDomain,
-                });
-                this.orders = Array.isArray(result) ? result : [];
+                const domainKey = normalizeDomainKey(this.selectedDomain);
+                const result = await this.lieferzeitenOrdersService.getOrders({ domain: domainKey });
+                const orders = Array.isArray(result) ? result : [];
+
+                this.orders = orders.map((order) => ({
+                    ...order,
+                    domainKey: resolveDomainKeyForSourceSystem(order.sourceSystem || order.domain),
+                }));
             } catch (error) {
                 this.orders = [];
                 this.loadError = error;
