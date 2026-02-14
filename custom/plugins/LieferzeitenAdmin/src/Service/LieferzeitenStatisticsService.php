@@ -6,6 +6,18 @@ use Doctrine\DBAL\Connection;
 
 readonly class LieferzeitenStatisticsService
 {
+    private const DOMAIN_SOURCE_MAPPING = [
+        'first-medical-e-commerce' => ['first medical', 'e-commerce', 'shopware', 'gambio'],
+        'medical-solutions' => ['medical solutions', 'medical-solutions', 'medical_solutions'],
+    ];
+
+    private const LEGACY_DOMAIN_MAPPING = [
+        'first medical' => 'first-medical-e-commerce',
+        'e-commerce' => 'first-medical-e-commerce',
+        'first medical - e-commerce' => 'first-medical-e-commerce',
+        'medical solutions' => 'medical-solutions',
+    ];
+
     public function __construct(private Connection $connection)
     {
     }
@@ -215,13 +227,18 @@ readonly class LieferzeitenStatisticsService
     private function buildScopeCondition(array &$params, ?string $domain, ?string $channel): string
     {
         $filter = $this->resolveSourceFilter($domain, $channel);
-        if ($filter === null) {
+        if ($filter === []) {
             return '';
         }
 
-        $params['sourceSystem'] = $filter;
+        $placeholders = [];
+        foreach ($filter as $index => $sourceSystem) {
+            $paramName = sprintf('sourceSystem%d', $index);
+            $params[$paramName] = $sourceSystem;
+            $placeholders[] = ':' . $paramName;
+        }
 
-        return ' AND p.source_system = :sourceSystem';
+        return sprintf(' AND p.source_system IN (%s)', implode(', ', $placeholders));
     }
 
     /**
@@ -230,13 +247,18 @@ readonly class LieferzeitenStatisticsService
     private function buildSourceScopeCondition(string $column, array &$params, ?string $domain, ?string $channel): string
     {
         $filter = $this->resolveSourceFilter($domain, $channel);
-        if ($filter === null) {
+        if ($filter === []) {
             return '';
         }
 
-        $params['sourceSystem'] = $filter;
+        $placeholders = [];
+        foreach ($filter as $index => $sourceSystem) {
+            $paramName = sprintf('sourceSystem%d', $index);
+            $params[$paramName] = $sourceSystem;
+            $placeholders[] = ':' . $paramName;
+        }
 
-        return sprintf(' AND %s = :sourceSystem', $column);
+        return sprintf(' AND %s IN (%s)', $column, implode(', ', $placeholders));
     }
 
     private function sanitizePeriod(int $periodDays): int
@@ -248,20 +270,39 @@ readonly class LieferzeitenStatisticsService
         return 30;
     }
 
-    private function resolveSourceFilter(?string $domain, ?string $channel): ?string
+    /**
+     * @return array<int, string>
+     */
+    public function resolveSourceFilter(?string $domain, ?string $channel): array
     {
-        $domain = trim((string) $domain);
-        $channel = trim((string) $channel);
+        $channel = $this->normalizeSource((string) $channel);
+        $domainKey = $this->normalizeDomainKey((string) $domain);
 
-        if ($channel !== '' && $channel !== 'all') {
-            return $channel;
+        if ($channel !== null && $channel !== 'all') {
+            return [$channel];
         }
 
-        if ($domain !== '') {
-            return $domain;
+        if ($domainKey !== null) {
+            return self::DOMAIN_SOURCE_MAPPING[$domainKey] ?? [$domainKey];
         }
 
-        return null;
+        return [];
+    }
+
+    private function normalizeDomainKey(string $domain): ?string
+    {
+        $domain = $this->normalizeSource($domain);
+        if ($domain === null) {
+            return null;
+        }
+
+        return self::LEGACY_DOMAIN_MAPPING[$domain] ?? $domain;
+    }
+
+    private function normalizeSource(string $value): ?string
+    {
+        $value = trim(mb_strtolower($value));
+
+        return $value !== '' ? $value : null;
     }
 }
-

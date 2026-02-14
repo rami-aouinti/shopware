@@ -1,4 +1,5 @@
 import template from './lieferzeiten-index.html.twig';
+import { normalizeDomainKey, resolveDomainKeyForSourceSystem } from '../../utils/domain-source-mapping';
 
 Shopware.Component.register('lieferzeiten-index', {
     template,
@@ -20,13 +21,20 @@ Shopware.Component.register('lieferzeiten-index', {
         this.loadOrders();
     },
 
+    watch: {
+        selectedDomain() {
+            this.loadOrders();
+        },
+    },
+
     computed: {
         filteredOrders() {
-            if (!this.selectedDomain) {
+            const domainKey = normalizeDomainKey(this.selectedDomain);
+            if (!domainKey) {
                 return [];
             }
 
-            return this.orders.filter((order) => order.domain === this.selectedDomain);
+            return this.orders.filter((order) => order.domainKey === domainKey);
         },
     },
 
@@ -36,8 +44,14 @@ Shopware.Component.register('lieferzeiten-index', {
             this.loadError = null;
 
             try {
-                const result = await this.lieferzeitenOrdersService.getOrders();
-                this.orders = Array.isArray(result) ? result : [];
+                const domainKey = normalizeDomainKey(this.selectedDomain);
+                const result = await this.lieferzeitenOrdersService.getOrders({ domain: domainKey });
+                const orders = Array.isArray(result) ? result : [];
+
+                this.orders = orders.map((order) => ({
+                    ...order,
+                    domainKey: resolveDomainKeyForSourceSystem(order.sourceSystem || order.domain),
+                }));
             } catch (error) {
                 this.orders = [];
                 this.loadError = error;
