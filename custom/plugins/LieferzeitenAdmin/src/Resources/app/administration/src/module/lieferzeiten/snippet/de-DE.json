@@ -159,7 +159,36 @@
       },
       "overdueShipping": "Überfälliger Versand",
       "overdueDelivery": "Überfällige Lieferungen (abgeschlossen)",
-      "activityDate": "Aktiv am"
+      "activityDate": "Aktiv am",
+      "actionsColumn": "Aktionen",
+      "actionsUnavailable": "Keine Aktion verfügbar",
+      "actionUnavailableReason": "Für diese Aktivität ist keine kontextuelle Aktion verfügbar.",
+      "actionSuccessTitle": "Aktion ausgeführt",
+      "actionErrorTitle": "Aktion fehlgeschlagen",
+      "actions": {
+        "openOrder": "Bestellung öffnen",
+        "openTask": "Aufgabe öffnen",
+        "openTracking": "Tracking",
+        "closeTask": "Aufgabe schließen",
+        "reopenTask": "Aufgabe erneut öffnen"
+      },
+      "actionReasons": {
+        "noViewAcl": "Fehlende Berechtigung: lieferzeiten.viewer.",
+        "noEditAcl": "Fehlende Berechtigung: lieferzeiten.editor.",
+        "missingOrderReference": "Für diese Aktivität ist keine Bestellreferenz vorhanden.",
+        "missingTaskReference": "Für diese Aktivität ist keine Aufgabenreferenz vorhanden.",
+        "missingTrackingReference": "Für diese Aktivität ist keine Trackingnummer vorhanden.",
+        "unsupportedTaskStatus": "Aktion für den aktuellen Aufgabenstatus nicht verfügbar."
+      },
+      "actionSuccess": {
+        "closeTask": "Aufgabe erfolgreich geschlossen.",
+        "reopenTask": "Aufgabe erfolgreich erneut geöffnet."
+      },
+      "actionError": {
+        "closeTask": "Aufgabe konnte nicht geschlossen werden.",
+        "reopenTask": "Aufgabe konnte nicht erneut geöffnet werden.",
+        "openTracking": "Tracking-Historie konnte nicht geladen werden."
+      }
     },
     "loading": {
       "errorTitle": "Bestellungen konnten nicht geladen werden",
