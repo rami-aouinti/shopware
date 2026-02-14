@@ -13,7 +13,25 @@ class LieferzeitenOrdersService extends ApiService {
         });
 
         const data = ApiService.handleResponse(response) ?? response?.data;
-        return data?.data ?? data ?? [];
+        const rows = data?.data ?? data ?? [];
+
+        if (!Array.isArray(rows)) {
+            return [];
+        }
+
+        return rows.map((row) => ({
+            ...row,
+            orderNumber: row.orderNumber || row.bestellnummer || null,
+            san6OrderNumber: row.san6OrderNumber || row.san6 || null,
+            san6Position: row.san6Position || row.san6Pos || null,
+            quantity: row.quantity || null,
+            paymentMethod: row.paymentMethod || null,
+            paymentDate: row.paymentDate || null,
+            trackingSummary: row.trackingSummary || row.sendenummer || null,
+            shippingAssignmentType: row.shippingAssignmentType || row.shipping_assignment_type || null,
+            sourceSystem: row.sourceSystem || row.domain || null,
+            domain: row.domain || row.sourceSystem || null,
+        }));
     }
 
 
@@ -46,6 +64,14 @@ class LieferzeitenOrdersService extends ApiService {
 
     async seedDemoData(reset = false) {
         const response = await this.httpClient.post(`_action/${this.getApiBasePath()}/demo-data`, { reset }, {
+            headers: this.getBasicHeaders(),
+        });
+
+        return ApiService.handleResponse(response) ?? response?.data ?? {};
+    }
+
+    async getSalesChannelLieferzeiten(salesChannelId) {
+        const response = await this.httpClient.get(`_action/${this.getApiBasePath()}/sales-channel/${encodeURIComponent(salesChannelId)}/lieferzeiten`, {
             headers: this.getBasicHeaders(),
         });
 

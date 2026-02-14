@@ -320,15 +320,19 @@ class DemoDataSeederService
         }
 
         foreach ([
-            ['sales_channel_id' => 'demo_main_storefront', 'default_status' => 'open', 'enable_notifications' => 1],
-            ['sales_channel_id' => 'demo_b2b_storefront', 'default_status' => 'closed', 'enable_notifications' => 0],
-            ['sales_channel_id' => 'demo_marketplace', 'default_status' => 'open', 'enable_notifications' => 1],
+            ['sales_channel_id' => 'demo_main_storefront', 'default_status' => 'open', 'enable_notifications' => 1, 'shipping_working_days' => 0, 'shipping_cutoff' => '14:00', 'delivery_working_days' => 2, 'delivery_cutoff' => '14:00'],
+            ['sales_channel_id' => 'demo_b2b_storefront', 'default_status' => 'closed', 'enable_notifications' => 0, 'shipping_working_days' => 1, 'shipping_cutoff' => '12:00', 'delivery_working_days' => 3, 'delivery_cutoff' => '12:00'],
+            ['sales_channel_id' => 'demo_marketplace', 'default_status' => 'open', 'enable_notifications' => 1, 'shipping_working_days' => 0, 'shipping_cutoff' => '16:00', 'delivery_working_days' => 1, 'delivery_cutoff' => '16:00'],
         ] as $channelSetting) {
             $this->connection->insert('lieferzeiten_channel_settings', [
                 'id' => $this->uuidBytes(),
                 'sales_channel_id' => $channelSetting['sales_channel_id'],
                 'default_status' => $channelSetting['default_status'],
                 'enable_notifications' => $channelSetting['enable_notifications'],
+                'shipping_working_days' => $channelSetting['shipping_working_days'],
+                'shipping_cutoff' => $channelSetting['shipping_cutoff'],
+                'delivery_working_days' => $channelSetting['delivery_working_days'],
+                'delivery_cutoff' => $channelSetting['delivery_cutoff'],
                 'last_changed_by' => 'demo.seeder',
                 'last_changed_at' => $now->format('Y-m-d H:i:s'),
                 'created_at' => $now->format('Y-m-d H:i:s'),

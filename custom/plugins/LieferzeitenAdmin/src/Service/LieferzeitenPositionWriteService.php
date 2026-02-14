@@ -4,6 +4,8 @@ namespace LieferzeitenAdmin\Service;
 
 use Doctrine\DBAL\Connection;
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Notification\ShippingDateOverdueTaskService;
+use LieferzeitenAdmin\Service\Notification\TaskAssignmentRuleResolver;
 use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
@@ -20,6 +22,7 @@ class LieferzeitenPositionWriteService
         private readonly EntityRepository $neuerLieferterminHistoryRepository,
         private readonly LieferzeitenTaskService $taskService,
         private readonly NotificationEventService $notificationEventService,
+        private readonly TaskAssignmentRuleResolver $taskAssignmentRuleResolver,
     ) {
     }
 
@@ -42,6 +45,12 @@ class LieferzeitenPositionWriteService
                 'lastChangedAt' => $changedAt,
             ],
         ], $context);
+
+        $this->taskService->closeLatestOpenTaskByPositionAndTrigger(
+            $positionId,
+            NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED,
+            $context,
+        );
     }
 
     public function updateNeuerLiefertermin(string $positionId, \DateTimeImmutable $from, \DateTimeImmutable $to, string $expectedUpdatedAt, Context $context): void
@@ -225,13 +234,18 @@ class LieferzeitenPositionWriteService
             ],
         ], $context);
 
+        $triggerKey = NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED;
+        $rule = $this->taskAssignmentRuleResolver->resolve($triggerKey, $context);
+        $dueDate = ShippingDateOverdueTaskService::nextBusinessDay($changedAt);
+
         $taskPayload = [
             'taskType' => 'additional-delivery-request',
-            'triggerKey' => NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUESTED,
+            'triggerKey' => $triggerKey,
             'positionId' => $positionId,
             'createdBy' => $actor,
             'createdAt' => $changedAt->format(DATE_ATOM),
             'initiator' => $initiator,
+            'initiatorUserId' => Uuid::isValid($actor) ? $actor : null,
             'customerEmail' => $notificationContext['customerEmail'],
             'externalOrderId' => $notificationContext['externalOrderId'],
             'sourceSystem' => $notificationContext['sourceSystem'],
@@ -240,7 +254,7 @@ class LieferzeitenPositionWriteService
 
         $this->taskService->createTask(
             $taskPayload,
-            $initiator,
+            Uuid::isValid($actor) ? $actor : $initiator,
             null,
             null,
             $context,

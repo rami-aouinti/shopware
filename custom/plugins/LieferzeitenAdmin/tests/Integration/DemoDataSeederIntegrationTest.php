@@ -5,10 +5,12 @@ namespace LieferzeitenAdmin\Tests\Integration;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Connection;
 use LieferzeitenAdmin\Service\DemoDataSeederService;
+use LieferzeitenAdmin\Service\ChannelDateSettingsProvider;
 use LieferzeitenAdmin\Service\LieferzeitenOrderOverviewService;
 use LieferzeitenAdmin\Service\LieferzeitenStatisticsService;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class DemoDataSeederIntegrationTest extends TestCase
 {
@@ -82,7 +84,10 @@ class DemoDataSeederIntegrationTest extends TestCase
 
         static::assertSame(8, $orders['total'], 'Test order must be excluded from listing.');
 
-        $statisticsService = new LieferzeitenStatisticsService($this->connection);
+        $statisticsService = new LieferzeitenStatisticsService(
+            $this->connection,
+            new ChannelDateSettingsProvider($this->createMock(SystemConfigService::class), $this->connection),
+        );
         $stats = $statisticsService->getStatistics(30, null, null);
 
         static::assertGreaterThan(0, $stats['metrics']['openOrders']);
@@ -154,6 +159,20 @@ class DemoDataSeederIntegrationTest extends TestCase
             created_at TEXT,
             last_changed_by TEXT,
             last_changed_at TEXT
+        )');
+
+        $connection->executeStatement('CREATE TABLE lieferzeiten_channel_settings (
+            id BLOB PRIMARY KEY,
+            sales_channel_id TEXT,
+            default_status TEXT,
+            enable_notifications INTEGER,
+            shipping_working_days INTEGER,
+            shipping_cutoff TEXT,
+            delivery_working_days INTEGER,
+            delivery_cutoff TEXT,
+            last_changed_by TEXT,
+            last_changed_at TEXT,
+            created_at TEXT
         )');
 
         $connection->executeStatement('CREATE TABLE lieferzeiten_notification_toggle (

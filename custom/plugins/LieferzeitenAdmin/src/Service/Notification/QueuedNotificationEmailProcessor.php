@@ -11,6 +11,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 class QueuedNotificationEmailProcessor
 {
@@ -71,9 +72,9 @@ class QueuedNotificationEmailProcessor
         }
 
         try {
-            $recipient = (string) ($payload['customerEmail'] ?? '');
-            if ($recipient === '') {
-                throw new \RuntimeException('Missing customerEmail in notification payload.');
+            $recipient = $this->resolveRecipientEmail($payload);
+            if ($recipient === null) {
+                throw new \RuntimeException('Missing notification recipient in payload.');
             }
 
             $template = $this->templateResolver->resolve(
@@ -112,6 +113,40 @@ class QueuedNotificationEmailProcessor
                 'error' => $e->getMessage(),
             ], 'mails');
         }
+    }
+
+    /** @param array<string,mixed> $payload */
+    private function resolveRecipientEmail(array $payload): ?string
+    {
+        $candidates = [
+            isset($payload['recipientEmail']) && is_string($payload['recipientEmail']) ? trim($payload['recipientEmail']) : '',
+            isset($payload['customerEmail']) && is_string($payload['customerEmail']) ? trim($payload['customerEmail']) : '',
+            isset($payload['initiatorEmail']) && is_string($payload['initiatorEmail']) ? trim($payload['initiatorEmail']) : '',
+        ];
+
+        foreach ($candidates as $candidate) {
+            if ($candidate !== '') {
+                return $candidate;
+            }
+        }
+
+        $recipientUserId = isset($payload['recipientUserId']) && is_string($payload['recipientUserId'])
+            ? trim($payload['recipientUserId'])
+            : '';
+        if ($recipientUserId === '' || !Uuid::isValid($recipientUserId)) {
+            return null;
+        }
+
+        $email = $this->connection->fetchOne(
+            'SELECT `email` FROM `user` WHERE `id` = :id LIMIT 1',
+            ['id' => hex2bin($recipientUserId)],
+        );
+
+        if (!is_string($email) || trim($email) === '') {
+            return null;
+        }
+
+        return trim($email);
     }
 
     private function claimQueuedEvent(string $id): bool
