@@ -67,6 +67,7 @@ Component.register('lieferzeiten-channel-settings-list', {
             channels: [],
             matrixValues: {},
             existingEntryIds: {},
+            existingEntries: {},
             validationErrors: {},
             isLoading: false,
             isSaving: false,
@@ -427,6 +428,7 @@ Component.register('lieferzeiten-channel-settings-list', {
                 this.channels = this.getWhitelistedChannels(salesChannels);
                 this.matrixValues = {};
                 this.existingEntryIds = {};
+                this.existingEntries = {};
                 this.channelPdmsLieferzeiten = {};
                 this.channelPdmsMappingIncomplete = {};
 

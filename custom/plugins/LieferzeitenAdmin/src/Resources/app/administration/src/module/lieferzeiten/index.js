@@ -17,12 +17,12 @@ Module.register('lieferzeiten', {
 
     privileges: {
         viewer: {
-            permissions: ['lieferzeiten.viewer'],
+            permissions: ['admin'],
             dependencies: [],
         },
         editor: {
-            permissions: ['lieferzeiten.editor'],
-            dependencies: ['lieferzeiten.viewer'],
+            permissions: ['admin'],
+            dependencies: ['viewer'],
         },
     },
 
