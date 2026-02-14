@@ -6,10 +6,10 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use LieferzeitenAdmin\Service\LieferzeitenPositionWriteService;
 use LieferzeitenAdmin\Service\LieferzeitenTaskService;
+use LieferzeitenAdmin\Service\Notification\NotificationEventService;
 use LieferzeitenAdmin\Service\WriteEndpointConflictException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 
@@ -20,8 +20,14 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->connection = DriverManager::getConnection(['url' => 'sqlite:///:memory:']);
+        $this->connection->executeStatement('CREATE TABLE lieferzeiten_paket (
+            id BLOB PRIMARY KEY,
+            status TEXT NULL,
+            updated_at TEXT NOT NULL
+        )');
         $this->connection->executeStatement('CREATE TABLE lieferzeiten_position (
             id BLOB PRIMARY KEY,
+            paket_id BLOB NULL,
             comment TEXT NULL,
             current_comment TEXT NULL,
             last_changed_by TEXT NULL,
@@ -37,6 +43,13 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
         )');
         $this->connection->executeStatement('CREATE TABLE lieferzeiten_neuer_liefertermin_history (
             position_id BLOB NOT NULL,
+            liefertermin_from TEXT NULL,
+            liefertermin_to TEXT NULL,
+            liefertermin TEXT NULL,
+            created_at TEXT NULL
+        )');
+        $this->connection->executeStatement('CREATE TABLE lieferzeiten_neuer_liefertermin_paket_history (
+            paket_id BLOB NOT NULL,
             liefertermin_from TEXT NULL,
             liefertermin_to TEXT NULL,
             liefertermin TEXT NULL,
@@ -61,14 +74,17 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
         $positionRepository = $this->createPositionRepositoryMock();
         $service = new LieferzeitenPositionWriteService(
             $positionRepository,
+            $this->createMock(EntityRepository::class),
             $this->connection,
             $this->createMock(EntityRepository::class),
             $this->createMock(EntityRepository::class),
+            $this->createMock(EntityRepository::class),
             $this->createMock(LieferzeitenTaskService::class),
+            $this->createMock(NotificationEventService::class),
         );
 
-        $contextUserA = new Context(new AdminApiSource('user-a'));
-        $contextUserB = new Context(new AdminApiSource('user-b'));
+        $contextUserA = Context::createDefaultContext();
+        $contextUserB = Context::createDefaultContext();
 
         $service->updateComment($positionId, 'Comment from user A', $initialUpdatedAt, $contextUserA);
 
@@ -79,7 +95,7 @@ class LieferzeitenPositionWriteServiceTest extends TestCase
             $refresh = $e->getRefresh();
             static::assertTrue(($refresh['exists'] ?? false) === true);
             static::assertSame('Comment from user A', $refresh['comment'] ?? null);
-            static::assertSame('user-a', $refresh['lastChangedBy'] ?? null);
+            static::assertSame('system', $refresh['lastChangedBy'] ?? null);
             static::assertIsString($refresh['updatedAt'] ?? null);
 
             throw $e;

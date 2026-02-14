@@ -7,9 +7,11 @@ use LieferzeitenAdmin\Service\LieferzeitenImportService;
 use LieferzeitenAdmin\Service\LieferzeitenOrderOverviewService;
 use LieferzeitenAdmin\Service\LieferzeitenPositionWriteService;
 use LieferzeitenAdmin\Service\LieferzeitenTaskService;
+use LieferzeitenAdmin\Service\LieferzeitenOrderStatusWriteService;
 use LieferzeitenAdmin\Service\WriteEndpointConflictException;
 use LieferzeitenAdmin\Service\LieferzeitenStatisticsService;
 use LieferzeitenAdmin\Service\DemoDataSeederService;
+use LieferzeitenAdmin\Service\Tracking\TrackingDeliveryDateSyncService;
 use LieferzeitenAdmin\Service\Tracking\TrackingHistoryService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
@@ -27,12 +29,15 @@ class LieferzeitenSyncController extends AbstractController
     public function __construct(
         private readonly LieferzeitenImportService $importService,
         private readonly TrackingHistoryService $trackingHistoryService,
+        private readonly TrackingDeliveryDateSyncService $trackingDeliveryDateSyncService,
         private readonly LieferzeitenOrderOverviewService $orderOverviewService,
         private readonly LieferzeitenPositionWriteService $positionWriteService,
         private readonly LieferzeitenTaskService $taskService,
+        private readonly LieferzeitenOrderStatusWriteService $orderStatusWriteService,
         private readonly LieferzeitenStatisticsService $statisticsService,
         private readonly DemoDataSeederService $demoDataSeederService,
         private readonly AuditLogService $auditLogService,
+        private readonly PdmsLieferzeitenMappingService $pdmsLieferzeitenMappingService,
     ) {
     }
 
@@ -147,6 +152,7 @@ class LieferzeitenSyncController extends AbstractController
             [
                 'bestellnummer' => $request->query->get('bestellnummer'),
                 'san6' => $request->query->get('san6'),
+                'san6Pos' => $request->query->get('san6Pos'),
                 'orderDateFrom' => $request->query->get('orderDateFrom'),
                 'orderDateTo' => $request->query->get('orderDateTo'),
                 'shippingDateFrom' => $request->query->get('shippingDateFrom'),
@@ -156,6 +162,8 @@ class LieferzeitenSyncController extends AbstractController
                 'user' => $request->query->get('user'),
                 'sendenummer' => $request->query->get('sendenummer'),
                 'status' => $request->query->get('status'),
+                'positionStatus' => $request->query->get('positionStatus'),
+                'paymentMethod' => $request->query->get('paymentMethod'),
                 'shippingAssignmentType' => $request->query->get('shippingAssignmentType'),
                 'businessDateFrom' => $request->query->get('businessDateFrom'),
                 'businessDateTo' => $request->query->get('businessDateTo'),
@@ -170,6 +178,7 @@ class LieferzeitenSyncController extends AbstractController
                 'neuerLieferterminFrom' => $request->query->get('neuerLieferterminFrom'),
                 'neuerLieferterminTo' => $request->query->get('neuerLieferterminTo'),
                 'domain' => $request->query->get('domain'),
+                'rowMode' => $request->query->get('rowMode'),
             ],
         );
 
@@ -205,6 +214,22 @@ class LieferzeitenSyncController extends AbstractController
         return new JsonResponse($payload);
     }
 
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/sales-channel/{salesChannelId}/lieferzeiten',
+        name: 'api.admin.lieferzeiten.sales_channel_lieferzeiten',
+        defaults: ['_acl' => ['lieferzeiten.viewer']],
+        methods: [Request::METHOD_GET]
+    )]
+    public function salesChannelLieferzeiten(string $salesChannelId, Context $context): JsonResponse
+    {
+        if (!Uuid::isValid($salesChannelId)) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Invalid sales channel id'], Response::HTTP_BAD_REQUEST);
+        }
+
+        return new JsonResponse($this->pdmsLieferzeitenMappingService->getForSalesChannel($salesChannelId, $context));
+    }
+
     #[Route(
         path: '/api/_action/lieferzeiten/sync',
         name: 'api.admin.lieferzeiten.sync',
@@ -214,6 +239,7 @@ class LieferzeitenSyncController extends AbstractController
     public function syncNow(Context $context): JsonResponse
     {
         $this->importService->sync($context, 'on_demand');
+        $this->trackingDeliveryDateSyncService->sync($context);
         $this->auditLogService->log('sync_started', 'lieferzeiten_sync', null, $context, [], 'shopware');
 
         return new JsonResponse(['status' => 'ok']);
@@ -316,6 +342,56 @@ class LieferzeitenSyncController extends AbstractController
         };
 
         return new JsonResponse($response, $httpCode);
+    }
+
+
+    #[Route(
+        path: '/api/_action/lieferzeiten/paket/{paketId}/status',
+        name: 'api.admin.lieferzeiten.paket.status',
+        defaults: ['_acl' => ['lieferzeiten.editor']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function updatePaketStatus(string $paketId, Request $request, Context $context): JsonResponse
+    {
+        $validationError = $this->validatePaketId($paketId);
+        if ($validationError !== null) {
+            return $validationError;
+        }
+
+        $payload = $request->toArray();
+        $status = (int) ($payload['status'] ?? 0);
+        if (!in_array($status, [7, 8], true)) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Only status 7 or 8 can be set manually'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $expectedUpdatedAt = trim((string) ($payload['updatedAt'] ?? ''));
+        if ($expectedUpdatedAt === '') {
+            return new JsonResponse(['status' => 'error', 'message' => 'updatedAt is required for optimistic concurrency control'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $this->orderStatusWriteService->updateOrderStatus($paketId, $status, $expectedUpdatedAt, $context);
+        } catch (WriteEndpointConflictException $e) {
+            $this->auditLogService->log('paket_status_update_conflict', 'lieferzeiten_paket', $paketId, $context, [
+                'expectedUpdatedAt' => $expectedUpdatedAt,
+                'refresh' => $e->getRefresh(),
+            ], 'shopware');
+
+            return new JsonResponse([
+                'status' => 'error',
+                'code' => 'CONCURRENT_MODIFICATION',
+                'message' => $e->getMessage(),
+                'refresh' => $e->getRefresh(),
+            ], Response::HTTP_CONFLICT);
+        }
+
+        $this->auditLogService->log('paket_status_updated_by_lms_user', 'lieferzeiten_paket', $paketId, $context, [
+            'status' => $status,
+            'expectedUpdatedAt' => $expectedUpdatedAt,
+            'triggerSource' => 'user_lms',
+        ], 'shopware');
+
+        return new JsonResponse(['status' => 'ok']);
     }
 
     #[Route(
@@ -470,6 +546,10 @@ class LieferzeitenSyncController extends AbstractController
         $validationError = $this->validateRange($range['from'], $range['to'], 1, 4);
         if ($validationError !== null) {
             return $validationError;
+        }
+
+        if (!$this->positionWriteService->canUpdateNeuerLieferterminForPaket($paketId)) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Paket status does not allow editing the new delivery date'], Response::HTTP_BAD_REQUEST);
         }
 
         $supplierRange = $this->positionWriteService->getSupplierRangeBoundsByPaketId($paketId);

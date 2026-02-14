@@ -9,6 +9,8 @@ use LieferzeitenAdmin\Service\LieferzeitenOrderOverviewService;
 use LieferzeitenAdmin\Service\LieferzeitenPositionWriteService;
 use LieferzeitenAdmin\Service\LieferzeitenStatisticsService;
 use LieferzeitenAdmin\Service\LieferzeitenTaskService;
+use LieferzeitenAdmin\Service\DemoDataSeederService;
+use LieferzeitenAdmin\Service\Tracking\TrackingDeliveryDateSyncService;
 use LieferzeitenAdmin\Service\Tracking\TrackingHistoryService;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
@@ -42,10 +44,12 @@ class LieferzeitenTaskApiIntegrationTest extends TestCase
         return new LieferzeitenSyncController(
             $this->createMock(LieferzeitenImportService::class),
             $this->createMock(TrackingHistoryService::class),
+            $this->createMock(TrackingDeliveryDateSyncService::class),
             $this->createMock(LieferzeitenOrderOverviewService::class),
             $this->createMock(LieferzeitenPositionWriteService::class),
             $taskService,
             $this->createMock(LieferzeitenStatisticsService::class),
+            $this->createMock(DemoDataSeederService::class),
             $this->createMock(AuditLogService::class),
         );
     }

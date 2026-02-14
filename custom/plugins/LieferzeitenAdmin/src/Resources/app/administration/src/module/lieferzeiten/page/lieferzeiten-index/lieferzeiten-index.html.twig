@@ -17,6 +17,40 @@
                     <p>{{ $t('lieferzeiten.general.openDefinition') }}</p>
                 </sw-card>
 
+
+                <sw-card class="lieferzeiten-index__filters" :title="$t('global.sw-data-grid.filterPanel.title')">
+                    <sw-container columns="repeat(auto-fit, minmax(220px, 1fr))" gap="16px">
+                        <sw-text-field v-model:value="filters.bestellnummer" label="Bestellnummer" />
+                        <sw-text-field v-model:value="filters.san6" label="San6 Auftragsnummer" />
+                        <sw-text-field v-model:value="filters.user" label="Username" />
+                        <sw-text-field v-model:value="filters.sendenummer" label="Sendenummer" />
+                        <sw-text-field v-model:value="filters.status" label="Status" />
+
+                        <sw-datepicker v-model:value="filters.shippingDateFrom" label="spätester Versandzeitpunkt (von)" />
+                        <sw-datepicker v-model:value="filters.shippingDateTo" label="spätester Versandzeitpunkt (bis)" />
+
+                        <sw-datepicker v-model:value="filters.businessDateFrom" label="Versand-Datum (von)" />
+                        <sw-datepicker v-model:value="filters.businessDateTo" label="Versand-Datum (bis)" />
+
+                        <sw-datepicker v-model:value="filters.deliveryDateFrom" label="spätester Lieferzeitpunkt (von)" />
+                        <sw-datepicker v-model:value="filters.deliveryDateTo" label="spätester Lieferzeitpunkt (bis)" />
+
+                        <sw-datepicker v-model:value="filters.businessDateEndFrom" label="Liefer-Datum (von)" />
+                        <sw-datepicker v-model:value="filters.businessDateEndTo" label="Liefer-Datum (bis)" />
+
+                        <sw-datepicker v-model:value="filters.lieferterminLieferantFrom" label="Liefertermin Lieferant (von)" />
+                        <sw-datepicker v-model:value="filters.lieferterminLieferantTo" label="Liefertermin Lieferant (bis)" />
+
+                        <sw-datepicker v-model:value="filters.neuerLieferterminFrom" label="Liefertermin Auftragsbearbeitung (von)" />
+                        <sw-datepicker v-model:value="filters.neuerLieferterminTo" label="Liefertermin Auftragsbearbeitung (bis)" />
+                    </sw-container>
+
+                    <div class="lieferzeiten-index__filter-actions">
+                        <sw-button variant="primary" @click="applyFilters">Filtern</sw-button>
+                        <sw-button variant="ghost" @click="resetFilters">Zurücksetzen</sw-button>
+                    </div>
+                </sw-card>
+
                 <sw-card class="lieferzeiten-index__tabs">
                     <sw-loader v-if="isLoading" />
 
@@ -26,7 +60,7 @@
                         :subline="$t('lieferzeiten.loading.errorDescription')"
                     >
                         <template #actions>
-                            <sw-button variant="primary" @click="loadOrders">
+                            <sw-button variant="primary" @click="reloadData">
                                 {{ $t('lieferzeiten.loading.retry') }}
                             </sw-button>
                         </template>
@@ -58,7 +92,7 @@
                         <router-view
                             :orders="filteredOrders"
                             :selected-domain="selectedDomain"
-                            :on-reload-order="loadOrders"
+                            :on-reload-order="reloadData"
                         />
                     </template>
                 </sw-card>
