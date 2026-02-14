@@ -12,6 +12,8 @@ const BUSINESS_STATUS_SNIPPETS = {
     '8': 'lieferzeiten.businessStatus.closed',
 };
 
+const INTERNAL_SHIPPING_LABEL = 'Versand durch First Medical';
+
 Shopware.Component.register('lieferzeiten-order-table', {
     template,
 
@@ -334,19 +336,44 @@ Shopware.Component.register('lieferzeiten-order-table', {
 
         resolveTrackingEntries(order, position) {
             const carrier = String(position.trackingCarrier || order.trackingCarrier || '').toLowerCase();
-            return (position.packages || []).map((pkg) => {
+            const packageEntries = Array.isArray(position.packages) ? position.packages : [];
+            const fallbackPackages = packageEntries.length === 0
+                ? [position.sendenummer || order.sendenummer || '']
+                : packageEntries;
+
+            return fallbackPackages.map((pkg) => {
                 if (typeof pkg === 'string') {
-                    return { number: pkg, carrier };
+                    const number = String(pkg || '').trim();
+                    if (number.toLowerCase() === INTERNAL_SHIPPING_LABEL.toLowerCase()) {
+                        return { number, carrier: 'internal', isInternal: true };
+                    }
+
+                    return { number, carrier };
+                }
+
+                const number = String(pkg?.number || '').trim();
+                if (number.toLowerCase() === INTERNAL_SHIPPING_LABEL.toLowerCase()) {
+                    return { number, carrier: 'internal', isInternal: true };
                 }
 
                 return {
-                    number: String(pkg?.number || ''),
+                    number,
                     carrier: String(pkg?.carrier || carrier).toLowerCase(),
                 };
             }).filter((entry) => entry.number !== '');
         },
 
         async openTrackingHistory(entry) {
+            if (entry?.isInternal) {
+                this.activeTracking = entry;
+                this.trackingError = this.$t('lieferzeiten.tracking.internalShipmentInfo');
+                this.trackingEvents = [];
+                this.isTrackingLoading = false;
+                this.showTrackingModal = true;
+
+                return;
+            }
+
             if (!entry?.number || !entry?.carrier) {
                 this.trackingError = this.$t('lieferzeiten.tracking.missingCarrier');
                 this.showTrackingModal = true;

@@ -23,6 +23,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class LieferzeitenImportService
 {
+    private const INTERNAL_SHIPPING_LABEL = 'Versand durch First Medical';
+
     public function __construct(
         private readonly EntityRepository $paketRepository,
         private readonly EntityRepository $positionRepository,
@@ -282,6 +284,10 @@ class LieferzeitenImportService
         ]], $context);
 
         $trackingNumbers = $this->extractTrackingNumbers($payload);
+        if ($trackingNumbers === [] && $this->isInternalShipment($payload)) {
+            $trackingNumbers[] = self::INTERNAL_SHIPPING_LABEL;
+        }
+
         foreach ($trackingNumbers as $trackingNumber) {
             if ($this->trackingNumberExists($positionId, $trackingNumber, $context)) {
                 continue;
@@ -359,12 +365,17 @@ class LieferzeitenImportService
     {
         $tracking = [];
 
-        $direct = $payload['trackingNumbers'] ?? null;
-        if (is_array($direct)) {
-            foreach ($direct as $n) {
-                if (is_string($n) && $n !== '') {
-                    $tracking[] = $n;
-                }
+        $directCandidates = [
+            $payload['trackingNumbers'] ?? null,
+            $payload['tracking_numbers'] ?? null,
+            $payload['sendenummern'] ?? null,
+            $payload['trackingNumber'] ?? null,
+            $payload['sendenummer'] ?? null,
+        ];
+
+        foreach ($directCandidates as $directCandidate) {
+            foreach ($this->normalizeTrackingCandidates($directCandidate) as $candidate) {
+                $tracking[] = $candidate;
             }
         }
 
@@ -376,13 +387,104 @@ class LieferzeitenImportService
                 }
 
                 $number = (string) ($parcel['trackingNumber'] ?? $parcel['sendenummer'] ?? '');
-                if ($number !== '') {
-                    $tracking[] = $number;
+                foreach ($this->normalizeTrackingCandidates($number) as $candidate) {
+                    $tracking[] = $candidate;
                 }
             }
         }
 
         return array_values(array_unique($tracking));
+    }
+
+    /** @return array<int,string> */
+    private function normalizeTrackingCandidates(mixed $value): array
+    {
+        $result = [];
+
+        if (is_array($value)) {
+            foreach ($value as $entry) {
+                foreach ($this->normalizeTrackingCandidates($entry) as $candidate) {
+                    $result[] = $candidate;
+                }
+            }
+
+            return $result;
+        }
+
+        if (!is_string($value)) {
+            return [];
+        }
+
+        $candidate = trim($value);
+        if ($candidate === '' || $this->isInvalidTrackingPlaceholder($candidate)) {
+            return [];
+        }
+
+        return [$candidate];
+    }
+
+    private function isInvalidTrackingPlaceholder(string $value): bool
+    {
+        $normalized = mb_strtolower(trim($value));
+
+        return in_array($normalized, [
+            '-',
+            '--',
+            'n/a',
+            'na',
+            'none',
+            'kein tracking',
+            'ohne tracking',
+            'internal',
+            'intern',
+            'eigenversand',
+        ], true);
+    }
+
+    /** @param array<string,mixed> $payload */
+    private function isInternalShipment(array $payload): bool
+    {
+        $candidates = [
+            $payload['internalShipment'] ?? null,
+            $payload['isInternalShipment'] ?? null,
+            $payload['internal_shipping'] ?? null,
+            $payload['internalShipping'] ?? null,
+            $payload['internal_dispatch'] ?? null,
+            $payload['isInternalDispatch'] ?? null,
+            $payload['selfShipment'] ?? null,
+            $payload['shippingProvider'] ?? null,
+            $payload['carrier'] ?? null,
+            $payload['trackingProvider'] ?? null,
+            $payload['versandart'] ?? null,
+            $payload['shippingAssignmentType'] ?? null,
+        ];
+
+        foreach ($candidates as $candidate) {
+            if ($this->isTruthy($candidate)) {
+                return true;
+            }
+
+            if (!is_string($candidate)) {
+                continue;
+            }
+
+            $normalized = mb_strtolower(trim($candidate));
+            if (in_array($normalized, [
+                'internal',
+                'intern',
+                'internal_shipping',
+                'internal shipment',
+                'self',
+                'self_shipment',
+                'eigenversand',
+                'first medical',
+                'versand durch first medical',
+            ], true)) {
+                return true;
+            }
+        }
+
+        return $this->extractTrackingNumbers($payload) === [];
     }
 
     private function parseDate(mixed $value): ?string

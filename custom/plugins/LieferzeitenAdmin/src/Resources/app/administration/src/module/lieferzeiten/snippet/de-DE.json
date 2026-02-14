@@ -97,7 +97,8 @@
       "loading": "Tracking-Historie wird geladen …",
       "empty": "Keine Tracking-Ereignisse gefunden.",
       "loadError": "Tracking konnte nicht geladen werden.",
-      "missingCarrier": "Tracking nicht möglich: Kein Versanddienstleister hinterlegt."
+      "missingCarrier": "Tracking nicht möglich: Kein Versanddienstleister hinterlegt.",
+      "internalShipmentInfo": "Versand durch First Medical (interne Expedition, kein externes Lieferanten-Tracking verfügbar)."
     },
     "statistics": {
       "periodLabel": "Periode",
