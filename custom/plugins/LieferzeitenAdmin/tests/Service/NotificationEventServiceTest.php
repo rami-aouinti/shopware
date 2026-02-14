@@ -25,6 +25,7 @@ class NotificationEventServiceTest extends TestCase
 
         $toggleResolver->expects($this->once())
             ->method('isEnabled')
+            ->with('date_livraison.attribuee', 'email', $this->isInstanceOf(Context::class), 'sales-channel-1')
             ->willReturn(true);
 
         $repository->expects($this->once())
@@ -32,7 +33,12 @@ class NotificationEventServiceTest extends TestCase
             ->willReturn(new EntitySearchResult('lieferzeiten_notification_event', 0, new EntityCollection(), null, new Criteria(), Context::createDefaultContext()));
 
         $repository->expects($this->once())
-            ->method('create');
+            ->method('create')
+            ->with($this->callback(static function (array $payload): bool {
+                $event = $payload[0] ?? [];
+
+                return (($event['payload']['salesChannelId'] ?? null) === 'sales-channel-1');
+            }));
 
         $reliability->expects($this->once())
             ->method('executeWithRetry')
@@ -53,7 +59,8 @@ class NotificationEventServiceTest extends TestCase
             ['externalOrderId' => 'EXT-100'],
             Context::createDefaultContext(),
             'EXT-100',
-            'shopware'
+            'shopware',
+            'sales-channel-1',
         ));
     }
 

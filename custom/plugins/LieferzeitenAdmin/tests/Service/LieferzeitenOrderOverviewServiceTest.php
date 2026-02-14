@@ -131,6 +131,43 @@ class LieferzeitenOrderOverviewServiceTest extends TestCase
     }
 
 
+
+    public function testLieferterminLieferantRangeUsesPositionJoinInsteadOfPaketId(): void
+    {
+        $capturedSql = [];
+        $connection = $this->createMock(Connection::class);
+        $connection->method('fetchOne')
+            ->willReturnCallback(static function (string $sql) use (&$capturedSql): string {
+                $capturedSql[] = $sql;
+
+                return '0';
+            });
+
+        $connection->method('fetchAllAssociative')
+            ->willReturnCallback(static function (string $sql) use (&$capturedSql): array {
+                $capturedSql[] = $sql;
+
+                return [];
+            });
+
+        $service = new LieferzeitenOrderOverviewService($connection);
+        $service->listOrders(1, 25, null, null, [
+            'lieferterminLieferantFrom' => '2026-01-05',
+            'lieferterminLieferantTo' => '2026-01-20',
+        ]);
+
+        static::assertCount(2, $capturedSql);
+        foreach ($capturedSql as $sql) {
+            static::assertStringContainsString('INNER JOIN `lieferzeiten_liefertermin_lieferant_history` llh ON llh.position_id = pos_filter.id', $sql);
+            static::assertStringContainsString('INNER JOIN `lieferzeiten_position` latest_pos ON latest_pos.id = latest.position_id', $sql);
+            static::assertStringContainsString('WHERE latest_pos.paket_id = p.id', $sql);
+            static::assertStringContainsString('llh.liefertermin_to >= :lieferterminLieferantFrom', $sql);
+            static::assertStringContainsString('llh.liefertermin_from <= :lieferterminLieferantTo', $sql);
+            static::assertStringNotContainsString('INNER JOIN `lieferzeiten_liefertermin_lieferant_history` llh ON llh.paket_id = p.id', $sql);
+            static::assertStringNotContainsString('WHERE latest.paket_id = p.id', $sql);
+        }
+    }
+
     public function testListOrdersAddsBusinessStatusPayload(): void
     {
         $connection = $this->createMock(Connection::class);
@@ -240,6 +277,7 @@ class LieferzeitenOrderOverviewServiceTest extends TestCase
                     return [[
                         'positionId' => 'position-1',
                         'number' => 'TRACK-1',
+                        'carrier' => 'DHL',
                     ]];
                 }
 
@@ -289,5 +327,6 @@ class LieferzeitenOrderOverviewServiceTest extends TestCase
         static::assertArrayHasKey('commentHistory', $result);
         static::assertSame('3', $result['positions'][0]['orderedQuantity']);
         static::assertSame('2', $result['positions'][0]['shippedQuantity']);
+        static::assertSame('DHL', $result['positions'][0]['trackingEntries'][0]['carrier']);
     }
 }

@@ -206,7 +206,7 @@
       "navigation": {
         "thresholdsByChannel": "LMS landing page: Delay thresholds by channel",
         "taskAssignmentRules": "Task assignment rules",
-        "notificationToggles": "Notification settings"
+        "notificationToggles": "Email notification settings"
       },
       "channelSettings": {
         "title": "LMS · Thresholds by sales channel",
@@ -232,6 +232,13 @@
         "incompleteMappingBadge": "Incomplete PDMS mapping",
         "incompleteMappingWarning": "PDMS mapping for channel \"{channelName}\" is incomplete. Missing slots are marked below so you can complete the mapping.",
         "incompleteMappingSlotLabel": "Slot {slot} not configured"
+      },
+      "notificationMatrix": {
+        "title": "Notification matrix (email)",
+        "source": "Source: `lieferzeiten_notification_toggle` with logical key",
+        "emailOnlyHint": "Only the email channel is currently operational and configurable.",
+        "invalidEntries": "{count} inconsistent entr(y/ies) detected (triggerKey/channel/code). They are locked in the matrix.",
+        "notificationType": "Notification type"
       }
     },
     "businessStatus": {

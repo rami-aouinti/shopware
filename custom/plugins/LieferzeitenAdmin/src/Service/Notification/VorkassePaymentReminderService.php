@@ -14,6 +14,7 @@ class VorkassePaymentReminderService
     public function __construct(
         private readonly EntityRepository $paketRepository,
         private readonly NotificationEventService $notificationEventService,
+        private readonly SalesChannelResolver $salesChannelResolver,
     ) {
     }
 
@@ -59,6 +60,20 @@ class VorkassePaymentReminderService
                 'customerEmail' => $order->getCustomerEmail(),
             ];
 
+            $salesChannelId = $this->salesChannelResolver->resolve(
+                $order->getSourceSystem(),
+                $order->getExternalOrderId(),
+                $order->getPaketNumber(),
+                $order->getSalesChannelId(),
+            );
+
+            if ($salesChannelId !== null && $order->getSalesChannelId() !== $salesChannelId && $order->getId() !== null) {
+                $this->paketRepository->upsert([[
+                    'id' => $order->getId(),
+                    'salesChannelId' => $salesChannelId,
+                ]], $context);
+            }
+
             foreach (NotificationTriggerCatalog::channels() as $channel) {
                 $this->notificationEventService->dispatch(
                     $eventKey . ':' . $channel,
@@ -68,6 +83,7 @@ class VorkassePaymentReminderService
                     $context,
                     $order->getExternalOrderId(),
                     $order->getSourceSystem(),
+                    $salesChannelId,
                 );
             }
         }

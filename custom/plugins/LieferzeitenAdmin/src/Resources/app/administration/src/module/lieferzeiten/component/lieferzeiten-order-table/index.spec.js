@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 jest.mock('./lieferzeiten-order-table.html.twig', () => '', { virtual: true });
 jest.mock('./lieferzeiten-order-table.scss', () => '', { virtual: true });
 
@@ -151,5 +154,38 @@ describe('lieferzeiten/component/lieferzeiten-order-table', () => {
         expect(methods.shippingLabelForPosition.call(context, { shippingAssignmentType: 'teil' }, { orderedQuantity: 3, shippedQuantity: 2 })).toBe('Teillieferung 2/3 Stück');
         expect(methods.shippingLabelForPosition.call(context, { shippingAssignmentType: 'trennung' }, { orderedQuantity: 5, shippedQuantity: 2 })).toBe('Trennung Auftragsposition 2/5 Stück');
     });
+
+    it('builds normalized order tracking entries and keeps unique clickable targets', () => {
+        const context = {
+            resolveTrackingEntries: methods.resolveTrackingEntries,
+            isInternalShippingMode: methods.isInternalShippingMode,
+        };
+
+        const order = {
+            trackingCarrier: 'dhl',
+            positions: [
+                { id: 'pos-1', trackingCarrier: 'dhl', packages: [{ number: '0034043412345678', carrier: 'dhl' }] },
+                { id: 'pos-2', trackingCarrier: 'gls', packages: [{ number: 'GLS123', carrier: 'gls' }] },
+                { id: 'pos-3', trackingCarrier: 'dhl', packages: [{ number: '0034043412345678', carrier: 'dhl' }] },
+            ],
+        };
+
+        const entries = methods.resolveOrderTrackingEntries.call(context, order);
+
+        expect(entries).toEqual([
+            { number: '0034043412345678', carrier: 'dhl' },
+            { number: 'GLS123', carrier: 'gls' },
+        ]);
+    });
+
+    it('renders clickable tracking entries in the main row using tracking link class', () => {
+        const templatePath = path.resolve(__dirname, './lieferzeiten-order-table.html.twig');
+        const template = fs.readFileSync(templatePath, 'utf8');
+
+        expect(template).toContain('v-for="entry in resolveOrderTrackingEntries(order)"');
+        expect(template).toContain('class="lieferzeiten-order-table__tracking-link"');
+        expect(template).toContain('@click="openTrackingHistory(entry)"');
+    });
+
 
 });

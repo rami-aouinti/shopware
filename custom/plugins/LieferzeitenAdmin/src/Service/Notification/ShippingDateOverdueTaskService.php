@@ -2,13 +2,13 @@
 
 namespace LieferzeitenAdmin\Service\Notification;
 
+use LieferzeitenAdmin\Entity\PaketEntity;
 use LieferzeitenAdmin\Entity\PositionEntity;
 use LieferzeitenAdmin\Service\ChannelPdmsThresholdResolver;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 
 class ShippingDateOverdueTaskService
 {
@@ -23,14 +23,10 @@ class ShippingDateOverdueTaskService
     public function run(Context $context): void
     {
         $now = new \DateTimeImmutable();
-        if ((int) $now->format('H') < 12) {
-            return;
-        }
 
         $criteria = new Criteria();
         $criteria->addAssociation('paket');
         $criteria->addFilter(new EqualsFilter('paket.shippingDate', null));
-        $criteria->addFilter(new RangeFilter('paket.businessDateTo', [RangeFilter::LT => $now->modify('+1 day')->format(DATE_ATOM)]));
 
         /** @var iterable<PositionEntity> $positions */
         $positions = $this->positionRepository->search($criteria, $context)->getEntities();
@@ -41,6 +37,8 @@ class ShippingDateOverdueTaskService
                 continue;
             }
 
+            // businessDateTo is treated as "spätester Versandzeitpunkt" from the integration payload.
+            // paket.shippingDate cannot be used here because it is the actual shipment timestamp and remains NULL until shipped.
             $businessDateTo = $paket->getBusinessDateTo();
             if (!$businessDateTo instanceof \DateTimeInterface) {
                 continue;
@@ -51,6 +49,12 @@ class ShippingDateOverdueTaskService
                 $paket->getExternalOrderId(),
                 $position->getPositionNumber(),
             );
+
+            $cutoffToday = $this->buildCutoffDate($now, $settings['shipping']['cutoff']);
+            if ($now < $cutoffToday) {
+                continue;
+            }
+
             $thresholdDate = $this->buildThresholdDate($now, $settings['shipping']);
             if (\DateTimeImmutable::createFromInterface($businessDateTo) >= $thresholdDate) {
                 continue;
@@ -61,7 +65,8 @@ class ShippingDateOverdueTaskService
                 continue;
             }
 
-            $rule = $this->taskAssignmentRuleResolver->resolve($trigger, $context);
+            $assignmentContext = $this->buildAssignmentContext($position, $paket);
+            $rule = $this->taskAssignmentRuleResolver->resolve($trigger, $context, $assignmentContext);
             $dueDate = self::nextBusinessDay($now);
 
             $this->taskRepository->create([[
@@ -80,9 +85,37 @@ class ShippingDateOverdueTaskService
                     'trigger' => $trigger,
                     'dueDate' => $dueDate->format('Y-m-d'),
                     'assignment' => $rule,
+                    'assignmentContext' => $assignmentContext,
                 ],
             ]], $context);
         }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildAssignmentContext(PositionEntity $position, PaketEntity $paket): array
+    {
+        return [
+            'position' => [
+                'id' => $position->getUniqueIdentifier(),
+                'number' => $position->getPositionNumber(),
+                'status' => $position->getStatus(),
+                'articleNumber' => $position->getArticleNumber(),
+                'artikelname' => $position->getArtikelname(),
+            ],
+            'paket' => [
+                'id' => $paket->getUniqueIdentifier(),
+                'number' => $paket->getPaketNumber(),
+                'status' => $paket->getStatus(),
+                'sourceSystem' => $paket->getSourceSystem(),
+                'externalOrderId' => $paket->getExternalOrderId(),
+            ],
+            'sourceSystem' => $paket->getSourceSystem(),
+            'externalOrderId' => $paket->getExternalOrderId(),
+            'salesChannel' => null,
+            'status' => $position->getStatus() ?? $paket->getStatus(),
+        ];
     }
 
     private function hasActiveTaskForPosition(string $positionId, string $trigger, Context $context): bool
@@ -105,6 +138,13 @@ class ShippingDateOverdueTaskService
         }
 
         return $date;
+    }
+
+    private function buildCutoffDate(\DateTimeImmutable $now, string $cutoff): \DateTimeImmutable
+    {
+        [$hour, $minute] = array_map('intval', explode(':', $cutoff));
+
+        return $now->setTime($hour, $minute);
     }
 
     /**

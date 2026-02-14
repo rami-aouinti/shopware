@@ -4,6 +4,7 @@ namespace LieferzeitenAdmin\Tests\Service;
 
 use LieferzeitenAdmin\Service\LieferzeitenTaskService;
 use LieferzeitenAdmin\Service\Notification\NotificationEventService;
+use LieferzeitenAdmin\Service\Notification\SalesChannelResolver;
 use LieferzeitenAdmin\Service\Notification\NotificationTriggerCatalog;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
@@ -20,7 +21,7 @@ class LieferzeitenTaskServiceTest extends TestCase
     {
         $taskRepository = $this->createMock(EntityRepository::class);
         $notificationService = $this->createMock(NotificationEventService::class);
-        $service = new LieferzeitenTaskService($taskRepository, $notificationService);
+        $service = new LieferzeitenTaskService($taskRepository, $notificationService, $this->createMock(SalesChannelResolver::class));
 
         $context = new Context(new AdminApiSource('user-123'));
 
@@ -47,7 +48,9 @@ class LieferzeitenTaskServiceTest extends TestCase
             }), $context);
 
         $notificationService = $this->createMock(NotificationEventService::class);
-        $service = new LieferzeitenTaskService($taskRepository, $notificationService);
+        $resolver = $this->createMock(SalesChannelResolver::class);
+        $resolver->method('resolve')->willReturn('sales-channel-1');
+        $service = new LieferzeitenTaskService($taskRepository, $notificationService, $resolver);
 
         $service->createTask([
             'positionId' => 'pos-1',
@@ -73,7 +76,7 @@ class LieferzeitenTaskServiceTest extends TestCase
             }), $context);
 
         $notificationService = $this->createMock(NotificationEventService::class);
-        $service = new LieferzeitenTaskService($taskRepository, $notificationService);
+        $service = new LieferzeitenTaskService($taskRepository, $notificationService, $this->createMock(SalesChannelResolver::class));
 
         $service->assignTask('task-1', 'agent@example.test', $context);
     }
@@ -100,6 +103,9 @@ class LieferzeitenTaskServiceTest extends TestCase
             ->with($this->callback(static fn (array $payload): bool => ($payload[0]['status'] ?? null) === LieferzeitenTaskService::STATUS_DONE), $context);
 
         $notificationService = $this->createMock(NotificationEventService::class);
+        $resolver = $this->createMock(SalesChannelResolver::class);
+        $resolver->method('resolve')->willReturn('sales-channel-1');
+
         $notificationService->expects($this->once())
             ->method('dispatch')
             ->with(
@@ -116,7 +122,7 @@ class LieferzeitenTaskServiceTest extends TestCase
                 true,
             );
 
-        $service = new LieferzeitenTaskService($taskRepository, $notificationService);
+        $service = new LieferzeitenTaskService($taskRepository, $notificationService, $resolver);
 
         $service->closeTask($taskId, $context);
     }
@@ -139,6 +145,9 @@ class LieferzeitenTaskServiceTest extends TestCase
             ->with($this->callback(static fn (array $payload): bool => ($payload[0]['status'] ?? null) === LieferzeitenTaskService::STATUS_REOPENED), $context);
 
         $notificationService = $this->createMock(NotificationEventService::class);
+        $resolver = $this->createMock(SalesChannelResolver::class);
+        $resolver->method('resolve')->willReturn('sales-channel-2');
+
         $notificationService->expects($this->once())
             ->method('dispatch')
             ->with(
@@ -149,9 +158,10 @@ class LieferzeitenTaskServiceTest extends TestCase
                 $context,
                 null,
                 null,
+                'sales-channel-2',
             );
 
-        $service = new LieferzeitenTaskService($taskRepository, $notificationService);
+        $service = new LieferzeitenTaskService($taskRepository, $notificationService, $resolver);
 
         $service->reopenTask($taskId, $context);
     }
@@ -169,7 +179,7 @@ class LieferzeitenTaskServiceTest extends TestCase
         $taskRepository->expects($this->never())->method('update');
 
         $notificationService = $this->createMock(NotificationEventService::class);
-        $service = new LieferzeitenTaskService($taskRepository, $notificationService);
+        $service = new LieferzeitenTaskService($taskRepository, $notificationService, $this->createMock(SalesChannelResolver::class));
 
         $service->reopenTask($taskId, $context);
     }

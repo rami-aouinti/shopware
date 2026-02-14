@@ -482,6 +482,31 @@ readonly class LieferzeitenOrderOverviewService
             $params[$toKey] = $toValue . ' 23:59:59';
         }
 
+        if ($historyTableSuffix === 'liefertermin_lieferant_history') {
+            $conditions[] = sprintf(
+                'EXISTS (
+                    SELECT 1
+                    FROM `lieferzeiten_position` pos_filter
+                    INNER JOIN `lieferzeiten_%1$s` %2$s ON %2$s.position_id = pos_filter.id
+                    WHERE pos_filter.paket_id = p.id
+                      AND %2$s.id = (
+                          SELECT latest.id
+                          FROM `lieferzeiten_%1$s` latest
+                          INNER JOIN `lieferzeiten_position` latest_pos ON latest_pos.id = latest.position_id
+                          WHERE latest_pos.paket_id = p.id
+                          ORDER BY latest.created_at DESC
+                          LIMIT 1
+                      )
+                      AND %3$s
+                )',
+                $historyTableSuffix,
+                $alias,
+                implode(' AND ', $historyConditions),
+            );
+
+            return;
+        }
+
         $conditions[] = sprintf(
             'EXISTS (
                 SELECT 1
@@ -709,6 +734,7 @@ readonly class LieferzeitenOrderOverviewService
             'SELECT
                 LOWER(HEX(sh.position_id)) AS positionId,
                 sh.sendenummer AS number,
+                sh.carrier AS carrier,
                 sh.last_changed_by AS lastChangedBy,
                 sh.last_changed_at AS lastChangedAt,
                 sh.created_at AS createdAt

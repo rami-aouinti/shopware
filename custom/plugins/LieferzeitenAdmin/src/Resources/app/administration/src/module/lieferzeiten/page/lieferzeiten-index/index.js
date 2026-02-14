@@ -18,6 +18,26 @@ const DOMAIN_LABEL_ALIASES = {
     'Medical Solutions': 'medical-solutions-germany.de',
 };
 
+const createDefaultFilters = () => ({
+    bestellnummer: '',
+    san6: '',
+    user: '',
+    sendenummer: '',
+    status: '',
+    shippingDateFrom: null,
+    shippingDateTo: null,
+    businessDateFrom: null,
+    businessDateTo: null,
+    deliveryDateFrom: null,
+    deliveryDateTo: null,
+    businessDateEndFrom: null,
+    businessDateEndTo: null,
+    lieferterminLieferantFrom: null,
+    lieferterminLieferantTo: null,
+    neuerLieferterminFrom: null,
+    neuerLieferterminTo: null,
+});
+
 Shopware.Component.register('lieferzeiten-index', {
     template,
 
@@ -29,25 +49,7 @@ Shopware.Component.register('lieferzeiten-index', {
         return {
             selectedDomain: null,
             selectedBereich: null,
-            filters: {
-                bestellnummer: "",
-                san6: "",
-                shippingDateFrom: null,
-                shippingDateTo: null,
-                businessDateFrom: null,
-                businessDateTo: null,
-                deliveryDateFrom: null,
-                deliveryDateTo: null,
-                businessDateEndFrom: null,
-                businessDateEndTo: null,
-                lieferterminLieferantFrom: null,
-                lieferterminLieferantTo: null,
-                neuerLieferterminFrom: null,
-                neuerLieferterminTo: null,
-                user: "",
-                sendenummer: "",
-                status: "",
-            },
+            filters: createDefaultFilters(),
             orders: [],
             isLoading: false,
             isStatisticsLoading: false,
@@ -216,25 +218,7 @@ Shopware.Component.register('lieferzeiten-index', {
         },
 
         resetFilters() {
-            this.filters = {
-                bestellnummer: '',
-                san6: '',
-                shippingDateFrom: null,
-                shippingDateTo: null,
-                businessDateFrom: null,
-                businessDateTo: null,
-                deliveryDateFrom: null,
-                deliveryDateTo: null,
-                businessDateEndFrom: null,
-                businessDateEndTo: null,
-                lieferterminLieferantFrom: null,
-                lieferterminLieferantTo: null,
-                neuerLieferterminFrom: null,
-                neuerLieferterminTo: null,
-                user: '',
-                sendenummer: '',
-                status: '',
-            };
+            this.filters = createDefaultFilters();
 
             this.loadOrders();
         },

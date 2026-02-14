@@ -37,7 +37,7 @@ Component.register('lieferzeiten-notification-toggle-list', {
                 'liefertermin.anfrage.geschlossen',
                 'liefertermin.anfrage.wiedereroeffnet',
             ],
-            channelOptions: ['email', 'sms', 'webhook'],
+            channelOptions: ['email'],
             invalidEntries: [],
         };
     },

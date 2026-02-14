@@ -613,14 +613,16 @@ Shopware.Component.register('lieferzeiten-order-table', {
         },
 
         resolveTrackingEntries(order, position) {
+            const fallbackCarrier = String(position.trackingCarrier || order.trackingCarrier || '').toLowerCase();
+
             if (Array.isArray(position?.trackingEntries) && position.trackingEntries.length > 0) {
                 return position.trackingEntries.map((entry) => ({
                     number: String(entry?.number || '').trim(),
-                    carrier: String(entry?.carrier || '').trim().toLowerCase(),
+                    carrier: String(entry?.carrier || fallbackCarrier).trim().toLowerCase(),
                 })).filter((entry) => entry.number !== '');
             }
 
-            const carrier = String(position.trackingCarrier || order.trackingCarrier || '').toLowerCase();
+            const carrier = fallbackCarrier;
             const packageEntries = Array.isArray(position.packages) ? position.packages : [];
             const fallbackPackages = packageEntries.length === 0
                 ? [position.sendenummer || order.sendenummer || '']
@@ -646,6 +648,40 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     carrier: String(pkg?.carrier || carrier).toLowerCase(),
                 };
             }).filter((entry) => entry.number !== '');
+        },
+
+
+        resolveOrderTrackingEntries(order) {
+            const positions = Array.isArray(order?.positions) ? order.positions : [];
+            const entries = positions.flatMap((position) => this.resolveTrackingEntries(order, position));
+
+            if (entries.length === 0) {
+                const fallbackEntry = this.resolveTrackingEntries(order, {
+                    packages: [order?.sendenummer || ''],
+                    trackingCarrier: order?.trackingCarrier,
+                });
+
+                if (fallbackEntry.length > 0) {
+                    entries.push(...fallbackEntry);
+                }
+            }
+
+            if (entries.length === 0 && this.isInternalShippingMode(order)) {
+                entries.push({ number: INTERNAL_SHIPPING_LABEL, carrier: 'internal', isInternal: true });
+            }
+
+            const seen = new Set();
+
+            return entries.filter((entry) => {
+                const key = `${entry.carrier}-${entry.number}`;
+
+                if (seen.has(key)) {
+                    return false;
+                }
+
+                seen.add(key);
+                return true;
+            });
         },
 
         resolveTrackingSummaryDisplay(order) {
