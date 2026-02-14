@@ -67,6 +67,19 @@ readonly class LieferzeitenOrderOverviewService
         'domain',
     ];
 
+
+    private const DOMAIN_SOURCE_MAPPING = [
+        'first-medical-e-commerce' => ['first medical', 'e-commerce', 'shopware', 'gambio'],
+        'medical-solutions' => ['medical solutions', 'medical-solutions', 'medical_solutions'],
+    ];
+
+    private const LEGACY_DOMAIN_MAPPING = [
+        'first medical' => 'first-medical-e-commerce',
+        'e-commerce' => 'first-medical-e-commerce',
+        'first medical - e-commerce' => 'first-medical-e-commerce',
+        'medical solutions' => 'medical-solutions',
+    ];
+
     private const SORTABLE_FIELDS = [
         'bestelldatum' => 'p.order_date',
         'orderDate' => 'p.order_date',
@@ -137,11 +150,12 @@ readonly class LieferzeitenOrderOverviewService
                 p.last_changed_by AS user,
                 p.status AS status,
                 p.shipping_assignment_type AS shipping_assignment_type,
+                p.source_system AS sourceSystem,
                 MAX(sh.sendenummer) AS sendenummer
              FROM `lieferzeiten_paket` p
              %s
              %s
-             GROUP BY p.id, p.external_order_id, p.paket_number, p.order_date, p.shipping_date, p.delivery_date, p.last_changed_by, p.status, p.shipping_assignment_type
+             GROUP BY p.id, p.external_order_id, p.paket_number, p.order_date, p.shipping_date, p.delivery_date, p.last_changed_by, p.status, p.shipping_assignment_type, p.source_system
              ORDER BY %s
              LIMIT :limit OFFSET :offset',
             $joinSql,
@@ -267,6 +281,19 @@ readonly class LieferzeitenOrderOverviewService
             $filters,
             'nlh',
         );
+
+
+        $domainFilter = $this->resolveDomainFilter((string) ($filters['domain'] ?? ''));
+        if ($domainFilter !== []) {
+            $placeholders = [];
+            foreach ($domainFilter as $index => $sourceSystem) {
+                $paramName = sprintf('domainSource%d', $index);
+                $params[$paramName] = $sourceSystem;
+                $placeholders[] = ':' . $paramName;
+            }
+
+            $conditions[] = sprintf('LOWER(COALESCE(p.source_system, "")) IN (%s)', implode(', ', $placeholders));
+        }
 
         if ($conditions === []) {
             return '';

@@ -49,6 +49,21 @@
         gap: 14px;
     }
 
+    .external-orders-channel-config__group {
+        & + & {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e9edf5;
+        }
+    }
+
+    .external-orders-channel-config__group-title {
+        margin: 0 0 10px;
+        color: #0b356c;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
     .external-orders-channel-config__item {
         display: flex;
         flex-direction: column;

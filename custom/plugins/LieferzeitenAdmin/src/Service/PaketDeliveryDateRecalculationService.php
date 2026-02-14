@@ -37,7 +37,7 @@ class PaketDeliveryDateRecalculationService
 
             $resolution = $this->baseDateResolver->resolve($payload);
             $settings = $this->settingsProvider->getForChannel((string) ($paket->get('sourceSystem') ?? 'shopware'));
-            $calculated = $this->calculator->calculate($resolution['baseDate'], $settings);
+            $calculated = $this->calculator->calculate($resolution['baseDate'], $settings['delivery']);
 
             $updates[] = [
                 'id' => $paket->getId(),

@@ -87,7 +87,18 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 const supplierRange = this.resolveInitialRange(order, 'lieferterminLieferant', 14);
                 const newRange = this.resolveInitialRange(order, 'neuerLiefertermin', 4);
 
-                const positions = Array.isArray(order.positions) ? order.positions : [];
+                const positions = (order.positions || []).map((position) => ({
+                    ...position,
+                    lieferterminLieferantRange: { ...supplierRange },
+                    originalLieferterminLieferantRange: { ...supplierRange },
+                }));
+
+                const parcels = (order.parcels || []).map((parcel) => ({
+                    ...parcel,
+                    supplierRange: { ...supplierRange },
+                    neuerLieferterminRange: { ...newRange },
+                    originalNeuerLieferterminRange: { ...newRange },
+                }));
 
                 this.$set(this.editableOrders, order.id, {
                     ...order,
@@ -99,6 +110,11 @@ Shopware.Component.register('lieferzeiten-order-table', {
                     paymentDateDisplay: this.resolvePaymentDate(order),
                     customerNamesDisplay: this.resolveCustomerNames(order),
                     positionsCountDisplay: positions.length,
+                    packageStatusDisplay: this.resolvePackageStatus(order),
+                    latestShippingAtDisplay: this.resolveLatestShippingAt(order),
+                    shippingDateDisplay: this.resolveShippingDate(order),
+                    latestDeliveryAtDisplay: this.resolveLatestDeliveryAt(order),
+                    deliveryDateDisplay: this.resolveDeliveryDate(order),
                     lieferterminLieferantRange: supplierRange,
                     neuerLieferterminRange: newRange,
                     originalLieferterminLieferantRange: { ...supplierRange },
@@ -188,7 +204,91 @@ Shopware.Component.register('lieferzeiten-order-table', {
             return date.toISOString();
         },
 
-        formatDateTime(value) {
+        resolvePackageStatus(order) {
+            const rawStatus = this.pickFirstDefined(order, [
+                'packageStatus',
+                'paketStatus',
+                'paket_status',
+                'status',
+            ]);
+
+            if (!rawStatus || String(rawStatus).trim() === '') {
+                return null;
+            }
+
+            const normalized = String(rawStatus).trim();
+            const labels = {
+                open: this.$t('lieferzeiten.status.open'),
+                closed: this.$t('lieferzeiten.status.closed'),
+                pending: 'Pending',
+                shipped: 'Shipped',
+                delivered: 'Delivered',
+            };
+
+            return labels[normalized.toLowerCase()] || normalized;
+        },
+
+        resolveLatestShippingAt(order) {
+            return this.formatDateTime(this.pickFirstDefined(order, [
+                'latestShippingDate',
+                'spaetesterVersand',
+                'spaetester_versand',
+                'shippingDateTo',
+                'shipping_date_to',
+            ]));
+        },
+
+        resolveShippingDate(order) {
+            return this.formatDate(this.pickFirstDefined(order, [
+                'shippingDate',
+                'shipping_date',
+                'versandDatum',
+                'versand_datum',
+                'businessDateFrom',
+                'business_date_from',
+                'shippedAt',
+            ]));
+        },
+
+        resolveLatestDeliveryAt(order) {
+            return this.formatDateTime(this.pickFirstDefined(order, [
+                'latestDeliveryDate',
+                'spaetesteLieferung',
+                'spaeteste_lieferung',
+                'deliveryDateTo',
+                'delivery_date_to',
+            ]));
+        },
+
+        resolveDeliveryDate(order) {
+            return this.formatDate(this.pickFirstDefined(order, [
+                'deliveryDate',
+                'delivery_date',
+                'lieferDatum',
+                'liefer_datum',
+                'businessDateTo',
+                'business_date_to',
+                'deliveredAt',
+                'calculatedDeliveryDate',
+                'calculated_delivery_date',
+            ]));
+        },
+
+        pickFirstDefined(source, keys) {
+            if (!source || !Array.isArray(keys)) {
+                return null;
+            }
+
+            for (const key of keys) {
+                if (Object.prototype.hasOwnProperty.call(source, key) && source[key] !== null && source[key] !== undefined) {
+                    return source[key];
+                }
+            }
+
+            return null;
+        },
+
+        formatDate(value) {
             if (!value) {
                 return '-';
             }
@@ -198,10 +298,27 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 return '-';
             }
 
-            return new Intl.DateTimeFormat('de-DE', {
-                dateStyle: 'short',
-                timeStyle: 'short',
-            }).format(date);
+            return date.toLocaleDateString('de-DE', { timeZone: 'Europe/Berlin' });
+        },
+
+        formatDateTime(value) {
+            if (!value) {
+                return null;
+            }
+
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) {
+                return null;
+            }
+
+            return date.toLocaleString('de-DE', {
+                timeZone: 'Europe/Berlin',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+            });
         },
 
         resolveTrackingEntries(order, position) {
@@ -291,18 +408,18 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 || (range?.to || null) !== (originalRange?.to || null);
         },
 
-        canSaveLiefertermin(order) {
-            return this.isRangeValid(order.lieferterminLieferantRange, 1, 14)
-                && this.isRangeChanged(order.lieferterminLieferantRange, order.originalLieferterminLieferantRange);
+        canSaveLiefertermin(target) {
+            return this.isRangeValid(target.lieferterminLieferantRange, 1, 14)
+                && this.isRangeChanged(target.lieferterminLieferantRange, target.originalLieferterminLieferantRange);
         },
 
-        canSaveNeuerLiefertermin(order) {
-            const supplierRange = order.lieferterminLieferantRange;
-            const newRange = order.neuerLieferterminRange;
+        canSaveNeuerLiefertermin(target) {
+            const supplierRange = target.supplierRange;
+            const newRange = target.neuerLieferterminRange;
 
             if (!this.isRangeValid(supplierRange, 1, 14)
                 || !this.isRangeValid(newRange, 1, 4)
-                || !this.isRangeChanged(newRange, order.originalNeuerLieferterminRange)) {
+                || !this.isRangeChanged(newRange, target.originalNeuerLieferterminRange)) {
                 return false;
             }
 
@@ -380,12 +497,12 @@ Shopware.Component.register('lieferzeiten-order-table', {
             return `KW ${week}`;
         },
 
-        async saveLiefertermin(order) {
-            if (!this.hasEditAccess() || !this.canSaveLiefertermin(order)) {
+        async saveLiefertermin(order, position) {
+            if (!this.hasEditAccess() || !this.canSaveLiefertermin(position)) {
                 return;
             }
 
-            const positionId = this.getTargetPositionId(order);
+            const positionId = position?.id || null;
             if (!positionId) {
                 this.createNotificationError({ title: this.$t('global.default.error'), message: 'Missing position id' });
                 return;
@@ -393,8 +510,8 @@ Shopware.Component.register('lieferzeiten-order-table', {
 
             try {
                 await this.lieferzeitenOrdersService.updateLieferterminLieferant(positionId, {
-                    from: order.lieferterminLieferantRange.from,
-                    to: order.lieferterminLieferantRange.to,
+                    from: position.lieferterminLieferantRange.from,
+                    to: position.lieferterminLieferantRange.to,
                     updatedAt: this.resolveConcurrencyToken(order),
                 });
                 this.createNotificationSuccess({ title: this.$t('global.default.success'), message: this.$t('lieferzeiten.audit.savedSupplierDate') });
@@ -411,21 +528,21 @@ Shopware.Component.register('lieferzeiten-order-table', {
             }
         },
 
-        async saveNeuerLiefertermin(order) {
-            if (!this.hasEditAccess() || !this.canSaveNeuerLiefertermin(order)) {
+        async saveNeuerLiefertermin(order, parcel) {
+            if (!this.hasEditAccess() || !this.canSaveNeuerLiefertermin(parcel)) {
                 return;
             }
 
-            const positionId = this.getTargetPositionId(order);
-            if (!positionId) {
-                this.createNotificationError({ title: this.$t('global.default.error'), message: 'Missing position id' });
+            const paketId = parcel?.id || null;
+            if (!paketId) {
+                this.createNotificationError({ title: this.$t('global.default.error'), message: 'Missing paket id' });
                 return;
             }
 
             try {
-                await this.lieferzeitenOrdersService.updateNeuerLiefertermin(positionId, {
-                    from: order.neuerLieferterminRange.from,
-                    to: order.neuerLieferterminRange.to,
+                await this.lieferzeitenOrdersService.updateNeuerLieferterminByPaket(paketId, {
+                    from: parcel.neuerLieferterminRange.from,
+                    to: parcel.neuerLieferterminRange.to,
                     updatedAt: this.resolveConcurrencyToken(order),
                 });
                 this.createNotificationSuccess({ title: this.$t('global.default.success'), message: this.$t('lieferzeiten.audit.savedNewDate') });
@@ -447,7 +564,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 return;
             }
 
-            const positionId = this.getTargetPositionId(order);
+            const positionId = order.commentTargetPositionId;
             if (!positionId) {
                 this.createNotificationError({ title: this.$t('global.default.error'), message: 'Missing position id' });
                 return;
@@ -477,7 +594,7 @@ Shopware.Component.register('lieferzeiten-order-table', {
                 return;
             }
 
-            const positionId = this.getTargetPositionId(order);
+            const positionId = order.commentTargetPositionId;
             if (!positionId) {
                 this.createNotificationError({ title: this.$t('global.default.error'), message: 'Missing position id' });
                 return;
@@ -520,10 +637,6 @@ Shopware.Component.register('lieferzeiten-order-table', {
 
         updateAudit(order, action) {
             order.audit = `${action} • ${new Date().toLocaleString('de-DE')}`;
-        },
-
-        getTargetPositionId(order) {
-            return order?.positions?.[0]?.id || null;
         },
 
         async reloadOrder(order) {

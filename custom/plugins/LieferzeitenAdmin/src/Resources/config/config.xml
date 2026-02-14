@@ -63,16 +63,16 @@
             <name>shopwareDateSettings</name>
             <label lang="en-GB">Shopware date settings (JSON)</label>
             <label lang="de-DE">Shopware Datums-Einstellungen (JSON)</label>
-            <helpText lang="en-GB">Format: {"workingDays":2,"cutoff":"14:00"}</helpText>
-            <helpText lang="de-DE">Format: {"workingDays":2,"cutoff":"14:00"}</helpText>
+            <helpText lang="en-GB">Format: {"shipping":{"workingDays":0,"cutoff":"14:00"},"delivery":{"workingDays":2,"cutoff":"14:00"}} (legacy fallback: {"workingDays":2,"cutoff":"14:00"})</helpText>
+            <helpText lang="de-DE">Format: {"shipping":{"workingDays":0,"cutoff":"14:00"},"delivery":{"workingDays":2,"cutoff":"14:00"}} (Legacy-Fallback: {"workingDays":2,"cutoff":"14:00"})</helpText>
         </input-field>
 
         <input-field type="text">
             <name>gambioDateSettings</name>
             <label lang="en-GB">Gambio date settings (JSON)</label>
             <label lang="de-DE">Gambio Datums-Einstellungen (JSON)</label>
-            <helpText lang="en-GB">Format: {"workingDays":2,"cutoff":"14:00"}</helpText>
-            <helpText lang="de-DE">Format: {"workingDays":2,"cutoff":"14:00"}</helpText>
+            <helpText lang="en-GB">Format: {"shipping":{"workingDays":0,"cutoff":"14:00"},"delivery":{"workingDays":2,"cutoff":"14:00"}} (legacy fallback: {"workingDays":2,"cutoff":"14:00"})</helpText>
+            <helpText lang="de-DE">Format: {"shipping":{"workingDays":0,"cutoff":"14:00"},"delivery":{"workingDays":2,"cutoff":"14:00"}} (Legacy-Fallback: {"workingDays":2,"cutoff":"14:00"})</helpText>
         </input-field>
 
 
