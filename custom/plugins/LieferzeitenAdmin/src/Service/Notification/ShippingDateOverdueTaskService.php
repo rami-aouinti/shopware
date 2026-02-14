@@ -2,6 +2,7 @@
 
 namespace LieferzeitenAdmin\Service\Notification;
 
+use LieferzeitenAdmin\Entity\PaketEntity;
 use LieferzeitenAdmin\Entity\PositionEntity;
 use LieferzeitenAdmin\Service\ChannelPdmsThresholdResolver;
 use Shopware\Core\Framework\Context;
@@ -64,7 +65,8 @@ class ShippingDateOverdueTaskService
                 continue;
             }
 
-            $rule = $this->taskAssignmentRuleResolver->resolve($trigger, $context);
+            $assignmentContext = $this->buildAssignmentContext($position, $paket);
+            $rule = $this->taskAssignmentRuleResolver->resolve($trigger, $context, $assignmentContext);
             $dueDate = self::nextBusinessDay($now);
 
             $this->taskRepository->create([[
@@ -83,9 +85,37 @@ class ShippingDateOverdueTaskService
                     'trigger' => $trigger,
                     'dueDate' => $dueDate->format('Y-m-d'),
                     'assignment' => $rule,
+                    'assignmentContext' => $assignmentContext,
                 ],
             ]], $context);
         }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildAssignmentContext(PositionEntity $position, PaketEntity $paket): array
+    {
+        return [
+            'position' => [
+                'id' => $position->getUniqueIdentifier(),
+                'number' => $position->getPositionNumber(),
+                'status' => $position->getStatus(),
+                'articleNumber' => $position->getArticleNumber(),
+                'artikelname' => $position->getArtikelname(),
+            ],
+            'paket' => [
+                'id' => $paket->getUniqueIdentifier(),
+                'number' => $paket->getPaketNumber(),
+                'status' => $paket->getStatus(),
+                'sourceSystem' => $paket->getSourceSystem(),
+                'externalOrderId' => $paket->getExternalOrderId(),
+            ],
+            'sourceSystem' => $paket->getSourceSystem(),
+            'externalOrderId' => $paket->getExternalOrderId(),
+            'salesChannel' => null,
+            'status' => $position->getStatus() ?? $paket->getStatus(),
+        ];
     }
 
     private function hasActiveTaskForPosition(string $positionId, string $trigger, Context $context): bool
