@@ -1,6 +1,6 @@
 # Integrationsvertrag — LieferzeitenAdmin
 
-Version: `1.2.0`  
+Version: `1.3.0`  
 Letzte Aktualisierung: `2026-02-14`
 
 ## 1) Ein-/Ausgabe-Verträge der APIs
@@ -194,3 +194,28 @@ Jede Vertragsänderung muss:
 1. die Dokumentversion erhöhen,
 2. die Unit-Tests aktualisieren,
 3. Rückwärtskompatibilität von Schlüssel-Aliasen (`externalId|id|orderNumber` usw.) soweit möglich erhalten.
+
+
+## 7) Statistik-API (Versionierung und Zeitfenster)
+
+- Neuer bevorzugter Endpunkt: `GET /api/_action/lieferzeiten/v1/statistics`
+- Bestehender Endpunkt: `GET /api/_action/lieferzeiten/statistics` (**deprecated**, bleibt temporär für Rückwärtskompatibilität verfügbar).
+
+### Zeitfenster-Priorität
+1. `from`/`to` (ISO-Datetime)
+2. `period` (`7|30|90`)
+3. Default: 30 Tage
+
+### Zusätzliche Antwort-Metadaten
+Die Statistik-Antwort enthält ein stabiles Fensterobjekt:
+
+```json
+{
+  "window": {
+    "mode": "custom|period",
+    "from": "2026-02-01T00:00:00+01:00",
+    "to": "2026-02-14T10:15:22+01:00",
+    "timezone": "Europe/Berlin"
+  }
+}
+```

@@ -56,6 +56,7 @@ class LieferzeitenSyncControllerAclTest extends TestCase
         yield 'read tasks requires viewer' => ['GET', '/api/_action/lieferzeiten/tasks', 'lieferzeiten.viewer'];
         yield 'read orders requires viewer' => ['GET', '/api/_action/lieferzeiten/orders', 'lieferzeiten.viewer'];
         yield 'read statistics requires viewer' => ['GET', '/api/_action/lieferzeiten/statistics', 'lieferzeiten.viewer'];
+        yield 'read statistics v1 requires viewer' => ['GET', '/api/_action/lieferzeiten/v1/statistics', 'lieferzeiten.viewer'];
         yield 'read tracking requires viewer' => ['GET', '/api/_action/lieferzeiten/tracking/{carrier}/{trackingNumber}', 'lieferzeiten.viewer'];
         yield 'read demo data status requires viewer' => ['GET', '/api/_action/lieferzeiten/demo-data/status', 'lieferzeiten.viewer'];
         yield 'read sales channel lieferzeiten requires viewer' => ['GET', '/api/_action/lieferzeiten/sales-channel/{salesChannelId}/lieferzeiten', 'lieferzeiten.viewer'];

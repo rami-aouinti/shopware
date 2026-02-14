@@ -64,6 +64,7 @@ readonly class LieferzeitenStatisticsService
             ) pos_stats ON pos_stats.paket_id = p.id
             WHERE COALESCE(p.is_test_order, 0) = 0
               AND p.created_at >= :periodStart
+              AND p.created_at <= :periodEnd
               %s',
             $scopeSql,
         );
@@ -73,7 +74,7 @@ readonly class LieferzeitenStatisticsService
             : [];
 
         $metrics = $this->connection->fetchAssociative($metricsSql, $params, $metricsParamTypes) ?: [];
-        $overdueCounts = $this->calculateOverdueCounts($periodStartSql, $domain, $channel, $now);
+        $overdueCounts = $this->calculateOverdueCounts($periodStartSql, $periodEndSql, $domain, $channel, $effectiveNow);
 
         $channelSql = sprintf(
             'SELECT
@@ -82,6 +83,7 @@ readonly class LieferzeitenStatisticsService
             FROM `lieferzeiten_paket` p
             WHERE COALESCE(p.is_test_order, 0) = 0
               AND p.created_at >= :periodStart
+              AND p.created_at <= :periodEnd
               %s
             GROUP BY COALESCE(NULLIF(p.source_system, ""), "Unknown")
             ORDER BY value DESC, channel ASC',
@@ -98,12 +100,14 @@ readonly class LieferzeitenStatisticsService
                 SELECT a.created_at AS occurred_at, a.source_system AS source_system
                 FROM `lieferzeiten_audit_log` a
                 WHERE a.created_at >= :periodStart
+                  AND a.created_at <= :periodEnd
 
                 UNION ALL
 
                 SELECT t.created_at AS occurred_at, JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.sourceSystem")) AS source_system
                 FROM `lieferzeiten_task` t
                 WHERE t.created_at >= :periodStart
+                  AND t.created_at <= :periodEnd
 
                 UNION ALL
 
@@ -112,6 +116,7 @@ readonly class LieferzeitenStatisticsService
                 INNER JOIN `lieferzeiten_paket` p ON p.id = pos.paket_id
                 WHERE pos.last_changed_at IS NOT NULL
                   AND pos.last_changed_at >= :periodStart
+                  AND pos.last_changed_at <= :periodEnd
                   AND COALESCE(p.is_test_order, 0) = 0
 
                 UNION ALL
@@ -120,6 +125,7 @@ readonly class LieferzeitenStatisticsService
                 FROM `lieferzeiten_paket` p
                 WHERE p.last_changed_at IS NOT NULL
                   AND p.last_changed_at >= :periodStart
+                  AND p.last_changed_at <= :periodEnd
                   AND COALESCE(p.is_test_order, 0) = 0
             ) t
             WHERE 1=1
@@ -142,7 +148,10 @@ readonly class LieferzeitenStatisticsService
                 t.event_status AS status,
                 t.message AS message,
                 t.event_at AS eventAt,
-                p.delivery_date AS promisedAt
+                p.delivery_date AS promisedAt,
+                LOWER(HEX(COALESCE(t.paket_id, p.id))) AS paketId,
+                LOWER(HEX(t.task_id)) AS taskId,
+                tracking_history.tracking_number AS trackingNumber
             FROM (
                 SELECT
                     a.id,
@@ -151,10 +160,13 @@ readonly class LieferzeitenStatisticsService
                     "audit" AS event_type,
                     a.action AS event_status,
                     a.action AS message,
-                    a.created_at AS event_at
+                    a.created_at AS event_at,
+                    p.id AS paket_id,
+                    NULL AS task_id
                 FROM `lieferzeiten_audit_log` a
                 LEFT JOIN `lieferzeiten_paket` p ON p.external_order_id = JSON_UNQUOTE(JSON_EXTRACT(a.payload, "$.externalOrderId"))
                 WHERE a.created_at >= :periodStart
+                  AND a.created_at <= :periodEnd
 
                 UNION ALL
 
@@ -165,10 +177,13 @@ readonly class LieferzeitenStatisticsService
                     "task" AS event_type,
                     t.status AS event_status,
                     COALESCE(JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.taskType")), "task") AS message,
-                    t.created_at AS event_at
+                    t.created_at AS event_at,
+                    p.id AS paket_id,
+                    t.id AS task_id
                 FROM `lieferzeiten_task` t
                 LEFT JOIN `lieferzeiten_paket` p ON p.external_order_id = JSON_UNQUOTE(JSON_EXTRACT(t.payload, "$.externalOrderId"))
                 WHERE t.created_at >= :periodStart
+                  AND t.created_at <= :periodEnd
 
                 UNION ALL
 
@@ -179,11 +194,14 @@ readonly class LieferzeitenStatisticsService
                     "position" AS event_type,
                     COALESCE(pos.status, "updated") AS event_status,
                     "position_updated" AS message,
-                    pos.last_changed_at AS event_at
+                    pos.last_changed_at AS event_at,
+                    pos.paket_id AS paket_id,
+                    NULL AS task_id
                 FROM `lieferzeiten_position` pos
                 INNER JOIN `lieferzeiten_paket` p ON p.id = pos.paket_id
                 WHERE pos.last_changed_at IS NOT NULL
                   AND pos.last_changed_at >= :periodStart
+                  AND pos.last_changed_at <= :periodEnd
                   AND COALESCE(p.is_test_order, 0) = 0
 
                 UNION ALL
@@ -195,13 +213,26 @@ readonly class LieferzeitenStatisticsService
                     "paket" AS event_type,
                     COALESCE(p.status, "updated") AS event_status,
                     "paket_updated" AS message,
-                    p.last_changed_at AS event_at
+                    p.last_changed_at AS event_at,
+                    p.id AS paket_id,
+                    NULL AS task_id
                 FROM `lieferzeiten_paket` p
                 WHERE p.last_changed_at IS NOT NULL
                   AND p.last_changed_at >= :periodStart
+                  AND p.last_changed_at <= :periodEnd
                   AND COALESCE(p.is_test_order, 0) = 0
             ) t
             LEFT JOIN `lieferzeiten_paket` p ON p.external_order_id = t.order_number
+            LEFT JOIN (
+                SELECT
+                    pos.paket_id,
+                    MIN(sh.sendenummer) AS tracking_number
+                FROM `lieferzeiten_sendenummer_history` sh
+                INNER JOIN `lieferzeiten_position` pos ON pos.id = sh.position_id
+                WHERE sh.sendenummer IS NOT NULL
+                  AND sh.sendenummer <> ""
+                GROUP BY pos.paket_id
+            ) tracking_history ON tracking_history.paket_id = COALESCE(t.paket_id, p.id)
             WHERE t.order_number IS NOT NULL
               %s
             ORDER BY t.event_at DESC
@@ -236,6 +267,9 @@ readonly class LieferzeitenStatisticsService
                 'message' => (string) ($row['message'] ?? ''),
                 'eventAt' => (string) ($row['eventAt'] ?? ''),
                 'promisedAt' => $row['promisedAt'],
+                'paketId' => isset($row['paketId']) ? (string) $row['paketId'] : null,
+                'taskId' => isset($row['taskId']) ? (string) $row['taskId'] : null,
+                'trackingNumber' => isset($row['trackingNumber']) ? (string) $row['trackingNumber'] : null,
             ], $activities),
         ];
     }
@@ -243,10 +277,11 @@ readonly class LieferzeitenStatisticsService
     /**
      * @return array{shipping:int,delivery:int}
      */
-    private function calculateOverdueCounts(string $periodStartSql, ?string $domain, ?string $channel, \DateTimeImmutable $now): array
+    private function calculateOverdueCounts(string $periodStartSql, string $periodEndSql, ?string $domain, ?string $channel, \DateTimeImmutable $now): array
     {
         $params = [
             'periodStart' => $periodStartSql,
+            'periodEnd' => $periodEndSql,
         ];
         $scopeSql = $this->buildScopeCondition($params, $domain, $channel);
 
@@ -269,6 +304,7 @@ readonly class LieferzeitenStatisticsService
             ) pos_stats ON pos_stats.paket_id = p.id
             WHERE COALESCE(p.is_test_order, 0) = 0
               AND p.created_at >= :periodStart
+              AND p.created_at <= :periodEnd
               %s',
             $scopeSql,
         ), $params);
@@ -400,6 +436,46 @@ readonly class LieferzeitenStatisticsService
         }
 
         return 30;
+    }
+
+    /**
+     * @return array{mode:string,from:\DateTimeImmutable,to:\DateTimeImmutable,timezone:\DateTimeZone,periodDays:int}
+     */
+    private function resolveWindow(?int $periodDays, ?string $from, ?string $to): array
+    {
+        $timezone = new \DateTimeZone(date_default_timezone_get());
+        $now = new \DateTimeImmutable('now', $timezone);
+        $normalizedPeriod = $this->sanitizePeriod($periodDays ?? 30);
+
+        $fromDate = $this->parseDateValue($from);
+        $toDate = $this->parseDateValue($to);
+
+        if ($fromDate !== null || $toDate !== null) {
+            $resolvedTo = $toDate ?? $now;
+            $resolvedFrom = $fromDate ?? $resolvedTo->setTime(0, 0)->modify(sprintf('-%d days', $normalizedPeriod - 1));
+
+            if ($resolvedFrom > $resolvedTo) {
+                [$resolvedFrom, $resolvedTo] = [$resolvedTo, $resolvedFrom];
+            }
+
+            return [
+                'mode' => 'custom',
+                'from' => $resolvedFrom,
+                'to' => $resolvedTo,
+                'timezone' => new \DateTimeZone($resolvedFrom->getTimezone()->getName()),
+                'periodDays' => max(1, (int) $resolvedFrom->diff($resolvedTo)->days + 1),
+            ];
+        }
+
+        $resolvedFrom = $now->setTime(0, 0)->modify(sprintf('-%d days', $normalizedPeriod - 1));
+
+        return [
+            'mode' => 'period',
+            'from' => $resolvedFrom,
+            'to' => $now,
+            'timezone' => $timezone,
+            'periodDays' => $normalizedPeriod,
+        ];
     }
 
     /**

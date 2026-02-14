@@ -131,6 +131,8 @@ class DemoDataSeederIntegrationTest extends TestCase
             article_number TEXT,
             status TEXT,
             ordered_at TEXT,
+            ordered_quantity INTEGER,
+            shipped_quantity INTEGER,
             last_changed_by TEXT,
             last_changed_at TEXT,
             created_at TEXT
