@@ -429,6 +429,46 @@ class LieferzeitenImportServiceTest extends TestCase
         $method->invoke($service, $context);
     }
 
+
+    public function testBuildParcelRowsReturnsSeparateRowsPerParcel(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'buildParcelRows');
+        $method->setAccessible(true);
+
+        $rows = $method->invoke($service, [
+            'orderNumber' => 'SO-1000',
+            'sourceSystem' => 'san6',
+            'status' => '7',
+            'parcels' => [
+                ['paketNumber' => 'PK-1', 'trackingNumber' => 'TR-1', 'status' => 'in_transit'],
+                ['paketNumber' => 'PK-2', 'trackingNumber' => 'TR-2', 'status' => 'delivered'],
+            ],
+        ], 'SO-1000');
+
+        static::assertCount(2, $rows);
+        static::assertSame('PK-1', $rows[0]['paketNumber']);
+        static::assertSame('PK-2', $rows[1]['paketNumber']);
+        static::assertSame(['TR-1'], $rows[0]['trackingNumbers']);
+        static::assertSame(['TR-2'], $rows[1]['trackingNumbers']);
+    }
+
+    public function testBuildParcelRowsCreatesFallbackParcelNumberWhenMissing(): void
+    {
+        $service = $this->createService();
+        $method = new \ReflectionMethod($service, 'buildParcelRows');
+        $method->setAccessible(true);
+
+        $rows = $method->invoke($service, [
+            'parcels' => [
+                ['status' => 'ready'],
+            ],
+        ], 'EXT-9');
+
+        static::assertCount(1, $rows);
+        static::assertSame('EXT-9-1', $rows[0]['paketNumber']);
+    }
+
     private function createSearchResult(PaketEntity $entity): EntitySearchResult
     {
         return new EntitySearchResult(

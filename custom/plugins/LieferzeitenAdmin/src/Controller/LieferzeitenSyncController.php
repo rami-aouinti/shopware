@@ -170,6 +170,7 @@ class LieferzeitenSyncController extends AbstractController
                 'neuerLieferterminFrom' => $request->query->get('neuerLieferterminFrom'),
                 'neuerLieferterminTo' => $request->query->get('neuerLieferterminTo'),
                 'domain' => $request->query->get('domain'),
+                'rowMode' => $request->query->get('rowMode'),
             ],
         );
 
