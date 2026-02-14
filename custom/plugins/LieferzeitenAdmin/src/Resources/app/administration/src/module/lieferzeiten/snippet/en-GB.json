@@ -1,16 +1,17 @@
 {
   "lieferzeiten": {
     "general": {
-      "mainMenuItemGeneral": "Delivery times",
+      "mainMenuItemGeneral": "Delivery Time Management",
       "description": "Delivery time monitoring in admin",
       "infoTitle": "Notice",
       "timezoneInfo": "Time calculations are based on timezone Europe/Berlin.",
-      "openDefinition": "\"Open\" means at least one parcel is still not closed."
+      "openDefinition": "\"Open\" means at least one parcel is still not closed.",
+      "mainMenuItemStatistics": "Delivery Time Management Statistics"
     },
     "tabs": {
       "all": "All orders",
       "open": "Open orders",
-      "statistics": "Statistics"
+      "statistics": "Delivery Time Management Statistics"
     },
     "zones": {
       "order": "Order",
@@ -104,11 +105,11 @@
       "channelLabel": "Channel",
       "allChannels": "All channels",
       "open": "Open",
-      "activities": "Activities",
-      "chartTitle": "Activities by channel",
-      "tableTitle": "Activities",
+      "activities": "Delivery-time activities",
+      "chartTitle": "Visual delivery-time activity overview",
+      "tableTitle": "Delivery-time activity table",
       "drilldown": "Drilldown",
-      "drilldownTitle": "Activity details",
+      "drilldownTitle": "Delivery-time activity details",
       "exportCsv": "Export CSV",
       "promisedDate": "Delivery date",
       "period": {
