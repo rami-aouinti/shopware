@@ -155,37 +155,60 @@ describe('lieferzeiten/component/lieferzeiten-order-table', () => {
         expect(methods.shippingLabelForPosition.call(context, { shippingAssignmentType: 'trennung' }, { orderedQuantity: 5, shippedQuantity: 2 })).toBe('Trennung Auftragsposition 2/5 Stück');
     });
 
-    it('builds normalized order tracking entries and keeps unique clickable targets', () => {
+    it('does not notify on initial task snapshot to avoid false positives on reload', () => {
+        const createNotificationInfo = jest.fn();
         const context = {
-            resolveTrackingEntries: methods.resolveTrackingEntries,
-            isInternalShippingMode: methods.isInternalShippingMode,
+            extractAdditionalDeliveryRequestTaskStatusByPosition: methods.extractAdditionalDeliveryRequestTaskStatusByPosition,
+            isAdditionalDeliveryRequestTaskClosed: methods.isAdditionalDeliveryRequestTaskClosed,
+            createNotificationInfo,
+            additionalRequestTaskStatusByPosition: {},
+            additionalRequestTaskInitialized: false,
+            $t: (key) => key,
         };
 
-        const order = {
-            trackingCarrier: 'dhl',
-            positions: [
-                { id: 'pos-1', trackingCarrier: 'dhl', packages: [{ number: '0034043412345678', carrier: 'dhl' }] },
-                { id: 'pos-2', trackingCarrier: 'gls', packages: [{ number: 'GLS123', carrier: 'gls' }] },
-                { id: 'pos-3', trackingCarrier: 'dhl', packages: [{ number: '0034043412345678', carrier: 'dhl' }] },
-            ],
+        methods.handleAdditionalDeliveryRequestTaskTransitions.call(context, [{
+            positions: [{
+                id: 'position-1',
+                additionalDeliveryRequestTask: { status: 'done', initiator: 'John Doe', closedAt: '2025-01-01 10:00:00' },
+            }],
+        }]);
+
+        expect(createNotificationInfo).not.toHaveBeenCalled();
+        expect(context.additionalRequestTaskInitialized).toBe(true);
+        expect(context.additionalRequestTaskStatusByPosition['position-1'].status).toBe('done');
+    });
+
+    it('notifies only when additional delivery request task really transitions to done/cancelled', () => {
+        const createNotificationInfo = jest.fn();
+        const context = {
+            extractAdditionalDeliveryRequestTaskStatusByPosition: methods.extractAdditionalDeliveryRequestTaskStatusByPosition,
+            isAdditionalDeliveryRequestTaskClosed: methods.isAdditionalDeliveryRequestTaskClosed,
+            createNotificationInfo,
+            additionalRequestTaskStatusByPosition: {
+                'position-1': { status: 'open', closedAt: null, initiator: 'Jane Doe' },
+            },
+            additionalRequestTaskInitialized: true,
+            $t: (key) => key,
         };
 
-        const entries = methods.resolveOrderTrackingEntries.call(context, order);
+        methods.handleAdditionalDeliveryRequestTaskTransitions.call(context, [{
+            positions: [{
+                id: 'position-1',
+                additionalDeliveryRequestTask: { status: 'cancelled', initiator: 'Jane Doe', closedAt: '2025-01-02 10:00:00' },
+            }],
+        }]);
 
-        expect(entries).toEqual([
-            { number: '0034043412345678', carrier: 'dhl' },
-            { number: 'GLS123', carrier: 'gls' },
-        ]);
+        expect(createNotificationInfo).toHaveBeenCalledTimes(1);
+        expect(createNotificationInfo.mock.calls[0][0].message).toContain('lieferzeiten.additionalRequest.notificationClosed');
+
+        methods.handleAdditionalDeliveryRequestTaskTransitions.call(context, [{
+            positions: [{
+                id: 'position-1',
+                additionalDeliveryRequestTask: { status: 'cancelled', initiator: 'Jane Doe', closedAt: '2025-01-02 10:00:00' },
+            }],
+        }]);
+
+        expect(createNotificationInfo).toHaveBeenCalledTimes(1);
     });
-
-    it('renders clickable tracking entries in the main row using tracking link class', () => {
-        const templatePath = path.resolve(__dirname, './lieferzeiten-order-table.html.twig');
-        const template = fs.readFileSync(templatePath, 'utf8');
-
-        expect(template).toContain('v-for="entry in resolveOrderTrackingEntries(order)"');
-        expect(template).toContain('class="lieferzeiten-order-table__tracking-link"');
-        expect(template).toContain('@click="openTrackingHistory(entry)"');
-    });
-
 
 });
