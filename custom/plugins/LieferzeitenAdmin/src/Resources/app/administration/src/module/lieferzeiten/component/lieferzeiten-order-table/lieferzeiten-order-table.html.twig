@@ -191,6 +191,8 @@
                                     <tr>
                                         <th>{{ $t('lieferzeiten.table.parcels') }}</th>
                                         <th>{{ $t('lieferzeiten.table.packageStatus') }}</th>
+                                        <th>Versand-Datum</th>
+                                        <th>Liefer-Datum</th>
                                         <th>{{ $t('lieferzeiten.fields.newDate') }}</th>
                                         <th>{{ $t('lieferzeiten.fields.supplierWeek') }}</th>
                                     </tr>
@@ -199,6 +201,8 @@
                                     <tr v-for="parcel in row.order.parcels" :key="parcel.id">
                                         <td>{{ displayOrDash(parcel.paketId || parcel.id) }}</td>
                                         <td>{{ displayOrDash(parcel.statusDisplay) }}</td>
+                                        <td>{{ displayOrDash(parcel.shippingDateDisplay) }}</td>
+                                        <td>{{ displayOrDash(parcel.deliveryDateDisplay) }}</td>
                                         <td>
                                             <sw-datepicker v-model:value="parcel.neuerLieferterminRange.from" :disabled="!hasEditAccess() || !parcel.supplierRange.from || !isParcelEditableByStatus(parcel)" size="small" />
                                             <sw-datepicker v-model:value="parcel.neuerLieferterminRange.to" :disabled="!hasEditAccess() || !parcel.supplierRange.to || !isParcelEditableByStatus(parcel)" size="small" />
