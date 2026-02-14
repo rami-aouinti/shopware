@@ -3,20 +3,20 @@
 namespace LieferzeitenAdmin\Entity;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\CreatedAtField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
-use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\UpdatedAtField;
 
-class ChannelSettingsDefinition extends EntityDefinition
+class NeuerLieferterminPaketHistoryDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'lieferzeiten_channel_settings';
+    public const ENTITY_NAME = 'lieferzeiten_neuer_liefertermin_paket_history';
 
     public function getEntityName(): string
     {
@@ -25,27 +25,25 @@ class ChannelSettingsDefinition extends EntityDefinition
 
     public function getEntityClass(): string
     {
-        return ChannelSettingsEntity::class;
+        return NeuerLieferterminPaketHistoryEntity::class;
     }
 
     public function getCollectionClass(): string
     {
-        return ChannelSettingsCollection::class;
+        return NeuerLieferterminPaketHistoryCollection::class;
     }
 
     protected function defineFields(): FieldCollection
     {
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),
-            (new StringField('sales_channel_id', 'salesChannelId'))->addFlags(new Required()),
-            new StringField('default_status', 'defaultStatus'),
-            (new BoolField('enable_notifications', 'enableNotifications'))->addFlags(new Required()),
-            new IntField('shipping_working_days', 'shippingWorkingDays'),
-            new StringField('shipping_cutoff', 'shippingCutoff'),
-            new IntField('delivery_working_days', 'deliveryWorkingDays'),
-            new StringField('delivery_cutoff', 'deliveryCutoff'),
+            (new FkField('paket_id', 'paketId', PaketDefinition::class))->addFlags(new Required()),
+            new DateTimeField('liefertermin_from', 'lieferterminFrom'),
+            new DateTimeField('liefertermin_to', 'lieferterminTo'),
+            new DateTimeField('liefertermin', 'liefertermin'),
             new StringField('last_changed_by', 'lastChangedBy'),
             new DateTimeField('last_changed_at', 'lastChangedAt'),
+            new ManyToOneAssociationField('paket', 'paket_id', PaketDefinition::class, 'id', false),
             new CreatedAtField(),
             new UpdatedAtField(),
         ]);

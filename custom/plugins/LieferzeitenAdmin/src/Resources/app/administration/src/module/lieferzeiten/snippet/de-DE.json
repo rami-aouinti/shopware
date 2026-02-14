@@ -1,16 +1,17 @@
 {
   "lieferzeiten": {
     "general": {
-      "mainMenuItemGeneral": "Lieferzeiten",
+      "mainMenuItemGeneral": "Lieferzeiten-Management",
       "description": "Monitoring der Lieferzeiten im Admin",
       "infoTitle": "Hinweis",
       "timezoneInfo": "Zeitberechnungen basieren auf der Zeitzone Europe/Berlin.",
-      "openDefinition": "„Offen“ bedeutet mindestens ein noch nicht geschlossenes Paket."
+      "openDefinition": "„Offen“ bedeutet mindestens ein noch nicht geschlossenes Paket.",
+      "mainMenuItemStatistics": "Statistiken Lieferzeiten-Management"
     },
     "tabs": {
       "all": "Alle Bestellungen",
       "open": "Offene Bestellungen",
-      "statistics": "Statistiken"
+      "statistics": "Statistiken Lieferzeiten-Management"
     },
     "zones": {
       "order": "Bestellung",
@@ -102,18 +103,19 @@
       "loading": "Tracking-Historie wird geladen …",
       "empty": "Keine Tracking-Ereignisse gefunden.",
       "loadError": "Tracking konnte nicht geladen werden.",
-      "missingCarrier": "Tracking nicht möglich: Kein Versanddienstleister hinterlegt."
+      "missingCarrier": "Tracking nicht möglich: Kein Versanddienstleister hinterlegt.",
+      "internalShipmentInfo": "Versand durch First Medical (interne Expedition, kein externes Lieferanten-Tracking verfügbar)."
     },
     "statistics": {
       "periodLabel": "Periode",
       "channelLabel": "Kanal",
       "allChannels": "Alle Kanäle",
       "open": "Offen",
-      "activities": "Aktivitäten",
-      "chartTitle": "Aktivitäten nach Kanal",
-      "tableTitle": "Aktivitäten",
+      "activities": "Lieferzeiten-Aktivitäten",
+      "chartTitle": "Visuelle Auswertung der Lieferzeiten-Aktivitäten",
+      "tableTitle": "Tabelle der Lieferzeiten-Aktivitäten",
       "drilldown": "Drilldown",
-      "drilldownTitle": "Aktivitätsdetails",
+      "drilldownTitle": "Details zur Lieferzeiten-Aktivität",
       "exportCsv": "CSV exportieren",
       "promisedDate": "Lieferdatum",
       "period": {
@@ -124,8 +126,8 @@
       "status": {
         "overdue": "Überfällig"
       },
-      "overdueShipping": "Versand überfällig",
-      "overdueDelivery": "Lieferung überfällig",
+      "overdueShipping": "Überfälliger Versand",
+      "overdueDelivery": "Überfällige Lieferungen (abgeschlossen)",
       "activityDate": "Aktiv am"
     },
     "loading": {
@@ -158,6 +160,12 @@
       "shipped": "Versendet",
       "closed": "Abgeschlossen",
       "unknown": "Unbekannt"
+    },
+    "statusChange": {
+      "placeholder": "Status 7/8 auswählen",
+      "save": "Status speichern",
+      "saved": "Status aktualisiert und für Push vorgemerkt.",
+      "invalidSelection": "Bitte Status 7 oder 8 auswählen."
     }
   }
 }

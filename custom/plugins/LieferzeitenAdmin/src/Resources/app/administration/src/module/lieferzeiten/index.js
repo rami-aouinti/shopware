@@ -71,5 +71,15 @@ Module.register('lieferzeiten', {
             position: 100,
             privilege: 'lieferzeiten.viewer',
         },
+        {
+            id: 'lieferzeiten-statistics',
+            label: 'lieferzeiten.general.mainMenuItemStatistics',
+            color: '#2B8CBF',
+            path: 'lieferzeiten.statistics',
+            icon: 'regular-chart-bar',
+            parent: 'sw-dashboard',
+            position: 110,
+            privilege: 'lieferzeiten.viewer',
+        },
     ],
 });

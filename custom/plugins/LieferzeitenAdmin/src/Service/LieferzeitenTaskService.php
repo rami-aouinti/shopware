@@ -124,6 +124,26 @@ class LieferzeitenTaskService
         $this->transitionTask($taskId, self::STATUS_DONE, $context, true);
     }
 
+    public function closeLatestOpenTaskByPositionAndTrigger(string $positionId, string $triggerKey, Context $context): void
+    {
+        $task = $this->findLatestByPositionAndTrigger($positionId, $triggerKey, $context);
+        if ($task === null && $triggerKey !== 'additional-delivery-request') {
+            $task = $this->findLatestByPositionAndTrigger($positionId, 'additional-delivery-request', $context);
+        }
+
+        if ($task === null) {
+            return;
+        }
+
+        $taskId = (string) $task->getUniqueIdentifier();
+        $status = (string) ($task->get('status') ?? self::STATUS_OPEN);
+        if ($status === self::STATUS_DONE || $status === self::STATUS_CANCELLED) {
+            return;
+        }
+
+        $this->closeTask($taskId, $context);
+    }
+
     public function cancelTask(string $taskId, Context $context): void
     {
         $this->transitionTask($taskId, self::STATUS_CANCELLED, $context, true);
@@ -179,6 +199,11 @@ class LieferzeitenTaskService
             return;
         }
 
+        $initiatorUserId = isset($payload['initiatorUserId']) && is_string($payload['initiatorUserId']) && Uuid::isValid($payload['initiatorUserId'])
+            ? $payload['initiatorUserId']
+            : (Uuid::isValid($initiator) ? $initiator : null);
+        $notificationRecipient = $this->resolveNotificationRecipient($payload, $initiator, $initiatorUserId);
+
         if ($toStatus === self::STATUS_DONE || $toStatus === self::STATUS_CANCELLED) {
             $eventKey = sprintf('task-close:%s:%s', NotificationTriggerCatalog::ADDITIONAL_DELIVERY_DATE_REQUEST_CLOSED, $taskId);
             $this->notificationEventService->dispatch(
@@ -188,9 +213,12 @@ class LieferzeitenTaskService
                 [
                     'taskId' => $taskId,
                     'initiator' => $initiator,
+                    'initiatorUserId' => $initiatorUserId,
+                    'recipientUserId' => $notificationRecipient,
                     'manual' => $manual,
                     'status' => $toStatus,
                     'closedAt' => $closedAt?->format(DATE_ATOM),
+                    'customerEmail' => $payload['customerEmail'] ?? null,
                     'payload' => $payload,
                 ],
                 $context,
@@ -210,7 +238,10 @@ class LieferzeitenTaskService
                 [
                     'taskId' => $taskId,
                     'initiator' => $initiator,
+                    'initiatorUserId' => $initiatorUserId,
+                    'recipientUserId' => $notificationRecipient,
                     'reopenedAt' => (new \DateTimeImmutable())->format(DATE_ATOM),
+                    'customerEmail' => $payload['customerEmail'] ?? null,
                     'payload' => $payload,
                 ],
                 $context,
@@ -218,6 +249,23 @@ class LieferzeitenTaskService
                 isset($payload['sourceSystem']) ? (string) $payload['sourceSystem'] : null,
             );
         }
+    }
+
+    private function resolveNotificationRecipient(array $payload, string $initiator, ?string $initiatorUserId): ?string
+    {
+        if ($initiatorUserId !== null) {
+            return $initiatorUserId;
+        }
+
+        if (isset($payload['initiator']) && is_string($payload['initiator']) && Uuid::isValid($payload['initiator'])) {
+            return $payload['initiator'];
+        }
+
+        if (Uuid::isValid($initiator)) {
+            return $initiator;
+        }
+
+        return null;
     }
 
     private function findLatestByPositionAndTrigger(string $positionId, string $triggerKey, Context $context): mixed

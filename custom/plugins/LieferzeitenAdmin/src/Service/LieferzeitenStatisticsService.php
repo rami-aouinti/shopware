@@ -19,7 +19,10 @@ readonly class LieferzeitenStatisticsService
         'medical solutions' => 'medical-solutions',
     ];
 
-    public function __construct(private Connection $connection)
+    public function __construct(
+        private Connection $connection,
+        private ChannelDateSettingsProvider $channelDateSettingsProvider,
+    )
     {
     }
 
@@ -31,11 +34,10 @@ readonly class LieferzeitenStatisticsService
         $periodDays = $this->sanitizePeriod($periodDays);
         $periodStart = (new \DateTimeImmutable('now'))->setTime(0, 0)->modify(sprintf('-%d days', $periodDays - 1));
         $periodStartSql = $periodStart->format('Y-m-d H:i:s');
-        $nowSql = (new \DateTimeImmutable('now'))->format('Y-m-d H:i:s');
+        $now = new \DateTimeImmutable('now');
 
         $params = [
             'periodStart' => $periodStartSql,
-            'now' => $nowSql,
         ];
 
         $scopeSql = $this->buildScopeCondition($params, $domain, $channel);
@@ -44,10 +46,13 @@ readonly class LieferzeitenStatisticsService
             'SELECT
                 SUM(CASE WHEN COALESCE(pos_stats.open_positions, 0) > 0 THEN 1 ELSE 0 END) AS open_orders,
                 SUM(CASE WHEN COALESCE(pos_stats.open_positions, 0) > 0 AND p.shipping_date IS NOT NULL AND p.shipping_date < :now THEN 1 ELSE 0 END) AS overdue_shipping,
-                SUM(CASE WHEN COALESCE(pos_stats.open_positions, 0) > 0 AND p.delivery_date IS NOT NULL AND p.delivery_date < :now THEN 1 ELSE 0 END) AS overdue_delivery
+                SUM(CASE WHEN COALESCE(pos_stats.open_positions, 0) = 0 AND COALESCE(pos_stats.closed_positions, 0) > 0 AND p.delivery_date IS NOT NULL AND p.delivery_date < :now THEN 1 ELSE 0 END) AS overdue_delivery
             FROM `lieferzeiten_paket` p
             LEFT JOIN (
-                SELECT paket_id, SUM(CASE WHEN LOWER(COALESCE(status, "")) IN ("done", "closed", "completed") THEN 0 ELSE 1 END) AS open_positions
+                SELECT
+                    paket_id,
+                    SUM(CASE WHEN LOWER(COALESCE(status, "")) IN ("done", "closed", "completed") THEN 0 ELSE 1 END) AS open_positions,
+                    SUM(CASE WHEN LOWER(COALESCE(status, "")) IN ("done", "closed", "completed") THEN 1 ELSE 0 END) AS closed_positions
                 FROM `lieferzeiten_position`
                 GROUP BY paket_id
             ) pos_stats ON pos_stats.paket_id = p.id
@@ -62,6 +67,7 @@ readonly class LieferzeitenStatisticsService
             : [];
 
         $metrics = $this->connection->fetchAssociative($metricsSql, $params, $metricsParamTypes) ?: [];
+        $overdueCounts = $this->calculateOverdueCounts($periodStartSql, $domain, $channel, $now);
 
         $channelSql = sprintf(
             'SELECT
@@ -203,7 +209,6 @@ readonly class LieferzeitenStatisticsService
                 'openOrders' => (int) ($metrics['open_orders'] ?? 0),
                 'overdueShipping' => (int) ($metrics['overdue_shipping'] ?? 0),
                 'overdueDelivery' => (int) ($metrics['overdue_delivery'] ?? 0),
-                'activities' => array_sum(array_map(static fn (array $row): int => (int) ($row['count'] ?? 0), $timeline)),
             ],
             'channels' => array_map(static fn (array $row): array => [
                 'channel' => (string) ($row['channel'] ?? 'Unknown'),
@@ -224,6 +229,98 @@ readonly class LieferzeitenStatisticsService
                 'promisedAt' => $row['promisedAt'],
             ], $activities),
         ];
+    }
+
+    /**
+     * @return array{shipping:int,delivery:int}
+     */
+    private function calculateOverdueCounts(string $periodStartSql, ?string $domain, ?string $channel, \DateTimeImmutable $now): array
+    {
+        $params = [
+            'periodStart' => $periodStartSql,
+        ];
+        $scopeSql = $this->buildScopeCondition($params, $domain, $channel);
+
+        $rows = $this->connection->fetchAllAssociative(sprintf(
+            'SELECT
+                p.source_system,
+                p.shipping_date,
+                p.delivery_date,
+                COALESCE(pos_stats.open_positions, 0) AS open_positions
+            FROM `lieferzeiten_paket` p
+            LEFT JOIN (
+                SELECT paket_id, SUM(CASE WHEN LOWER(COALESCE(status, "")) IN ("done", "closed", "completed") THEN 0 ELSE 1 END) AS open_positions
+                FROM `lieferzeiten_position`
+                GROUP BY paket_id
+            ) pos_stats ON pos_stats.paket_id = p.id
+            WHERE COALESCE(p.is_test_order, 0) = 0
+              AND p.created_at >= :periodStart
+              %s',
+            $scopeSql,
+        ), $params);
+
+        $shippingOverdue = 0;
+        $deliveryOverdue = 0;
+
+        foreach ($rows as $row) {
+            if ((int) ($row['open_positions'] ?? 0) <= 0) {
+                continue;
+            }
+
+            $sourceSystem = (string) ($row['source_system'] ?? 'shopware');
+            $settings = $this->channelDateSettingsProvider->getForChannel($sourceSystem);
+
+            $shippingDate = $this->parseDateValue($row['shipping_date'] ?? null);
+            if ($shippingDate !== null && $shippingDate < $this->buildThresholdDate($now, $settings['shipping'])) {
+                ++$shippingOverdue;
+            }
+
+            $deliveryDate = $this->parseDateValue($row['delivery_date'] ?? null);
+            if ($deliveryDate !== null && $deliveryDate < $this->buildThresholdDate($now, $settings['delivery'])) {
+                ++$deliveryOverdue;
+            }
+        }
+
+        return ['shipping' => $shippingOverdue, 'delivery' => $deliveryOverdue];
+    }
+
+    /**
+     * @param array{workingDays:int,cutoff:string} $settings
+     */
+    private function buildThresholdDate(\DateTimeImmutable $now, array $settings): \DateTimeImmutable
+    {
+        [$hour, $minute] = array_map('intval', explode(':', $settings['cutoff']));
+        $threshold = $now->setTime($hour, $minute);
+
+        $remaining = max(0, (int) ($settings['workingDays'] ?? 0));
+        while ($remaining > 0) {
+            $threshold = $threshold->modify('-1 day');
+            $weekday = (int) $threshold->format('N');
+            if ($weekday >= 6) {
+                continue;
+            }
+
+            --$remaining;
+        }
+
+        return $threshold;
+    }
+
+    private function parseDateValue(mixed $value): ?\DateTimeImmutable
+    {
+        if ($value instanceof \DateTimeInterface) {
+            return \DateTimeImmutable::createFromInterface($value);
+        }
+
+        if (!is_string($value) || trim($value) === '') {
+            return null;
+        }
+
+        try {
+            return new \DateTimeImmutable($value);
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     /**

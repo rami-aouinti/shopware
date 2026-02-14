@@ -8,7 +8,7 @@ class IntegrationContractValidator
     private const API_REQUIRED_FIELDS = [
         'shopware' => ['externalId|id|orderNumber', 'status', 'date|orderDate'],
         'gambio' => ['externalId|id|orderNumber', 'status', 'date|orderDate'],
-        'san6' => ['orderNumber', 'shippingDate|deliveryDate'],
+        'san6' => ['orderNumber', 'shippingDate|deliveryDate|parcels'],
         'dhl' => ['trackingNumber', 'status', 'eventTime|timestamp'],
         'gls' => ['trackingNumber', 'status', 'eventTime|timestamp'],
     ];
