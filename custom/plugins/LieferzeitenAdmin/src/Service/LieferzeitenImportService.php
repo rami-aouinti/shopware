@@ -736,17 +736,11 @@ class LieferzeitenImportService
     /** @param array<string,mixed> $order */
     private function isSan6InternalDeliveryCompleted(array $order, array $san6Payload): bool
     {
-        $state = (string) ($order[San6MatchingService::INTERNAL_DELIVERY_STATE] ?? $san6Payload[San6MatchingService::INTERNAL_DELIVERY_STATE] ?? '');
-        if ($state !== '' && strtolower(trim($state)) === San6MatchingService::INTERNAL_DELIVERY_COMPLETED_STATE) {
+        $state = strtolower(trim((string) ($san6Payload[San6MatchingService::INTERNAL_DELIVERY_STATE] ?? $order[San6MatchingService::INTERNAL_DELIVERY_STATE] ?? '')));
+        if ($state === San6MatchingService::INTERNAL_DELIVERY_COMPLETED_STATE) {
             return true;
         }
 
-        return $this->toBool($order[San6MatchingService::INTERNAL_DELIVERY_COMPLETED_FLAG] ?? $san6Payload[San6MatchingService::INTERNAL_DELIVERY_COMPLETED_FLAG] ?? null);
-    }
-
-    /** @param array<string,mixed> $order */
-    private function isSan6InternalDeliveryCompleted(array $order, array $san6Payload): bool
-    {
         foreach (self::SAN6_INTERNAL_DELIVERY_COMPLETED_FLAG_KEYS as $key) {
             $value = $san6Payload[$key] ?? $order[$key] ?? null;
             if (is_bool($value)) {
@@ -763,6 +757,11 @@ class LieferzeitenImportService
                     return false;
                 }
             }
+        }
+
+        $matchedFlag = $san6Payload[San6MatchingService::INTERNAL_DELIVERY_COMPLETED_FLAG] ?? $order[San6MatchingService::INTERNAL_DELIVERY_COMPLETED_FLAG] ?? null;
+        if ($matchedFlag !== null && $this->toBool($matchedFlag)) {
+            return true;
         }
 
         $state = strtolower(trim((string) ($san6Payload['deliveryCompletionState'] ?? $order['deliveryCompletionState'] ?? '')));
