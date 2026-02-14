@@ -25,6 +25,7 @@ Shopware.Component.register('lieferzeiten-index', {
             selectedDomain: null,
             orders: [],
             isLoading: false,
+            isStatisticsLoading: false,
             loadError: null,
             filters: {
                 bestellnummer: '',
@@ -49,12 +50,12 @@ Shopware.Component.register('lieferzeiten-index', {
     },
 
     created() {
-        this.loadOrders();
+        this.reloadData();
     },
 
     watch: {
         selectedDomain() {
-            this.loadOrders();
+            this.reloadData();
         },
     },
 
@@ -88,6 +89,14 @@ Shopware.Component.register('lieferzeiten-index', {
                 .map((source) => source.toLowerCase())
                 .includes(normalizedOrderDomain)) || null;
         },
+
+        async reloadData() {
+            await Promise.all([
+                this.loadOrders(),
+                this.loadStatistics(),
+            ]);
+        },
+
         async loadOrders() {
             this.isLoading = true;
             this.loadError = null;

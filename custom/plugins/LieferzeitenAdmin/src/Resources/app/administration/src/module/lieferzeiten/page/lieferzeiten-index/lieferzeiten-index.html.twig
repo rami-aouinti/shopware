@@ -60,7 +60,7 @@
                         :subline="$t('lieferzeiten.loading.errorDescription')"
                     >
                         <template #actions>
-                            <sw-button variant="primary" @click="loadOrders">
+                            <sw-button variant="primary" @click="reloadData">
                                 {{ $t('lieferzeiten.loading.retry') }}
                             </sw-button>
                         </template>
@@ -92,7 +92,7 @@
                         <router-view
                             :orders="filteredOrders"
                             :selected-domain="selectedDomain"
-                            :on-reload-order="loadOrders"
+                            :on-reload-order="reloadData"
                         />
                     </template>
                 </sw-card>
