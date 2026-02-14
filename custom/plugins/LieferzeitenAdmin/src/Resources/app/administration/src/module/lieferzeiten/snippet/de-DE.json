@@ -64,7 +64,13 @@
       "quantity": "Menge",
       "packageNumbers": "Pakete",
       "status": "Status",
-      "businessStatus": "Geschäftsstatus"
+      "businessStatus": "Geschäftsstatus",
+      "tracking": "Tracking",
+      "packageStatus": "Paket-Status",
+      "latestShippingDeadline": "Spätester Versandzeitpunkt",
+      "shippingDate": "Versand-Datum",
+      "latestDeliveryDeadline": "Spätester Lieferzeitpunkt",
+      "deliveryDate": "Liefer-Datum"
     },
     "fields": {
       "supplierDate": "Liefertermin Lieferant (1-14 Tage)",
