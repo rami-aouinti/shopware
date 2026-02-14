@@ -24,6 +24,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class LieferzeitenImportService
 {
+    private const INTERNAL_SHIPPING_LABEL = 'Versand durch First Medical';
+
     /**
      * SAN6 payload contract for internal deliveries without tracking.
      *
