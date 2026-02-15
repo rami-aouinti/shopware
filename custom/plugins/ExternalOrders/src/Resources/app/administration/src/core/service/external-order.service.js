@@ -6,6 +6,8 @@ class ExternalOrderService extends ApiService {
         this.name = 'externalOrderService';
     }
 
+    static DEMO_DATA_TIMEOUT_MS = 120000;
+
     async list({ channel = null, search = null } = {}) {
         const params = {};
         if (channel) {
@@ -77,6 +79,7 @@ class ExternalOrderService extends ApiService {
     async toggleTestData() {
         const response = await this.httpClient.post(`_action/${this.getApiBasePath()}/test-data/toggle`, {}, {
             headers: this.getBasicHeaders(),
+            timeout: ExternalOrderService.DEMO_DATA_TIMEOUT_MS,
         });
 
         const data = ApiService.handleResponse(response) ?? response?.data;
@@ -86,6 +89,7 @@ class ExternalOrderService extends ApiService {
     async seedTestData() {
         const response = await this.httpClient.post(`_action/${this.getApiBasePath()}/test-data`, {}, {
             headers: this.getBasicHeaders(),
+            timeout: ExternalOrderService.DEMO_DATA_TIMEOUT_MS,
         });
 
         const data = ApiService.handleResponse(response) ?? response?.data;
