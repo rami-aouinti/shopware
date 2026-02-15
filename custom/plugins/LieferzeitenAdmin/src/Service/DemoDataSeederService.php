@@ -16,8 +16,10 @@ class DemoDataSeederService
      */
     private const ORDER_PREFIX = 'DEMO-';
 
-    public function __construct(private readonly Connection $connection)
-    {
+    public function __construct(
+        private readonly Connection $connection,
+        private readonly LieferzeitenExternalOrderLinkService $externalOrderLinkService,
+    ) {
     }
 
 
@@ -79,13 +81,15 @@ class DemoDataSeederService
     {
         $created = [];
         $deleted = [];
+        $linkResult = ['linked' => 0, 'missingIds' => []];
 
-        $this->connection->transactional(function () use ($reset, &$created, &$deleted): void {
+        $this->connection->transactional(function () use ($reset, &$created, &$deleted, &$linkResult): void {
             if ($reset) {
                 $deleted = $this->cleanup();
             }
 
             $created = $this->insertDemoData();
+            $linkResult = $this->externalOrderLinkService->linkDemoExternalOrders($this->buildExpectedDemoExternalOrderIds());
         });
 
         return [
@@ -93,6 +97,7 @@ class DemoDataSeederService
             'reset' => $reset,
             'deleted' => $deleted,
             'created' => $created,
+            'linking' => $linkResult,
             'message' => 'Demo data generated successfully.',
         ];
     }
@@ -183,6 +188,24 @@ class DemoDataSeederService
         );
 
         return $counts;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function buildExpectedDemoExternalOrderIds(): array
+    {
+        return [
+            self::ORDER_PREFIX . '1001',
+            self::ORDER_PREFIX . '1002',
+            self::ORDER_PREFIX . '1003',
+            self::ORDER_PREFIX . '1004',
+            self::ORDER_PREFIX . '1005',
+            self::ORDER_PREFIX . '1006',
+            self::ORDER_PREFIX . '1007',
+            self::ORDER_PREFIX . '1008',
+            self::ORDER_PREFIX . '1999',
+        ];
     }
 
     /**
