@@ -11,7 +11,6 @@ Shopware.Component.register('lieferzeiten-statistics', {
     inject: [
         'lieferzeitenOrdersService',
         'lieferzeitenTrackingService',
-        'acl',
     ],
 
     mixins: ['notification'],
@@ -154,20 +153,40 @@ Shopware.Component.register('lieferzeiten-statistics', {
     },
 
     methods: {
+        getAclService() {
+            const injectedAcl = this.acl;
+
+            if (typeof injectedAcl?.can === 'function') {
+                return injectedAcl;
+            }
+
+            const serviceAcl = Shopware.Application.getContainer('service')?.acl;
+
+            if (typeof serviceAcl?.can === 'function') {
+                return serviceAcl;
+            }
+
+            return null;
+        },
+
         hasViewAccess() {
-            if (typeof this.acl?.can !== 'function') {
+            const aclService = this.getAclService();
+
+            if (!aclService) {
                 return false;
             }
 
-            return this.acl.can('lieferzeiten.viewer') || this.acl.can('admin');
+            return aclService.can('lieferzeiten.viewer') || aclService.can('admin');
         },
 
         hasEditAccess() {
-            if (typeof this.acl?.can !== 'function') {
+            const aclService = this.getAclService();
+
+            if (!aclService) {
                 return false;
             }
 
-            return this.acl.can('lieferzeiten.editor') || this.acl.can('admin');
+            return aclService.can('lieferzeiten.editor') || aclService.can('admin');
         },
 
         resolveActivityActions(item) {

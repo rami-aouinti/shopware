@@ -9,7 +9,7 @@ Component.register('lieferzeiten-task-assignment-rule-list', {
 
     mixins: ['notification'],
 
-    inject: ['repositoryFactory', 'acl'],
+    inject: ['repositoryFactory'],
 
     data() {
         return {
@@ -30,11 +30,13 @@ Component.register('lieferzeiten-task-assignment-rule-list', {
 
     computed: {
         hasEditAccess() {
-            if (typeof this.acl?.can !== 'function') {
+            const aclService = this.getAclService();
+
+            if (!aclService) {
                 return false;
             }
 
-            return this.acl.can('lieferzeiten.editor') || this.acl.can('admin');
+            return aclService.can('lieferzeiten.editor') || aclService.can('admin');
         },
 
         columns() {
@@ -59,6 +61,22 @@ Component.register('lieferzeiten-task-assignment-rule-list', {
     },
 
     methods: {
+        getAclService() {
+            const injectedAcl = this.acl;
+
+            if (typeof injectedAcl?.can === 'function') {
+                return injectedAcl;
+            }
+
+            const serviceAcl = Shopware.Application.getContainer('service')?.acl;
+
+            if (typeof serviceAcl?.can === 'function') {
+                return serviceAcl;
+            }
+
+            return null;
+        },
+
         extractErrorMessage(error) {
             return error?.response?.data?.errors?.[0]?.detail
                 || error?.response?.data?.message
