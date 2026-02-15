@@ -566,14 +566,18 @@ Component.register('lieferzeiten-channel-settings-list', {
 
             try {
                 const response = await this.lieferzeitenOrdersService.toggleDemoData();
-                this.hasDemoData = Boolean(response?.hasDemoData);
+                const isRemoved = response?.action === 'removed';
+                const hasSummary = Object.prototype.hasOwnProperty.call(response || {}, 'createdExternalOrders');
+                this.hasDemoData = isRemoved ? false : (hasSummary ? true : Boolean(response?.hasDemoData));
                 await this.loadData();
 
                 this.createNotificationSuccess({
                     title: this.$tc('lieferzeiten.lms.dashboard.demoDataTitle'),
-                    message: response?.action === 'removed'
+                    message: isRemoved
                         ? this.$tc('lieferzeiten.lms.dashboard.demoDataRemoved')
-                        : this.$tc('lieferzeiten.lms.dashboard.demoDataSaved'),
+                        : (hasSummary
+                            ? `${response?.createdExternalOrders ?? 0} externe Bestellungen, ${response?.createdLieferzeiten ?? 0} Lieferzeiten-Datensätze, ${response?.linked ?? 0} verknüpft.`
+                            : this.$tc('lieferzeiten.lms.dashboard.demoDataSaved')),
                 });
             } catch (error) {
                 this.notifyRequestError(error, this.$tc('lieferzeiten.lms.dashboard.demoDataTitle'));

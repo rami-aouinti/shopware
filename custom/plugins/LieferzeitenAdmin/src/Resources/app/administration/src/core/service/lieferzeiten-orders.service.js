@@ -97,7 +97,21 @@ class LieferzeitenOrdersService extends ApiService {
     }
 
     async toggleDemoData() {
-        const response = await this.httpClient.post(`_action/${this.getApiBasePath()}/demo-data/toggle`, {}, {
+        const status = await this.getDemoDataStatus();
+
+        if (Boolean(status?.hasDemoData)) {
+            const response = await this.httpClient.post(`_action/${this.getApiBasePath()}/demo-data/toggle`, {}, {
+                headers: this.getBasicHeaders(),
+            });
+
+            return ApiService.handleResponse(response) ?? response?.data ?? {};
+        }
+
+        return this.seedLinkedDemoData();
+    }
+
+    async seedLinkedDemoData() {
+        const response = await this.httpClient.post('_action/external-orders/demo-data/seed-linked', {}, {
             headers: this.getBasicHeaders(),
         });
 

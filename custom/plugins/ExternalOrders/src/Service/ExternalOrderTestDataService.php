@@ -102,6 +102,30 @@ class ExternalOrderTestDataService
         return count($upsertPayload);
     }
 
+    /**
+     * @return array<int, string>
+     */
+    public function getDemoExternalOrderIds(): array
+    {
+        $payloads = $this->fakeExternalOrderProvider->getSeedPayloads();
+        $externalIds = [];
+
+        foreach ($payloads as $payload) {
+            if (!is_array($payload)) {
+                continue;
+            }
+
+            $externalId = $this->resolveExternalId($payload);
+            if ($externalId === null) {
+                continue;
+            }
+
+            $externalIds[] = $externalId;
+        }
+
+        return array_values(array_unique($externalIds));
+    }
+
 
     private function buildDemoExternalIdFilter(): MultiFilter
     {
