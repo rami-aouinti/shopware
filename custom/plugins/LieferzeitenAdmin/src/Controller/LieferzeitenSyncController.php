@@ -315,7 +315,7 @@ class LieferzeitenSyncController extends AbstractController
         ));
 
         $expectedExternalOrderIds = $this->externalOrderTestDataService->getDemoExternalOrderIds();
-        $linkResult = $this->demoDataSeederService->linkExpectedDemoExternalOrders($expectedExternalOrderIds, $seedRunId, $seedSourceMarker);
+        $linkResult = $this->demoDataSeederService->linkExpectedDemoExternalOrders($expectedExternalOrderIds, $seedRunId, $seedSourceMarker, true);
         $deletedCount = (int) ($linkResult['deletedCount'] ?? ($linkResult['deletedMissingPackages'] ?? 0));
         $destructiveCleanup = (bool) ($linkResult['destructiveCleanup'] ?? false);
 

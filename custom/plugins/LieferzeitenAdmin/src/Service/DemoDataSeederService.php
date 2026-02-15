@@ -112,9 +112,19 @@ class DemoDataSeederService
      * @param array<int, string>|null $expectedExternalOrderIds
      * @return array{linked:int, missingIds:array<int, string>, deletedCount:int, deletedMissingPackages:int, destructiveCleanup:bool}
      */
-    public function linkExpectedDemoExternalOrders(?array $expectedExternalOrderIds = null, ?string $seedRunId = null, ?string $expectedSourceMarker = null): array
+    public function linkExpectedDemoExternalOrders(
+        ?array $expectedExternalOrderIds = null,
+        ?string $seedRunId = null,
+        ?string $expectedSourceMarker = null,
+        bool $allowDestructiveCleanup = false,
+    ): array
     {
-        return $this->externalOrderLinkService->linkDemoExternalOrders($expectedExternalOrderIds ?? $this->externalOrderTestDataService->getDemoExternalOrderIds(), $seedRunId, $expectedSourceMarker);
+        return $this->externalOrderLinkService->linkDemoExternalOrders(
+            $expectedExternalOrderIds ?? $this->externalOrderTestDataService->getDemoExternalOrderIds(),
+            $seedRunId,
+            $expectedSourceMarker,
+            $allowDestructiveCleanup,
+        );
     }
 
     /**
