@@ -44,6 +44,13 @@ class LieferzeitenExternalOrderLinkService
         $destructiveCleanup = $this->canUseDestructiveCleanup($seedRunId, $expectedSourceMarker, $allowDestructiveCleanup);
         $cleanupMarker = $destructiveCleanup ? $expectedSourceMarker : null;
 
+        if ($allowDestructiveCleanup === true && $destructiveCleanup === false) {
+            $this->logger->warning('Destructive cleanup was requested but ignored because the current seed run marker is invalid.', [
+                'seedRunId' => $seedRunId,
+                'expectedSourceMarker' => $expectedSourceMarker,
+            ]);
+        }
+
         $persistedExternalOrderIds = $this->fetchPersistedDemoExternalOrderIds();
 
         if ($persistedExternalOrderIds === []) {
@@ -149,27 +156,27 @@ class LieferzeitenExternalOrderLinkService
     }
 
     /**
-     * @param array<int, string> $externalOrderIds
+     * @param array<int, string> $missingExternalOrderIds
      */
-    private function cleanupMissingPakete(array $externalOrderIds, ?string $cleanupMarker): int
+    private function cleanupMissingPakete(array $missingExternalOrderIds, ?string $cleanupMarker): int
     {
-        if ($externalOrderIds === []) {
+        if ($missingExternalOrderIds === []) {
             return 0;
         }
 
         if ($cleanupMarker === null) {
             $this->logger->warning('Missing Lieferzeiten demo external order IDs detected. Destructive cleanup is disabled by default; no pakete were deleted.', [
-                'missingIds' => $externalOrderIds,
+                'missingIds' => $missingExternalOrderIds,
             ]);
 
             return 0;
         }
 
-        $deletedRows = $this->deletePaketeByExternalOrderIdsAndMarker($externalOrderIds, $cleanupMarker);
+        $deletedRows = $this->deletePaketeCreatedInCurrentRun($missingExternalOrderIds, $cleanupMarker);
 
         if ($deletedRows === 0) {
             $this->logger->warning('No Lieferzeiten pakete deleted for missing external order IDs because no rows matched the current seed marker.', [
-                'missingIds' => $externalOrderIds,
+                'missingIds' => $missingExternalOrderIds,
                 'cleanupMarker' => $cleanupMarker,
             ]);
         }
@@ -180,7 +187,7 @@ class LieferzeitenExternalOrderLinkService
     /**
      * @param array<int, string> $externalOrderIds
      */
-    private function deletePaketeByExternalOrderIdsAndMarker(array $externalOrderIds, string $cleanupMarker): int
+    private function deletePaketeCreatedInCurrentRun(array $externalOrderIds, string $cleanupMarker): int
     {
         $placeholders = implode(',', array_fill(0, count($externalOrderIds), '?'));
         $params = [...$externalOrderIds, $cleanupMarker];
