@@ -150,7 +150,7 @@
         <service id="LieferzeitenAdmin\Service\DemoDataSeederService">
             <argument type="service" id="Doctrine\DBAL\Connection" />
             <argument type="service" id="LieferzeitenAdmin\Service\LieferzeitenExternalOrderLinkService" />
-            <argument type="service" id="ExternalOrders\Service\ExternalOrderTestDataService" />
+            <argument type="service" id="ExternalOrders\Service\ExternalOrderTestDataService" on-invalid="null" />
         </service>
 
         <service id="LieferzeitenAdmin\Service\Tracking\DhlTrackingClient">
@@ -198,7 +198,9 @@
             <argument type="service" id="lieferzeiten_task.repository" />
             <argument type="service" id="LieferzeitenAdmin\Service\ChannelPdmsThresholdResolver" />
         </service>
-        <service id="LieferzeitenAdmin\Controller\LieferzeitenSyncController" public="true" />
+        <service id="LieferzeitenAdmin\Controller\LieferzeitenSyncController" public="true">
+            <argument key="$externalOrderTestDataService" type="service" id="ExternalOrders\Service\ExternalOrderTestDataService" on-invalid="null" />
+        </service>
         <service id="LieferzeitenAdmin\Controller\LieferzeitenOrderStatusController" public="true" />
 
         <service id="LieferzeitenAdmin\ScheduledTask\LieferzeitenImportTask">

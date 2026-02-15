@@ -39,7 +39,7 @@ class LieferzeitenSyncController extends AbstractController
         private readonly LieferzeitenOrderStatusWriteService $orderStatusWriteService,
         private readonly LieferzeitenStatisticsService $statisticsService,
         private readonly DemoDataSeederService $demoDataSeederService,
-        private readonly ExternalOrderTestDataService $externalOrderTestDataService,
+        private readonly ?ExternalOrderTestDataService $externalOrderTestDataService,
         private readonly AuditLogService $auditLogService,
         private readonly PdmsLieferzeitenMappingService $pdmsLieferzeitenMappingService,
     ) {
@@ -303,6 +303,13 @@ class LieferzeitenSyncController extends AbstractController
     )]
     public function seedLinkedDemoData(Request $request, Context $context): JsonResponse
     {
+        if ($this->externalOrderTestDataService === null) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'ExternalOrders plugin is required for linked demo data seeding',
+            ], Response::HTTP_FAILED_DEPENDENCY);
+        }
+
         $payload = json_decode((string) $request->getContent(), true);
         $allowDestructiveCleanup = is_array($payload) ? (bool) ($payload['destructiveCleanup'] ?? $payload['allowDestructiveCleanup'] ?? false) : false;
 
