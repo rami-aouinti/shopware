@@ -15,7 +15,10 @@
 
         <service id="ExternalOrders\Service\FakeExternalOrderProvider" />
         <service id="ExternalOrders\Service\ExternalOrderTestDataService">
-            <argument type="service" id="external_order.repository" />
+            <argument key="$orderRepository" type="service" id="order.repository" />
+            <argument key="$fakeExternalOrderProvider" type="service" id="ExternalOrders\Service\FakeExternalOrderProvider" />
+            <argument key="$externalToOrderMapper" type="service" id="ExternalOrders\Service\ExternalToOrderMapper" />
+            <argument key="$connection" type="service" id="Doctrine\DBAL\Connection" />
         </service>
         <service id="ExternalOrders\Service\ExternalOrderService">
             <argument key="$orderRepository" type="service" id="order.repository" />
