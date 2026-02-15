@@ -9,6 +9,11 @@ use Shopware\Core\Framework\Uuid\Uuid;
 class DemoDataSeederService
 {
     private const DOMAINS = ['First Medical', 'E-Commerce', 'Medical Solutions'];
+
+    /**
+     * Official external order ID demo format: DEMO-{CHANNEL}-{NNN} (e.g. DEMO-B2B-001).
+     * Keep this prefix aligned with ExternalOrders\Service\FakeExternalOrderProvider::DEMO_ORDER_PREFIX.
+     */
     private const ORDER_PREFIX = 'DEMO-';
 
     public function __construct(private readonly Connection $connection)

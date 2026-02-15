@@ -4,6 +4,11 @@ namespace ExternalOrders\Service;
 
 class FakeExternalOrderProvider
 {
+    /**
+     * Official demo external order ID prefix shared with LieferzeitenAdmin demo seeding.
+     */
+    public const DEMO_ORDER_PREFIX = 'DEMO-';
+
     private const CHANNELS = [
         'b2b',
         'ebay_de',
@@ -454,7 +459,7 @@ class FakeExternalOrderProvider
 
         foreach (self::CHANNELS as $channel) {
             for ($index = 1; $index <= $perChannel; $index += 1) {
-                $id = sprintf('fake-%s-%03d', $channel, $index);
+                $id = sprintf('%s%s-%03d', self::DEMO_ORDER_PREFIX, strtoupper($channel), $index);
                 $firstName = $this->pickValue(self::FIRST_NAMES, $id, 1);
                 $lastName = $this->pickValue(self::LAST_NAMES, $id, 2);
                 $customerName = sprintf('%s %s', $firstName, $lastName);
