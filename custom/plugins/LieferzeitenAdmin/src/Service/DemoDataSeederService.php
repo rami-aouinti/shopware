@@ -17,6 +17,7 @@ class DemoDataSeederService
      */
     private const ORDER_PREFIX = 'DEMO-';
     private const DEMO_DATASET_SIZE = 9;
+    private const SEED_MARKER_PREFIX = 'demo.seeder.run:';
 
     public function __construct(
         private readonly Connection $connection,
@@ -80,21 +81,25 @@ class DemoDataSeederService
     /**
      * @return array<string, mixed>
      */
-    public function seed(Context $context, bool $reset = false): array
+    public function seed(Context $context, bool $reset = false, bool $linkExternalOrders = true, ?string $seedRunId = null): array
     {
         $created = [];
         $deleted = [];
-        $linkResult = ['linked' => 0, 'missingIds' => []];
+        $linkResult = ['linked' => 0, 'missingIds' => [], 'deletedMissingPackages' => 0, 'destructiveCleanup' => false];
 
-        $this->connection->transactional(function () use ($reset, &$created, &$deleted, &$linkResult): void {
+        $this->connection->transactional(function () use ($reset, $linkExternalOrders, $seedRunId, &$created, &$deleted, &$linkResult): void {
             $expectedDemoExternalOrderIds = $this->buildExpectedDemoExternalOrderIds();
 
             if ($reset) {
                 $deleted = $this->cleanup();
             }
 
-            $created = $this->insertDemoData($expectedDemoExternalOrderIds);
-            $linkResult = $this->externalOrderLinkService->linkDemoExternalOrders($expectedDemoExternalOrderIds);
+            $seedMarker = self::SEED_MARKER_PREFIX . ($seedRunId ?: 'default');
+            $created = $this->insertDemoData($expectedDemoExternalOrderIds, $seedMarker);
+
+            if ($linkExternalOrders) {
+                $linkResult = $this->externalOrderLinkService->linkDemoExternalOrders($expectedDemoExternalOrderIds, $seedRunId, $seedMarker);
+            }
         });
 
         return [
@@ -110,11 +115,11 @@ class DemoDataSeederService
 
     /**
      * @param array<int, string>|null $expectedExternalOrderIds
-     * @return array{linked:int, missingIds:array<int, string>}
+     * @return array{linked:int, missingIds:array<int, string>, deletedMissingPackages:int, destructiveCleanup:bool}
      */
-    public function linkExpectedDemoExternalOrders(?array $expectedExternalOrderIds = null): array
+    public function linkExpectedDemoExternalOrders(?array $expectedExternalOrderIds = null, ?string $seedRunId = null, ?string $expectedSourceMarker = null): array
     {
-        return $this->externalOrderLinkService->linkDemoExternalOrders($expectedExternalOrderIds ?? $this->buildExpectedDemoExternalOrderIds());
+        return $this->externalOrderLinkService->linkDemoExternalOrders($expectedExternalOrderIds ?? $this->buildExpectedDemoExternalOrderIds(), $seedRunId, $expectedSourceMarker);
     }
 
     /**
@@ -266,7 +271,7 @@ class DemoDataSeederService
     /**
      * @return array<string, int>
      */
-    private function insertDemoData(array $externalOrderIds): array
+    private function insertDemoData(array $externalOrderIds, string $seedMarker): array
     {
         $counts = [
             'paket' => 0,
@@ -307,7 +312,7 @@ class DemoDataSeederService
                 'payment_date' => $dataset['paymentDate']->format('Y-m-d H:i:s'),
                 'calculated_delivery_date' => $dataset['calculatedDeliveryDate']->format('Y-m-d H:i:s'),
                 'is_test_order' => $dataset['isTestOrder'] ? 1 : 0,
-                'last_changed_by' => 'demo.seeder',
+                'last_changed_by' => $seedMarker,
                 'last_changed_at' => $now->format('Y-m-d H:i:s'),
                 'created_at' => $now->format('Y-m-d H:i:s'),
             ]);

@@ -303,22 +303,29 @@ class LieferzeitenSyncController extends AbstractController
     )]
     public function seedLinkedDemoData(Context $context): JsonResponse
     {
+        $seedRunId = Uuid::randomHex();
+        $seedSourceMarker = 'demo.seeder.run:' . $seedRunId;
+
         $removedExternalOrders = $this->externalOrderTestDataService->removeSeededFakeOrders($context);
         $createdExternalOrders = $this->externalOrderTestDataService->seedFakeOrdersOnce($context);
-        $lieferzeitenResult = $this->demoDataSeederService->seed($context, true);
+        $lieferzeitenResult = $this->demoDataSeederService->seed($context, true, false, $seedRunId);
         $createdLieferzeiten = array_sum(array_map(
             static fn ($value): int => (int) $value,
             is_array($lieferzeitenResult['created'] ?? null) ? $lieferzeitenResult['created'] : [],
         ));
 
         $expectedExternalOrderIds = $this->externalOrderTestDataService->getDemoExternalOrderIds();
-        $linkResult = $this->demoDataSeederService->linkExpectedDemoExternalOrders($expectedExternalOrderIds);
+        $linkResult = $this->demoDataSeederService->linkExpectedDemoExternalOrders($expectedExternalOrderIds, $seedRunId, $seedSourceMarker);
+        $deletedMissingPackages = (int) ($linkResult['deletedMissingPackages'] ?? 0);
+        $destructiveCleanup = (bool) ($linkResult['destructiveCleanup'] ?? false);
 
         $summary = [
             'createdExternalOrders' => $createdExternalOrders,
             'createdLieferzeiten' => $createdLieferzeiten,
             'linked' => (int) ($linkResult['linked'] ?? 0),
             'missing' => is_array($linkResult['missingIds'] ?? null) ? $linkResult['missingIds'] : [],
+            'deletedMissingPackages' => $deletedMissingPackages,
+            'destructiveCleanup' => $destructiveCleanup,
         ];
 
         $this->auditLogService->log('demo_data_seeded_linked', 'lieferzeiten_demo_data', null, $context, [
@@ -329,6 +336,12 @@ class LieferzeitenSyncController extends AbstractController
             'lieferzeiten' => [
                 'created' => $lieferzeitenResult['created'] ?? [],
                 'deleted' => $lieferzeitenResult['deleted'] ?? [],
+            ],
+            'linking' => [
+                'seedRunId' => $seedRunId,
+                'seedSourceMarker' => $seedSourceMarker,
+                'deletedMissingPackages' => $deletedMissingPackages,
+                'destructiveCleanup' => $destructiveCleanup,
             ],
             'summary' => $summary,
         ], 'shopware');
