@@ -7,7 +7,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
@@ -17,11 +16,12 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 class ExternalOrderSyncService
 {
     public function __construct(
-        private readonly EntityRepository $externalOrderRepository,
+        private readonly EntityRepository $orderRepository,
         private readonly HttpClientInterface $httpClient,
         private readonly SystemConfigService $systemConfigService,
         private readonly LoggerInterface $logger,
         private readonly TopmSan6Client $topmSan6Client,
+        private readonly ExternalToOrderMapper $externalToOrderMapper,
     ) {
     }
 
@@ -73,13 +73,23 @@ class ExternalOrderSyncService
 
         foreach (array_chunk($externalIds, $chunkSize) as $chunk) {
             $criteria = new Criteria();
-            $criteria->addFilter(new EqualsAnyFilter('externalId', $chunk));
+            $criteria->addFilter(new EqualsAnyFilter('customFields.external_order_id', $chunk));
             $criteria->setLimit(count($chunk));
 
-            $result = $this->externalOrderRepository->search($criteria, $context);
+            $result = $this->orderRepository->search($criteria, $context);
 
             foreach ($result->getEntities() as $entity) {
-                $mapping[$entity->getExternalId()] = $entity->getId();
+                $customFields = $entity->getCustomFields();
+                if (!is_array($customFields)) {
+                    continue;
+                }
+
+                $existingExternalId = $customFields['external_order_id'] ?? null;
+                if (!is_string($existingExternalId) || $existingExternalId === '') {
+                    continue;
+                }
+
+                $mapping[$existingExternalId] = $entity->getId();
             }
         }
 
@@ -257,6 +267,7 @@ class ExternalOrderSyncService
 
         $existingIds = $this->fetchExistingIds($externalIds, $context);
         $insertPayload = [];
+        $seenExternalIds = [];
 
         foreach ($orders as $order) {
             if (!is_array($order)) {
@@ -264,17 +275,13 @@ class ExternalOrderSyncService
             }
 
             $externalId = $this->resolveExternalId($order);
-            if ($externalId === null || isset($existingIds[$externalId])) {
+            if ($externalId === null || isset($existingIds[$externalId]) || isset($seenExternalIds[$externalId])) {
                 continue;
             }
 
-            $order['channel'] = $order['channel'] ?? $channel;
+            $seenExternalIds[$externalId] = true;
 
-            $insertPayload[] = [
-                'id' => Uuid::randomHex(),
-                'externalId' => $externalId,
-                'payload' => $order,
-            ];
+            $insertPayload[] = $this->externalToOrderMapper->mapToOrderPayload($order, $channel, $externalId);
         }
 
         if ($insertPayload === []) {
@@ -285,7 +292,7 @@ class ExternalOrderSyncService
             return;
         }
 
-        $this->externalOrderRepository->upsert($insertPayload, $context);
+        $this->orderRepository->upsert($insertPayload, $context);
         $this->logger->info('External Orders sync finished.', [
             'channel' => $channel,
             'total' => count($insertPayload),
