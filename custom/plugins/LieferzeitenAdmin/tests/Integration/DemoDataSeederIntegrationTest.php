@@ -9,6 +9,8 @@ use LieferzeitenAdmin\Service\ChannelDateSettingsProvider;
 use LieferzeitenAdmin\Service\ChannelPdmsThresholdResolver;
 use LieferzeitenAdmin\Service\LieferzeitenOrderOverviewService;
 use LieferzeitenAdmin\Service\LieferzeitenStatisticsService;
+use LieferzeitenAdmin\Service\LieferzeitenExternalOrderLinkService;
+use ExternalOrders\Service\ExternalOrderTestDataService;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -28,7 +30,7 @@ class DemoDataSeederIntegrationTest extends TestCase
 
     public function testDemoDataCreationIsSuccessful(): void
     {
-        $seeder = new DemoDataSeederService($this->connection);
+        $seeder = $this->createSeeder();
 
         $result = $seeder->seed(Context::createDefaultContext(), false);
 
@@ -37,11 +39,12 @@ class DemoDataSeederIntegrationTest extends TestCase
         static::assertGreaterThan(0, $result['created']['position']);
         static::assertGreaterThan(0, $result['created']['notificationEvents']);
         static::assertGreaterThan(0, $result['created']['taskAssignmentRules']);
+        static::assertSame([], $result['linking']['missingIds']);
     }
 
     public function testRerunDoesNotCreateDuplicates(): void
     {
-        $seeder = new DemoDataSeederService($this->connection);
+        $seeder = $this->createSeeder();
 
         $seeder->seed(Context::createDefaultContext(), false);
         $firstCount = (int) $this->connection->fetchOne('SELECT COUNT(*) FROM lieferzeiten_paket');
@@ -65,7 +68,7 @@ class DemoDataSeederIntegrationTest extends TestCase
 
     public function testResetThenReseedWorks(): void
     {
-        $seeder = new DemoDataSeederService($this->connection);
+        $seeder = $this->createSeeder();
         $seeder->seed(Context::createDefaultContext(), false);
 
         $result = $seeder->seed(Context::createDefaultContext(), true);
@@ -77,7 +80,7 @@ class DemoDataSeederIntegrationTest extends TestCase
 
     public function testSeededDataIsVisibleInListingAndStatisticsEndpoints(): void
     {
-        $seeder = new DemoDataSeederService($this->connection);
+        $seeder = $this->createSeeder();
         $seeder->seed(Context::createDefaultContext(), false);
 
         $orderOverviewService = new LieferzeitenOrderOverviewService($this->connection);
@@ -99,6 +102,35 @@ class DemoDataSeederIntegrationTest extends TestCase
 
         $statusCoverage = $this->connection->fetchFirstColumn('SELECT DISTINCT status FROM lieferzeiten_paket WHERE is_test_order = 0 ORDER BY status');
         static::assertSame(['1', '2', '3', '4', '5', '6', '7', '8'], $statusCoverage);
+    }
+
+
+    private function createSeeder(): DemoDataSeederService
+    {
+        $externalIds = [
+            'DEMO-B2B-001',
+            'DEMO-EBAY_DE-001',
+            'DEMO-KAUFLAND-001',
+            'DEMO-EBAY_AT-001',
+            'DEMO-ZONAMI-001',
+            'DEMO-PEG-001',
+            'DEMO-BEZB-001',
+            'DEMO-B2B-002',
+            'DEMO-EBAY_DE-002',
+        ];
+
+        $linkService = $this->createMock(LieferzeitenExternalOrderLinkService::class);
+        $linkService
+            ->method('linkDemoExternalOrders')
+            ->with($externalIds)
+            ->willReturn(['linked' => count($externalIds), 'missingIds' => []]);
+
+        $externalOrderTestDataService = $this->createMock(ExternalOrderTestDataService::class);
+        $externalOrderTestDataService
+            ->method('getDemoExternalOrderIds')
+            ->willReturn($externalIds);
+
+        return new DemoDataSeederService($this->connection, $linkService, $externalOrderTestDataService);
     }
 
     private function createSchema(Connection $connection): void

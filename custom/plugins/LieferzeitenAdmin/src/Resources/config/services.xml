@@ -150,6 +150,7 @@
         <service id="LieferzeitenAdmin\Service\DemoDataSeederService">
             <argument type="service" id="Doctrine\DBAL\Connection" />
             <argument type="service" id="LieferzeitenAdmin\Service\LieferzeitenExternalOrderLinkService" />
+            <argument type="service" id="ExternalOrders\Service\ExternalOrderTestDataService" />
         </service>
 
         <service id="LieferzeitenAdmin\Service\Tracking\DhlTrackingClient">
