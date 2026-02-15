@@ -134,6 +134,46 @@ class DemoDataSeederIntegrationTest extends TestCase
         static::assertSame(count($externalIds), (int) $this->connection->fetchOne('SELECT COUNT(*) FROM lieferzeiten_paket'));
     }
 
+
+    public function testMissingIdsAreReportedWithoutCleanupByDefault(): void
+    {
+        $seedRunId = 'run-safe-mode';
+        $seedMarker = 'demo.seeder.run:' . $seedRunId;
+        $missingId = 'DEMO-MISSING-001';
+
+        $this->insertPaketForExternalOrder($missingId, $seedMarker, 'PKT-MISS-CURRENT');
+        $this->insertPaketForExternalOrder($missingId, 'demo.seeder.run:previous', 'PKT-MISS-PREV');
+        $this->connection->insert('external_order_data', ['id' => '1', 'external_id' => 'DEMO-EXISTS-001']);
+
+        $linkService = new LieferzeitenExternalOrderLinkService($this->connection, $this->createMock(\Psr\Log\LoggerInterface::class));
+        $result = $linkService->linkDemoExternalOrders(['DEMO-EXISTS-001', $missingId], $seedRunId, $seedMarker);
+
+        static::assertSame([$missingId], $result['missingIds']);
+        static::assertSame(0, $result['deletedCount']);
+        static::assertFalse($result['destructiveCleanup']);
+        static::assertSame(2, (int) $this->connection->fetchOne('SELECT COUNT(*) FROM lieferzeiten_paket WHERE external_order_id = ?', [$missingId]));
+    }
+
+    public function testDestructiveCleanupOnlyDeletesRowsFromCurrentRunMarker(): void
+    {
+        $seedRunId = 'run-destructive';
+        $seedMarker = 'demo.seeder.run:' . $seedRunId;
+        $missingId = 'DEMO-MISSING-002';
+
+        $this->insertPaketForExternalOrder($missingId, $seedMarker, 'PKT-DEL-CURRENT');
+        $this->insertPaketForExternalOrder($missingId, 'demo.seeder.run:previous', 'PKT-KEEP-PREVIOUS');
+        $this->connection->insert('external_order_data', ['id' => '2', 'external_id' => 'DEMO-EXISTS-002']);
+
+        $linkService = new LieferzeitenExternalOrderLinkService($this->connection, $this->createMock(\Psr\Log\LoggerInterface::class));
+        $result = $linkService->linkDemoExternalOrders(['DEMO-EXISTS-002', $missingId], $seedRunId, $seedMarker, true);
+
+        static::assertTrue($result['destructiveCleanup']);
+        static::assertSame([$missingId], $result['missingIds']);
+        static::assertSame(1, $result['deletedCount']);
+        static::assertSame(1, (int) $this->connection->fetchOne('SELECT COUNT(*) FROM lieferzeiten_paket WHERE external_order_id = ?', [$missingId]));
+        static::assertSame(1, (int) $this->connection->fetchOne('SELECT COUNT(*) FROM lieferzeiten_paket WHERE external_order_id = ? AND last_changed_by = ?', [$missingId, 'demo.seeder.run:previous']));
+    }
+
     public function testSeededDataIsVisibleInListingAndStatisticsEndpoints(): void
     {
         $seeder = $this->createSeeder();
@@ -193,6 +233,31 @@ class DemoDataSeederIntegrationTest extends TestCase
             ->willReturn($externalIds);
 
         return new DemoDataSeederService($this->connection, $linkService, $externalOrderTestDataService);
+    }
+
+
+    private function insertPaketForExternalOrder(string $externalOrderId, string $lastChangedBy, string $paketNumber): void
+    {
+        $this->connection->insert('lieferzeiten_paket', [
+            'id' => random_bytes(16),
+            'paket_number' => $paketNumber,
+            'external_order_id' => $externalOrderId,
+            'source_system' => 'First Medical',
+            'status' => '1',
+            'shipping_assignment_type' => 'dhl',
+            'partial_shipment_quantity' => null,
+            'order_date' => '2026-01-01 00:00:00',
+            'shipping_date' => '2026-01-02 00:00:00',
+            'delivery_date' => '2026-01-03 00:00:00',
+            'business_date_from' => '2026-01-02 00:00:00',
+            'business_date_to' => '2026-01-03 00:00:00',
+            'payment_date' => '2026-01-01 00:00:00',
+            'calculated_delivery_date' => '2026-01-03 00:00:00',
+            'is_test_order' => 0,
+            'last_changed_by' => $lastChangedBy,
+            'last_changed_at' => '2026-01-01 00:00:00',
+            'created_at' => '2026-01-01 00:00:00',
+        ]);
     }
 
     private function createSchema(Connection $connection): void

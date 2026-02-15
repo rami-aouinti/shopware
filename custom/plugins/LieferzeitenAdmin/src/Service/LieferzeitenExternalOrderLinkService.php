@@ -25,7 +25,12 @@ class LieferzeitenExternalOrderLinkService
      * @param array<int, string> $expectedExternalOrderIds
      * @return array{linked:int, missingIds:array<int, string>, deletedCount:int, deletedMissingPackages:int, destructiveCleanup:bool}
      */
-    public function linkDemoExternalOrders(array $expectedExternalOrderIds, ?string $seedRunId = null, ?string $expectedSourceMarker = null): array
+    public function linkDemoExternalOrders(
+        array $expectedExternalOrderIds,
+        ?string $seedRunId = null,
+        ?string $expectedSourceMarker = null,
+        bool $allowDestructiveCleanup = false,
+    ): array
     {
         $expectedExternalOrderIds = array_values(array_unique(array_filter(
             $expectedExternalOrderIds,
@@ -36,7 +41,7 @@ class LieferzeitenExternalOrderLinkService
             return ['linked' => 0, 'missingIds' => [], 'deletedCount' => 0, 'deletedMissingPackages' => 0, 'destructiveCleanup' => false];
         }
 
-        $destructiveCleanup = $this->canUseDestructiveCleanup($seedRunId, $expectedSourceMarker);
+        $destructiveCleanup = $this->canUseDestructiveCleanup($seedRunId, $expectedSourceMarker, $allowDestructiveCleanup);
         $cleanupMarker = $destructiveCleanup ? self::SEED_MARKER_PREFIX . $seedRunId : null;
 
         $persistedExternalOrderIds = $this->fetchPersistedDemoExternalOrderIds();
@@ -186,8 +191,12 @@ class LieferzeitenExternalOrderLinkService
         );
     }
 
-    private function canUseDestructiveCleanup(?string $seedRunId, ?string $expectedSourceMarker): bool
+    private function canUseDestructiveCleanup(?string $seedRunId, ?string $expectedSourceMarker, bool $allowDestructiveCleanup): bool
     {
+        if ($allowDestructiveCleanup !== true) {
+            return false;
+        }
+
         if (!is_string($seedRunId) || $seedRunId === '' || !is_string($expectedSourceMarker) || $expectedSourceMarker === '') {
             return false;
         }
