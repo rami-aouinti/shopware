@@ -18,11 +18,13 @@
         </service>
         <service id="ExternalOrders\Service\TopmSan6OrderMapper" />
         <service id="ExternalOrders\Service\TopmSan6Client" />
+        <service id="ExternalOrders\Service\ExternalToOrderMapper" />
         <service id="ExternalOrders\Service\TopmSan6OrderExportService">
             <argument type="service" id="order.repository" />
         </service>
         <service id="ExternalOrders\Service\ExternalOrderSyncService">
-            <argument type="service" id="external_order.repository" />
+            <argument key="$orderRepository" type="service" id="order.repository" />
+            <argument key="$externalToOrderMapper" type="service" id="ExternalOrders\Service\ExternalToOrderMapper" />
         </service>
         <service id="ExternalOrders\Controller\ExternalOrderController" public="true" />
 
