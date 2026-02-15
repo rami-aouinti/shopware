@@ -40,6 +40,9 @@ class DemoDataSeederIntegrationTest extends TestCase
         static::assertGreaterThan(0, $result['created']['notificationEvents']);
         static::assertGreaterThan(0, $result['created']['taskAssignmentRules']);
         static::assertSame([], $result['linking']['missingIds']);
+        static::assertSame(9, $result['linking']['linked']);
+        static::assertSame(0, $result['linking']['deletedCount']);
+        static::assertFalse($result['linking']['destructiveCleanup']);
     }
 
     public function testRerunDoesNotCreateDuplicates(): void
@@ -76,6 +79,59 @@ class DemoDataSeederIntegrationTest extends TestCase
         static::assertTrue($result['reset']);
         static::assertGreaterThan(0, array_sum($result['deleted']));
         static::assertSame(9, $result['created']['paket']);
+    }
+
+
+    public function testLinkingKeepsValidPaketeAndLinksAllGeneratedExternalOrders(): void
+    {
+        $externalIds = [
+            'DEMO-B2B-001',
+            'DEMO-EBAY_DE-001',
+            'DEMO-KAUFLAND-001',
+            'DEMO-EBAY_AT-001',
+            'DEMO-ZONAMI-001',
+            'DEMO-PEG-001',
+            'DEMO-BEZB-001',
+            'DEMO-B2B-002',
+            'DEMO-EBAY_DE-002',
+        ];
+
+        foreach ($externalIds as $index => $externalId) {
+            $this->connection->insert('lieferzeiten_paket', [
+                'id' => random_bytes(16),
+                'paket_number' => sprintf('PKT-%03d', $index + 1),
+                'external_order_id' => $externalId,
+                'source_system' => 'First Medical',
+                'status' => '1',
+                'shipping_assignment_type' => 'dhl',
+                'partial_shipment_quantity' => null,
+                'order_date' => '2026-01-01 00:00:00',
+                'shipping_date' => '2026-01-02 00:00:00',
+                'delivery_date' => '2026-01-03 00:00:00',
+                'business_date_from' => '2026-01-02 00:00:00',
+                'business_date_to' => '2026-01-03 00:00:00',
+                'payment_date' => '2026-01-01 00:00:00',
+                'calculated_delivery_date' => '2026-01-03 00:00:00',
+                'is_test_order' => 0,
+                'last_changed_by' => 'demo.seeder.run:previous',
+                'last_changed_at' => '2026-01-01 00:00:00',
+                'created_at' => '2026-01-01 00:00:00',
+            ]);
+
+            $this->connection->insert('external_order_data', [
+                'id' => (string) ($index + 1),
+                'external_id' => $externalId,
+            ]);
+        }
+
+        $linkService = new LieferzeitenExternalOrderLinkService($this->connection, $this->createMock(\Psr\Log\LoggerInterface::class));
+        $result = $linkService->linkDemoExternalOrders($externalIds);
+
+        static::assertSame([], $result['missingIds']);
+        static::assertSame(count($externalIds), $result['linked']);
+        static::assertSame(0, $result['deletedCount']);
+        static::assertFalse($result['destructiveCleanup']);
+        static::assertSame(count($externalIds), (int) $this->connection->fetchOne('SELECT COUNT(*) FROM lieferzeiten_paket'));
     }
 
     public function testSeededDataIsVisibleInListingAndStatisticsEndpoints(): void
@@ -123,7 +179,13 @@ class DemoDataSeederIntegrationTest extends TestCase
         $linkService
             ->method('linkDemoExternalOrders')
             ->with($externalIds)
-            ->willReturn(['linked' => count($externalIds), 'missingIds' => []]);
+            ->willReturn([
+                'linked' => count($externalIds),
+                'missingIds' => [],
+                'deletedCount' => 0,
+                'deletedMissingPackages' => 0,
+                'destructiveCleanup' => false,
+            ]);
 
         $externalOrderTestDataService = $this->createMock(ExternalOrderTestDataService::class);
         $externalOrderTestDataService
@@ -249,6 +311,11 @@ class DemoDataSeederIntegrationTest extends TestCase
             last_changed_by TEXT,
             last_changed_at TEXT,
             created_at TEXT
+        )');
+
+        $connection->executeStatement('CREATE TABLE external_order_data (
+            id TEXT PRIMARY KEY,
+            external_id TEXT
         )');
 
         $connection->executeStatement('CREATE TABLE lieferzeiten_task (

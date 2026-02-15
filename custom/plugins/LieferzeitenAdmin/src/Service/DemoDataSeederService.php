@@ -10,13 +10,8 @@ use Shopware\Core\Framework\Uuid\Uuid;
 class DemoDataSeederService
 {
     private const DOMAINS = ['First Medical', 'E-Commerce', 'Medical Solutions'];
-
-    /**
-     * Official external order ID demo format: DEMO-{CHANNEL}-{NNN} (e.g. DEMO-B2B-001).
-     * Keep this prefix aligned with ExternalOrders\Service\FakeExternalOrderProvider::DEMO_ORDER_PREFIX.
-     */
     private const ORDER_PREFIX = 'DEMO-';
-    private const DEMO_DATASET_SIZE = 9;
+
     private const SEED_MARKER_PREFIX = 'demo.seeder.run:';
 
     public function __construct(
@@ -85,10 +80,10 @@ class DemoDataSeederService
     {
         $created = [];
         $deleted = [];
-        $linkResult = ['linked' => 0, 'missingIds' => [], 'deletedMissingPackages' => 0, 'destructiveCleanup' => false];
+        $linkResult = ['linked' => 0, 'missingIds' => [], 'deletedCount' => 0, 'deletedMissingPackages' => 0, 'destructiveCleanup' => false];
 
         $this->connection->transactional(function () use ($reset, $linkExternalOrders, $seedRunId, &$created, &$deleted, &$linkResult): void {
-            $expectedDemoExternalOrderIds = $this->buildExpectedDemoExternalOrderIds();
+            $expectedDemoExternalOrderIds = $this->externalOrderTestDataService->getDemoExternalOrderIds();
 
             if ($reset) {
                 $deleted = $this->cleanup();
@@ -115,11 +110,11 @@ class DemoDataSeederService
 
     /**
      * @param array<int, string>|null $expectedExternalOrderIds
-     * @return array{linked:int, missingIds:array<int, string>, deletedMissingPackages:int, destructiveCleanup:bool}
+     * @return array{linked:int, missingIds:array<int, string>, deletedCount:int, deletedMissingPackages:int, destructiveCleanup:bool}
      */
     public function linkExpectedDemoExternalOrders(?array $expectedExternalOrderIds = null, ?string $seedRunId = null, ?string $expectedSourceMarker = null): array
     {
-        return $this->externalOrderLinkService->linkDemoExternalOrders($expectedExternalOrderIds ?? $this->buildExpectedDemoExternalOrderIds(), $seedRunId, $expectedSourceMarker);
+        return $this->externalOrderLinkService->linkDemoExternalOrders($expectedExternalOrderIds ?? $this->externalOrderTestDataService->getDemoExternalOrderIds(), $seedRunId, $expectedSourceMarker);
     }
 
     /**
@@ -127,7 +122,7 @@ class DemoDataSeederService
      */
     private function cleanup(): array
     {
-        $orderPrefixParam = self::ORDER_PREFIX . '%';
+        $orderPrefixParam = 'DEMO-%';
 
         $counts = [
             'paket' => 0,
@@ -200,72 +195,14 @@ class DemoDataSeederService
         );
         $counts['tasks'] = $this->connection->executeStatement(
             'DELETE FROM `lieferzeiten_task` WHERE payload LIKE :prefix',
-            ['prefix' => '%"externalOrderId":"' . self::ORDER_PREFIX . '%'],
+            ['prefix' => '%"externalOrderId":"DEMO-%'],
         );
         $counts['auditLogs'] = $this->connection->executeStatement(
             'DELETE FROM `lieferzeiten_audit_log` WHERE payload LIKE :prefix',
-            ['prefix' => '%"externalOrderId":"' . self::ORDER_PREFIX . '%'],
+            ['prefix' => '%"externalOrderId":"DEMO-%'],
         );
 
         return $counts;
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    private function buildExpectedDemoExternalOrderIds(): array
-    {
-        $demoExternalOrderIds = $this->externalOrderTestDataService->getDemoExternalOrderIds();
-        if ($demoExternalOrderIds === []) {
-            return [];
-        }
-
-        $channelBuckets = [];
-        $channelOrder = [];
-
-        foreach ($demoExternalOrderIds as $externalOrderId) {
-            if (!preg_match('/^' . preg_quote(self::ORDER_PREFIX, '/') . '([A-Z0-9_]+)-\\d{3}$/', $externalOrderId, $matches)) {
-                continue;
-            }
-
-            $channel = $matches[1];
-            if (!array_key_exists($channel, $channelBuckets)) {
-                $channelBuckets[$channel] = [];
-                $channelOrder[] = $channel;
-            }
-
-            $channelBuckets[$channel][] = $externalOrderId;
-        }
-
-        if ($channelBuckets === []) {
-            return array_slice($demoExternalOrderIds, 0, self::DEMO_DATASET_SIZE);
-        }
-
-        $selectedIds = [];
-
-        while (count($selectedIds) < self::DEMO_DATASET_SIZE) {
-            $addedThisCycle = false;
-
-            foreach ($channelOrder as $channel) {
-                $candidateId = array_shift($channelBuckets[$channel]);
-                if ($candidateId === null) {
-                    continue;
-                }
-
-                $selectedIds[] = $candidateId;
-                $addedThisCycle = true;
-
-                if (count($selectedIds) >= self::DEMO_DATASET_SIZE) {
-                    break;
-                }
-            }
-
-            if (!$addedThisCycle) {
-                break;
-            }
-        }
-
-        return array_values(array_unique($selectedIds));
     }
 
     /**
