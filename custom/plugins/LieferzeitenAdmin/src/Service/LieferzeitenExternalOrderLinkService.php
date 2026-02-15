@@ -23,7 +23,7 @@ class LieferzeitenExternalOrderLinkService
 
     /**
      * @param array<int, string> $expectedExternalOrderIds
-     * @return array{linked:int, missingIds:array<int, string>, deletedMissingPackages:int, destructiveCleanup:bool}
+     * @return array{linked:int, missingIds:array<int, string>, deletedCount:int, deletedMissingPackages:int, destructiveCleanup:bool}
      */
     public function linkDemoExternalOrders(array $expectedExternalOrderIds, ?string $seedRunId = null, ?string $expectedSourceMarker = null): array
     {
@@ -33,7 +33,7 @@ class LieferzeitenExternalOrderLinkService
         )));
 
         if ($expectedExternalOrderIds === []) {
-            return ['linked' => 0, 'missingIds' => [], 'deletedMissingPackages' => 0, 'destructiveCleanup' => false];
+            return ['linked' => 0, 'missingIds' => [], 'deletedCount' => 0, 'deletedMissingPackages' => 0, 'destructiveCleanup' => false];
         }
 
         $destructiveCleanup = $this->canUseDestructiveCleanup($seedRunId, $expectedSourceMarker);
@@ -54,6 +54,7 @@ class LieferzeitenExternalOrderLinkService
             return [
                 'linked' => 0,
                 'missingIds' => $expectedExternalOrderIds,
+                'deletedCount' => $deletedMissingPackages,
                 'deletedMissingPackages' => $deletedMissingPackages,
                 'destructiveCleanup' => $destructiveCleanup,
             ];
@@ -82,6 +83,7 @@ class LieferzeitenExternalOrderLinkService
         return [
             'linked' => count($linkedIds),
             'missingIds' => $missingIds,
+            'deletedCount' => $deletedMissingPackages,
             'deletedMissingPackages' => $deletedMissingPackages,
             'destructiveCleanup' => $destructiveCleanup,
         ];

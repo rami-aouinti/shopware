@@ -316,15 +316,15 @@ class LieferzeitenSyncController extends AbstractController
 
         $expectedExternalOrderIds = $this->externalOrderTestDataService->getDemoExternalOrderIds();
         $linkResult = $this->demoDataSeederService->linkExpectedDemoExternalOrders($expectedExternalOrderIds, $seedRunId, $seedSourceMarker);
-        $deletedMissingPackages = (int) ($linkResult['deletedMissingPackages'] ?? 0);
+        $deletedCount = (int) ($linkResult['deletedCount'] ?? ($linkResult['deletedMissingPackages'] ?? 0));
         $destructiveCleanup = (bool) ($linkResult['destructiveCleanup'] ?? false);
 
         $summary = [
             'createdExternalOrders' => $createdExternalOrders,
             'createdLieferzeiten' => $createdLieferzeiten,
             'linked' => (int) ($linkResult['linked'] ?? 0),
-            'missing' => is_array($linkResult['missingIds'] ?? null) ? $linkResult['missingIds'] : [],
-            'deletedMissingPackages' => $deletedMissingPackages,
+            'missingIds' => is_array($linkResult['missingIds'] ?? null) ? $linkResult['missingIds'] : [],
+            'deletedCount' => $deletedCount,
             'destructiveCleanup' => $destructiveCleanup,
         ];
 
@@ -340,7 +340,7 @@ class LieferzeitenSyncController extends AbstractController
             'linking' => [
                 'seedRunId' => $seedRunId,
                 'seedSourceMarker' => $seedSourceMarker,
-                'deletedMissingPackages' => $deletedMissingPackages,
+                'deletedCount' => $deletedCount,
                 'destructiveCleanup' => $destructiveCleanup,
             ],
             'summary' => $summary,
