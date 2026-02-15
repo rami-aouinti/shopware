@@ -17,7 +17,7 @@ class DemoDataSeederService
     public function __construct(
         private readonly Connection $connection,
         private readonly LieferzeitenExternalOrderLinkService $externalOrderLinkService,
-        private readonly ExternalOrderTestDataService $externalOrderTestDataService,
+        private readonly ?ExternalOrderTestDataService $externalOrderTestDataService,
     ) {
     }
 
@@ -83,7 +83,7 @@ class DemoDataSeederService
         $linkResult = ['linked' => 0, 'missingIds' => [], 'deletedCount' => 0, 'deletedMissingPackages' => 0, 'destructiveCleanup' => false];
 
         $this->connection->transactional(function () use ($reset, $linkExternalOrders, $seedRunId, &$created, &$deleted, &$linkResult): void {
-            $expectedDemoExternalOrderIds = $this->externalOrderTestDataService->getDemoExternalOrderIds();
+            $expectedDemoExternalOrderIds = $this->externalOrderTestDataService?->getDemoExternalOrderIds() ?? [];
 
             if ($reset) {
                 $deleted = $this->cleanup();
@@ -120,7 +120,7 @@ class DemoDataSeederService
     ): array
     {
         return $this->externalOrderLinkService->linkDemoExternalOrders(
-            $expectedExternalOrderIds ?? $this->externalOrderTestDataService->getDemoExternalOrderIds(),
+            $expectedExternalOrderIds ?? ($this->externalOrderTestDataService?->getDemoExternalOrderIds() ?? []),
             $seedRunId,
             $expectedSourceMarker,
             $allowDestructiveCleanup,
