@@ -9,6 +9,10 @@
             <tag name="shopware.entity.definition"/>
         </service>
 
+        <service id="ExternalOrders\Entity\ExternalOrderDataDefinition">
+            <tag name="shopware.entity.definition"/>
+        </service>
+
         <service id="ExternalOrders\Service\FakeExternalOrderProvider" />
         <service id="ExternalOrders\Service\ExternalOrderTestDataService">
             <argument type="service" id="external_order.repository" />
