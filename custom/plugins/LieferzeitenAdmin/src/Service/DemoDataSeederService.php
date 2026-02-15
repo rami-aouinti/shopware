@@ -3,6 +3,7 @@
 namespace LieferzeitenAdmin\Service;
 
 use Doctrine\DBAL\Connection;
+use ExternalOrders\Service\ExternalOrderTestDataService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
 
@@ -15,10 +16,12 @@ class DemoDataSeederService
      * Keep this prefix aligned with ExternalOrders\Service\FakeExternalOrderProvider::DEMO_ORDER_PREFIX.
      */
     private const ORDER_PREFIX = 'DEMO-';
+    private const DEMO_DATASET_SIZE = 9;
 
     public function __construct(
         private readonly Connection $connection,
         private readonly LieferzeitenExternalOrderLinkService $externalOrderLinkService,
+        private readonly ExternalOrderTestDataService $externalOrderTestDataService,
     ) {
     }
 
@@ -84,12 +87,14 @@ class DemoDataSeederService
         $linkResult = ['linked' => 0, 'missingIds' => []];
 
         $this->connection->transactional(function () use ($reset, &$created, &$deleted, &$linkResult): void {
+            $expectedDemoExternalOrderIds = $this->buildExpectedDemoExternalOrderIds();
+
             if ($reset) {
                 $deleted = $this->cleanup();
             }
 
-            $created = $this->insertDemoData();
-            $linkResult = $this->externalOrderLinkService->linkDemoExternalOrders($this->buildExpectedDemoExternalOrderIds());
+            $created = $this->insertDemoData($expectedDemoExternalOrderIds);
+            $linkResult = $this->externalOrderLinkService->linkDemoExternalOrders($expectedDemoExternalOrderIds);
         });
 
         return [
@@ -205,23 +210,63 @@ class DemoDataSeederService
      */
     private function buildExpectedDemoExternalOrderIds(): array
     {
-        return [
-            self::ORDER_PREFIX . '1001',
-            self::ORDER_PREFIX . '1002',
-            self::ORDER_PREFIX . '1003',
-            self::ORDER_PREFIX . '1004',
-            self::ORDER_PREFIX . '1005',
-            self::ORDER_PREFIX . '1006',
-            self::ORDER_PREFIX . '1007',
-            self::ORDER_PREFIX . '1008',
-            self::ORDER_PREFIX . '1999',
-        ];
+        $demoExternalOrderIds = $this->externalOrderTestDataService->getDemoExternalOrderIds();
+        if ($demoExternalOrderIds === []) {
+            return [];
+        }
+
+        $channelBuckets = [];
+        $channelOrder = [];
+
+        foreach ($demoExternalOrderIds as $externalOrderId) {
+            if (!preg_match('/^' . preg_quote(self::ORDER_PREFIX, '/') . '([A-Z0-9_]+)-\\d{3}$/', $externalOrderId, $matches)) {
+                continue;
+            }
+
+            $channel = $matches[1];
+            if (!array_key_exists($channel, $channelBuckets)) {
+                $channelBuckets[$channel] = [];
+                $channelOrder[] = $channel;
+            }
+
+            $channelBuckets[$channel][] = $externalOrderId;
+        }
+
+        if ($channelBuckets === []) {
+            return array_slice($demoExternalOrderIds, 0, self::DEMO_DATASET_SIZE);
+        }
+
+        $selectedIds = [];
+
+        while (count($selectedIds) < self::DEMO_DATASET_SIZE) {
+            $addedThisCycle = false;
+
+            foreach ($channelOrder as $channel) {
+                $candidateId = array_shift($channelBuckets[$channel]);
+                if ($candidateId === null) {
+                    continue;
+                }
+
+                $selectedIds[] = $candidateId;
+                $addedThisCycle = true;
+
+                if (count($selectedIds) >= self::DEMO_DATASET_SIZE) {
+                    break;
+                }
+            }
+
+            if (!$addedThisCycle) {
+                break;
+            }
+        }
+
+        return array_values(array_unique($selectedIds));
     }
 
     /**
      * @return array<string, int>
      */
-    private function insertDemoData(): array
+    private function insertDemoData(array $externalOrderIds): array
     {
         $counts = [
             'paket' => 0,
@@ -237,8 +282,12 @@ class DemoDataSeederService
             'auditLogs' => 0,
         ];
 
+        if ($externalOrderIds === []) {
+            return $counts;
+        }
+
         $now = new \DateTimeImmutable('now');
-        $datasets = $this->buildOrderDataset($now);
+        $datasets = $this->buildOrderDataset($now, $externalOrderIds);
 
         foreach ($datasets as $dataset) {
             $paketId = $this->uuidBytes();
@@ -424,26 +473,49 @@ class DemoDataSeederService
     /**
      * @return array<int, array<string, mixed>>
      */
-    private function buildOrderDataset(\DateTimeImmutable $base): array
+    private function buildOrderDataset(\DateTimeImmutable $base, array $externalOrderIds): array
     {
-        return [
-            $this->buildOrder('1001', self::DOMAINS[0], 1, 'dhl', false, false, 'open', $base->modify('-2 days')),
-            $this->buildOrder('1002', self::DOMAINS[1], 2, 'gls', false, true, 'open', $base->modify('-3 days')),
-            $this->buildOrder('1003', self::DOMAINS[2], 3, 'eigenversand', false, false, 'open', $base->modify('-4 days')),
-            $this->buildOrder('1004', self::DOMAINS[0], 4, 'dhl', true, false, 'closed', $base->modify('-5 days')),
-            $this->buildOrder('1005', self::DOMAINS[1], 5, 'gls', false, true, 'open', $base->modify('-6 days')),
-            $this->buildOrder('1006', self::DOMAINS[2], 6, 'eigenversand', true, false, 'closed', $base->modify('-7 days')),
-            $this->buildOrder('1007', self::DOMAINS[0], 7, 'dhl', false, true, 'open', $base->modify('-8 days')),
-            $this->buildOrder('1008', self::DOMAINS[1], 8, 'gls', true, true, 'closed', $base->modify('-9 days')),
-            $this->buildOrder('1999', self::DOMAINS[2], 8, 'dhl', false, false, 'open', $base->modify('-1 day'), true),
+        $orderTemplates = [
+            [self::DOMAINS[0], 1, 'dhl', false, false, 'open', '-2 days', false],
+            [self::DOMAINS[1], 2, 'gls', false, true, 'open', '-3 days', false],
+            [self::DOMAINS[2], 3, 'eigenversand', false, false, 'open', '-4 days', false],
+            [self::DOMAINS[0], 4, 'dhl', true, false, 'closed', '-5 days', false],
+            [self::DOMAINS[1], 5, 'gls', false, true, 'open', '-6 days', false],
+            [self::DOMAINS[2], 6, 'eigenversand', true, false, 'closed', '-7 days', false],
+            [self::DOMAINS[0], 7, 'dhl', false, true, 'open', '-8 days', false],
+            [self::DOMAINS[1], 8, 'gls', true, true, 'closed', '-9 days', false],
+            [self::DOMAINS[2], 8, 'dhl', false, false, 'open', '-1 day', true],
         ];
+
+        $datasets = [];
+        $max = min(count($orderTemplates), count($externalOrderIds));
+
+        for ($index = 0; $index < $max; $index += 1) {
+            [$domain, $status, $shippingType, $closed, $overdue, $taskStatus, $orderDateModifier, $isTestOrder] = $orderTemplates[$index];
+
+            $datasets[] = $this->buildOrder(
+                $externalOrderIds[$index],
+                sprintf('%04d', $index + 1),
+                $domain,
+                $status,
+                $shippingType,
+                $closed,
+                $overdue,
+                $taskStatus,
+                $base->modify($orderDateModifier),
+                $isTestOrder,
+            );
+        }
+
+        return $datasets;
     }
 
     /**
      * @return array<string, mixed>
      */
     private function buildOrder(
-        string $suffix,
+        string $externalOrderId,
+        string $rowSuffix,
         string $domain,
         int $status,
         string $shippingType,
@@ -459,8 +531,8 @@ class DemoDataSeederService
         $supplierTo = $orderDate->modify('+5 days');
 
         return [
-            'externalOrderId' => self::ORDER_PREFIX . $suffix,
-            'paketNumber' => 'SAN6-' . $suffix,
+            'externalOrderId' => $externalOrderId,
+            'paketNumber' => 'SAN6-' . $rowSuffix,
             'domain' => $domain,
             'status' => (string) $status,
             'shippingAssignmentType' => $shippingType,
@@ -483,7 +555,7 @@ class DemoDataSeederService
                     'supplierTo' => $supplierTo,
                     'newFrom' => $supplierFrom->modify('+1 day'),
                     'newTo' => $supplierFrom->modify('+2 days'),
-                    'trackingNumber' => $shippingType === 'eigenversand' ? null : strtoupper($shippingType) . '-' . $suffix,
+                    'trackingNumber' => $shippingType === 'eigenversand' ? null : strtoupper($shippingType) . '-' . $rowSuffix,
                 ],
             ],
         ];
