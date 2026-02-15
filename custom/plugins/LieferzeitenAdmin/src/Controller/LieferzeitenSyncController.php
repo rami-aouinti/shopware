@@ -301,8 +301,11 @@ class LieferzeitenSyncController extends AbstractController
         defaults: ['_acl' => ['lieferzeiten.editor']],
         methods: [Request::METHOD_POST]
     )]
-    public function seedLinkedDemoData(Context $context): JsonResponse
+    public function seedLinkedDemoData(Request $request, Context $context): JsonResponse
     {
+        $payload = json_decode((string) $request->getContent(), true);
+        $allowDestructiveCleanup = is_array($payload) ? (bool) ($payload['destructiveCleanup'] ?? $payload['allowDestructiveCleanup'] ?? false) : false;
+
         $seedRunId = Uuid::randomHex();
         $seedSourceMarker = 'demo.seeder.run:' . $seedRunId;
 
@@ -315,7 +318,12 @@ class LieferzeitenSyncController extends AbstractController
         ));
 
         $expectedExternalOrderIds = $this->externalOrderTestDataService->getDemoExternalOrderIds();
-        $linkResult = $this->demoDataSeederService->linkExpectedDemoExternalOrders($expectedExternalOrderIds, $seedRunId, $seedSourceMarker, true);
+        $linkResult = $this->demoDataSeederService->linkExpectedDemoExternalOrders(
+            $expectedExternalOrderIds,
+            $seedRunId,
+            $seedSourceMarker,
+            $allowDestructiveCleanup,
+        );
         $deletedCount = (int) ($linkResult['deletedCount'] ?? ($linkResult['deletedMissingPackages'] ?? 0));
         $destructiveCleanup = (bool) ($linkResult['destructiveCleanup'] ?? false);
 
@@ -340,6 +348,7 @@ class LieferzeitenSyncController extends AbstractController
             'linking' => [
                 'seedRunId' => $seedRunId,
                 'seedSourceMarker' => $seedSourceMarker,
+                'allowDestructiveCleanup' => $allowDestructiveCleanup,
                 'deletedCount' => $deletedCount,
                 'destructiveCleanup' => $destructiveCleanup,
             ],

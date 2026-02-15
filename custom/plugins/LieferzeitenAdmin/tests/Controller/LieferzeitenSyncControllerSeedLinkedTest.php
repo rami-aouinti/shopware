@@ -17,6 +17,7 @@ use LieferzeitenAdmin\Service\Tracking\TrackingDeliveryDateSyncService;
 use LieferzeitenAdmin\Service\Tracking\TrackingHistoryService;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
+use Symfony\Component\HttpFoundation\Request;
 
 class LieferzeitenSyncControllerSeedLinkedTest extends TestCase
 {
@@ -58,7 +59,8 @@ class LieferzeitenSyncControllerSeedLinkedTest extends TestCase
             $this->createMock(PdmsLieferzeitenMappingService::class),
         );
 
-        $response = $controller->seedLinkedDemoData(Context::createDefaultContext());
+        $request = new Request(content: json_encode(['destructiveCleanup' => true], JSON_THROW_ON_ERROR));
+        $response = $controller->seedLinkedDemoData($request, Context::createDefaultContext());
         $payload = json_decode((string) $response->getContent(), true);
 
         static::assertSame(200, $response->getStatusCode());
