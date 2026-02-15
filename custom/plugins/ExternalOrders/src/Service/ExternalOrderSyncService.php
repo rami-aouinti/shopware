@@ -21,7 +21,7 @@ class ExternalOrderSyncService
         private readonly SystemConfigService $systemConfigService,
         private readonly LoggerInterface $logger,
         private readonly TopmSan6Client $topmSan6Client,
-        private readonly ExternalToOrderMapper $externalToOrderMapper,
+        private readonly ?ExternalToOrderMapper $externalToOrderMapper = null,
     ) {
     }
 
@@ -281,7 +281,12 @@ class ExternalOrderSyncService
 
             $seenExternalIds[$externalId] = true;
 
-            $insertPayload[] = $this->externalToOrderMapper->mapToOrderPayload($order, $channel, $externalId);
+            $mappedPayload = $this->mapExternalOrder($order, $channel, $externalId);
+            if ($mappedPayload === null) {
+                continue;
+            }
+
+            $insertPayload[] = $mappedPayload;
         }
 
         if ($insertPayload === []) {
@@ -311,6 +316,25 @@ class ExternalOrderSyncService
         }
 
         return $externalId;
+    }
+
+    /**
+     * @param array<string, mixed> $order
+     *
+     * @return array<string, mixed>|null
+     */
+    private function mapExternalOrder(array $order, string $channel, string $externalId): ?array
+    {
+        if ($this->externalToOrderMapper === null) {
+            $this->logger->error('External Orders sync failed: mapper service is not available. Clear the cache and retry plugin update.', [
+                'channel' => $channel,
+                'externalId' => $externalId,
+            ]);
+
+            return null;
+        }
+
+        return $this->externalToOrderMapper->mapToOrderPayload($order, $channel, $externalId);
     }
 
     private function resolveCorrelationId(ResponseInterface $response): ?string
