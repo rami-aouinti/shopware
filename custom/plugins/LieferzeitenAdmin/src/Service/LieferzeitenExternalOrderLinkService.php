@@ -8,6 +8,7 @@ use Psr\Log\LoggerInterface;
 class LieferzeitenExternalOrderLinkService
 {
     private const ORDER_PREFIX = 'DEMO-';
+    private const SEED_MARKER_PREFIX = 'demo.seeder.run:';
 
     /**
      * @var array<string, bool>
@@ -22,9 +23,9 @@ class LieferzeitenExternalOrderLinkService
 
     /**
      * @param array<int, string> $expectedExternalOrderIds
-     * @return array{linked:int, missingIds:array<int, string>}
+     * @return array{linked:int, missingIds:array<int, string>, deletedMissingPackages:int, destructiveCleanup:bool}
      */
-    public function linkDemoExternalOrders(array $expectedExternalOrderIds): array
+    public function linkDemoExternalOrders(array $expectedExternalOrderIds, ?string $seedRunId = null, ?string $expectedSourceMarker = null): array
     {
         $expectedExternalOrderIds = array_values(array_unique(array_filter(
             $expectedExternalOrderIds,
@@ -32,21 +33,29 @@ class LieferzeitenExternalOrderLinkService
         )));
 
         if ($expectedExternalOrderIds === []) {
-            return ['linked' => 0, 'missingIds' => []];
+            return ['linked' => 0, 'missingIds' => [], 'deletedMissingPackages' => 0, 'destructiveCleanup' => false];
         }
+
+        $destructiveCleanup = $this->canUseDestructiveCleanup($seedRunId, $expectedSourceMarker);
+        $cleanupMarker = $destructiveCleanup ? self::SEED_MARKER_PREFIX . $seedRunId : null;
 
         $persistedExternalOrderIds = $this->fetchPersistedDemoExternalOrderIds();
 
         if ($persistedExternalOrderIds === []) {
             $this->logger->warning('No persisted demo external orders found while linking Lieferzeiten demo data.', [
                 'missingIds' => $expectedExternalOrderIds,
+                'destructiveCleanup' => $destructiveCleanup,
+                'seedRunId' => $seedRunId,
+                'expectedSourceMarker' => $expectedSourceMarker,
             ]);
 
-            $this->deletePaketeByExternalOrderIds($expectedExternalOrderIds);
+            $deletedMissingPackages = $this->cleanupMissingPakete($expectedExternalOrderIds, $cleanupMarker, $destructiveCleanup);
 
             return [
                 'linked' => 0,
                 'missingIds' => $expectedExternalOrderIds,
+                'deletedMissingPackages' => $deletedMissingPackages,
+                'destructiveCleanup' => $destructiveCleanup,
             ];
         }
 
@@ -57,17 +66,24 @@ class LieferzeitenExternalOrderLinkService
             $this->touchLinkedPakete($linkedIds);
         }
 
+        $deletedMissingPackages = 0;
+
         if ($missingIds !== []) {
             $this->logger->warning('Some Lieferzeiten demo external order IDs were not found in persisted external orders.', [
                 'missingIds' => $missingIds,
+                'destructiveCleanup' => $destructiveCleanup,
+                'seedRunId' => $seedRunId,
+                'expectedSourceMarker' => $expectedSourceMarker,
             ]);
 
-            $this->deletePaketeByExternalOrderIds($missingIds);
+            $deletedMissingPackages = $this->cleanupMissingPakete($missingIds, $cleanupMarker, $destructiveCleanup);
         }
 
         return [
             'linked' => count($linkedIds),
             'missingIds' => $missingIds,
+            'deletedMissingPackages' => $deletedMissingPackages,
+            'destructiveCleanup' => $destructiveCleanup,
         ];
     }
 
@@ -128,17 +144,53 @@ class LieferzeitenExternalOrderLinkService
     /**
      * @param array<int, string> $externalOrderIds
      */
-    private function deletePaketeByExternalOrderIds(array $externalOrderIds): void
+    private function cleanupMissingPakete(array $externalOrderIds, ?string $cleanupMarker, bool $destructiveCleanup): int
     {
         if ($externalOrderIds === []) {
-            return;
+            return 0;
         }
 
+        if (!$destructiveCleanup || $cleanupMarker === null) {
+            $this->logger->warning('Skipping destructive cleanup for missing Lieferzeiten pakete because no valid seed correlation was provided.', [
+                'missingIds' => $externalOrderIds,
+            ]);
+
+            return 0;
+        }
+
+        $deletedRows = $this->deletePaketeByExternalOrderIdsAndMarker($externalOrderIds, $cleanupMarker);
+
+        if ($deletedRows === 0) {
+            $this->logger->warning('No Lieferzeiten pakete deleted for missing external order IDs because no rows matched the current seed marker.', [
+                'missingIds' => $externalOrderIds,
+                'cleanupMarker' => $cleanupMarker,
+            ]);
+        }
+
+        return $deletedRows;
+    }
+
+    /**
+     * @param array<int, string> $externalOrderIds
+     */
+    private function deletePaketeByExternalOrderIdsAndMarker(array $externalOrderIds, string $cleanupMarker): int
+    {
         $placeholders = implode(',', array_fill(0, count($externalOrderIds), '?'));
-        $this->connection->executeStatement(
-            sprintf('DELETE FROM `lieferzeiten_paket` WHERE external_order_id IN (%s)', $placeholders),
-            $externalOrderIds,
+        $params = [...$externalOrderIds, $cleanupMarker];
+
+        return $this->connection->executeStatement(
+            sprintf('DELETE FROM `lieferzeiten_paket` WHERE external_order_id IN (%s) AND last_changed_by = ?', $placeholders),
+            $params,
         );
+    }
+
+    private function canUseDestructiveCleanup(?string $seedRunId, ?string $expectedSourceMarker): bool
+    {
+        if (!is_string($seedRunId) || $seedRunId === '' || !is_string($expectedSourceMarker) || $expectedSourceMarker === '') {
+            return false;
+        }
+
+        return $expectedSourceMarker === self::SEED_MARKER_PREFIX . $seedRunId;
     }
 
     private function tableExists(string $table): bool
@@ -157,4 +209,3 @@ class LieferzeitenExternalOrderLinkService
         return $this->tableExistsCache[$table];
     }
 }
-
