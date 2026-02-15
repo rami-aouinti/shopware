@@ -42,7 +42,7 @@ class LieferzeitenExternalOrderLinkService
         }
 
         $destructiveCleanup = $this->canUseDestructiveCleanup($seedRunId, $expectedSourceMarker, $allowDestructiveCleanup);
-        $cleanupMarker = $destructiveCleanup ? self::SEED_MARKER_PREFIX . $seedRunId : null;
+        $cleanupMarker = $destructiveCleanup ? $expectedSourceMarker : null;
 
         $persistedExternalOrderIds = $this->fetchPersistedDemoExternalOrderIds();
 
@@ -54,7 +54,7 @@ class LieferzeitenExternalOrderLinkService
                 'expectedSourceMarker' => $expectedSourceMarker,
             ]);
 
-            $deletedMissingPackages = $this->cleanupMissingPakete($expectedExternalOrderIds, $cleanupMarker, $destructiveCleanup);
+            $deletedMissingPackages = $this->cleanupMissingPakete($expectedExternalOrderIds, $cleanupMarker);
 
             return [
                 'linked' => 0,
@@ -82,7 +82,7 @@ class LieferzeitenExternalOrderLinkService
                 'expectedSourceMarker' => $expectedSourceMarker,
             ]);
 
-            $deletedMissingPackages = $this->cleanupMissingPakete($missingIds, $cleanupMarker, $destructiveCleanup);
+            $deletedMissingPackages = $this->cleanupMissingPakete($missingIds, $cleanupMarker);
         }
 
         return [
@@ -151,14 +151,14 @@ class LieferzeitenExternalOrderLinkService
     /**
      * @param array<int, string> $externalOrderIds
      */
-    private function cleanupMissingPakete(array $externalOrderIds, ?string $cleanupMarker, bool $destructiveCleanup): int
+    private function cleanupMissingPakete(array $externalOrderIds, ?string $cleanupMarker): int
     {
         if ($externalOrderIds === []) {
             return 0;
         }
 
-        if (!$destructiveCleanup || $cleanupMarker === null) {
-            $this->logger->warning('Skipping destructive cleanup for missing Lieferzeiten pakete because no valid seed correlation was provided.', [
+        if ($cleanupMarker === null) {
+            $this->logger->warning('Missing Lieferzeiten demo external order IDs detected. Destructive cleanup is disabled by default; no pakete were deleted.', [
                 'missingIds' => $externalOrderIds,
             ]);
 

@@ -361,14 +361,26 @@ class LieferzeitenSyncController extends AbstractController
         $reset = is_array($payload) ? (bool) ($payload['reset'] ?? false) : false;
 
         $result = $this->demoDataSeederService->seed($context, $reset);
+        $linking = is_array($result['linking'] ?? null) ? $result['linking'] : [];
+
+        $responsePayload = array_merge($result, [
+            'missingIds' => is_array($linking['missingIds'] ?? null) ? $linking['missingIds'] : [],
+            'deletedCount' => (int) ($linking['deletedCount'] ?? ($linking['deletedMissingPackages'] ?? 0)),
+            'destructiveCleanup' => (bool) ($linking['destructiveCleanup'] ?? false),
+        ]);
 
         $this->auditLogService->log('demo_data_seeded', 'lieferzeiten_demo_data', null, $context, [
             'reset' => $reset,
             'created' => $result['created'] ?? [],
             'deleted' => $result['deleted'] ?? [],
+            'linking' => [
+                'missingIds' => $responsePayload['missingIds'],
+                'deletedCount' => $responsePayload['deletedCount'],
+                'destructiveCleanup' => $responsePayload['destructiveCleanup'],
+            ],
         ], 'shopware');
 
-        return new JsonResponse($result);
+        return new JsonResponse($responsePayload);
     }
 
 
