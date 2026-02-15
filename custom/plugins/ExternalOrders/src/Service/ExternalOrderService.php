@@ -2,17 +2,20 @@
 
 namespace ExternalOrders\Service;
 
+use Doctrine\DBAL\ArrayParameterType;
+use Doctrine\DBAL\Connection;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 
 readonly class ExternalOrderService
 {
     public function __construct(
-        private EntityRepository $externalOrderRepository,
+        private EntityRepository $orderRepository,
+        private Connection $connection,
     ) {
     }
 
@@ -32,16 +35,24 @@ readonly class ExternalOrderService
 
         $criteria = new Criteria();
         $criteria->setLimit(5000);
-        $result = $this->externalOrderRepository->search($criteria, $context);
+        $result = $this->orderRepository->search($criteria, $context);
+
+        $orderIds = [];
+        foreach ($result->getEntities() as $entity) {
+            $orderIds[] = $entity->getId();
+        }
+
+        $metadataByOrderId = $this->fetchMetadataByOrderIds($orderIds);
 
         $orders = [];
         foreach ($result->getEntities() as $entity) {
-            $payload = $entity->getPayload();
-            if (!is_array($payload)) {
+            $metadata = $metadataByOrderId[$entity->getId()] ?? null;
+            $externalId = $this->resolveExternalId($entity->getCustomFields(), $metadata);
+            if ($externalId === null) {
                 continue;
             }
 
-            $orders[] = $this->mapExternalPayloadToListItem($payload, $entity->getExternalId());
+            $orders[] = $this->mapOrderToListItem($entity, $externalId, $metadata);
         }
 
         if ($channel) {
@@ -104,20 +115,21 @@ readonly class ExternalOrderService
 
     public function fetchOrderDetail(Context $context, string $orderId): ?array
     {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('externalId', $orderId));
+        $criteria = new Criteria([$orderId]);
 
-        $entity = $this->externalOrderRepository->search($criteria, $context)->first();
+        $entity = $this->orderRepository->search($criteria, $context)->first();
         if ($entity === null) {
             return null;
         }
 
-        $payload = $entity->getPayload();
-        if (!is_array($payload)) {
+        $metadataByOrderId = $this->fetchMetadataByOrderIds([$entity->getId()]);
+        $metadata = $metadataByOrderId[$entity->getId()] ?? null;
+        $externalId = $this->resolveExternalId($entity->getCustomFields(), $metadata);
+        if ($externalId === null) {
             return null;
         }
 
-        return $this->mapExternalPayloadToDetail($payload, $entity->getExternalId());
+        return $this->mapOrderToDetail($entity, $externalId, $metadata);
     }
 
     /**
@@ -137,45 +149,62 @@ readonly class ExternalOrderService
         }
 
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsAnyFilter('externalId', $normalizedIds));
-        $entities = $this->externalOrderRepository->search($criteria, $context)->getEntities();
+        $criteria->addFilter(new EqualsAnyFilter('id', $normalizedIds));
+        $entities = $this->orderRepository->search($criteria, $context)->getEntities();
+
+        $metadataByOrderId = $this->fetchMetadataByOrderIds($normalizedIds);
 
         $upserts = [];
         $foundIds = [];
         $alreadyMarked = 0;
 
         foreach ($entities as $entity) {
-            $payload = $entity->getPayload();
-            if (!is_array($payload)) {
+            $metadata = $metadataByOrderId[$entity->getId()] ?? null;
+            $externalId = $this->resolveExternalId($entity->getCustomFields(), $metadata);
+            if ($externalId === null) {
                 continue;
             }
 
-            $foundIds[] = $entity->getExternalId();
-            $isAlreadyMarked = (bool) ($payload['isTestOrder'] ?? false);
+            $customFields = $entity->getCustomFields() ?? [];
+
+            $foundIds[] = $entity->getId();
+            $isAlreadyMarked = (bool) ($customFields['external_order_is_test_order'] ?? false);
             if ($isAlreadyMarked) {
                 $alreadyMarked++;
                 continue;
             }
 
-            $payload['isTestOrder'] = true;
-            $payload['status'] = 'test';
-            $payload['statusLabel'] = 'Test';
-            $payload['ordersStatusName'] = 'Test';
-            $payload['orderStatusColor'] = '9e9e9e';
-
-            if (isset($payload['detail']) && is_array($payload['detail'])) {
-                $payload['detail']['additional']['status'] = 'Test';
-            }
+            $customFields['external_order_is_test_order'] = true;
+            $customFields['external_order_status'] = 'test';
+            $customFields['external_order_status_label'] = 'Test';
 
             $upserts[] = [
                 'id' => $entity->getId(),
-                'externalId' => $entity->getExternalId(),
-                'payload' => $payload,
+                'customFields' => $customFields,
             ];
+
+            if ($metadata !== null) {
+                $payload = $metadata['rawPayload'];
+                $payload['isTestOrder'] = true;
+                $payload['status'] = 'test';
+                $payload['statusLabel'] = 'Test';
+                $payload['ordersStatusName'] = 'Test';
+                $payload['orderStatusColor'] = '9e9e9e';
+
+                if (isset($payload['detail']) && is_array($payload['detail'])) {
+                    $payload['detail']['additional']['status'] = 'Test';
+                }
+
+                $this->connection->update('external_order_data', [
+                    'raw_payload' => json_encode($payload, JSON_THROW_ON_ERROR),
+                    'source_status' => 'test',
+                    'updated_at' => (new \DateTimeImmutable())->format('Y-m-d H:i:s.v'),
+                ], ['id' => hex2bin($metadata['id'])]);
+            }
         }
 
         if ($upserts !== []) {
-            $this->externalOrderRepository->upsert($upserts, $context);
+            $this->orderRepository->upsert($upserts, $context);
         }
 
         return [
@@ -185,8 +214,9 @@ readonly class ExternalOrderService
         ];
     }
 
-    private function mapExternalPayloadToListItem(array $payload, string $externalId): array
+    private function mapOrderToListItem(OrderEntity $order, string $externalId, ?array $metadata): array
     {
+        $payload = $metadata['rawPayload'] ?? [];
         $detail = $payload['detail'] ?? null;
         $detail = is_array($detail) ? $detail : null;
 
@@ -202,23 +232,25 @@ readonly class ExternalOrderService
         $customerName = $customerName !== '' ? $customerName : 'N/A';
 
         $email = $payload['customersEmailAddress'] ?? $payload['email'] ?? ($customer['email'] ?? 'N/A');
-        $orderNumber = $payload['orderNumber'] ?? ($detail['orderNumber'] ?? $externalId);
+        $orderNumber = $payload['orderNumber'] ?? ($detail['orderNumber'] ?? $order->getOrderNumber() ?? $externalId);
         $orderReference = $payload['auftragNumber'] ?? $payload['orderReference'] ?? $orderNumber;
         $channel = $payload['channel'] ?? 'unknown';
 
         $statusLabel = $payload['ordersStatusName'] ?? $payload['statusLabel'] ?? ($additional['status'] ?? 'Processing');
         $status = $payload['status'] ?? strtolower((string) $statusLabel);
 
-        $date = $payload['datePurchased'] ?? $payload['date'] ?? ($additional['orderDate'] ?? '');
+        $date = $payload['datePurchased'] ?? $payload['date'] ?? ($additional['orderDate'] ?? ($order->getOrderDateTime()?->format(DATE_ATOM) ?? ''));
 
         $totalItems = $payload['totalItems'] ?? $this->countDetailItems($detail);
-        $totalRevenue = $payload['totalRevenue'] ?? ($totals['sum'] ?? 0.0);
-        $orderId = $payload['orderId'] ?? $orderNumber;
+        $totalRevenue = $payload['totalRevenue'] ?? ($totals['sum'] ?? $order->getAmountTotal() ?? 0.0);
+        $orderId = $order->getId();
         $statusColor = $payload['orderStatusColor'] ?? ($additional['statusColor'] ?? null);
-        $isTestOrder = (bool) ($payload['isTestOrder'] ?? false);
+        $customFields = $order->getCustomFields() ?? [];
+        $isTestOrder = (bool) (($customFields['external_order_is_test_order'] ?? null) ?? ($payload['isTestOrder'] ?? false));
 
         return [
-            'id' => $externalId,
+            'id' => $order->getId(),
+            'externalId' => $externalId,
             'orderId' => $orderId,
             'channel' => $channel,
             'orderNumber' => $orderNumber,
@@ -240,16 +272,73 @@ readonly class ExternalOrderService
         ];
     }
 
-    private function mapExternalPayloadToDetail(array $payload, string $externalId): array
+    private function mapOrderToDetail(OrderEntity $order, string $externalId, ?array $metadata): array
     {
+        $payload = $metadata['rawPayload'] ?? [];
         if (isset($payload['detail']) && is_array($payload['detail'])) {
             $detail = $payload['detail'];
             $detail['items'] = $this->normalizeDetailItems($detail['items'] ?? []);
+            $detail['internalOrderId'] = $order->getId();
+            $detail['externalId'] = $externalId;
 
             return $detail;
         }
 
         return $this->buildDetailFallback($payload, $externalId);
+    }
+
+    /**
+     * @param array<int, string> $orderIds
+     *
+     * @return array<string, array{id:string, externalId:string, channel:?string, rawPayload:array<string,mixed>}>
+     */
+    private function fetchMetadataByOrderIds(array $orderIds): array
+    {
+        $orderIds = array_values(array_unique(array_filter($orderIds)));
+        if ($orderIds === []) {
+            return [];
+        }
+
+        $rows = $this->connection->fetchAllAssociative(
+            'SELECT LOWER(HEX(id)) as id, LOWER(HEX(order_id)) as order_id, external_id, channel, raw_payload
+             FROM external_order_data
+             WHERE order_id IN (:orderIds)',
+            ['orderIds' => array_map(static fn (string $id): string => hex2bin($id) ?: '', $orderIds)],
+            ['orderIds' => ArrayParameterType::BINARY]
+        );
+
+        $result = [];
+        foreach ($rows as $row) {
+            $orderId = $row['order_id'] ?? null;
+            $externalId = $row['external_id'] ?? null;
+            if (!is_string($orderId) || !is_string($externalId) || $externalId === '') {
+                continue;
+            }
+
+            $rawPayload = json_decode((string) ($row['raw_payload'] ?? '{}'), true);
+            $result[$orderId] = [
+                'id' => (string) ($row['id'] ?? ''),
+                'externalId' => $externalId,
+                'channel' => isset($row['channel']) ? (string) $row['channel'] : null,
+                'rawPayload' => is_array($rawPayload) ? $rawPayload : [],
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array<string, mixed>|null $customFields
+     * @param array{id:string, externalId:string, channel:?string, rawPayload:array<string,mixed>}|null $metadata
+     */
+    private function resolveExternalId(?array $customFields, ?array $metadata): ?string
+    {
+        $fromCustomFields = $customFields['external_order_id'] ?? null;
+        if (is_string($fromCustomFields) && $fromCustomFields !== '') {
+            return $fromCustomFields;
+        }
+
+        return $metadata['externalId'] ?? null;
     }
 
     private function buildDetailFallback(array $payload, string $externalId): array

@@ -18,7 +18,8 @@
             <argument type="service" id="external_order.repository" />
         </service>
         <service id="ExternalOrders\Service\ExternalOrderService">
-            <argument type="service" id="external_order.repository" />
+            <argument key="$orderRepository" type="service" id="order.repository" />
+            <argument key="$connection" type="service" id="Doctrine\DBAL\Connection" />
         </service>
         <service id="ExternalOrders\Service\TopmSan6OrderMapper" />
         <service id="ExternalOrders\Service\TopmSan6Client" />
