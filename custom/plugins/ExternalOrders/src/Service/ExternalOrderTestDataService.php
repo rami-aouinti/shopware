@@ -2,6 +2,8 @@
 
 namespace ExternalOrders\Service;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -13,8 +15,10 @@ use Shopware\Core\Framework\Uuid\Uuid;
 class ExternalOrderTestDataService
 {
     public function __construct(
-        private readonly EntityRepository $externalOrderRepository,
+        private readonly EntityRepository $orderRepository,
         private readonly FakeExternalOrderProvider $fakeExternalOrderProvider,
+        private readonly ExternalToOrderMapper $externalToOrderMapper,
+        private readonly Connection $connection,
     ) {
     }
 
@@ -24,7 +28,7 @@ class ExternalOrderTestDataService
         $criteria->addFilter($this->buildDemoExternalIdFilter());
         $criteria->setLimit(1);
 
-        return $this->externalOrderRepository->search($criteria, $context)->getTotal() > 0;
+        return $this->orderRepository->search($criteria, $context)->getTotal() > 0;
     }
 
     public function removeSeededFakeOrders(Context $context): int
@@ -33,7 +37,7 @@ class ExternalOrderTestDataService
         $criteria->addFilter($this->buildDemoExternalIdFilter());
         $criteria->setLimit(5000);
 
-        $result = $this->externalOrderRepository->search($criteria, $context);
+        $result = $this->orderRepository->search($criteria, $context);
         $deletePayload = [];
 
         foreach ($result->getEntities() as $entity) {
@@ -44,7 +48,7 @@ class ExternalOrderTestDataService
             return 0;
         }
 
-        $this->externalOrderRepository->delete($deletePayload, $context);
+        $this->orderRepository->delete($deletePayload, $context);
 
         return count($deletePayload);
     }
@@ -74,7 +78,8 @@ class ExternalOrderTestDataService
         }
 
         $existingIds = $this->fetchExistingIds($externalIds, $context);
-        $upsertPayload = [];
+        $orderUpsertPayload = [];
+        $metadataPayload = [];
 
         foreach ($payloads as $payload) {
             if (!is_array($payload)) {
@@ -86,20 +91,31 @@ class ExternalOrderTestDataService
                 continue;
             }
 
-            $upsertPayload[] = [
-                'id' => Uuid::randomHex(),
-                'externalId' => $externalId,
-                'payload' => $payload,
+            $channel = (string) ($payload['channel'] ?? 'unknown');
+            $mappedOrderPayload = $this->externalToOrderMapper->mapToOrderPayload($payload, $channel, $externalId);
+            $orderUpsertPayload[] = $mappedOrderPayload;
+
+            $metadataPayload[] = [
+                'id' => Uuid::fromStringToHex('external-order-data-' . $externalId),
+                'order_id' => hex2bin((string) $mappedOrderPayload['id']),
+                'external_id' => $externalId,
+                'channel' => $channel,
+                'raw_payload' => json_encode($payload, JSON_THROW_ON_ERROR),
+                'source_status' => isset($payload['status']) ? (string) $payload['status'] : null,
+                'source_created_at' => $this->normalizeDateTime($payload['datePurchased'] ?? $payload['date'] ?? null),
+                'created_at' => (new \DateTimeImmutable())->format('Y-m-d H:i:s.v'),
+                'updated_at' => (new \DateTimeImmutable())->format('Y-m-d H:i:s.v'),
             ];
         }
 
-        if ($upsertPayload === []) {
+        if ($orderUpsertPayload === []) {
             return 0;
         }
 
-        $this->externalOrderRepository->upsert($upsertPayload, $context);
+        $this->orderRepository->upsert($orderUpsertPayload, $context);
+        $this->upsertExternalOrderMetadata($metadataPayload);
 
-        return count($upsertPayload);
+        return count($orderUpsertPayload);
     }
 
     /**
@@ -130,8 +146,8 @@ class ExternalOrderTestDataService
     private function buildDemoExternalIdFilter(): MultiFilter
     {
         return new MultiFilter(MultiFilter::CONNECTION_OR, [
-            new PrefixFilter('externalId', FakeExternalOrderProvider::DEMO_ORDER_PREFIX),
-            new PrefixFilter('externalId', 'fake-'),
+            new PrefixFilter('customFields.external_order_id', FakeExternalOrderProvider::DEMO_ORDER_PREFIX),
+            new PrefixFilter('customFields.external_order_id', 'fake-'),
         ]);
     }
 
@@ -146,13 +162,22 @@ class ExternalOrderTestDataService
 
         foreach (array_chunk($externalIds, $chunkSize) as $chunk) {
             $criteria = new Criteria();
-            $criteria->addFilter(new EqualsAnyFilter('externalId', $chunk));
             $criteria->setLimit(count($chunk));
-
-            $result = $this->externalOrderRepository->search($criteria, $context);
+            $criteria->addFilter(new EqualsAnyFilter('customFields.external_order_id', $chunk));
+            $result = $this->orderRepository->search($criteria, $context);
 
             foreach ($result->getEntities() as $entity) {
-                $mapping[$entity->getExternalId()] = $entity->getId();
+                $customFields = $entity->getCustomFields();
+                if (!is_array($customFields)) {
+                    continue;
+                }
+
+                $existingExternalId = $customFields['external_order_id'] ?? null;
+                if (!is_string($existingExternalId) || $existingExternalId === '') {
+                    continue;
+                }
+
+                $mapping[$existingExternalId] = $entity->getId();
             }
         }
 
@@ -171,5 +196,39 @@ class ExternalOrderTestDataService
         }
 
         return $externalId;
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $metadataPayload
+     */
+    private function upsertExternalOrderMetadata(array $metadataPayload): void
+    {
+        foreach ($metadataPayload as $metadataRow) {
+            try {
+                $this->connection->insert('external_order_data', $metadataRow);
+            } catch (UniqueConstraintViolationException) {
+                $this->connection->update('external_order_data', [
+                    'order_id' => $metadataRow['order_id'],
+                    'channel' => $metadataRow['channel'],
+                    'raw_payload' => $metadataRow['raw_payload'],
+                    'source_status' => $metadataRow['source_status'],
+                    'source_created_at' => $metadataRow['source_created_at'],
+                    'updated_at' => $metadataRow['updated_at'],
+                ], ['external_id' => $metadataRow['external_id']]);
+            }
+        }
+    }
+
+    private function normalizeDateTime(mixed $value): ?string
+    {
+        if (!is_string($value) || trim($value) === '') {
+            return null;
+        }
+
+        try {
+            return (new \DateTimeImmutable($value))->format('Y-m-d H:i:s.v');
+        } catch (\Throwable) {
+            return null;
+        }
     }
 }
