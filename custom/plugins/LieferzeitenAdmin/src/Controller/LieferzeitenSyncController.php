@@ -2,6 +2,7 @@
 
 namespace LieferzeitenAdmin\Controller;
 
+use ExternalOrders\Service\ExternalOrderTestDataService;
 use LieferzeitenAdmin\Service\AdditionalDeliveryAssigneeMissingException;
 use LieferzeitenAdmin\Service\Audit\AuditLogService;
 use LieferzeitenAdmin\Service\LieferzeitenImportService;
@@ -38,6 +39,7 @@ class LieferzeitenSyncController extends AbstractController
         private readonly LieferzeitenOrderStatusWriteService $orderStatusWriteService,
         private readonly LieferzeitenStatisticsService $statisticsService,
         private readonly DemoDataSeederService $demoDataSeederService,
+        private readonly ExternalOrderTestDataService $externalOrderTestDataService,
         private readonly AuditLogService $auditLogService,
         private readonly PdmsLieferzeitenMappingService $pdmsLieferzeitenMappingService,
     ) {
@@ -291,6 +293,48 @@ class LieferzeitenSyncController extends AbstractController
         return new JsonResponse(['status' => 'ok']);
     }
 
+
+
+    #[Route(
+        path: '/api/_action/external-orders/demo-data/seed-linked',
+        name: 'api.admin.external-orders.demo_data.seed_linked',
+        defaults: ['_acl' => ['lieferzeiten.editor']],
+        methods: [Request::METHOD_POST]
+    )]
+    public function seedLinkedDemoData(Context $context): JsonResponse
+    {
+        $removedExternalOrders = $this->externalOrderTestDataService->removeSeededFakeOrders($context);
+        $createdExternalOrders = $this->externalOrderTestDataService->seedFakeOrdersOnce($context);
+        $lieferzeitenResult = $this->demoDataSeederService->seed($context, true);
+        $createdLieferzeiten = array_sum(array_map(
+            static fn ($value): int => (int) $value,
+            is_array($lieferzeitenResult['created'] ?? null) ? $lieferzeitenResult['created'] : [],
+        ));
+
+        $expectedExternalOrderIds = $this->externalOrderTestDataService->getDemoExternalOrderIds();
+        $linkResult = $this->demoDataSeederService->linkExpectedDemoExternalOrders($expectedExternalOrderIds);
+
+        $summary = [
+            'createdExternalOrders' => $createdExternalOrders,
+            'createdLieferzeiten' => $createdLieferzeiten,
+            'linked' => (int) ($linkResult['linked'] ?? 0),
+            'missing' => is_array($linkResult['missingIds'] ?? null) ? $linkResult['missingIds'] : [],
+        ];
+
+        $this->auditLogService->log('demo_data_seeded_linked', 'lieferzeiten_demo_data', null, $context, [
+            'external' => [
+                'removed' => $removedExternalOrders,
+                'created' => $createdExternalOrders,
+            ],
+            'lieferzeiten' => [
+                'created' => $lieferzeitenResult['created'] ?? [],
+                'deleted' => $lieferzeitenResult['deleted'] ?? [],
+            ],
+            'summary' => $summary,
+        ], 'shopware');
+
+        return new JsonResponse($summary);
+    }
 
     #[Route(
         path: '/api/_action/lieferzeiten/demo-data',

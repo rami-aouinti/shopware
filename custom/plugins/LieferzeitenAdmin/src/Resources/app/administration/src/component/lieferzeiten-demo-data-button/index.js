@@ -81,9 +81,11 @@ Component.register('lieferzeiten-demo-data-button', {
 
             try {
                 const response = await this.lieferzeitenOrdersService.toggleDemoData();
-                this.hasDemoData = Boolean(response?.hasDemoData);
+                const isRemoved = response?.action === 'removed';
+                const hasSummary = Object.prototype.hasOwnProperty.call(response || {}, 'createdExternalOrders');
+                this.hasDemoData = isRemoved ? false : (hasSummary ? true : Boolean(response?.hasDemoData));
 
-                if (response?.action === 'removed') {
+                if (isRemoved) {
                     const removed = response?.deleted || {};
                     const totalRemoved = Object.values(removed).reduce((sum, value) => sum + Number(value || 0), 0);
 
@@ -92,6 +94,16 @@ Component.register('lieferzeiten-demo-data-button', {
                         message: totalRemoved > 0
                             ? `${totalRemoved} Demo-Datensätze wurden entfernt.`
                             : 'Keine Demo-Daten waren vorhanden.',
+                    });
+
+                    return;
+                }
+
+                if (hasSummary) {
+                    const missing = Array.isArray(response?.missing) ? response.missing.length : 0;
+                    this.createNotificationSuccess({
+                        title: 'Demo-Daten gespeichert',
+                        message: `${response?.createdExternalOrders ?? 0} externe Bestellungen, ${response?.createdLieferzeiten ?? 0} Lieferzeiten-Datensätze, ${response?.linked ?? 0} verknüpft${missing > 0 ? `, ${missing} fehlend` : ''}.`,
                     });
 
                     return;

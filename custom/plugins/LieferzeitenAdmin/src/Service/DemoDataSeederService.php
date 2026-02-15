@@ -102,6 +102,16 @@ class DemoDataSeederService
         ];
     }
 
+
+    /**
+     * @param array<int, string>|null $expectedExternalOrderIds
+     * @return array{linked:int, missingIds:array<int, string>}
+     */
+    public function linkExpectedDemoExternalOrders(?array $expectedExternalOrderIds = null): array
+    {
+        return $this->externalOrderLinkService->linkDemoExternalOrders($expectedExternalOrderIds ?? $this->buildExpectedDemoExternalOrderIds());
+    }
+
     /**
      * @return array<string, int>
      */
