@@ -8,8 +8,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\PrefixFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class ExternalOrderTestDataService
@@ -24,8 +22,25 @@ class ExternalOrderTestDataService
 
     public function hasSeededFakeOrders(Context $context): bool
     {
+        $hasMetadata = $this->connection->fetchOne(
+            'SELECT 1 FROM external_order_data WHERE external_id LIKE :demoPrefix OR external_id LIKE :legacyPrefix LIMIT 1',
+            [
+                'demoPrefix' => FakeExternalOrderProvider::DEMO_ORDER_PREFIX . '%',
+                'legacyPrefix' => 'fake-%',
+            ]
+        );
+
+        if ($hasMetadata !== false) {
+            return true;
+        }
+
+        $demoExternalOrderIds = $this->getDemoExternalOrderIds();
+        if ($demoExternalOrderIds === []) {
+            return false;
+        }
+
         $criteria = new Criteria();
-        $criteria->addFilter($this->buildDemoExternalIdFilter());
+        $criteria->addFilter(new EqualsAnyFilter('customFields.external_order_id', $demoExternalOrderIds));
         $criteria->setLimit(1);
 
         return $this->orderRepository->search($criteria, $context)->getTotal() > 0;
@@ -33,24 +48,60 @@ class ExternalOrderTestDataService
 
     public function removeSeededFakeOrders(Context $context): int
     {
-        $criteria = new Criteria();
-        $criteria->addFilter($this->buildDemoExternalIdFilter());
-        $criteria->setLimit(5000);
+        $orderIds = $this->connection->fetchFirstColumn(
+            'SELECT LOWER(HEX(order_id)) FROM external_order_data WHERE external_id LIKE :demoPrefix OR external_id LIKE :legacyPrefix',
+            [
+                'demoPrefix' => FakeExternalOrderProvider::DEMO_ORDER_PREFIX . '%',
+                'legacyPrefix' => 'fake-%',
+            ]
+        );
 
-        $result = $this->orderRepository->search($criteria, $context);
-        $deletePayload = [];
+        $this->connection->executeStatement(
+            'DELETE FROM external_order_data WHERE external_id LIKE :demoPrefix OR external_id LIKE :legacyPrefix',
+            [
+                'demoPrefix' => FakeExternalOrderProvider::DEMO_ORDER_PREFIX . '%',
+                'legacyPrefix' => 'fake-%',
+            ]
+        );
 
-        foreach ($result->getEntities() as $entity) {
-            $deletePayload[] = ['id' => $entity->getId()];
+        $orderIds = array_values(array_filter($orderIds, static fn (mixed $id): bool => is_string($id) && $id !== ''));
+
+        if ($orderIds === []) {
+            $orderIds = $this->fetchLegacyDemoOrderIds($context);
         }
 
-        if ($deletePayload === []) {
+        if ($orderIds === []) {
             return 0;
         }
 
+        $deletePayload = array_map(static fn (string $id): array => ['id' => $id], $orderIds);
         $this->orderRepository->delete($deletePayload, $context);
 
         return count($deletePayload);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function fetchLegacyDemoOrderIds(Context $context): array
+    {
+        $demoExternalOrderIds = $this->getDemoExternalOrderIds();
+        if ($demoExternalOrderIds === []) {
+            return [];
+        }
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsAnyFilter('customFields.external_order_id', $demoExternalOrderIds));
+        $criteria->setLimit(5000);
+
+        $result = $this->orderRepository->search($criteria, $context);
+        $orderIds = [];
+
+        foreach ($result->getEntities() as $entity) {
+            $orderIds[] = $entity->getId();
+        }
+
+        return $orderIds;
     }
 
     public function seedFakeOrdersOnce(Context $context): int
@@ -140,15 +191,6 @@ class ExternalOrderTestDataService
         }
 
         return array_values(array_unique($externalIds));
-    }
-
-
-    private function buildDemoExternalIdFilter(): MultiFilter
-    {
-        return new MultiFilter(MultiFilter::CONNECTION_OR, [
-            new PrefixFilter('customFields.external_order_id', FakeExternalOrderProvider::DEMO_ORDER_PREFIX),
-            new PrefixFilter('customFields.external_order_id', 'fake-'),
-        ]);
     }
 
     /**
