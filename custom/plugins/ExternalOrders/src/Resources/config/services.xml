@@ -29,6 +29,10 @@
         </service>
         <service id="ExternalOrders\Service\ExternalOrderSyncService">
             <argument key="$orderRepository" type="service" id="order.repository" />
+            <argument key="$httpClient" type="service" id="Symfony\Contracts\HttpClient\HttpClientInterface" />
+            <argument key="$systemConfigService" type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument key="$logger" type="service" id="logger" />
+            <argument key="$topmSan6Client" type="service" id="ExternalOrders\Service\TopmSan6Client" />
             <argument key="$externalToOrderMapper" type="service" id="ExternalOrders\Service\ExternalToOrderMapper" />
         </service>
         <service id="ExternalOrders\Controller\ExternalOrderController" public="true" />
