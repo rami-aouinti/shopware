@@ -82,6 +82,8 @@ class ExternalOrderController extends AbstractController
     )]
     public function seedTestData(Context $context): Response
     {
+        $this->extendExecutionTimeLimit();
+
         $inserted = $this->testDataService->seedFakeOrdersOnce($context);
 
         return new JsonResponse([
@@ -111,6 +113,8 @@ class ExternalOrderController extends AbstractController
     )]
     public function toggleTestData(Context $context): Response
     {
+        $this->extendExecutionTimeLimit();
+
         if ($this->testDataService->hasSeededFakeOrders($context)) {
             $removed = $this->testDataService->removeSeededFakeOrders($context);
 
@@ -130,6 +134,14 @@ class ExternalOrderController extends AbstractController
         ]);
     }
 
+    private function extendExecutionTimeLimit(): void
+    {
+        if (!function_exists('set_time_limit')) {
+            return;
+        }
+
+        @set_time_limit(180);
+    }
 
     #[Route(
         path: '/api/_action/external-orders/mark-test',
