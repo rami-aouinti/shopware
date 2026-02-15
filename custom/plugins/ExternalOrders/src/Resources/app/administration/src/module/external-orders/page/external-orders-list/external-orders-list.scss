@@ -297,6 +297,14 @@
         padding: 0;
     }
 
+
+    &__empty-state {
+        min-height: calc(100vh - 420px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     &__table-wrapper {
         background: #ffffff;
         border: 1px solid #e3e9f2;
