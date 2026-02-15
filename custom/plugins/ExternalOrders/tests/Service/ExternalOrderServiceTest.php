@@ -2,9 +2,9 @@
 
 namespace ExternalOrders\Tests\Service;
 
+use Doctrine\DBAL\Connection;
 use ExternalOrders\Service\ExternalOrderService;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderCollection;
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -15,111 +15,110 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 
 class ExternalOrderServiceTest extends TestCase
 {
-    public function testFetchOrdersReturnsDemoPayloadByDefault(): void
-    {
-        $repository = $this->createMock(EntityRepository::class);
-        $repository->expects($this->never())->method('search');
-
-        $service = new ExternalOrderService($repository);
-
-        $result = $service->fetchOrders(Context::createDefaultContext());
-
-        $this->assertSame(5, $result['total']);
-        $this->assertSame('fake-1001', $result['orders'][0]['id']);
-    }
-
-    public function testFetchOrdersUsesRepositoryWhenDemoDisabled(): void
+    public function testFetchOrdersUsesOrderIdAsPrimaryIdentifierAndExternalIdAsBusinessReference(): void
     {
         $context = Context::createDefaultContext();
-        $order = $this->createOrderEntity('order-1', 'ORDER-1', 2);
+        $order = $this->createOrderEntity('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'SW-10001', 25.5, [
+            'external_order_id' => 'EXT-10001',
+        ]);
 
-        $result = new EntitySearchResult(
-            OrderDefinition::ENTITY_NAME,
-            1,
-            new OrderCollection([$order]),
-            null,
-            new Criteria(),
-            $context
+        $repository = $this->createMock(EntityRepository::class);
+        $repository->expects($this->once())->method('search')->willReturn(
+            new EntitySearchResult(OrderDefinition::ENTITY_NAME, 1, new OrderCollection([$order]), null, new Criteria(), $context)
         );
 
-        $repository = $this->createMock(EntityRepository::class);
-        $repository->expects($this->once())
-            ->method('search')
-            ->willReturn($result);
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->once())
+            ->method('fetchAllAssociative')
+            ->willReturn([]);
 
-        $service = new ExternalOrderService($repository, false);
+        $service = new ExternalOrderService($repository, $connection);
 
-        $payload = $service->fetchOrders($context, null, null, 1, 50, 'orderNumber', 'ASC');
+        $result = $service->fetchOrders($context);
 
-        $this->assertSame(1, $payload['total']);
-        $this->assertSame(1, $payload['summary']['orderCount']);
-        $this->assertSame('order-1', $payload['orders'][0]['id']);
-        $this->assertSame(2, $payload['summary']['totalItems']);
+        static::assertSame(1, $result['total']);
+        static::assertSame('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', $result['orders'][0]['id']);
+        static::assertSame('EXT-10001', $result['orders'][0]['externalId']);
+        static::assertSame('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', $result['orders'][0]['orderId']);
     }
 
-    public function testFetchOrderDetailReturnsDemoPayloadByDefault(): void
-    {
-        $repository = $this->createMock(EntityRepository::class);
-        $repository->expects($this->never())->method('search');
-
-        $service = new ExternalOrderService($repository);
-
-        $detail = $service->fetchOrderDetail(Context::createDefaultContext(), 'fake-1001');
-
-        $this->assertSame('EO-1001', $detail['orderNumber']);
-    }
-
-    public function testFetchOrderDetailUsesRepositoryWhenDemoDisabled(): void
+    public function testFetchOrderDetailLoadsMetadataFromExternalOrderData(): void
     {
         $context = Context::createDefaultContext();
-        $order = $this->createOrderEntity('order-2', 'ORDER-2', 1);
-
-        $result = new EntitySearchResult(
-            OrderDefinition::ENTITY_NAME,
-            1,
-            new OrderCollection([$order]),
-            null,
-            new Criteria([$order->getId()]),
-            $context
-        );
+        $order = $this->createOrderEntity('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 'SW-20001', 10.0, []);
 
         $repository = $this->createMock(EntityRepository::class);
-        $repository->expects($this->once())
-            ->method('search')
-            ->willReturn($result);
+        $repository->expects($this->once())->method('search')->willReturn(
+            new EntitySearchResult(OrderDefinition::ENTITY_NAME, 1, new OrderCollection([$order]), null, new Criteria([$order->getId()]), $context)
+        );
 
-        $service = new ExternalOrderService($repository, false);
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->once())
+            ->method('fetchAllAssociative')
+            ->willReturn([[ 
+                'id' => 'cccccccccccccccccccccccccccccccc',
+                'order_id' => 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+                'external_id' => 'EXT-20001',
+                'channel' => 'san6',
+                'raw_payload' => json_encode([
+                    'detail' => [
+                        'orderNumber' => 'EXT-ORDER-20001',
+                        'items' => [['quantity' => 2]],
+                    ],
+                ], JSON_THROW_ON_ERROR),
+            ]]);
+
+        $service = new ExternalOrderService($repository, $connection);
 
         $detail = $service->fetchOrderDetail($context, $order->getId());
 
-        $this->assertSame('ORDER-2', $detail['orderNumber']);
-        $this->assertSame(1.0, $detail['totals']['sum']);
+        static::assertNotNull($detail);
+        static::assertSame('EXT-ORDER-20001', $detail['orderNumber']);
+        static::assertSame('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', $detail['internalOrderId']);
+        static::assertSame('EXT-20001', $detail['externalId']);
     }
 
-    private function createOrderEntity(string $id, string $orderNumber, int $lineItemQuantity): OrderEntity
+    public function testMarkOrdersAsTestUsesInternalOrderIds(): void
     {
-        $lineItem = $this->createMock(OrderLineItemEntity::class);
-        $lineItem->method('getQuantity')->willReturn($lineItemQuantity);
-        $lineItem->method('getPrice')->willReturn(null);
-        $lineItem->method('getLabel')->willReturn('Item');
-        $lineItem->method('getId')->willReturn('line-1');
+        $context = Context::createDefaultContext();
+        $order = $this->createOrderEntity('dddddddddddddddddddddddddddddddd', 'SW-30001', 15.0, []);
 
+        $repository = $this->createMock(EntityRepository::class);
+        $repository->expects($this->once())->method('search')->willReturn(
+            new EntitySearchResult(OrderDefinition::ENTITY_NAME, 1, new OrderCollection([$order]), null, new Criteria(), $context)
+        );
+        $repository->expects($this->once())->method('upsert');
+
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->once())
+            ->method('fetchAllAssociative')
+            ->willReturn([[ 
+                'id' => 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+                'order_id' => 'dddddddddddddddddddddddddddddddd',
+                'external_id' => 'EXT-30001',
+                'channel' => 'san6',
+                'raw_payload' => json_encode(['status' => 'processing'], JSON_THROW_ON_ERROR),
+            ]]);
+        $connection->expects($this->once())->method('update');
+
+        $service = new ExternalOrderService($repository, $connection);
+
+        $result = $service->markOrdersAsTest($context, ['dddddddddddddddddddddddddddddddd']);
+
+        static::assertSame(['updated' => 1, 'alreadyMarked' => 0, 'notFound' => 0], $result);
+    }
+
+    /**
+     * @param array<string, mixed>|null $customFields
+     */
+    private function createOrderEntity(string $id, string $orderNumber, float $amountTotal, ?array $customFields): OrderEntity
+    {
         $order = $this->createMock(OrderEntity::class);
         $order->method('getId')->willReturn($id);
-        $order->method('getSalesChannelId')->willReturn('channel-1');
         $order->method('getOrderNumber')->willReturn($orderNumber);
-        $order->method('getOrderCustomer')->willReturn(null);
-        $order->method('getAmountTotal')->willReturn(1.0);
-        $order->method('getAmountNet')->willReturn(1.0);
-        $order->method('getShippingTotal')->willReturn(0.0);
-        $order->method('getPositionPrice')->willReturn(1.0);
-        $order->method('getLineItems')->willReturn([$lineItem]);
-        $order->method('getStateMachineState')->willReturn(null);
+        $order->method('getAmountTotal')->willReturn($amountTotal);
         $order->method('getOrderDateTime')->willReturn(new \DateTimeImmutable('2024-06-18 09:14:00'));
-        $order->method('getBillingAddress')->willReturn(null);
-        $order->method('getDeliveries')->willReturn(null);
-        $order->method('getTransactions')->willReturn(null);
-        $order->method('getCustomerComment')->willReturn('');
+        $order->method('getCustomFields')->willReturn($customFields);
 
         return $order;
     }

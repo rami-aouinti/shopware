@@ -58,14 +58,14 @@ class ExternalOrderController extends AbstractController
     }
 
     #[Route(
-        path: '/api/_action/external-orders/detail/{orderId}',
+        path: '/api/_action/external-orders/detail/{internalOrderId}',
         name: 'api.admin.external-orders.detail',
         defaults: ['_acl' => ['admin']],
         methods: [Request::METHOD_GET]
     )]
-    public function detail(string $orderId, Context $context): Response
+    public function detail(string $internalOrderId, Context $context): Response
     {
-        $detail = $this->externalOrderService->fetchOrderDetail($context, $orderId);
+        $detail = $this->externalOrderService->fetchOrderDetail($context, $internalOrderId);
 
         if ($detail === null) {
             return new JsonResponse(['message' => 'Order not found'], Response::HTTP_NOT_FOUND);
@@ -140,9 +140,13 @@ class ExternalOrderController extends AbstractController
     public function markTest(Request $request, Context $context): Response
     {
         $payload = json_decode($request->getContent(), true);
-        $orderIds = is_array($payload['orderIds'] ?? null) ? $payload['orderIds'] : [];
+        $internalOrderIds = is_array($payload['orderIds'] ?? null) ? $payload['orderIds'] : [];
 
-        $result = $this->externalOrderService->markOrdersAsTest($context, $orderIds);
+        if (is_array($payload['internalOrderIds'] ?? null)) {
+            $internalOrderIds = $payload['internalOrderIds'];
+        }
+
+        $result = $this->externalOrderService->markOrdersAsTest($context, $internalOrderIds);
 
         return new JsonResponse($result);
     }
@@ -205,15 +209,15 @@ class ExternalOrderController extends AbstractController
     }
 
     #[Route(
-        path: '/api/_action/external-orders/export/{orderId}',
+        path: '/api/_action/external-orders/export/{internalOrderId}',
         name: 'api.admin.external-orders.export-order',
         defaults: ['_acl' => ['admin']],
         methods: [Request::METHOD_POST]
     )]
-    public function exportOrder(string $orderId, Context $context): Response
+    public function exportOrder(string $internalOrderId, Context $context): Response
     {
         try {
-            return new JsonResponse($this->orderExportService->exportOrder($orderId, $context));
+            return new JsonResponse($this->orderExportService->exportOrder($internalOrderId, $context));
         } catch (\Throwable $exception) {
             return new JsonResponse([
                 'success' => false,
@@ -223,14 +227,14 @@ class ExternalOrderController extends AbstractController
     }
 
     #[Route(
-        path: '/api/_action/external-orders/export-status/{orderId}',
+        path: '/api/_action/external-orders/export-status/{internalOrderId}',
         name: 'api.admin.external-orders.export-status',
         defaults: ['_acl' => ['admin']],
         methods: [Request::METHOD_GET]
     )]
-    public function exportStatus(string $orderId): Response
+    public function exportStatus(string $internalOrderId): Response
     {
-        $status = $this->orderExportService->getLatestExportStatus($orderId);
+        $status = $this->orderExportService->getLatestExportStatus($internalOrderId);
 
         return new JsonResponse($status ?? ['status' => 'not_found'], $status === null ? Response::HTTP_NOT_FOUND : Response::HTTP_OK);
     }
