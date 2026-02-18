@@ -118,6 +118,12 @@
         margin: 0 0 24px !important;
     }
 
+    :global(.external-orders__page .mt-card.external-orders-lieferzeit-empty__channels) {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 0 24px !important;
+    }
+
     :global(.external-orders__page .mt-card) {
         max-width: none !important;
     }
